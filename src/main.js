@@ -4,6 +4,7 @@ import wfc from './wfc/client/wfc'
 
 Vue.config.productionTip = false
 wfc.init()
+console.log('xxxo', wfc)
 
 new Vue({
   render: h => h(App),

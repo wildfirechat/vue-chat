@@ -1,5 +1,4 @@
 
-import { ContextMenu, MenuItem } from "react-contextmenu";
 import wfc from './wfc/client/wfc'
 
 export function isElectron() {
@@ -64,6 +63,6 @@ export const AppPath = null;
 export const desktopCapturer = null;
 
 // for web
-export const ContextMenuTrigger = require("react-contextmenu").ContextMenuTrigger;
-export const hideMenu = require("react-contextmenu").hideMenu;
-export const PostMessageEventEmitter = require('./ui/windowEmitter');
+export const ContextMenuTrigger = null;
+export const hideMenu = null;
+export const PostMessageEventEmitter = null;
