@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 import wfc from "./wfc";
 import EventType from "./wfcEvent";
 import Conversation from "../model/conversation";

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 /**
  * 
     message in json format
@@ -41,16 +45,17 @@ import { encode } from 'base64-arraybuffer';
 import Config from '../../config.js';
 
 import Long from 'long'
+import { observable } from 'mobx';
 
 export default class Message {
     conversation = {};
     from = '';
     content = {}; // 实际是payload
-    messageContent = {};
+    @observable messageContent = {};
     messageId = 0;
     direction = 0;
-    status = 0;
-    forceRerender = 0;
+    @observable status = 0;
+    @observable forceRerender = 0;
     messageUid = 0;
     timestamp = 0;
     to = '';

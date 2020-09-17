@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 import Conversation from '../model/conversation';
 import { EventEmitter } from 'events';
 import MessageStatus from '../messages/messageStatus';
@@ -1363,6 +1367,9 @@ export class WfcManager {
      */
     deleteFileRecord(messageUid, successCB, failCB){
         impl.deleteFileRecord(messageUid, successCB, failCB);
+    }
+    sendConferenceRequest(sessionId, roomId, request, data, callback){
+        impl.sendConferenceRequest(sessionId, roomId, request, data, callback)
     }
 
     _getStore() {

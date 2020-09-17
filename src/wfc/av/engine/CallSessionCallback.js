@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 export default class CallSessionCallback {
 
     onInitial(session, selfUserInfo, participantUserInfos) {
@@ -13,6 +17,10 @@ export default class CallSessionCallback {
     }
 
     didParticipantJoined(userId, userInfo) {
+
+    }
+
+    didParticipantConnected(userId) {
 
     }
 

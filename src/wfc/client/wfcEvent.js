@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 export default class EventType {
     // function (message) {}
     static SendMessage = 'sendMsg';
@@ -35,4 +39,7 @@ export default class EventType {
     static SettingUpdate = 'settingUpdate';
     // function (groupId) {}
     static GroupMembersUpdate = 'groupMembersUpdate';
+
+    // function (event) {}
+    static ConferenceEvent = 'conferenceEvent';
 }

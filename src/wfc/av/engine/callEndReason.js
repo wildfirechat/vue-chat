@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020 WildFireChat. All rights reserved.
+ */
+
 export default class CallEndReason {
     static REASON_Unknown = 0;
     static REASON_Busy = 1;
@@ -12,4 +16,5 @@ export default class CallEndReason {
     static RemoteBusy = 10;
     static RemoteTimeout = 11;
     static RemoteNetworkError = 12;
+
 }
