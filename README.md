@@ -6,3 +6,4 @@
 1. ```npm install```
 2. ```npm run serve```
 
+更多信息，请参考[web-chat](https://github.com/wildfirechat/web-chat)
