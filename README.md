@@ -1,24 +1,8 @@
-# vue-chat
+# vue-demo
 
-## Project setup
-```
-npm install
-```
+这是一个最简的野火IM vue demo，演示如果将野火IM的能力集成到vue框架。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## 开发测试
+1. ```npm install```
+2. ```npm run serve```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

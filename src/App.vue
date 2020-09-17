@@ -1,20 +1,14 @@
 <template>
   <div id="app">
-    <!--    <img alt="Vue logo" src="./assets/logo.png">-->
-    <!--    <HelloWorld msg="Welcome to Your Vue.js HH" v-show="state === 1"/>-->
     <div v-show="status !== 1">
-
       <p>请使用野火IM 移动端扫码登录</p>
       <img v-bind:src="qrCode">
     </div>
     <TestWfc v-show="status === 1"/>
-
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import Login from "@/components/Login";
 import TestWfc from "@/components/TestWfc";
 import axios from 'axios'
 import Config from "@/config";
@@ -125,8 +119,6 @@ export default {
   },
 
   components: {
-    HelloWorld,
-    Login,
     TestWfc
   }
 }
