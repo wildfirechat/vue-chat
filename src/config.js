@@ -19,7 +19,7 @@ export default class Config {
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'http://imtest.wildfirechat.cn:8888';
+    static APP_SERVER = 'http://wildfirechat.cn:8888';
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
     // turn server 配置，可以添加多个
     static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.cn:3478', userName: 'wfchat', password: 'wfchat'}];
@@ -27,7 +27,7 @@ export default class Config {
 
     // appId和appKey和专业版im server是绑定的，一定要做对应修改
     static WEB_APP_ID = 'web_12345678';
-    static WEB_APP_KEY = '54dd468f020d75eba04333bd8566e0326fe3734a';
+    static WEB_APP_KEY = '44889f61b0c4908761953fd178451b4e80308368';
 
     static MESSAGE_ROAMING = 1;
     // 拉取最近2小时的消息

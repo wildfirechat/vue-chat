@@ -3,19 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve --skip-plugins @vue/cli-plugin-eslint",
+    "build": "vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "atob": "^2.1.2",
+    "axios": "^0.20.0",
     "base64-arraybuffer": "^0.2.0",
     "btoa": "^1.2.1",
     "core-js": "^3.6.5",
     "detectrtc": "^1.4.1",
     "events": "^3.2.0",
+    "jr-qrcode": "^1.1.4",
     "js-base64": "^3.4.5",
     "long": "^4.0.0",
+    "qrcode.vue": "^1.7.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
