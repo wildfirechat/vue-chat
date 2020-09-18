@@ -33,6 +33,10 @@ export default {
     wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
   },
 
+  beforeDestroy() {
+    wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
+  },
+
   methods: {
     async createPCLoginSession(userId) {
       let response = await axios.post('/pc_session', {
