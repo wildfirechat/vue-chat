@@ -6,20 +6,24 @@ export default class Config {
     // 是否支持1对1音视频通话
     static ENABLE_SINGLE_VOIP_CALL = true;
     // 打开voip调试模式时，voip window不会自动关闭，方便分析控制台日志，需要手动关闭。
-    static ENABLE_VOIP_DEBUG_MODE = true;
+    static ENABLE_VOIP_DEBUG_MODE = false;
 
     static DEFAULT_PORTRAIT_URL = 'https://static.wildfirechat.cn/user-fallback.png';
     // 如果需要支持音视频通话功能，必须全站使用https(包括app server和im server) + wss，
     // WebSockets over SSL/TLS，启用https时，一定要配置为true；不启用https，一定要为false
-    static USE_WSS = false;
+    // 置为true时，请确保 IM SERVER 支持https访问。IM SERVER本身不能处理https请求，一般是通过在IM SERVER前面加上nginx之类的负载均衡器来实现https支持
+    static USE_WSS = true;
     // WebSocket连接端口，需要和服务端对应，不能随意修改
     static WS_PORT = 8083;
     // Secure WebSocket连接端口，需要和服务端对应，不能随意修改
     static WSS_PORT = 8084;
 
+    // IM SERVER的HOST，是域名或者ip，没有http等前缀!
+    static IM_SERVER_HOST = 'wildfirechat.cn';
+
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'http://wildfirechat.cn:8888';
+    static APP_SERVER = 'https://app.wildfirechat.cn';
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
     // turn server 配置，可以添加多个
     static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.cn:3478', userName: 'wfchat', password: 'wfchat'}];
@@ -38,6 +42,7 @@ export default class Config {
     // 1 clientId存储于sessionStorage，每个session对应一个clientId，刷新网页时，clientId不会变化；但打开新的tab页面，或者重启浏览器等，会重新生成
     // 2 clientId存储于localStorage，和域名绑定，每个域名，对应一个clientId，重启浏览器等，不会变化，会导致同一个浏览器，不能同时登录多个不同的账号
     // token是和clientId绑定的，当选策略1和2的时候，应用层可选择将上次成功连接的userId和token持久化，当用户进行刷新网页等操作时，可以直接用持久化的userId和token进行连接；而不用重新进行扫码登录
+    // 选2时，支持web端快速登录
     static CLIENT_ID_STRATEGY = 0;
 
     static SDK_PLATFORM_WINDOWS = 3;
@@ -57,6 +62,9 @@ export default class Config {
 
     // 发送消息超时时间，超时之后，认为当前连接已不可用，将进行重连，单位是秒。没有特殊需求不，不建议修改
     static SEND_MESSAGE_TIMEOUT = 20;
+
+    // 会话过期时间，表示一个会话，自己不再参与之后，多久会过期。会话列表不展示已过期的会话；单位是天
+    static CONVERSATION_EXPIRE_TIME = 30;
 
     static getWFCPlatform() {
         if (isElectron()) {
@@ -78,9 +86,5 @@ export default class Config {
         Object.keys(options).forEach(key =>{
             Config[key] = options[key];
         });
-    }
-
-    static validateConfig(){
-
     }
 }
