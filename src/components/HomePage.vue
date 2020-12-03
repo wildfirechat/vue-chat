@@ -64,6 +64,8 @@ export default {
 .menu-container {
   width: 100px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   background-color: antiquewhite;
 }
 
@@ -77,7 +79,7 @@ export default {
 }
 
 .menu {
-  height: 100%;
+  flex: 1;
 }
 
 .menu ul {
