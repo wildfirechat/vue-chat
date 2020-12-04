@@ -1,31 +1,13 @@
 <template>
   <section class="conversation-page">
-    <section class="conversation-list-container">
-      <div>
-        <input type="text" placeholder="search"/>
-      </div>
-      <section class="conversation-list">
-        <ul>
-          <li
-              @click="showConversation(conversation)"
-              v-for="conversation in conversationList"
-              :key="conversation"
-          >
-            {{ conversation }}
-          </li>
-        </ul>
-      </section>
-    </section>
-    <ConversationView
-        v-bind:conversation="currentConversation"
-        class="conversation-container"
-
-    />
+    <ConversationListPanel class="conversation-list-panel-container"/>
+    <ConversationView class="conversation-container"/>
   </section>
 </template>
 
 <script>
 import ConversationView from "./conversation/ConversationView";
+import ConversationListPanel from "@/components/ConversationListPanel";
 
 export default {
   data() {
@@ -42,6 +24,7 @@ export default {
     },
   },
   components: {
+    ConversationListPanel,
     ConversationView,
   },
 };
@@ -54,7 +37,7 @@ export default {
   height: 100%;
 }
 
-.conversation-list-container {
+.conversation-list-panel-container {
   width: 250px;
   background-color: azure;
 }
