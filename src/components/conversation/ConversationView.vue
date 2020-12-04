@@ -17,7 +17,7 @@
             <li v-for="item in messages" :key="item">{{ conversation + ' ' + item }}</li>
           </ul>
         </div>
-        <div class="input-container">Message input area</div>
+        <MessageInputView class="message-input-container"/>
         <SingleConversationInfoView v-if="conversation === 1"
                                     v-bind:class="{active:showConversationInfo}"
                                     class="conversation-info-container"/>
@@ -33,9 +33,10 @@
 import UIEventType from "@/UIEventType";
 import SingleConversationInfoView from "@/components/conversation/SingleConversationInfoView";
 import GroupConversationInfoView from "@/components/conversation/GroupConversationInfoView";
+import MessageInputView from "@/components/conversation/MessageInputView";
 
 export default {
-  components: {GroupConversationInfoView, SingleConversationInfoView},
+  components: {MessageInputView, GroupConversationInfoView, SingleConversationInfoView},
   // props: ["conversation"],
   data() {
     return {
@@ -93,7 +94,7 @@ export default {
   flex: 1;
 }
 
-.input-container {
+.message-input-container {
   margin-top: auto;
   height: 200px;
   background-color: blueviolet;
