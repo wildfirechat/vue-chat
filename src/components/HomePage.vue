@@ -19,8 +19,7 @@
 </template>
 
 <script>
-import ConversationListView from "./conversation/ConversationListView";
-import ConversationView from "./conversation/ConversationView";
+
 export default {
   data() {
     return {};
@@ -37,13 +36,10 @@ export default {
     },
     go2Setting() {
       console.log("go2Setting");
-      this.$router.push({ path: "/home/setting" });
+      this.$router.push({path: "/home/setting"});
     },
   },
-  components: {
-    ConversationListView,
-    ConversationView,
-  },
+  components: {},
 };
 </script>
 
@@ -55,6 +51,7 @@ export default {
 
   list-style: none;
 }
+
 .home {
   display: flex;
   width: 100vw;
@@ -69,7 +66,7 @@ export default {
   background-color: antiquewhite;
 }
 
-.avatar{
+.avatar {
   background-color: gray;
   width: 50px;
   height: 50px;
@@ -97,15 +94,5 @@ export default {
 .menu ul li:last-of-type {
   margin-top: auto;
   margin-bottom: 20px;
-}
-
-.conversation-list-panel {
-  width: 250px;
-  background-color: aquamarine;
-}
-
-.conversation-container {
-  flex: 1;
-  background-color: azure;
 }
 </style>

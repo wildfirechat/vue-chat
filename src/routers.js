@@ -11,7 +11,6 @@ const routers = [
     },
     {
         path: '/home',
-        name: 'home',
         component: HomePage,
         children: [
             {
