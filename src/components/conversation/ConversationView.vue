@@ -1,8 +1,11 @@
 <template>
   <section>
-    <div>
+    <div v-if="conversation==null" class="empty">
+      <h2>empty</h2>
+    </div>
+    <div v-else>
       <header>
-        <h1>Conv title</h1>
+        <h1>Conv title {{ conversation }}</h1>
       </header>
       <div class="message-list">
         <ul>
@@ -40,5 +43,8 @@ export default {
   created() {
     console.log("conversationView created", this.conversation);
   },
+  updated() {
+    console.log('conversationView updated', this.conversation)
+  }
 };
 </script>

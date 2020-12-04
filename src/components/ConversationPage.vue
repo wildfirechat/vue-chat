@@ -1,38 +1,47 @@
 <template>
-  <div class="conversation-page">
-    <ConversationListView class="conversation-list-container"/>
+  <section class="conversation-page">
+    <section class="conversation-list-container">
+      <div>
+        <input type="text" placeholder="search"/>
+      </div>
+      <section class="conversation-list">
+        <ul>
+          <li
+              @click="showConversation(conversation)"
+              v-for="conversation in conversationList"
+              :key="conversation"
+          >
+            {{ conversation }}
+          </li>
+        </ul>
+      </section>
+    </section>
     <ConversationView
-        conversation="test conversation props"
+        v-bind:conversation="currentConversation"
         class="conversation-container"
+
     />
-  </div>
+  </section>
 </template>
 
 <script>
-import ConversationListView from "./conversation/ConversationListView";
 import ConversationView from "./conversation/ConversationView";
 
 export default {
   data() {
-    return {};
+    return {
+      currentConversation: null,
+      conversationList: [1, 2, 3, 4, 5, 6, 7]
+    };
   },
 
   methods: {
-    go2Conversation() {
-      console.log("go2Conversation");
-      this.$router.push("/home/conversation");
-    },
-    go2Contact() {
-      console.log("go2Contatc");
-      this.$router.push("/home/contact");
-    },
-    go2Setting() {
-      console.log("go2Setting");
-      this.$router.push({path: "/home/setting"});
+    showConversation(conversation) {
+      this.currentConversation = conversation;
+      console.log("show conversation", conversation);
     },
   },
   components: {
-    ConversationListView,
     ConversationView,
   },
 };
@@ -40,17 +49,19 @@ export default {
 
 <style lang="css" scoped>
 .conversation-page {
-  display: flex;
   flex: 1;
+  display: flex;
+  height: 100%;
 }
 
 .conversation-list-container {
   width: 250px;
-  background-color: aquamarine;
+  background-color: azure;
 }
 
 .conversation-container {
   flex: 1;
-  background-color: azure;
+  background-color: beige;
 }
+
 </style>
