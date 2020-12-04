@@ -16,6 +16,9 @@ export default {
       conversationList: [1, 2, 3, 4, 5, 6, 7]
     };
   },
+  destroyed() {
+    console.log('conversation page destroyed')
+  },
 
   methods: {
     showConversation(conversation) {

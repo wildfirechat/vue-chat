@@ -14,6 +14,8 @@
 
 <script>
 
+import UIEventType from "@/UIEventType";
+
 export default {
   name: 'ConversationListView',
   data() {
@@ -27,6 +29,7 @@ export default {
     showConversation(conversation) {
       this.currentConversation = conversation;
       console.log("show conversation", conversation);
+      this.$root.$emit(UIEventType.currentConversation, conversation)
     },
   },
   components: {},

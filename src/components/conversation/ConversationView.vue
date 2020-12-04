@@ -1,7 +1,7 @@
 <template>
   <section>
     <div v-if="conversation==null" class="empty">
-      <h2>empty</h2>
+      <h2>no conversation is select</h2>
     </div>
     <div v-else>
       <header>
@@ -37,12 +37,26 @@
 </template>
 
 <script>
+import UIEventType from "@/UIEventType";
+
 export default {
-  props: ["conversation"],
+  // props: ["conversation"],
+  data() {
+    return {
+      conversation: null,
+    }
+  },
+
+  mounted() {
+    this.$root.$on(UIEventType.currentConversation, (arg) => {
+      this.conversation = arg
+    })
+  },
 
   created() {
     console.log("conversationView created", this.conversation);
   },
+
   updated() {
     console.log('conversationView updated', this.conversation)
   }
