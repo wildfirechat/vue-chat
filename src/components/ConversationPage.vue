@@ -1,7 +1,7 @@
 <template>
   <section class="conversation-page">
-    <ConversationListPanel class="conversation-list-panel-container"/>
-    <ConversationView class="conversation-container"/>
+    <ConversationListPanel class="conversation-list-panel"/>
+    <ConversationView class="conversation-view"/>
   </section>
 </template>
 
@@ -40,12 +40,12 @@ export default {
   height: 100%;
 }
 
-.conversation-list-panel-container {
+.conversation-list-panel {
   width: 250px;
   background-color: azure;
 }
 
-.conversation-container {
+.conversation-view {
   flex: 1;
   background-color: beige;
 }
