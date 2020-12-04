@@ -32,3 +32,13 @@
     </div>
   </section>
 </template>
+
+<script>
+export default {
+  props: ["conversation"],
+
+  created() {
+    console.log("conversationView created", this.conversation);
+  },
+};
+</script>

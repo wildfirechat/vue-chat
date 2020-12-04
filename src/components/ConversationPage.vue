@@ -1,13 +1,17 @@
 <template>
   <div class="conversation-page">
-    <ConversationListView class="conversation-list-container" />
-    <ConversationView class="conversation-container" />
+    <ConversationListView class="conversation-list-container"/>
+    <ConversationView
+        conversation="test conversation props"
+        class="conversation-container"
+    />
   </div>
 </template>
 
 <script>
 import ConversationListView from "./conversation/ConversationListView";
 import ConversationView from "./conversation/ConversationView";
+
 export default {
   data() {
     return {};
@@ -24,7 +28,7 @@ export default {
     },
     go2Setting() {
       console.log("go2Setting");
-      this.$router.push({ path: "/home/setting" });
+      this.$router.push({path: "/home/setting"});
     },
   },
   components: {
@@ -35,13 +39,12 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
-.conversation-page{
+.conversation-page {
   display: flex;
   flex: 1;
 }
 
-.conversation-list-container{
+.conversation-list-container {
   width: 250px;
   background-color: aquamarine;
 }
