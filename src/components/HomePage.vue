@@ -3,7 +3,24 @@
     <div class="home">
       <section class="menu-container">
         <div>
-          <a href="#"><img class="avatar" src="" alt=""></a>
+          <!-- todo tippy example -->
+          <tippy to="infoTrigger"
+                 interactive
+                 :animate-fill="false"
+                 placement="right"
+                 distant="7"
+                 theme="light"
+                 animation="fade"
+                 trigger="click"
+                 arrow>
+            <div class="user-info-container">
+              <h3>Header</h3>
+              <p style="color: black"> TODO - data binding</p>
+              <button @click="test">Click</button>
+            </div>
+          </tippy>
+
+          <a href="#"><img ref="infoTippy"  name="infoTrigger" class="avatar" src="" alt=""></a>
         </div>
         <nav class="menu">
           <ul>
@@ -38,6 +55,10 @@ export default {
       console.log("go2Setting");
       this.$router.push({path: "/home/setting"});
     },
+    test() {
+      console.log(this.$refs['infoTippy']);
+      this.$refs['infoTippy']._tippy.hide();
+    }
   },
   components: {},
 };
@@ -95,4 +116,11 @@ export default {
   margin-top: auto;
   margin-bottom: 20px;
 }
+
+.user-info-container{
+  width: 200px;
+  height: 200px;
+}
+
+
 </style>

@@ -3,3 +3,13 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+.tippy-tooltip.light-theme {
+    /* todo */
+    background-color: yellow;
+    border: 2px solid orange;
+}
+
+.tippy-arrow {
+    border-right: 8px solid red !important;
+}

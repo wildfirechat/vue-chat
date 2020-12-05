@@ -20,7 +20,8 @@
     "long": "^4.0.0",
     "qrcode.vue": "^1.7.0",
     "vue": "^2.6.11",
-    "vue-router": "^3.4.9"
+    "vue-router": "^3.4.9",
+    "vue-tippy": "^4.7.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
