@@ -5,10 +5,20 @@
           @click="showConversation(conversation)"
           v-for="conversation in conversationList"
           :key="conversation"
+          @contextmenu.prevent="$refs.menu.open($event,conversation)"
       >
         {{ conversation }}
       </li>
     </ul>
+    <vue-context ref="menu" v-slot="{data}">
+<!--      TODO -->
+      <li v-if="data === 1">
+        <a @click.prevent="onClick(data)">Option 1</a>
+      </li>
+      <li>
+        <a @click.prevent="onClick(data)">Option 2</a>
+      </li>
+    </vue-context>
   </section>
 </template>
 
@@ -31,6 +41,9 @@ export default {
       console.log("show conversation", conversation);
       this.$root.$emit(UIEventType.currentConversation, conversation)
     },
+    onClick(v) {
+      console.log('test', v)
+    }
   },
   components: {},
 };

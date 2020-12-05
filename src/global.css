@@ -13,3 +13,5 @@
 .tippy-arrow {
     border-right: 8px solid red !important;
 }
+
+@import '~vue-context/dist/css/vue-context.css';
