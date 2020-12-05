@@ -5,6 +5,9 @@ import routers from './routers'
 
 import wfc from './wfc/client/wfc'
 
+import './global.css'
+import './assets/fonts/icomoon/style.css'
+
 Vue.config.productionTip = false
 wfc.init()
 console.log('init wfc', wfc)

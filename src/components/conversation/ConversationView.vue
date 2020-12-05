@@ -7,23 +7,31 @@
       <header>
         <div class="title-container">
           <h1>Conv title {{ conversation }}</h1>
-          <a href="#"><img @click="toggleConversationInfo" src="" alt="setting"/></a>
+          <a href="#"
+            ><img @click="toggleConversationInfo" src="" alt="setting"
+          /></a>
         </div>
       </header>
       <div class="conversation-content-container">
         <div class="conversation-message-list">
           <ul>
             <!--todo item.messageId or messageUid as key-->
-            <li v-for="item in messages" :key="item">{{ conversation + ' ' + item }}</li>
+            <li v-for="item in messages" :key="item">
+              {{ conversation + " " + item }}
+            </li>
           </ul>
         </div>
-        <MessageInputView class="message-input-container"/>
-        <SingleConversationInfoView v-if="conversation === 1"
-                                    v-bind:class="{active:showConversationInfo}"
-                                    class="conversation-info-container"/>
-        <GroupConversationInfoView v-if="conversation === 2 "
-                                   v-bind:class="{active:showConversationInfo}"
-                                   class="conversation-info-container"/>
+        <MessageInputView class="message-input-container" />
+        <SingleConversationInfoView
+          v-if="conversation === 1"
+          v-bind:class="{ active: showConversationInfo }"
+          class="conversation-info-container"
+        />
+        <GroupConversationInfoView
+          v-if="conversation === 2"
+          v-bind:class="{ active: showConversationInfo }"
+          class="conversation-info-container"
+        />
       </div>
     </div>
   </section>
@@ -36,7 +44,11 @@ import GroupConversationInfoView from "@/components/conversation/GroupConversati
 import MessageInputView from "@/components/conversation/MessageInputView";
 
 export default {
-  components: {MessageInputView, GroupConversationInfoView, SingleConversationInfoView},
+  components: {
+    MessageInputView,
+    GroupConversationInfoView,
+    SingleConversationInfoView,
+  },
   // props: ["conversation"],
   data() {
     return {
@@ -48,9 +60,9 @@ export default {
 
   methods: {
     toggleConversationInfo() {
-      console.log('toggle conversationInfo');
+      console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
-    }
+    },
   },
 
   mounted() {
@@ -97,7 +109,7 @@ export default {
 .message-input-container {
   margin-top: auto;
   height: 200px;
-  background-color: blueviolet;
+  background-color: pink;
 }
 
 .conversation-info-container {
