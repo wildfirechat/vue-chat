@@ -7,9 +7,7 @@
       <header>
         <div class="title-container">
           <h1>Conv title {{ conversation }}</h1>
-          <a href="#"
-            ><img @click="toggleConversationInfo" src="" alt="setting"
-          /></a>
+          <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
       <div class="conversation-content-container">
@@ -21,16 +19,18 @@
             </li>
           </ul>
         </div>
-        <MessageInputView class="message-input-container" />
+        <MessageInputView class="message-input-container"/>
         <SingleConversationInfoView
-          v-if="conversation === 1"
-          v-bind:class="{ active: showConversationInfo }"
-          class="conversation-info-container"
+            v-if="conversation === 1"
+            v-click-outside="hideConversationInfo"
+            v-bind:class="{ active: showConversationInfo }"
+            class="conversation-info-container"
         />
         <GroupConversationInfoView
-          v-if="conversation === 2"
-          v-bind:class="{ active: showConversationInfo }"
-          class="conversation-info-container"
+            v-click-outside="hideConversationInfo"
+            v-if="conversation === 2"
+            v-bind:class="{ active: showConversationInfo }"
+            class="conversation-info-container"
         />
       </div>
     </div>
@@ -42,6 +42,7 @@ import UIEventType from "@/UIEventType";
 import SingleConversationInfoView from "@/components/conversation/SingleConversationInfoView";
 import GroupConversationInfoView from "@/components/conversation/GroupConversationInfoView";
 import MessageInputView from "@/components/conversation/MessageInputView";
+import ClickOutside from 'vue-click-outside'
 
 export default {
   components: {
@@ -54,6 +55,8 @@ export default {
     return {
       conversation: null,
       showConversationInfo: false,
+      isInviteConversationMember: false,
+      isShowConversationMember: false,
       messages: [1, 2, 3, 4, 5],
     };
   },
@@ -63,12 +66,20 @@ export default {
       console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
     },
+    hideConversationInfo() {
+      // TODO
+      // 是否在创建群聊，或者是在查看会话参与者信息
+      this.showConversationInfo && (this.showConversationInfo = false);
+      console.log('hide')
+    }
   },
 
   mounted() {
     this.$root.$on(UIEventType.currentConversation, (arg) => {
       this.conversation = arg;
     });
+    console.log('oooo', this.$refs, this.$refs['setting'])
+    this.popupItem = this.$refs['setting'];
   },
 
   created() {
@@ -77,6 +88,11 @@ export default {
 
   updated() {
     console.log("conversationView updated", this.conversation);
+    this.popupItem = this.$refs['setting'];
+  },
+
+  directives: {
+    ClickOutside
   },
 };
 </script>

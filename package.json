@@ -20,6 +20,7 @@
     "long": "^4.0.0",
     "qrcode.vue": "^1.7.0",
     "vue": "^2.6.11",
+    "vue-click-outside": "^1.1.0",
     "vue-context": "^6.0.0",
     "vue-router": "^3.4.9",
     "vue-tippy": "^4.7.2"
