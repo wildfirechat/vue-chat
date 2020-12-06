@@ -20,13 +20,51 @@
             </div>
           </tippy>
 
-          <a href="#"><img ref="infoTippy"  name="infoTrigger" class="avatar" src="" alt=""></a>
+          <a href="#"><img ref="infoTippy" name="infoTrigger" class="avatar" src="" alt=""></a>
         </div>
         <nav class="menu">
           <ul>
-            <li><a href="#" @click="go2Conversation">Conversation</a></li>
-            <li><a href="#" @click="go2Contact">Contact</a></li>
-            <li><a href="#" @click="go2Setting">Setting</a></li>
+            <li>
+              <div>
+                <tippy to="testTrigger"
+                       interactive
+                       :animate-fill="false"
+                       placement="right"
+                       distant="7"
+                       theme="light"
+                       animation="fade"
+                       trigger="click"
+                       arrow>
+                  <div class="user-info-container">
+                    <h3>Header</h3>
+                    <p style="color: black"> TODO - data binding</p>
+                    <button @click="test">Click</button>
+                  </div>
+                </tippy>
+                <a href="#" ref="testTippy" name="testTrigger" @click="go2Conversation">Conversation</a>
+              </div>
+            </li>
+            <li><a href="#" ref="infoTrigger" @click="go2Contact">Contact</a></li>
+            <li>
+              <div>
+                <tippy to="testTrigger1"
+                       interactive
+                       :animate-fill="false"
+                       placement="right-end"
+                       distant="7"
+                       theme="light"
+                       animation="fade"
+                       trigger="click"
+                       arrow>
+                  <div class="user-info-container">
+                    <h3>Header</h3>
+                    <p style="color: black"> TODO - data binding</p>
+                    <button @click="test">Click</button>
+                  </div>
+                </tippy>
+                <a href="#" ref="testTippy1" name="testTrigger1" @click="go2Setting">Setting</a>
+              </div>
+            </li>
           </ul>
         </nav>
       </section>
@@ -117,7 +155,7 @@ export default {
   margin-bottom: 20px;
 }
 
-.user-info-container{
+.user-info-container {
   width: 200px;
   height: 200px;
 }
