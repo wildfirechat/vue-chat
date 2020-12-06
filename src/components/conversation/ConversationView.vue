@@ -78,7 +78,6 @@ export default {
     this.$root.$on(UIEventType.currentConversation, (arg) => {
       this.conversation = arg;
     });
-    console.log('oooo', this.$refs, this.$refs['setting'])
     this.popupItem = this.$refs['setting'];
   },
 

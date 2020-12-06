@@ -15,15 +15,16 @@
               trigger="click"
               arrow
           >
-            <div class="user-info-container">
-              <h3>Header</h3>
-              <p style="color: black">TODO - data binding</p>
-              <button @click="test">Click</button>
-            </div>
+            <UserCardView v-on:close="closeUserCard"/>
+            <!--            <div class="user-info-container">-->
+            <!--              <h3>Header</h3>-->
+            <!--              <p style="color: black">TODO - data binding</p>-->
+            <!--              <button @click="test">Click</button>-->
+            <!--            </div>-->
           </tippy>
 
           <a href="#"><img
-              ref="infoTippy"
+              ref="userCardTippy"
               name="infoTrigger"
               class="avatar"
               src="@/assets/images/user-fallback.png"
@@ -67,6 +68,8 @@
 </template>
 
 <script>
+import UserCardView from "@/components/user/UserCardView";
+
 export default {
   data() {
     return {
@@ -88,12 +91,12 @@ export default {
       this.$router.push({path: "/home/setting"});
     },
 
-    test() {
-      console.log(this.$refs["infoTippy"]);
-      this.$refs["infoTippy"]._tippy.hide();
+    closeUserCard() {
+      console.log('closeUserCard')
+      this.$refs["userCardTippy"]._tippy.hide();
     },
   },
-  components: {},
+  components: {UserCardView},
 };
 </script>
 
@@ -154,10 +157,6 @@ export default {
   margin-bottom: 20px;
 }
 
-.user-info-container {
-  width: 200px;
-  height: 200px;
-}
 
 i {
   font-size: 24px;

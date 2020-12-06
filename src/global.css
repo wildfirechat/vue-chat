@@ -6,12 +6,14 @@
 
 .tippy-tooltip.light-theme {
     /* todo */
-    background-color: yellow;
-    border: 2px solid orange;
+    background-color: white;
+    border: 2px solid white;
+    /*width: 350px;*/
+    /*height: 350px;*/
 }
 
 .tippy-arrow {
-    border-right: 8px solid red !important;
+    border-right: 8px solid white !important;
 }
 
 @import '~vue-context/dist/css/vue-context.css';
