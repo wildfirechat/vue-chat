@@ -4,66 +4,59 @@
       <section class="menu-container">
         <div>
           <!-- todo tippy example -->
-          <tippy to="infoTrigger"
-                 interactive
-                 :animate-fill="false"
-                 placement="right"
-                 distant="7"
-                 theme="light"
-                 animation="fade"
-                 trigger="click"
-                 arrow>
+          <tippy
+              to="infoTrigger"
+              interactive
+              :animate-fill="false"
+              placement="right"
+              distant="7"
+              theme="light"
+              animation="fade"
+              trigger="click"
+              arrow
+          >
             <div class="user-info-container">
               <h3>Header</h3>
-              <p style="color: black"> TODO - data binding</p>
+              <p style="color: black">TODO - data binding</p>
               <button @click="test">Click</button>
             </div>
           </tippy>
 
-          <a href="#"><img ref="infoTippy" name="infoTrigger" class="avatar" src="" alt=""></a>
+          <a href="#"><img
+              ref="infoTippy"
+              name="infoTrigger"
+              class="avatar"
+              src="@/assets/images/user-fallback.png"
+              alt=""
+          /></a>
         </div>
         <nav class="menu">
           <ul>
+            <li><i class="icon-ion-ios-chatboxes" v-bind:class="{active : currentTab === 'conversation'}"
+                   @click="go2Conversation"></i></li>
+            <li><i class="icon-ion-ios-contact" v-bind:class="{active : currentTab === 'contact'}"
+                   @click="go2Contact"></i></li>
             <li>
-              <div>
-                <tippy to="testTrigger"
-                       interactive
-                       :animate-fill="false"
-                       placement="right"
-                       distant="7"
-                       theme="light"
-                       animation="fade"
-                       trigger="click"
-                       arrow>
-                  <div class="user-info-container">
-                    <h3>Header</h3>
-                    <p style="color: black"> TODO - data binding</p>
-                    <button @click="test">Click</button>
-                  </div>
-                </tippy>
-                <a href="#" ref="testTippy" name="testTrigger" @click="go2Conversation">Conversation</a>
-              </div>
-            </li>
-            <li><a href="#" ref="infoTrigger" @click="go2Contact">Contact</a></li>
-            <li>
-              <div>
-                <tippy to="testTrigger1"
-                       interactive
-                       :animate-fill="false"
-                       placement="right-end"
-                       distant="7"
-                       theme="light"
-                       animation="fade"
-                       trigger="click"
-                       arrow>
-                  <div class="user-info-container">
-                    <h3>Header</h3>
-                    <p style="color: black"> TODO - data binding</p>
-                    <button @click="test">Click</button>
-                  </div>
-                </tippy>
-                <a href="#" ref="testTippy1" name="testTrigger1" @click="go2Setting">Setting</a>
-              </div>
+              <i class="icon-ion-ios-settings-strong" v-bind:class="{active : currentTab === 'setting'}"
+                 @click="go2Setting"></i>
+              <!--              <div>-->
+              <!--                <tippy to="testTrigger1"-->
+              <!--                       interactive-->
+              <!--                       :animate-fill="false"-->
+              <!--                       placement="right-end"-->
+              <!--                       distant="7"-->
+              <!--                       theme="light"-->
+              <!--                       animation="fade"-->
+              <!--                       trigger="click"-->
+              <!--                       arrow>-->
+              <!--                  <div class="user-info-container">-->
+              <!--                    <h3>Header</h3>-->
+              <!--                    <p style="color: black"> TODO - data binding</p>-->
+              <!--                    <button @click="test">Click</button>-->
+              <!--                  </div>-->
+              <!--                </tippy>-->
+              <!--                <i class="icon-ion-ios-settings-strong" name="testTrigger1"></i>-->
+              <!--              </div>-->
             </li>
           </ul>
         </nav>
@@ -74,29 +67,31 @@
 </template>
 
 <script>
-
 export default {
   data() {
-    return {};
+    return {
+      currentTab: 'conversation',
+    };
   },
 
   methods: {
     go2Conversation() {
-      console.log("go2Conversation");
+      this.currentTab = 'conversation';
       this.$router.push("/home");
     },
     go2Contact() {
-      console.log("go2Contatc");
+      this.currentTab = 'contact';
       this.$router.push("/home/contact");
     },
     go2Setting() {
-      console.log("go2Setting");
+      this.currentTab = 'setting';
       this.$router.push({path: "/home/setting"});
     },
+
     test() {
-      console.log(this.$refs['infoTippy']);
-      this.$refs['infoTippy']._tippy.hide();
-    }
+      console.log(this.$refs["infoTippy"]);
+      this.$refs["infoTippy"]._tippy.hide();
+    },
   },
   components: {},
 };
@@ -118,20 +113,24 @@ export default {
 }
 
 .menu-container {
-  width: 100px;
+  width: 60px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: antiquewhite;
+  align-items: center;
+  background: linear-gradient(180deg, #292a2c 0%, #483a3a 100%);
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  padding: 20px 0;
 }
 
 .avatar {
   background-color: gray;
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   display: block;
   margin: 10px auto;
-  border-radius: 10px;
+  border-radius: 3px;
 }
 
 .menu {
@@ -146,7 +145,7 @@ export default {
 
 .menu ul li {
   margin: 10px;
-  height: 50px;
+  height: 40px;
   line-height: 50px;
 }
 
@@ -160,5 +159,17 @@ export default {
   height: 200px;
 }
 
+i {
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+}
 
+i:hover {
+  color: #34b7f1;
+}
+
+i.active {
+  color: #34b7f1;
+}
 </style>
