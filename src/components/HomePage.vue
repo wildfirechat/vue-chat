@@ -15,7 +15,7 @@
               trigger="click"
               arrow
           >
-            <UserCardView v-on:close="closeUserCard"/>
+            <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
             <!--            <div class="user-info-container">-->
             <!--              <h3>Header</h3>-->
             <!--              <p style="color: black">TODO - data binding</p>-->

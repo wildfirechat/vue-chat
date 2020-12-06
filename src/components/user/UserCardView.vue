@@ -2,7 +2,7 @@
   <section class="user-info-container">
     <div class="header">
       <div class="desc">
-        <h2>imndx</h2>
+        <h2>{{userInfo.name}}</h2>
         <label>野火ID: imndx</label>
       </div>
       <div>
@@ -37,6 +37,9 @@
 <script>
 export default {
   name: "UserCardView",
+  props: {
+    userInfo: null,
+  },
   methods: {
     share() {
       // TODO share
@@ -59,7 +62,6 @@ export default {
 <style lang="css" scoped>
 .user-info-container {
   width: 300px;
-  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -87,7 +89,7 @@ export default {
 .header .desc {
   display: flex;
   flex-direction: column;
-  justify-items: flex-start;
+  justify-content: center;
   align-items: flex-start;
 }
 
