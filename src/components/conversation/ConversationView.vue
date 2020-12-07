@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div v-if="conversation == null" class="empty">
+    <div v-if="conversation == null" class="conversation-empty-container">
       <h2>no conversation is select</h2>
     </div>
     <div v-else class="conversation-container">
@@ -97,17 +97,31 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.conversation-empty-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-left: 1px solid #e6e6e6;
+}
+
 .title-container {
   width: 100%;
+  height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .conversation-container {
   height: 100%;
   display: flex;
   flex-direction: column;
+  border-left: 1px solid #e6e6e6;
 }
 
 .conversation-content-container {
@@ -115,6 +129,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
+  background-color: #f3f3f3;
 }
 
 .conversation-message-list {

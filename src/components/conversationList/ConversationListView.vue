@@ -73,4 +73,9 @@ export default {
   background-color: #d6d6d6;
 }
 
+.conversation-list ul li.top {
+  background-color: #f1f1f1;
+
+}
+
 </style>
