@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import ConversationListView from "@/components/conversation/ConversationListView";
+import ConversationListView from "@/components/conversationList/ConversationListView";
 import SearchView from "@/components/SearchView";
 
 export default {
