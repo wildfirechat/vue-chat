@@ -10,6 +10,7 @@ import ConversationView from "./conversation/ConversationView";
 import ConversationListPanel from "@/components/ConversationListPanel";
 
 export default {
+  name: "ConversationPage",
   data() {
     return {
       currentConversation: null,

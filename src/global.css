@@ -16,4 +16,11 @@
     border-right: 8px solid white !important;
 }
 
+.single-line {
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: pre;
+}
+
 @import '~vue-context/dist/css/vue-context.css';

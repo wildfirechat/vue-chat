@@ -51,7 +51,7 @@ export default {
 
 <style lang="css" scoped>
 
-.conversation-list-panel-container{
+.conversation-list-panel-container {
   display: flex;
   flex-direction: column;
 }
@@ -72,7 +72,9 @@ export default {
 }
 
 .panel {
+  height: calc(100% - 60px);
   position: relative;
+  background-color: #f3f3f3;
   flex: 1;
 }
 
