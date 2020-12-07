@@ -1,6 +1,6 @@
 <template>
   <div class="text-message-container">
-    <p>123Text message lo contentText message lo contentText message lo contentText message lo contentText message lo
+    <p class="text">123Text message lo contentText message lo contentText message lo contentText message lo contentText message lo
       cText
       message lo contentText message lo contentText message lo contentontentText message lo content 123</p>
   </div>
@@ -20,4 +20,10 @@ export default {
   position: relative;
   border-radius: 5px;
 }
+
+.text-message-container .text{
+  color: #050505;
+  font-size: 16px;
+}
+
 </style>

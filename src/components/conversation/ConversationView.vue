@@ -17,8 +17,9 @@
             <li v-for="(item,index) in messages" :key="item">
               <!--todo 不同的消息类型 notification in out-->
 
-              <NormalOutMessageContentView v-if="index %2 === 0"/>
-              <NormalInMessageContentView v-if="index %2 === 1"/>
+              <NormalOutMessageContentView v-if="index %3 === 0"/>
+              <NormalInMessageContentView v-if="index %3 === 1"/>
+              <NotificationMessageContentView v-if="index %3 === 1"/>
             </li>
           </ul>
         </div>
@@ -47,10 +48,12 @@ import GroupConversationInfoView from "@/components/conversation/GroupConversati
 import MessageInputView from "@/components/conversation/MessageInputView";
 import ClickOutside from 'vue-click-outside'
 import NormalOutMessageContentView from "@/components/conversation/message/NormalOutMessageContentContainerView";
-import NormalInMessageContentView from "@/components/conversation/message/NotificationMessageContentView";
+import NormalInMessageContentView from "@/components/conversation/message/NormalInMessageContentContainerView";
+import NotificationMessageContentView from "@/components/conversation/message/NotificationMessageContentView";
 
 export default {
   components: {
+    NotificationMessageContentView,
     NormalInMessageContentView,
     NormalOutMessageContentView,
     MessageInputView,

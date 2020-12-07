@@ -4,7 +4,8 @@
       <p class="time">16:57</p>
       <div class="message-avatar-content-container">
         <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
-        <TextMessageContentView class="right-arrow"/>
+        <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
+        <ImageMessageContentView class="right-arrow right-arrow-white-color"/>
         <img class="avatar" src="@/assets/images/user-fallback.png">
       </div>
     </div>
@@ -13,12 +14,13 @@
 </template>
 
 <script>
-import TextMessageContentView from "@/components/conversation/message/content/TextMessageContentView";
+import ImageMessageContentView from "@/components/conversation/message/content/ImageMessageContentView";
 
 export default {
   name: "NormalOutMessageContentView",
   components: {
-    TextMessageContentView,
+    ImageMessageContentView,
+    // TextMessageContentView,
 
   }
 }
