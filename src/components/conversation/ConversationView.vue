@@ -14,8 +14,11 @@
         <div class="conversation-message-list">
           <ul>
             <!--todo item.messageId or messageUid as key-->
-            <li v-for="item in messages" :key="item">
-              {{ conversation + " " + item }}
+            <li v-for="(item,index) in messages" :key="item">
+              <!--todo 不同的消息类型 notification in out-->
+
+              <NormalOutMessageContentView v-if="index %2 === 0"/>
+              <NormalInMessageContentView v-if="index %2 === 1"/>
             </li>
           </ul>
         </div>
@@ -43,9 +46,13 @@ import SingleConversationInfoView from "@/components/conversation/SingleConversa
 import GroupConversationInfoView from "@/components/conversation/GroupConversationInfoView";
 import MessageInputView from "@/components/conversation/MessageInputView";
 import ClickOutside from 'vue-click-outside'
+import NormalOutMessageContentView from "@/components/conversation/message/NormalOutMessageContentContainerView";
+import NormalInMessageContentView from "@/components/conversation/message/NotificationMessageContentView";
 
 export default {
   components: {
+    NormalInMessageContentView,
+    NormalOutMessageContentView,
     MessageInputView,
     GroupConversationInfoView,
     SingleConversationInfoView,
@@ -126,6 +133,7 @@ export default {
 
 .conversation-content-container {
   flex: 1;
+  height: calc(100% - 60px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -134,6 +142,12 @@ export default {
 
 .conversation-message-list {
   flex: 1;
+  height: 100%;
+  overflow: auto;
+}
+
+.conversation-message-list ul {
+  list-style: none;
 }
 
 .message-input-container {
