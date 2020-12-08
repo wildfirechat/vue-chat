@@ -11,14 +11,14 @@
         </div>
       </header>
       <div class="conversation-content-container">
-        <div class="conversation-message-list">
+        <div class="conversation-message-list" v-on:scroll="onScroll">
           <ul>
             <!--todo item.messageId or messageUid as key-->
             <li v-for="(item,index) in messages" :key="item">
               <!--todo 不同的消息类型 notification in out-->
 
-              <NormalOutMessageContentView v-if="index %3 === 0"/>
-              <NormalInMessageContentView v-if="index %3 === 1"/>
+              <NormalOutMessageContentView :index="index" v-if="index %3 === 0"/>
+              <NormalInMessageContentView :index="index" v-if="index %3 === 1"/>
               <NotificationMessageContentView v-if="index %3 === 1"/>
             </li>
           </ul>
@@ -67,7 +67,8 @@ export default {
       showConversationInfo: false,
       isInviteConversationMember: false,
       isShowConversationMember: false,
-      messages: [1, 2, 3, 4, 5],
+      messages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 120],
+      // messages: [1, 2, 3],
     };
   },
 
@@ -81,6 +82,14 @@ export default {
       // 是否在创建群聊，或者是在查看会话参与者信息
       this.showConversationInfo && (this.showConversationInfo = false);
       console.log('hide')
+    },
+    onScroll() {
+      for (const popper of document.querySelectorAll('.tippy-popper')) {
+        const instance = popper._tippy;
+        if (instance.state.isVisible) {
+          instance.hide();
+        }
+      }
     }
   },
 

@@ -3,7 +3,24 @@
     <div class="message-time-container">
       <p class="time">16:58</p>
       <div class="message-avatar-content-container">
-        <img class="avatar" src="@/assets/images/user-fallback.png">
+        <div>
+          <tippy
+              :to="'infoTrigger' + this.index"
+              interactive
+              :animate-fill="false"
+              placement="left"
+              distant="7"
+              theme="light"
+              animation="fade"
+              trigger="click"
+          >
+            <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
+          </tippy>
+          <img ref="userCardTippy"
+               :name="'infoTrigger' + this.index"
+               class="avatar"
+               src="@/assets/images/user-fallback.png">
+        </div>
         <!--消息内容 根据情况，if-else-->
         <div class="message-name-content-container">
           <p class="name">我是imndx</p>
@@ -17,13 +34,23 @@
 
 <script>
 import TextMessageContentView from "@/components/conversation/message/content/TextMessageContentView";
+import UserCardView from "@/components/user/UserCardView";
 
 export default {
   name: "NormalInMessageContentView",
+  props: {
+    index: null,
+  },
+  methods: {
+    closeUserCard() {
+      console.log('closeUserCard')
+      this.$refs["userCardTippy"]._tippy.hide();
+    },
+  },
   components: {
     TextMessageContentView,
-
-  }
+    UserCardView,
+  },
 }
 </script>
 

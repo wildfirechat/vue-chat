@@ -6,7 +6,24 @@
         <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
         <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
         <ImageMessageContentView class="right-arrow right-arrow-white-color"/>
-        <img class="avatar" src="@/assets/images/user-fallback.png">
+        <div>
+          <tippy
+              :to="'infoTrigger' + this.index"
+              interactive
+              :animate-fill="false"
+              placement="left"
+              distant="7"
+              theme="light"
+              animation="fade"
+              trigger="click"
+          >
+            <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
+          </tippy>
+          <img ref="userCardTippy"
+               :name="'infoTrigger' + this.index"
+               class="avatar"
+               src="@/assets/images/user-fallback.png">
+        </div>
       </div>
     </div>
   </section>
@@ -15,14 +32,26 @@
 
 <script>
 import ImageMessageContentView from "@/components/conversation/message/content/ImageMessageContentView";
+import UserCardView from "@/components/user/UserCardView";
 
 export default {
   name: "NormalOutMessageContentView",
+  props: {
+    index: null,
+  },
   components: {
     ImageMessageContentView,
+    UserCardView,
     // TextMessageContentView,
 
+  },
+  methods: {
+    closeUserCard() {
+      console.log('closeUserCard')
+      this.$refs["userCardTippy"]._tippy.hide();
+    },
   }
+
 }
 </script>
 
