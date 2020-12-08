@@ -163,9 +163,8 @@ export default {
 }
 
 .message-input-container {
-  margin-top: auto;
   height: 200px;
-  background-color: pink;
+  border-top: 1px solid #e2e2e2;
 }
 
 .conversation-info-container {

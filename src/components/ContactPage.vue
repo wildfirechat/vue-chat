@@ -1,16 +1,17 @@
 <template>
   <div class="contact-page">
-    <ContactListView class="contact-list-container" />
-    <ContactDetailView class="contact-detail-container" />
+    <ContactListPanel class="contact-list-panel"/>
+    <ContactDetailView class="contact-detail-container"/>
   </div>
 </template>
 
 <script>
-import ContactListView from "./contact/ContactListView";
 import ContactDetailView from "./contact/ContactDetailView";
+import ContactListPanel from "@/components/ContactListPanel";
+
 export default {
   components: {
-    ContactListView,
+    ContactListPanel,
     ContactDetailView,
   },
 };
@@ -23,9 +24,14 @@ export default {
   flex: 1;
 }
 
-.contact-list-container {
-  background-color: burlywood;
+.contact-list-panel {
+  background-color: #fafafa;
   width: 250px;
+  height: 100%;
+}
+
+ul {
+  list-style: none;
 }
 
 .contact-detail-container {

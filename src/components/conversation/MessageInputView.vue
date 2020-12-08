@@ -10,7 +10,7 @@
         <li><i class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
-    <textarea class="input" name="input" id="" cols="30" rows="10"></textarea>
+    <div class="input" contenteditable="true"></div>
   </section>
 </template>
 
@@ -27,7 +27,7 @@ export default {
 }
 
 .input-action-container {
-  height: 60px;
+  height: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,8 +39,11 @@ export default {
 
 ul li {
   display: inline;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 20px;
+}
+
+ul li:last-of-type {
+  margin-right: 20px;
 }
 
 i {
