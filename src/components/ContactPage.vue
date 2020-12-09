@@ -1,17 +1,18 @@
 <template>
   <div class="contact-page">
     <ContactListPanel class="contact-list-panel"/>
-    <UserDetailView class="contact-detail-container"/>
+    <GroupDetailView class="contact-detail-container"/>
   </div>
 </template>
 
 <script>
 import ContactListPanel from "@/components/ContactListPanel";
 import UserDetailView from "@/components/contact/UserDetailView";
+import GroupDetailView from "@/components/contact/GroupDetailView";
 
 export default {
   components: {
-    UserDetailView,
+    GroupDetailView,
     ContactListPanel,
   },
 };

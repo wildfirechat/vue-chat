@@ -28,7 +28,7 @@
       </ul>
     </div>
     <div class="footer">
-      <button>发消息</button>
+      <a>发消息</a>
     </div>
   </section>
 </template>
@@ -105,13 +105,17 @@ export default {
   justify-content: center;
 }
 
-.footer button {
+.footer a {
   margin-top: 30px;
   color: white;
   padding: 10px 40px;
   background-color: #20fb64;
   border-radius: 5px;
   border: 1px solid transparent;
+}
+
+.footer a:active {
+  background-color: red;
 }
 
 </style>
