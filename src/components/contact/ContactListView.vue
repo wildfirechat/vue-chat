@@ -121,9 +121,12 @@ export default {
   height: 40px;
   display: flex;
   align-items: center;
-  margin-left: 15px;
+  padding-left: 15px;
   color: #262626;
   font-size: 14px;
+  position: sticky;
+  background-color: #fafafa;
+  top: 0;
 }
 
 .category-item {
