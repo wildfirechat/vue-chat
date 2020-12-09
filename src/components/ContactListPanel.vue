@@ -55,6 +55,7 @@ export default {
 .contact-list-panel-container {
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #f0f0f0;
 }
 
 .search-input-container {

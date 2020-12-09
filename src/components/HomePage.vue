@@ -116,7 +116,7 @@ export default {
 }
 
 .menu-container {
-  width: 60px;
+  width: 70px;
   height: 100%;
   display: flex;
   flex-direction: column;
