@@ -1,8 +1,8 @@
 <template>
   <section>
     <ul>
-      <li v-for="(friend,index) in newFriends" :key="index">
-        <div class="new-friend-item-container" v-bind:class="{active :index ===2}">
+      <li v-for="(friend,index) in newFriends" :key="index" @click="showFriendRequest(friend)">
+        <div class="new-friend-item-container" v-bind:class="{active :sharedState.currentFriendRequest ===friend}">
           <div class="new-friend-item">
             <img class="avatar" src="@/assets/images/user-fallback.png">
             <div class="info">
@@ -22,13 +22,22 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "NewFriendListView",
   props: {
     newFriends: null,
   },
   data() {
-    return {};
+    return {
+      sharedState: store.state,
+    };
+  },
+  methods: {
+    showFriendRequest(friendRequest) {
+      store.setCurrentFriendRequest(friendRequest);
+    }
   }
 }
 </script>

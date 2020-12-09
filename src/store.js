@@ -1,15 +1,11 @@
 let store = {
     debug: true,
     state: {
-        name: '',
         currentConversation: null,
-    },
+        currentFriendRequest: null,
+        currentGroup: null,
+        currentFriend: null,
 
-    setName(newName) {
-        if (this.debug) {
-            console.log('setName', this.name, newName);
-        }
-        this.state.name = newName;
     },
 
     setCurrentConversation(conversation) {
@@ -18,6 +14,24 @@ let store = {
         }
         this.state.currentConversation = conversation;
     },
+
+    setCurrentFriendRequest(friendRequest) {
+        this.state.currentFriendRequest = friendRequest;
+        this.state.currentFriend = null;
+        this.state.currentGroup = null;
+    },
+
+    setCurrentFriend(friend) {
+        this.state.currentFriendRequest = null;
+        this.state.currentFriend = friend;
+        this.state.currentGroup = null;
+    },
+
+    setCurrentGroup(group) {
+        this.state.currentFriendRequest = null;
+        this.state.currentFriend = null;
+        this.state.currentGroup = group;
+    }
 }
 export default store
 

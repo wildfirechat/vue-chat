@@ -1,8 +1,8 @@
 <template>
   <section>
     <ul>
-      <li v-for="(group, index) in groups" :key="index">
-        <div class="group-item" v-bind:class="{active: currentGroup === group}">
+      <li v-for="(group, index) in groups" :key="index" @click="showGroup(group)">
+        <div class="group-item" v-bind:class="{active: sharedState.currentGroup === group}">
           <img class="avatar" src="@/assets/images/user-fallback.png">
           <span class="single-line">imndx的群组</span>
         </div>
@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "GroupListVue",
   props: {
@@ -20,9 +22,14 @@ export default {
   },
   data() {
     return {
-      currentGroup: 2,
+      sharedState: store.state,
     }
-  }
+  },
+  methods: {
+    showGroup(group) {
+      store.setCurrentGroup(group)
+    }
+  },
 }
 </script>
 

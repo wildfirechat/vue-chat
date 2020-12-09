@@ -1,10 +1,10 @@
 <template>
   <section>
     <ul>
-      <li v-for="(friend, index) in friends" :key="index">
-        <div class="contact-item" v-bind:class="{active: currentContact === friend}">
+      <li v-for="(friend, index) in friends" :key="index" @click="showFriend(friend)">
+        <div class="contact-item">
           <p v-if="contactLabel(friend, index)" class="label">{{ contactLabel(friend, index) }}</p>
-          <div class="content" v-bind:class="{active: index ===3}">
+          <div class="content" v-bind:class="{active: sharedState.currentFriend === friend}">
             <img class="avatar" src="@/assets/images/user-fallback.png">
             <span class="single-line">imndx</span>
           </div>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "FriendListVue",
   props: {
@@ -23,10 +25,14 @@ export default {
   },
   data() {
     return {
-      currentContact: null,
+      sharedState: store.state,
     }
   },
   methods: {
+    showFriend(friend) {
+      store.setCurrentFriend(friend)
+    },
+
     contactLabel(friend, index) {
       // TODO 和前一个比较
       if (index === 0) {
@@ -76,8 +82,8 @@ export default {
   background-color: #d6d6d6;
 }
 
-.contact-item .content:hover {
-  background-color: red;
-}
+/*.contact-item .content:hover {*/
+/*  background-color: red;*/
+/*}*/
 
 </style>
