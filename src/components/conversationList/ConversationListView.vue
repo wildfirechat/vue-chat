@@ -5,7 +5,7 @@
           @click="showConversation(conversation)"
           v-for="conversation in conversationList"
           :key="conversation"
-          v-bind:class="{active:/*TODO conversation 比较*/ currentConversation === conversation}"
+          v-bind:class="{active:/*TODO conversation 比较*/ sharedState.currentConversation === conversation}"
           @contextmenu.prevent="$refs.menu.open($event,conversation)"
       >
         <ConversationItemView/>
@@ -26,23 +26,21 @@
 
 <script>
 
-import UIEventType from "@/UIEventType";
 import ConversationItemView from "@/components/conversationList/ConversationItemView";
+import store from "@/store";
 
 export default {
   name: 'ConversationListView',
   data() {
     return {
-      currentConversation: null,
-      conversationList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      conversationList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      sharedState: store.state,
     };
   },
 
   methods: {
     showConversation(conversation) {
-      this.currentConversation = conversation;
-      console.log("currentConversation", this.currentConversation);
-      this.$root.$emit(UIEventType.currentConversation, conversation)
+      store.setCurrentConversation(conversation);
     },
     onClick(v) {
       console.log('test', v)

@@ -1,12 +1,12 @@
 <template>
   <section>
-    <div v-if="conversation == null" class="conversation-empty-container">
+    <div v-if="sharedState.currentConversation == null" class="conversation-empty-container">
       <h2>no conversation is select</h2>
     </div>
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1>Conv title {{ conversation }}</h1>
+          <h1>Conv title {{ sharedState.currentConversation }}</h1>
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
@@ -25,14 +25,14 @@
         </div>
         <MessageInputView class="message-input-container"/>
         <SingleConversationInfoView
-            v-if="conversation === 1"
+            v-if="sharedState.currentConversation === 1"
             v-click-outside="hideConversationInfo"
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
         <GroupConversationInfoView
             v-click-outside="hideConversationInfo"
-            v-if="conversation === 2"
+            v-if="sharedState.currentConversation === 2"
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import UIEventType from "@/UIEventType";
 import SingleConversationInfoView from "@/components/conversation/SingleConversationInfoView";
 import GroupConversationInfoView from "@/components/conversation/GroupConversationInfoView";
 import MessageInputView from "@/components/conversation/MessageInputView";
@@ -50,6 +49,7 @@ import ClickOutside from 'vue-click-outside'
 import NormalOutMessageContentView from "@/components/conversation/message/NormalOutMessageContentContainerView";
 import NormalInMessageContentView from "@/components/conversation/message/NormalInMessageContentContainerView";
 import NotificationMessageContentView from "@/components/conversation/message/NotificationMessageContentView";
+import store from "@/store";
 
 export default {
   components: {
@@ -63,12 +63,11 @@ export default {
   // props: ["conversation"],
   data() {
     return {
-      conversation: null,
       showConversationInfo: false,
       isInviteConversationMember: false,
       isShowConversationMember: false,
       messages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 120],
-      // messages: [1, 2, 3],
+      sharedState: store.state,
     };
   },
 
@@ -94,9 +93,6 @@ export default {
   },
 
   mounted() {
-    this.$root.$on(UIEventType.currentConversation, (arg) => {
-      this.conversation = arg;
-    });
     this.popupItem = this.$refs['setting'];
   },
 
