@@ -1,15 +1,13 @@
 <template>
   <section class="contact-list-panel-container">
     <div class="search-input-container">
-      <input v-on:focus="onFocus(true)"
-             v-on:blur="onFocus(false)"
+      <input id="searchInput" v-on:focus="onFocus(true)"
              v-model="query"
              type="text" placeholder="search"/>
     </div>
     <div class="panel">
       <SearchView v-bind:query="query"
-                  v-bind:class="{active:focused}"
-                  v-if="focused"
+                  v-if="sharedSearchState.show"
                   class="search-container"/>
       <ContactListView class="contact-list-container"/>
     </div>
@@ -18,22 +16,22 @@
 </template>
 
 <script>
-import SearchView from "@/components/SearchView";
+import SearchView from "@/components/search/SearchView";
 import ContactListView from "@/components/contact/ContactListView";
+import store from "@/store";
 
 export default {
   name: 'ContactListPanel',
   data() {
     return {
       query: null,
-      focused: false,
+      sharedSearchState: store.state.search,
     };
   },
 
   methods: {
     onFocus(focused) {
-      this.focused = focused;
-      console.log('on foucs', focused)
+      store.toggleSearchView(focused);
       this.query = '';
     },
   },

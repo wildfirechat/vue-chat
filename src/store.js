@@ -15,6 +15,10 @@ let store = {
             expandGroup: false,
         },
 
+        search: {
+            show: false,
+        },
+
         misc: {
             test: false
         },
@@ -57,6 +61,11 @@ let store = {
 
     toggleFriendList() {
         this.state.contact.expandFriendList = !this.state.contact.expandFriendList;
+    },
+
+    toggleSearchView(show) {
+        console.log('ts', show, this.state.search.show);
+        this.state.search.show = show
     }
 
     // misc actions

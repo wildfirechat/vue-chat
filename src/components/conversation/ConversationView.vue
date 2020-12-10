@@ -80,7 +80,7 @@ export default {
       // TODO
       // 是否在创建群聊，或者是在查看会话参与者信息
       this.showConversationInfo && (this.showConversationInfo = false);
-      console.log('hide')
+      console.log('hide conv')
     },
     onScroll() {
       for (const popper of document.querySelectorAll('.tippy-popper')) {

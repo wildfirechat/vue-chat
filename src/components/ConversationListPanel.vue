@@ -1,15 +1,13 @@
 <template>
   <section class="conversation-list-panel-container">
     <div class="search-input-container">
-      <input v-on:focus="onFocus(true)"
-             v-on:blur="onFocus(false)"
+      <input id="searchInput" v-on:focus="onFocus(true)"
              v-model="query"
              type="text" placeholder="search"/>
     </div>
     <div class="panel">
       <SearchView v-bind:query="query"
-                  v-bind:class="{active:focused}"
-                  v-if="focused"
+                  v-if="sharedSearchState.show"
                   class="search-container"/>
       <ConversationListView class="conversation-list-container"/>
     </div>
@@ -19,14 +17,15 @@
 
 <script>
 import ConversationListView from "@/components/conversationList/ConversationListView";
-import SearchView from "@/components/SearchView";
+import SearchView from "@/components/search/SearchView";
+import store from "@/store";
 
 export default {
   name: 'ConversationListPanel',
   data() {
     return {
       query: null,
-      focused: false,
+      sharedSearchState: store.state.search,
     };
   },
 
@@ -36,9 +35,9 @@ export default {
       console.log("show conversation", conversation);
       // TODO
     },
+
     onFocus(focused) {
-      this.focused = focused;
-      console.log('on foucs', focused)
+      store.toggleSearchView(focused)
       this.query = '';
     },
   },
