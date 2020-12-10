@@ -2,7 +2,8 @@
   <section>
     <ul>
       <li v-for="(friend,index) in newFriends" :key="index" @click="showFriendRequest(friend)">
-        <div class="new-friend-item-container" v-bind:class="{active :sharedState.currentFriendRequest ===friend}">
+        <div class="new-friend-item-container"
+             v-bind:class="{active :sharedContactState.currentFriendRequest ===friend}">
           <div class="new-friend-item">
             <img class="avatar" src="@/assets/images/user-fallback.png">
             <div class="info">
@@ -31,7 +32,7 @@ export default {
   },
   data() {
     return {
-      sharedState: store.state,
+      sharedContactState: store.state.contact,
     };
   },
   methods: {

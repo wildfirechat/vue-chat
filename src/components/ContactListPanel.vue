@@ -27,16 +27,10 @@ export default {
     return {
       query: null,
       focused: false,
-      currentContact: null,
     };
   },
 
   methods: {
-    showContact(contact) {
-      this.currentContact = contact;
-      console.log("show contact", contact);
-      // TODO
-    },
     onFocus(focused) {
       this.focused = focused;
       console.log('on foucs', focused)

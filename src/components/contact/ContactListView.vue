@@ -3,29 +3,29 @@
     <ul>
       <li>
         <div @click="showNewFriends" class="category-item-container">
-          <i class="arrow right" v-bind:class="{down: expandNewFriend}"></i>
+          <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
           <span class="title">新的朋友</span>
         </div>
-        <NewFriendListView v-if="expandNewFriend" :new-friends="newFriends"/>
+        <NewFriendListView v-if="sharedContactState.expandFriendRequestList" :new-friends="newFriends"/>
       </li>
       <li>
         <div @click="showGroups" class="category-item-container">
-          <i class="arrow right" v-bind:class="{down: expandGroup}"></i>
+          <i class="arrow right" v-bind:class="{down: sharedContactState.expandGroup}"></i>
           <div class="category-item">
             <span class="title">群聊</span>
             <span class="desc">{{ groups.length }}</span>
           </div>
         </div>
-        <GroupListVue v-if="expandGroup" :groups="groups"/>
+        <GroupListVue v-if="sharedContactState.expandGroup" :groups="groups"/>
       <li>
         <div @click="showContacts" class="category-item-container">
-          <i class="arrow right" v-bind:class="{down: expandContact}"></i>
+          <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
           <div class="category-item">
             <span class="title">联系人</span>
             <span class="desc">{{ friends.length }}</span>
           </div>
         </div>
-        <FriendListVue v-if="expandContact" :friends="friends"/>
+        <FriendListVue v-if="sharedContactState.expandFriendList" :friends="friends"/>
       </li>
     </ul>
   </section>
@@ -34,15 +34,14 @@
 import FriendRequestListView from "@/components/contact/FriendRequestListView";
 import GroupListVue from "@/components/contact/GroupListVue";
 import FriendListVue from "@/components/contact/FriendListVue";
+import store from "@/store";
 
 export default {
   name: "ContactListView",
   components: {FriendListVue, GroupListVue, NewFriendListView: FriendRequestListView},
   data() {
     return {
-      expandNewFriend: false,
-      expandContact: false,
-      expandGroup: false,
+      sharedContactState: store.state.contact,
       newFriends: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       groups: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       friends: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -50,16 +49,13 @@ export default {
   },
   methods: {
     showNewFriends() {
-      this.expandNewFriend = !this.expandNewFriend;
-      // TODO
+      store.toggleFriendRequestList();
     },
     showGroups() {
-      this.expandGroup = !this.expandGroup
-      // TODO
-
+      store.toggleGroupList();
     },
     showContacts() {
-      this.expandContact = !this.expandContact;
+      store.toggleFriendList();
     },
 
   }

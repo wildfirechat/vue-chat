@@ -3,7 +3,7 @@
     <div class="group-info-container">
       <div class="group-info">
         <img src="@/assets/images/default_group_avatar.png">
-        <p>群名称</p>
+        <p>群名称 {{ group }}</p>
       </div>
       <a>进入群聊</a>
     </div>
@@ -12,7 +12,11 @@
 
 <script>
 export default {
-  name: "GroupDetailView"
+  name: "GroupDetailView",
+  props: {
+    group: null,
+  }
+
 }
 </script>
 

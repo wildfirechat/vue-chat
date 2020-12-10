@@ -2,7 +2,7 @@
   <section>
     <ul>
       <li v-for="(group, index) in groups" :key="index" @click="showGroup(group)">
-        <div class="group-item" v-bind:class="{active: sharedState.currentGroup === group}">
+        <div class="group-item" v-bind:class="{active: sharedContactState.currentGroup === group}">
           <img class="avatar" src="@/assets/images/user-fallback.png">
           <span class="single-line">imndx的群组</span>
         </div>
@@ -22,7 +22,7 @@ export default {
   },
   data() {
     return {
-      sharedState: store.state,
+      sharedContactState: store.state.contact,
     }
   },
   methods: {

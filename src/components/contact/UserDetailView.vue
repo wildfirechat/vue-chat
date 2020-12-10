@@ -2,8 +2,8 @@
   <section class="user-detail-container">
     <div class="header">
       <div>
-        <h2>imndx名字</h2>
-        <p>hello world. 你好，野火</p>
+        <h2>imndx名字 {{ user }}</h2>
+        <p>hello world. 你好，野火 {{ user }}</p>
       </div>
       <div>
         <img class="avatar" src="@/assets/images/user-fallback.png">
@@ -19,11 +19,11 @@
         </li>
         <li>
           <label>地区</label>
-          <div>北京</div>
+          <p>北京</p>
         </li>
         <li>
           <label>标签</label>
-          <div>测试用户</div>
+          <p>测试用户</p>
         </li>
       </ul>
     </div>
@@ -35,7 +35,10 @@
 
 <script>
 export default {
-  name: "UserDetailView"
+  name: "UserDetailView",
+  props: {
+    user: null,
+  }
 }
 </script>
 

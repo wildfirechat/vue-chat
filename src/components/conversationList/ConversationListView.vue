@@ -5,7 +5,7 @@
           @click="showConversation(conversation)"
           v-for="conversation in conversationList"
           :key="conversation"
-          v-bind:class="{active:/*TODO conversation 比较*/ sharedState.currentConversation === conversation}"
+          v-bind:class="{active:/*TODO conversation 比较*/ sharedConversationState.currentConversation === conversation}"
           @contextmenu.prevent="$refs.menu.open($event,conversation)"
       >
         <ConversationItemView/>
@@ -34,7 +34,7 @@ export default {
   data() {
     return {
       conversationList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      sharedState: store.state,
+      sharedConversationState: store.state.conversation,
     };
   },
 

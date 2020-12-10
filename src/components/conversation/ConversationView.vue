@@ -1,12 +1,12 @@
 <template>
   <section>
-    <div v-if="sharedState.currentConversation == null" class="conversation-empty-container">
+    <div v-if="sharedConversationState.currentConversation == null" class="conversation-empty-container">
       <h2>no conversation is select</h2>
     </div>
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1>Conv title {{ sharedState.currentConversation }}</h1>
+          <h1>Conv title {{ sharedConversationState.currentConversation }}</h1>
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
@@ -25,14 +25,14 @@
         </div>
         <MessageInputView class="message-input-container"/>
         <SingleConversationInfoView
-            v-if="sharedState.currentConversation === 1"
+            v-if="sharedConversationState.currentConversation === 1"
             v-click-outside="hideConversationInfo"
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
         <GroupConversationInfoView
             v-click-outside="hideConversationInfo"
-            v-if="sharedState.currentConversation === 2"
+            v-if="sharedConversationState.currentConversation === 2"
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
@@ -67,7 +67,7 @@ export default {
       isInviteConversationMember: false,
       isShowConversationMember: false,
       messages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 120],
-      sharedState: store.state,
+      sharedConversationState: store.state.conversation,
     };
   },
 

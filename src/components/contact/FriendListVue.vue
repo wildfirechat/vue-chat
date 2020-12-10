@@ -4,7 +4,7 @@
       <li v-for="(friend, index) in friends" :key="index" @click="showFriend(friend)">
         <div class="contact-item">
           <p v-if="contactLabel(friend, index)" class="label">{{ contactLabel(friend, index) }}</p>
-          <div class="content" v-bind:class="{active: sharedState.currentFriend === friend}">
+          <div class="content" v-bind:class="{active: sharedContactState.currentFriend === friend}">
             <img class="avatar" src="@/assets/images/user-fallback.png">
             <span class="single-line">imndx</span>
           </div>
@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-      sharedState: store.state,
+      sharedContactState: store.state.contact,
     }
   },
   methods: {

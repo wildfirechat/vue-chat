@@ -1,17 +1,32 @@
 <template>
   <div class="contact-page">
     <ContactListPanel class="contact-list-panel"/>
-    <GroupDetailView class="contact-detail-container"/>
+    <GroupDetailView
+        v-if="sharedContactState.currentGroup"
+        :group="sharedContactState.currentGroup"
+        class="contact-detail-container"/>
+    <UserDetailView
+        v-if="sharedContactState.currentFriend"
+        :user="sharedContactState.currentFriend"
+        class="contact-detail-container"/>
   </div>
 </template>
 
 <script>
 import ContactListPanel from "@/components/ContactListPanel";
-import UserDetailView from "@/components/contact/UserDetailView";
 import GroupDetailView from "@/components/contact/GroupDetailView";
+import store from "@/store";
+import UserDetailView from "@/components/contact/UserDetailView";
 
 export default {
+  name: 'ContactPage',
+  data() {
+    return {
+      sharedContactState: store.state.contact,
+    }
+  },
   components: {
+    UserDetailView,
     GroupDetailView,
     ContactListPanel,
   },
