@@ -60,6 +60,18 @@ export default {
       shouldShowAllContact: false,
     }
   },
+
+  mounted() {
+    console.log('mounted');
+    this.$nextTick(function () {
+      document.getElementsByClassName('search-result-item')[0].style.backgroundColor = '#d9d9d9'
+    });
+  },
+
+  beforeDestroy() {
+    store.setSearchQuery('')
+  },
+
   watch: {
     // "query":function (val, oldVal){
     //   console.log('searchView query changed:', val, oldVal)
@@ -86,17 +98,6 @@ export default {
       }
     },
 
-  },
-
-  mounted() {
-    console.log('mounted');
-    this.$nextTick(function () {
-      document.getElementsByClassName('search-result-item')[0].style.backgroundColor = '#d9d9d9'
-    });
-  },
-
-  updated() {
-    console.log('updated....')
   },
 
   computed: {

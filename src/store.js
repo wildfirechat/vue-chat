@@ -16,6 +16,7 @@ let store = {
         },
 
         search: {
+            query: null,
             show: false,
         },
 
@@ -66,7 +67,11 @@ let store = {
     toggleSearchView(show) {
         console.log('ts', show, this.state.search.show);
         this.state.search.show = show
-    }
+    },
+
+    setSearchQuery(query) {
+        this.state.search.query = query;
+    },
 
     // misc actions
 }

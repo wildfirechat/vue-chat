@@ -2,11 +2,11 @@
   <section class="conversation-list-panel-container">
     <div class="search-input-container">
       <input id="searchInput" v-on:focus="onFocus(true)"
-             v-model="query"
+             v-model="sharedSearchState.query"
              type="text" placeholder="search"/>
     </div>
     <div class="panel">
-      <SearchView v-bind:query="query"
+      <SearchView v-bind:query="sharedSearchState.query"
                   v-if="sharedSearchState.show"
                   class="search-container"/>
       <ConversationListView class="conversation-list-container"/>
@@ -24,7 +24,6 @@ export default {
   name: 'ConversationListPanel',
   data() {
     return {
-      query: null,
       sharedSearchState: store.state.search,
     };
   },
