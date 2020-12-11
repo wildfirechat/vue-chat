@@ -1,9 +1,11 @@
 <template>
   <section>
     <ul>
-      <li v-for="(friend, index) in friends" :key="index" @click="showFriend(friend)">
+      <li v-for="(friend, index) in friends" :key="index">
         <div class="contact-item">
-          <p v-if="contactLabel(friend, index)" class="label">{{ contactLabel(friend, index) }}</p>
+          <div v-if="contactLabel(friend, index)" class="label">
+            <p>{{ contactLabel(friend, index) }}</p>
+          </div>
           <div class="content"
                v-bind:class="{active: sharedContactState.currentFriend === friend}"
                @click="clickFriendItem(friend)">
@@ -35,9 +37,6 @@ export default {
     }
   },
   methods: {
-    showFriend(friend) {
-      store.setCurrentFriend(friend)
-    },
 
     clickFriendItem(friend) {
       // const test = this.sharedPickState.users.map(u => u.uid);
@@ -49,7 +48,7 @@ export default {
           store.pickUser(friend, true);
         }
       } else {
-        // TODO go conversation
+        store.setCurrentFriend(friend)
       }
     },
 
@@ -68,6 +67,10 @@ export default {
 
 <style lang="css" scoped>
 
+ul {
+  list-style: none;
+}
+
 .avatar {
   width: 40px;
   height: 40px;
@@ -75,7 +78,7 @@ export default {
 }
 
 .checkbox {
-  padding-right: 10px;
+  margin-right: 10px;
 }
 
 .contact-item {
@@ -87,7 +90,10 @@ export default {
 
 .contact-item .label {
   width: 100%;
-  margin-left: 30px;
+  padding-left: 30px;
+}
+
+.contact-item .label p {
   padding: 5px 5px 5px 0;
   border-bottom: 1px solid #e0e0e0;
 }

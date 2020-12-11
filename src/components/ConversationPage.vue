@@ -43,12 +43,11 @@ export default {
 
 .conversation-list-panel {
   width: 250px;
-  background-color: azure;
+  height: 100%;
 }
 
 .conversation-view {
   flex: 1;
-  background-color: beige;
 }
 
 </style>

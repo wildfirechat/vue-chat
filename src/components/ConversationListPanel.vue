@@ -45,6 +45,7 @@ export default {
 .conversation-list-panel-container {
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #f0f0f0;
 }
 
 .panel {

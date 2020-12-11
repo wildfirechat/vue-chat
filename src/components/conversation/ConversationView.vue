@@ -119,7 +119,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: white;
-  border-left: 1px solid #e6e6e6;
+  /*border-left: 1px solid #e6e6e6;*/
 }
 
 .title-container {
