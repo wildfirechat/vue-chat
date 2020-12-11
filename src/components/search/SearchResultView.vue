@@ -64,7 +64,10 @@ export default {
   mounted() {
     console.log('mounted');
     this.$nextTick(function () {
-      document.getElementsByClassName('search-result-item')[0].style.backgroundColor = '#d9d9d9'
+      let searchResultItems = document.getElementsByClassName('search-result-item');
+      if (searchResultItems && searchResultItems.length > 0) {
+        searchResultItems[0].style.backgroundColor = '#d9d9d9'
+      }
     });
   },
 

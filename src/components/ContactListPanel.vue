@@ -1,14 +1,10 @@
 <template>
   <section class="contact-list-panel-container">
-    <div class="search-input-container">
-      <input id="searchInput" v-on:focus="onFocus(true)"
-             v-model="sharedSearchState.query"
-             type="text" placeholder="search"/>
-    </div>
+    <SearchView/>
     <div class="panel">
-      <SearchView v-bind:query="sharedSearchState.query"
-                  v-if="sharedSearchState.show"
-                  class="search-container"/>
+      <SearchResultView v-bind:query="sharedSearchState.query"
+                        v-if="sharedSearchState.show"
+                        class="search-result-container"/>
       <ContactListView class="contact-list-container"/>
     </div>
 
@@ -16,9 +12,10 @@
 </template>
 
 <script>
-import SearchView from "@/components/search/SearchResultView";
+import SearchView from "@/components/search/SearchView";
 import ContactListView from "@/components/contact/ContactListView";
 import store from "@/store";
+import SearchResultView from "@/components/search/SearchResultView";
 
 export default {
   name: 'ContactListPanel',
@@ -28,12 +25,9 @@ export default {
     };
   },
 
-  methods: {
-    onFocus(focused) {
-      store.toggleSearchView(focused);
-    },
-  },
+  methods: {},
   components: {
+    SearchResultView,
     ContactListView,
     SearchView,
   },
@@ -48,21 +42,6 @@ export default {
   border-right: 1px solid #f0f0f0;
 }
 
-.search-input-container {
-  height: 60px;
-  display: flex;
-  flex-direction: column;
-  background-color: beige;
-  justify-content: center;
-}
-
-.search-input-container input {
-  height: 30px;
-  margin-left: 10px;
-  margin-right: 10px;
-  text-align: center;
-}
-
 .panel {
   height: calc(100% - 60px);
   position: relative;
@@ -70,7 +49,7 @@ export default {
   flex: 1;
 }
 
-.search-container {
+.search-result-container {
   position: absolute;
   top: 0;
   left: 0;
