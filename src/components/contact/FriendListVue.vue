@@ -4,7 +4,11 @@
       <li v-for="(friend, index) in friends" :key="index" @click="showFriend(friend)">
         <div class="contact-item">
           <p v-if="contactLabel(friend, index)" class="label">{{ contactLabel(friend, index) }}</p>
-          <div class="content" v-bind:class="{active: sharedContactState.currentFriend === friend}">
+          <div class="content"
+               v-bind:class="{active: sharedContactState.currentFriend === friend}"
+               @click="clickFriendItem(friend)">
+            <input class="checkbox" v-bind:value="friend" v-if="enablePick" type="checkbox"
+                   v-model="sharedPickState.users">
             <img class="avatar" src="@/assets/images/user-fallback.png">
             <span class="single-line">imndx</span>
           </div>
@@ -22,15 +26,31 @@ export default {
   name: "FriendListVue",
   props: {
     friends: null,
+    enablePick: null,
   },
   data() {
     return {
       sharedContactState: store.state.contact,
+      sharedPickState: store.state.pick,
     }
   },
   methods: {
     showFriend(friend) {
       store.setCurrentFriend(friend)
+    },
+
+    clickFriendItem(friend) {
+      // const test = this.sharedPickState.users.map(u => u.uid);
+      // console.log('clickFriendItem t', friend, test, Array.from(test));
+      if (this.enablePick) {
+        if (this.sharedPickState.users.findIndex(value => value.uid === friend.uid) >= 0) {
+          store.pickUser(friend, false);
+        } else {
+          store.pickUser(friend, true);
+        }
+      } else {
+        // TODO go conversation
+      }
     },
 
     contactLabel(friend, index) {
@@ -47,10 +67,15 @@ export default {
 </script>
 
 <style lang="css" scoped>
+
 .avatar {
   width: 40px;
   height: 40px;
   border-radius: 3px;
+}
+
+.checkbox {
+  padding-right: 10px;
 }
 
 .contact-item {

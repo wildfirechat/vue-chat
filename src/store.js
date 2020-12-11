@@ -20,6 +20,11 @@ let store = {
             show: false,
         },
 
+        pick: {
+            users: [],
+            conversations: [],
+        },
+
         misc: {
             test: false
         },
@@ -64,6 +69,7 @@ let store = {
         this.state.contact.expandFriendList = !this.state.contact.expandFriendList;
     },
 
+    // search actions
     toggleSearchView(show) {
         console.log('ts', show, this.state.search.show);
         this.state.search.show = show
@@ -72,6 +78,19 @@ let store = {
     setSearchQuery(query) {
         this.state.search.query = query;
     },
+
+    // pick actions
+    pickUser(user, pick = true) {
+        if (pick) {
+            this.state.pick.users.push(user);
+        } else {
+            // TODO 根据user.uid 判断
+            this.state.pick.users = this.state.pick.users.filter(u => user.uid !== u.uid)
+        }
+    },
+
+    // TODO pickConversation
+
 
     // misc actions
 }
