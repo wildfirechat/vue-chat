@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import SearchView from "@/components/search/SearchView";
+import SearchView from "@/components/search/SearchResultView";
 import ContactListView from "@/components/contact/ContactListView";
 import store from "@/store";
 

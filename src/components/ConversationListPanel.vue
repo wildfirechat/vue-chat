@@ -17,7 +17,7 @@
 
 <script>
 import ConversationListView from "@/components/conversationList/ConversationListView";
-import SearchView from "@/components/search/SearchView";
+import SearchView from "@/components/search/SearchResultView";
 import store from "@/store";
 
 export default {

@@ -47,7 +47,7 @@ import ClickOutside from "vue-click-outside";
 import store from "@/store";
 
 export default {
-  name: "SearchView",
+  name: "SearchResultView",
   props: [
     "query"
   ],
