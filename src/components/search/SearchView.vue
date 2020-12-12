@@ -34,6 +34,7 @@ export default {
             name: 'invite-modal',
             width: 600,
             height: 480,
+            clickToClose: false,
           }, {
             'before-open': this.beforeOpen,
             'before-close': this.beforeClose,
