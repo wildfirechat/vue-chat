@@ -29,7 +29,7 @@ export default {
       this.$modal.show(
           PickContactView,
           {
-            contacts: [{name: 2, uid: 'u1'}, {name: 2, uid: 'u2'}, {name: 3, uid: 'u3'}, {name: 4, uid: 'u4'}]
+            contacts: [{name: 2, uid: 'u1'}, {name: 2, uid: 'u2'}, {name: 3, uid: 'u3'}, {name: 4, uid: 'u4'}, {name: 5, uid: 'u5'}, {name: 6, uid: 'u6'}, {name: 7, uid: 'u7'}, {name: 8, uid: 'u9'}, {name: 10, uid: 'u10'}, {name: 11, uid: 'u11'}, {name: 12, uid: 'u12'}]
           }, {
             name: 'invite-modal',
             width: 600,

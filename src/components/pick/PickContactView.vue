@@ -14,11 +14,17 @@
         <span>已选择联系人</span>
       </header>
       <div class="content">
-
+        <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
+          <div class="picked-user">
+            <img class="avatar" src="@/assets/images/user-fallback.png" :alt="user + index">
+            <button class="unpick-button">x</button>
+          </div>
+          <span class="name single-line">我的名字是imndx</span>
+        </div>
       </div>
       <footer>
-        <button>取消</button>
-        <button>创建</button>
+        <button class="cancel">取消</button>
+        <button class="confirm">创建</button>
       </footer>
     </section>
   </div>
@@ -26,9 +32,15 @@
 
 <script>
 import FriendListVue from "@/components/contact/FriendListVue";
+import store from "@/store";
 
 export default {
   name: "PickContactView",
+  data() {
+    return {
+      sharedPickState: store.state.pick,
+    }
+  },
   components: {FriendListVue},
   props: ['contacts', 'initialCheckedContacts', 'uncheckableContacts', 'title', 'confirmTitle'],
 }
@@ -38,6 +50,7 @@ export default {
 .pick-contact-container {
   display: flex;
   height: 100%;
+  width: 100%;
 }
 
 .contact-list-container {
@@ -51,7 +64,6 @@ export default {
 .contact-list-container .input-container {
   display: flex;
   width: 100%;
-  background-color: red;
 }
 
 .contact-list-container input {
@@ -79,22 +91,96 @@ export default {
 
 .checked-contact-list-container header {
   height: 55px;
-  background-color: rebeccapurple;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
 
+.checked-contact-list-container header h2 {
+  font-size: 16px;
+  font-weight: normal;
+  margin-left: 30px;
+}
+
+.checked-contact-list-container header span {
+  font-size: 12px;
+  margin-right: 20px;
+}
+
+
 .checked-contact-list-container .content {
+  height: 100%;
   flex: 1;
+  display: flex;
+  padding: 0 30px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow: auto;
+}
+
+.checked-contact-list-container .content .picked-user-container {
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  column-count: 1;
+  justify-content: center;
+  align-content: center;
+  padding: 5px 10px;
+}
+
+.checked-contact-list-container .content .picked-user-container .name {
+  width: 100%;
+  font-size: 12px;
+}
+
+.checked-contact-list-container .content .picked-user-container .picked-user {
+  position: relative;
+  height: 65px;
+  width: 65px;
+}
+
+.checked-contact-list-container .content .avatar {
+  width: 45px;
+  height: 45px;
+  margin: 10px 10px;
+  border-radius: 3px;
+  border: 1px solid red;
+}
+
+.checked-contact-list-container .content .unpick-button {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid red;
+  border-radius: 10px;
+  top: 0;
+  right: 0;
+}
+
+.checked-contact-list-container .content .unpick-button:active {
+  background-color: #e5e5e5;
 }
 
 .checked-contact-list-container footer {
   height: 55px;
-  background-color: #42b983;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-bottom: 10px;
+}
+
+.checked-contact-list-container footer button {
+  padding: 5px 30px;
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+}
+
+.checked-contact-list-container footer button.confirm {
+  background-color: #20bf64;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 
