@@ -10,8 +10,8 @@
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
-      <div class="conversation-content-container">
-        <div class="conversation-message-list" v-on:scroll="onScroll">
+      <div ref="conversationContentContainer" class="conversation-content-container">
+        <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll">
           <ul>
             <!--todo item.messageId or messageUid as key-->
             <li v-for="(item,index) in messages" :key="item">
@@ -23,6 +23,7 @@
             </li>
           </ul>
         </div>
+        <div v-on:mousedown="dragStart" class="handler"></div>
         <MessageInputView class="message-input-container"/>
         <SingleConversationInfoView
             v-if="sharedConversationState.currentConversation === 1"
@@ -68,6 +69,7 @@ export default {
       isShowConversationMember: false,
       messages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 120],
       sharedConversationState: store.state.conversation,
+      isHandlerDragging: false,
     };
   },
 
@@ -89,11 +91,45 @@ export default {
           instance.hide();
         }
       }
+    },
+
+    dragStart() {
+      this.isHandlerDragging = true;
+      console.log('drag start')
+    },
+
+    drag(e) {
+      // Don't do anything if dragging flag is false
+      if (!this.isHandlerDragging) {
+        return false;
+      }
+
+      // Get offset
+      let containerOffsetTop = this.$refs['conversationContentContainer'].offsetTop;
+
+      // Get x-coordinate of pointer relative to container
+      let pointerRelativeYpos = e.clientY - containerOffsetTop;
+
+      // Arbitrary minimum width set on box A, otherwise its inner content will collapse to width of 0
+      let boxAminHeight = 150;
+
+      // Resize box A
+      // * 8px is the left/right spacing between .handler and its inner pseudo-element
+      // * Set flex-grow to 0 to prevent it from growing
+      this.$refs['conversationMessageList'].style.height = (Math.max(boxAminHeight, pointerRelativeYpos)) + 'px';
+      this.$refs['conversationMessageList'].style.flexGrow = 0;
+
+    },
+
+    dragEnd() {
+      this.isHandlerDragging = false;
     }
   },
 
   mounted() {
     this.popupItem = this.$refs['setting'];
+    document.addEventListener('mouseup', this.dragEnd);
+    document.addEventListener('mousemove', this.drag);
   },
 
   created() {
@@ -149,8 +185,7 @@ export default {
 }
 
 .conversation-message-list {
-  flex: 1;
-  height: 100%;
+  flex: 1 1 auto;
   overflow: auto;
 }
 
@@ -158,9 +193,25 @@ export default {
   list-style: none;
 }
 
-.message-input-container {
-  height: 200px;
+/*.handler {*/
+/*  height: 1px;*/
+/*  background-color: #e2e2e2;*/
+/*}*/
+
+.handler::before {
+  cursor: row-resize;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 3px;
   border-top: 1px solid #e2e2e2;
+  margin: 0 auto;
+}
+
+.message-input-container {
+  flex: 1 1 auto;
+  height: 200px;
+  min-height: 150px;
 }
 
 .conversation-info-container {
