@@ -132,6 +132,12 @@ export default {
     document.addEventListener('mousemove', this.drag);
   },
 
+  unmounted() {
+    document.removeEventListener('mouseup', this.dragEnd);
+    document.removeEventListener('mousemove', this.drag);
+
+  },
+
   created() {
     console.log("conversationView created", this.conversation);
   },
