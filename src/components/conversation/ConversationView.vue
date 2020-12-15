@@ -6,7 +6,7 @@
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1>Conv title {{ sharedConversationState.currentConversation }}</h1>
+          <h1>{{ sharedConversationState.currentConversation.conversation._target.name }}</h1>
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
@@ -14,12 +14,14 @@
         <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll">
           <ul>
             <!--todo item.messageId or messageUid as key-->
-            <li v-for="(item,index) in messages" :key="item">
+            <li v-for="(message) in sharedConversationState.currentConversationMessageList"
+                :key="message.messageId">
               <!--todo 不同的消息类型 notification in out-->
 
-              <NormalOutMessageContentView :index="index" v-if="index %3 === 0"/>
-              <NormalInMessageContentView :index="index" v-if="index %3 === 1"/>
-              <NotificationMessageContentView v-if="index %3 === 1"/>
+              <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
+              <NormalOutMessageContentView :message="message"
+                                           v-else-if="isNormalOutMessage(message)"/>
+              <NormalInMessageContentView :message="message" v-else/>
             </li>
           </ul>
         </div>
@@ -50,6 +52,7 @@ import ClickOutside from 'vue-click-outside'
 import NormalOutMessageContentView from "@/components/conversation/message/NormalOutMessageContentContainerView";
 import NormalInMessageContentView from "@/components/conversation/message/NormalInMessageContentContainerView";
 import NotificationMessageContentView from "@/components/conversation/message/NotificationMessageContentView";
+import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import store from "@/store";
 
 export default {
@@ -67,7 +70,6 @@ export default {
       showConversationInfo: false,
       isInviteConversationMember: false,
       isShowConversationMember: false,
-      messages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 120],
       sharedConversationState: store.state.conversation,
       isHandlerDragging: false,
     };
@@ -84,6 +86,25 @@ export default {
       this.showConversationInfo && (this.showConversationInfo = false);
       console.log('hide conv')
     },
+
+    isNormalOutMessage(message) {
+      if (!this.isNotificationMessage(message)) {
+        return message.direction === 0;
+      }
+      return false;
+    },
+
+    isNormalInMessage(message) {
+      if (!this.isNotificationMessage(message)) {
+        return message.direction === 1;
+      }
+      return false;
+    },
+
+    isNotificationMessage(message) {
+      return message.messageContent instanceof NotificationMessageContent;
+    },
+
     onScroll() {
       for (const popper of document.querySelectorAll('.tippy-popper')) {
         const instance = popper._tippy;

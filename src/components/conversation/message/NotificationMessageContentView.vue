@@ -6,8 +6,16 @@
 
 <script>
 
+import Message from "@/wfc/messages/message";
+
 export default {
   name: "NotificationMessageContentView",
+  props: {
+    message: {
+      type: Message,
+      required: true
+    }
+  },
   components: {}
 }
 </script>

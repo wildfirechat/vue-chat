@@ -5,10 +5,11 @@
       <div class="message-avatar-content-container">
         <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
         <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
-        <ImageMessageContentView class="right-arrow right-arrow-white-color"/>
+        <TextMessageContentView :message="message" v-if="message.messageContent.type === 1"/>
+        <ImageMessageContentView :message="message" v-if="message.messageContent === 3" class="right-arrow right-arrow-white-color"/>
         <div>
           <tippy
-              :to="'infoTrigger' + this.index"
+              :to="'infoTrigger' + this.message.messageId"
               interactive
               :animate-fill="false"
               placement="left"
@@ -20,7 +21,7 @@
             <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
           </tippy>
           <img ref="userCardTippy"
-               :name="'infoTrigger' + this.index"
+               :name="'infoTrigger' + this.message.messageId"
                class="avatar"
                src="@/assets/images/user-fallback.png">
         </div>
@@ -33,13 +34,19 @@
 <script>
 import ImageMessageContentView from "@/components/conversation/message/content/ImageMessageContentView";
 import UserCardView from "@/components/user/UserCardView";
+import Message from "@/wfc/messages/message";
+import TextMessageContentView from "@/components/conversation/message/content/TextMessageContentView";
 
 export default {
   name: "NormalOutMessageContentView",
   props: {
-    index: null,
+    message: {
+      type: Message,
+      required: true,
+    },
   },
   components: {
+    TextMessageContentView,
     ImageMessageContentView,
     UserCardView,
     // TextMessageContentView,

@@ -1,14 +1,20 @@
 <template>
   <div class="text-message-container">
-    <p class="text">123Text message lo contentText message lo contentText message lo contentText message lo contentText message lo
-      cText
-      message lo contentText message lo contentText message lo contentontentText message lo content 123</p>
+    <p class="text">{{this.message.messageContent.digest()}}</p>
   </div>
 </template>
 
 <script>
+import Message from "@/wfc/messages/message";
+
 export default {
-  name: "TextMessageContentView"
+  name: "TextMessageContentView",
+  props: {
+    message: {
+      type: Message,
+      required: true,
+    }
+  }
 }
 </script>
 
@@ -21,7 +27,7 @@ export default {
   border-radius: 5px;
 }
 
-.text-message-container .text{
+.text-message-container .text {
   color: #050505;
   font-size: 16px;
 }

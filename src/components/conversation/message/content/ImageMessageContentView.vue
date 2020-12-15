@@ -5,8 +5,16 @@
 </template>
 
 <script>
+import Message from "@/wfc/messages/message";
+
 export default {
-  name: "ImageMessageContentView"
+  name: "ImageMessageContentView",
+  props: {
+    message: {
+      type: Message,
+      required: true,
+    }
+  }
 }
 </script>
 

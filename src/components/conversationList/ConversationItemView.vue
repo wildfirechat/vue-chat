@@ -3,7 +3,7 @@
     <div class="conversation-item">
       <div class="header">
         <img class="avatar" :src="conversationInfo.conversation._target.portrait" alt=""/>
-        <em v-if="true" class="badge">9</em>
+        <em v-if="unread > 0" class="badge">{{ unread }}</em>
       </div>
       <div class="content">
         <div class="title-time-container">
@@ -39,6 +39,14 @@ export default {
     conversationDesc: function () {
       let conversationInfo = this.conversationInfo;
       return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest() : '';
+    },
+    unread: function () {
+      let conversationInfo = this.conversationInfo;
+      if (conversationInfo.isSilent) {
+        return 0;
+      }
+      let unreadCount = conversationInfo.unreadCount;
+      return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
     }
   }
 };

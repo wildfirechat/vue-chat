@@ -88,6 +88,7 @@ let store = {
             console.log('setCurrentConversation', this.state.currentConversation, conversation);
         }
         this.state.conversation.currentConversation = conversation;
+        this.state.conversation.currentConversationMessageList = wfc.getMessages(conversation.conversation);
     },
 
     // contact actions
