@@ -20,7 +20,7 @@
 
               <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
               <NormalOutMessageContentView :message="message"
-                                           v-else-if="isNormalOutMessage(message)"/>
+                                           v-else-if="message.direction === 0"/>
               <NormalInMessageContentView :message="message" v-else/>
             </li>
           </ul>
@@ -72,6 +72,7 @@ export default {
       isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
       isHandlerDragging: false,
+      shouldAutoScrollToBottom: true,
     };
   },
 
@@ -87,30 +88,22 @@ export default {
       console.log('hide conv')
     },
 
-    isNormalOutMessage(message) {
-      if (!this.isNotificationMessage(message)) {
-        return message.direction === 0;
-      }
-      return false;
-    },
-
-    isNormalInMessage(message) {
-      if (!this.isNotificationMessage(message)) {
-        return message.direction === 1;
-      }
-      return false;
-    },
-
     isNotificationMessage(message) {
       return message.messageContent instanceof NotificationMessageContent;
     },
 
-    onScroll() {
+    onScroll(e) {
       for (const popper of document.querySelectorAll('.tippy-popper')) {
         const instance = popper._tippy;
         if (instance.state.isVisible) {
           instance.hide();
         }
+      }
+      // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
+      if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
+        this.shouldAutoScrollToBottom = false;
+      } else {
+        this.shouldAutoScrollToBottom = true;
       }
     },
 
@@ -166,6 +159,13 @@ export default {
   updated() {
     console.log("conversationView updated", this.conversation);
     this.popupItem = this.$refs['setting'];
+    // refer to http://iamdustan.com/smoothscroll/
+    if (this.shouldAutoScrollToBottom) {
+      let messageListElement = this.$refs['conversationMessageList'];
+      messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'smooth'})
+    } else {
+      // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
+    }
   },
 
   directives: {
