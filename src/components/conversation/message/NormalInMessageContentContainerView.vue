@@ -24,7 +24,7 @@
         <!--消息内容 根据情况，if-else-->
         <div class="message-name-content-container">
           <p class="name">我是imndx</p>
-          <TextMessageContentView :message="message" class="left-arrow"/>
+          <MessageContentContainerView :message="message"/>
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@
 <script>
 import TextMessageContentView from "@/components/conversation/message/content/TextMessageContentView";
 import UserCardView from "@/components/user/UserCardView";
+import MessageContentContainerView from "@/components/conversation/message/MessageContentContainerView";
 
 export default {
   name: "NormalInMessageContentView",
@@ -48,6 +49,7 @@ export default {
     },
   },
   components: {
+    MessageContentContainerView,
     TextMessageContentView,
     UserCardView,
   },
@@ -97,24 +99,6 @@ export default {
   color: #bdbdbd;
   font-size: 12px;
   margin-bottom: 2px;
-}
-
-.left-arrow:before {
-  /*right: -10px;*/
-  left: -10px;
-  top: 15px;
-  position: absolute;
-  border: solid transparent;
-  content: "";
-  height: 0;
-  width: 0;
-  pointer-events: none;
-}
-
-.left-arrow:before {
-  border-color: transparent;
-  border-right-color: #98ea70;
-  border-width: 5px;
 }
 
 </style>

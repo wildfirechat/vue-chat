@@ -2,6 +2,7 @@ import ConnectionStatus from "@/wfc/client/connectionStatus";
 import wfc from "@/wfc/client/wfc";
 import EventType from "@/wfc/client/wfcEvent";
 import ConversationType from "@/wfc/model/conversationType";
+import {numberValue} from "@/wfc/util/longUtil";
 
 let store = {
     debug: true,
@@ -46,6 +47,7 @@ let store = {
         wfc.eventEmitter.on(EventType.UserInfosUpdate, (userInfos) => {
             // TODO optimize
             this._loadDefaultConversationList();
+            this._loadCurrentConversationMessages();
             // TODO 其他相关逻辑
         });
 
@@ -56,8 +58,16 @@ let store = {
 
         });
 
-        wfc.eventEmitter.on(EventType.ReceiveMessage, (msgs) => {
+        wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
+            console.log('jooo', msg, hasMore)
+            if (hasMore) {
+                // do nothing
+                return;
+            }
             this._loadDefaultConversationList();
+            if (msg.conversation.equal(this.state.conversation.currentConversation)) {
+                this._loadCurrentConversationMessages();
+            }
         });
 
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
@@ -88,7 +98,25 @@ let store = {
             console.log('setCurrentConversation', this.state.currentConversation, conversation);
         }
         this.state.conversation.currentConversation = conversation;
-        this.state.conversation.currentConversationMessageList = wfc.getMessages(conversation.conversation);
+        this._loadCurrentConversationMessages();
+    },
+
+    _loadCurrentConversationMessages() {
+        let conversation = this.state.conversation.currentConversation;
+        let msgs = wfc.getMessages(conversation);
+        let lastTimestamp = 0;
+        msgs.forEach(m => {
+            // TODO
+            // _from
+            // _showTime
+            m._from = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
+            if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 60 * 1000) {
+                m._showTime = true;
+                lastTimestamp = m.timestamp;
+            }
+        });
+        console.log('loaddc', msgs)
+        this.state.conversation.currentConversationMessageList = msgs;
     },
 
     // contact actions

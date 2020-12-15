@@ -6,7 +6,7 @@
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1>{{ sharedConversationState.currentConversation.conversation._target.name }}</h1>
+          <h1>{{ sharedConversationState.currentConversation._target.name }}</h1>
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>

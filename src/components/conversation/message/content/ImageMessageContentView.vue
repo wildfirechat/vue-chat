@@ -1,6 +1,6 @@
 <template>
   <div class="image-content-container">
-    <img src="@/assets/images/crash.png">
+    <img v-bind:src="message.messageContent.remotePath">
   </div>
 </template>
 
@@ -24,6 +24,13 @@ export default {
   position: relative;
   border: 1px solid #efefef;
   border-radius: 5px;
+}
+
+.image-content-container img{
+  max-height: 400px;
+  max-width: 400px;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .right-arrow:before {

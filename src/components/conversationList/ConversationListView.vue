@@ -5,7 +5,7 @@
           @click="showConversation(conversationInfo)"
           v-for="conversationInfo in sharedConversationState.conversationList"
           :key="conversationInfoKey(conversationInfo)"
-          v-bind:class="{active:/*TODO conversation 比较*/ sharedConversationState.currentConversation === conversationInfo}"
+          v-bind:class="{active:/*TODO conversation 比较*/ sharedConversationState.currentConversation === conversationInfo.conversation}"
           @contextmenu.prevent="$refs.menu.open($event,conversationInfo)"
       >
         <ConversationItemView :conversation-info="conversationInfo"/>
@@ -38,8 +38,8 @@ export default {
   },
 
   methods: {
-    showConversation(conversation) {
-      store.setCurrentConversation(conversation);
+    showConversation(conversationInfo) {
+      store.setCurrentConversation(conversationInfo.conversation);
     },
     onClick(v) {
       console.log('test', v)
