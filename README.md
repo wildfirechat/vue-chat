@@ -1,4 +1,4 @@
-# vue-demo
+# vue-chat
 
 这是一个最简的野火IM vue demo，演示如何将野火IM的能力集成到vue项目。
 

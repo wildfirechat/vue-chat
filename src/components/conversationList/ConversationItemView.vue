@@ -2,17 +2,18 @@
   <div class="conversation-item-container">
     <div class="conversation-item">
       <div class="header">
-        <img class="avatar" src="@/assets/images/user-fallback.png" alt=""/>
+        <img class="avatar" :src="conversationInfo.conversation._target.portrait" alt=""/>
         <em v-if="true" class="badge">9</em>
       </div>
       <div class="content">
         <div class="title-time-container">
-          <h2 class="title single-line">imndx 的公众号</h2>
+          <h2 class="title single-line">{{ conversationInfo.conversation._target.name }}</h2>
           <p class="time">10:43</p>
         </div>
         <div>
-          <p class="draft single-line" v-if="conversationInfo.draft">imndx: draft</p>
-          <p class="message single-line" v-else>imndx: last message</p>
+          <p class="draft single-line" v-if="conversationInfo.draft">{{ conversationInfo.draft }}</p>
+          <p class="message single-line" v-else>
+            {{ conversationDesc }}</p>
         </div>
       </div>
     </div>
@@ -20,13 +21,26 @@
 </template>
 
 <script>
+import ConversationInfo from "@/wfc/model/conversationInfo";
+
 export default {
-  data() {
-    return {
-      conversationInfo: {name: "imndx", draft: "ooo"},
-    };
-  },
   name: "ConversationItemView",
+  props: {
+    conversationInfo: {
+      type: ConversationInfo,
+      required: true,
+    },
+  },
+  data() {
+    return {};
+  },
+  methods: {},
+  computed: {
+    conversationDesc: function () {
+      let conversationInfo = this.conversationInfo;
+      return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest() : '';
+    }
+  }
 };
 </script>
 
@@ -107,11 +121,11 @@ export default {
 }
 
 .content .draft {
-  color: #b8b8b8;
+  color: red;
 }
 
 .content .message {
-
+  color: #b8b8b8;
 }
 
 

@@ -865,7 +865,7 @@ export class WfcManager {
     /**
      * 获取会话列表
      * @param {[number]} types 想获取的会话类型，可选值参考{@link ConversationType}
-     * @param {[0]} lines 想获取哪些会话线路的会话，默认传[0]即可
+     * @param {[number]} lines 想获取哪些会话线路的会话，默认传[0]即可
      * @returns {[ConversationInfo]}
      */
     getConversationList(types, lines) {

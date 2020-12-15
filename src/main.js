@@ -10,10 +10,15 @@ import VueContext from 'vue-context';
 import VModal from 'vue-js-modal'
 import './global.css'
 import './assets/fonts/icomoon/style.css'
+import store from "@/store";
 
 Vue.config.productionTip = false
+
+// init
 wfc.init()
+store.init();
 console.log('init wfc', wfc)
+// init end
 
 Vue.use(VueRouter)
 

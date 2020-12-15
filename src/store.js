@@ -1,8 +1,15 @@
+import ConnectionStatus from "@/wfc/client/connectionStatus";
+import wfc from "@/wfc/client/wfc";
+import EventType from "@/wfc/client/wfcEvent";
+import ConversationType from "@/wfc/model/conversationType";
+
 let store = {
     debug: true,
     state: {
         conversation: {
             currentConversation: null,
+            conversationList: [],
+            currentConversationMessageList: [],
         },
 
         contact: {
@@ -26,11 +33,56 @@ let store = {
         },
 
         misc: {
-            test: false
+            test: false,
+            connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
         },
     },
 
+    init() {
+        wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
+            this.state.misc.connectionStatus = status;
+        });
+
+        wfc.eventEmitter.on(EventType.UserInfosUpdate, (userInfos) => {
+            // TODO optimize
+            this._loadDefaultConversationList();
+            // TODO 其他相关逻辑
+        });
+
+        wfc.eventEmitter.on(EventType.GroupInfosUpdate, (groupInfos) => {
+            // TODO optimize
+            this._loadDefaultConversationList();
+            // TODO 其他相关逻辑
+
+        });
+
+        wfc.eventEmitter.on(EventType.ReceiveMessage, (msgs) => {
+            this._loadDefaultConversationList();
+        });
+
+        wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
+            this._loadDefaultConversationList();
+        })
+    },
+
     // conversation actions
+
+    _loadDefaultConversationList() {
+        this.loadConversationList([0, 1], [0])
+    },
+
+    loadConversationList(conversationType = [0, 1], lines = [0]) {
+        let conversationList = wfc.getConversationList(conversationType, lines);
+        conversationList.forEach(info => {
+            if (info.conversation.type === ConversationType.Single) {
+                info.conversation._target = wfc.getUserInfo(info.conversation.target, false);
+            } else if (info.conversation.type === ConversationType.Group) {
+                info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
+            }
+        });
+        this.state.conversation.conversationList = conversationList;
+    },
+
     setCurrentConversation(conversation) {
         if (this.debug) {
             console.log('setCurrentConversation', this.state.currentConversation, conversation);
@@ -94,5 +146,6 @@ let store = {
 
     // misc actions
 }
+
 export default store
 

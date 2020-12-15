@@ -2,13 +2,13 @@
   <section class="conversation-list">
     <ul>
       <li
-          @click="showConversation(conversation)"
-          v-for="conversation in conversationList"
-          :key="conversation"
-          v-bind:class="{active:/*TODO conversation 比较*/ sharedConversationState.currentConversation === conversation}"
-          @contextmenu.prevent="$refs.menu.open($event,conversation)"
+          @click="showConversation(conversationInfo)"
+          v-for="conversationInfo in sharedConversationState.conversationList"
+          :key="conversationInfoKey(conversationInfo)"
+          v-bind:class="{active:/*TODO conversation 比较*/ sharedConversationState.currentConversation === conversationInfo}"
+          @contextmenu.prevent="$refs.menu.open($event,conversationInfo)"
       >
-        <ConversationItemView/>
+        <ConversationItemView :conversation-info="conversationInfo"/>
       </li>
     </ul>
 
@@ -33,7 +33,6 @@ export default {
   name: 'ConversationListView',
   data() {
     return {
-      conversationList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       sharedConversationState: store.state.conversation,
     };
   },
@@ -44,7 +43,13 @@ export default {
     },
     onClick(v) {
       console.log('test', v)
-    }
+    },
+
+    conversationInfoKey(conversationInfo) {
+      let conv = conversationInfo.conversation;
+      return conv.target + '-' + conv.type + '-' + conv.line;
+    },
+
   },
   components: {
     ConversationItemView,
