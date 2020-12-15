@@ -20,7 +20,7 @@
     width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: pre;
+    white-space: nowrap;
 }
 
 @import '~vue-context/dist/css/vue-context.css';
