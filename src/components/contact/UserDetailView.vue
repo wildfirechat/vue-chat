@@ -2,11 +2,11 @@
   <section class="user-detail-container">
     <div class="header">
       <div>
-        <h2>imndx名字 {{ user }}</h2>
-        <p>hello world. 你好，野火 {{ user }}</p>
+        <h2>{{ name }}</h2>
+        <p>你好，野火</p>
       </div>
       <div>
-        <img class="avatar" src="@/assets/images/user-fallback.png">
+        <img class="avatar" :src="sharedStateContact.currentFriend.portrait">
       </div>
     </div>
     <div class="content">
@@ -14,7 +14,7 @@
         <li>
           <label>备注</label>
           <div class="alias">
-            <input type="text" placeholder="备注名"/>
+            <input type="text" :value="sharedStateContact.currentFriend.alias" placeholder="备注名"/>
           </div>
         </li>
         <li>
@@ -34,10 +34,31 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "UserDetailView",
   props: {
     user: null,
+  },
+  data() {
+    return {
+      sharedStateContact: store.state.contact,
+    }
+  },
+  computed: {
+    name: function () {
+      let name;
+      let friend = this.sharedStateContact.currentFriend;
+      if (friend.friendAlias) {
+        name = friend.friendAlias;
+      } else if (friend.displayName) {
+        name = friend.displayName;
+      } else {
+        name = friend.name;
+      }
+      return name;
+    }
   }
 }
 </script>

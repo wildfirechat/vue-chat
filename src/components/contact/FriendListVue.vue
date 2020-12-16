@@ -1,7 +1,7 @@
 <template>
   <section>
     <ul>
-      <li v-for="(friend, index) in friends" :key="index">
+      <li v-for="(friend, index) in sharedContactState.friendList" :key="friend.uid">
         <div class="contact-item">
           <div v-if="contactLabel(friend, index)" class="label">
             <p>{{ contactLabel(friend, index) }}</p>
@@ -11,8 +11,9 @@
                @click="clickFriendItem(friend)">
             <input class="checkbox" v-bind:value="friend" v-if="enablePick" type="checkbox"
                    v-model="sharedPickState.users">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-            <span class="single-line">imndx</span>
+            <img class="avatar" :src="friend.portrait">
+            <span
+                class="single-line"> {{friendName(friend)}}</span>
           </div>
         </div>
       </li>
@@ -27,7 +28,6 @@ import store from "@/store";
 export default {
   name: "FriendListVue",
   props: {
-    friends: null,
     enablePick: null,
   },
   data() {
@@ -50,6 +50,18 @@ export default {
       } else {
         store.setCurrentFriend(friend)
       }
+    },
+
+    friendName(friend) {
+      let name;
+      if (friend.friendAlias) {
+        name = friend.friendAlias;
+      } else if (friend.displayName) {
+        name = friend.displayName;
+      } else {
+        name = friend.name;
+      }
+      return name;
     },
 
     contactLabel(friend, index) {

@@ -21,6 +21,10 @@ let store = {
             expandFriendRequestList: false,
             expandFriendList: false,
             expandGroup: false,
+
+            friendList: [],
+            friendRequestList: [],
+            favGroupList: [],
         },
 
         search: {
@@ -48,6 +52,7 @@ let store = {
             // TODO optimize
             this._loadDefaultConversationList();
             this._loadCurrentConversationMessages();
+            this._loadFriendList();
             // TODO 其他相关逻辑
         });
 
@@ -73,6 +78,8 @@ let store = {
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
             this._loadDefaultConversationList();
         })
+
+        this._loadFriendList();
     },
 
     // conversation actions
@@ -102,7 +109,7 @@ let store = {
     },
 
     _loadCurrentConversationMessages() {
-        if(!this.state.conversation.currentConversationInfo){
+        if (!this.state.conversation.currentConversationInfo) {
             return;
         }
         let conversation = this.state.conversation.currentConversationInfo.conversation;
@@ -123,6 +130,15 @@ let store = {
     },
 
     // contact actions
+
+    _loadFriendList() {
+        let friends = wfc.getMyFriendList(false);
+        if (friends && friends.length > 0) {
+            let friendList = wfc.getUserInfos(friends, '');
+            this.state.contact.friendList = friendList;
+        }
+    },
+
     setCurrentFriendRequest(friendRequest) {
         this.state.contact.currentFriendRequest = friendRequest;
         this.state.contact.currentFriend = null;

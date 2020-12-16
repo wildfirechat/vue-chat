@@ -22,10 +22,10 @@
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
           <div class="category-item">
             <span class="title">联系人</span>
-            <span class="desc">{{ friends.length }}</span>
+            <span class="desc">{{ sharedContactState.friendList.length }}</span>
           </div>
         </div>
-        <FriendListVue :enable-pick="false" v-if="sharedContactState.expandFriendList" :friends="friends"/>
+        <FriendListVue :enable-pick="false" v-if="sharedContactState.expandFriendList"/>
       </li>
     </ul>
   </section>
@@ -44,7 +44,6 @@ export default {
       sharedContactState: store.state.contact,
       newFriends: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       groups: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      friends: [{name: 1, uid: 'u1'}, {name: 2, uid: 'u2'}, {name: 3, uid: 'u3'}, {name: 4, uid: 'u4'}],
     }
   },
   methods: {
