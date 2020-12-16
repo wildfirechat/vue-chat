@@ -1,10 +1,10 @@
 <template>
   <section>
     <ul>
-      <li v-for="(group, index) in groups" :key="index" @click="showGroup(group)">
-        <div class="group-item" v-bind:class="{active: sharedContactState.currentGroup === group}">
-          <img class="avatar" src="@/assets/images/user-fallback.png">
-          <span class="single-line">imndx的群组</span>
+      <li v-for="(group, index) in sharedContactState.favGroupList" :key="index" @click="showGroup(group)">
+        <div class="group-item" v-bind:class="{active: sharedContactState.currentGroup && sharedContactState.currentGroup.target === group.target}">
+          <img class="avatar" :src="group.portrait">
+          <span class="single-line">{{ group.name }}</span>
         </div>
       </li>
     </ul>
@@ -16,10 +16,8 @@
 import store from "@/store";
 
 export default {
-  name: "GroupListVue",
-  props: {
-    groups: null,
-  },
+  name: "GroupListView",
+  props: {},
   data() {
     return {
       sharedContactState: store.state.contact,

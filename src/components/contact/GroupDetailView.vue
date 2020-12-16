@@ -3,7 +3,7 @@
     <div class="group-info-container">
       <div class="group-info">
         <img src="@/assets/images/default_group_avatar.png">
-        <p>群名称 {{ group }}</p>
+        <p>群名称 {{ sharedContactState.currentGroup.name }}</p>
       </div>
       <a>进入群聊</a>
     </div>
@@ -11,10 +11,15 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "GroupDetailView",
-  props: {
-    group: null,
+  props: {},
+  data() {
+    return {
+      sharedContactState: store.state.contact,
+    }
   }
 
 }

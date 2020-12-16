@@ -46,6 +46,8 @@ let store = {
     init() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             this.state.misc.connectionStatus = status;
+            this._loadFavGroupList();
+            this._loadFriendList();
         });
 
         wfc.eventEmitter.on(EventType.UserInfosUpdate, (userInfos) => {
@@ -59,6 +61,7 @@ let store = {
         wfc.eventEmitter.on(EventType.GroupInfosUpdate, (groupInfos) => {
             // TODO optimize
             this._loadDefaultConversationList();
+            this._loadFavGroupList();
             // TODO 其他相关逻辑
 
         });
@@ -137,6 +140,11 @@ let store = {
             let friendList = wfc.getUserInfos(friends, '');
             this.state.contact.friendList = friendList;
         }
+        // TODO group
+    },
+
+    _loadFavGroupList() {
+        this.state.contact.favGroupList = wfc.getFavGroupList();
     },
 
     setCurrentFriendRequest(friendRequest) {

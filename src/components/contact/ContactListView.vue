@@ -13,10 +13,10 @@
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandGroup}"></i>
           <div class="category-item">
             <span class="title">群聊</span>
-            <span class="desc">{{ groups.length }}</span>
+            <span class="desc">{{ sharedContactState.favGroupList.length }}</span>
           </div>
         </div>
-        <GroupListVue v-if="sharedContactState.expandGroup" :groups="groups"/>
+        <GroupListVue v-if="sharedContactState.expandGroup"/>
       <li>
         <div @click="showContacts" class="category-item-container">
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
@@ -32,7 +32,7 @@
 </template>
 <script>
 import FriendRequestListView from "@/components/contact/FriendRequestListView";
-import GroupListVue from "@/components/contact/GroupListVue";
+import GroupListVue from "@/components/contact/GroupListView";
 import FriendListVue from "@/components/contact/FriendListVue";
 import store from "@/store";
 
@@ -43,7 +43,6 @@ export default {
     return {
       sharedContactState: store.state.contact,
       newFriends: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      groups: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     }
   },
   methods: {
