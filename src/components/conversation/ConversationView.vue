@@ -236,9 +236,8 @@ export default {
 }
 
 .message-input-container {
-  flex: 1 1 auto;
   height: 200px;
-  min-height: 150px;
+  min-height: 200px;
 }
 
 .conversation-info-container {

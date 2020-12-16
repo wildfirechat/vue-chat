@@ -43,6 +43,7 @@ export default {
 
 <style lang='css' scoped>
 .message-input-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -55,7 +56,7 @@ export default {
 }
 
 .input {
-  flex: 1;
+  flex: 1 1 auto;
 }
 
 ul li {
