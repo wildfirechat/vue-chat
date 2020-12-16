@@ -14,7 +14,7 @@
               animation="fade"
               trigger="click"
           >
-            <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
+            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
           </tippy>
           <img ref="userCardTippy"
                :name="'infoTrigger' + this.message.messageId"
@@ -23,7 +23,7 @@
         </div>
         <!--消息内容 根据情况，if-else-->
         <div class="message-name-content-container">
-          <p class="name">我是imndx</p>
+          <p class="name">{{ message._from.name }}</p>
           <MessageContentContainerView :message="message"/>
         </div>
       </div>

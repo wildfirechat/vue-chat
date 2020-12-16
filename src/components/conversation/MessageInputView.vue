@@ -28,7 +28,11 @@ export default {
   },
   methods: {
     send() {
-      let text = this.$refs['input'].innerHTML;
+      let text = this.$refs['input'].textContent;
+      if (!text.trim()) {
+        return;
+      }
+      this.$refs['input'].textContent ='';
       let textMessageContent = new TextMessageContent(text)
       let conversation = this.sharedConversation.currentConversationInfo.conversation;
       wfc.sendConversationMessage(conversation, textMessageContent);

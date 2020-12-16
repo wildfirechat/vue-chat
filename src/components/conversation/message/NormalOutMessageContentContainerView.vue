@@ -17,7 +17,7 @@
               animation="fade"
               trigger="click"
           >
-            <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
+            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
           </tippy>
           <img ref="userCardTippy"
                :name="'infoTrigger' + this.message.messageId"

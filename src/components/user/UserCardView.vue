@@ -2,11 +2,11 @@
   <section class="user-info-container">
     <div class="header">
       <div class="desc">
-        <h2>{{userInfo.name}}</h2>
-        <label>野火ID: imndx</label>
+        <h2>{{ userInfo.name }}</h2>
+        <label>野火ID: {{userInfo.name}}</label>
       </div>
       <div>
-        <img class="avatar" src="@/assets/images/user-fallback.png"/>
+        <img class="avatar" v-bind:src="userInfo.portrait"/>
       </div>
     </div>
     <div class="content">
@@ -35,10 +35,15 @@
 </template>
 
 <script>
+import UserInfo from "@/wfc/model/userInfo";
+
 export default {
   name: "UserCardView",
   props: {
-    userInfo: null,
+    userInfo: {
+      type: UserInfo,
+      required: true,
+    },
   },
   methods: {
     share() {
