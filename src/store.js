@@ -8,8 +8,8 @@ let store = {
     debug: true,
     state: {
         conversation: {
-            currentConversation: null,
-            conversationList: [],
+            currentConversationInfo: null,
+            conversationInfoList: [],
             currentConversationMessageList: [],
         },
 
@@ -65,7 +65,7 @@ let store = {
                 return;
             }
             this._loadDefaultConversationList();
-            if (msg.conversation.equal(this.state.conversation.currentConversation)) {
+            if (msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
                 this._loadCurrentConversationMessages();
             }
         });
@@ -90,19 +90,22 @@ let store = {
                 info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
             }
         });
-        this.state.conversation.conversationList = conversationList;
+        this.state.conversation.conversationInfoList = conversationList;
     },
 
-    setCurrentConversation(conversation) {
+    setCurrentConversationInfo(conversationInfo) {
         if (this.debug) {
-            console.log('setCurrentConversation', this.state.currentConversation, conversation);
+            console.log('setCurrentConversation', this.state.currentConversation, conversationInfo);
         }
-        this.state.conversation.currentConversation = conversation;
+        this.state.conversation.currentConversationInfo = conversationInfo;
         this._loadCurrentConversationMessages();
     },
 
     _loadCurrentConversationMessages() {
-        let conversation = this.state.conversation.currentConversation;
+        if(!this.state.conversation.currentConversationInfo){
+            return;
+        }
+        let conversation = this.state.conversation.currentConversationInfo.conversation;
         let msgs = wfc.getMessages(conversation);
         let lastTimestamp = 0;
         msgs.forEach(m => {

@@ -10,13 +10,30 @@
         <li><i class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
-    <div class="input" contenteditable="true"></div>
+    <div @keyup.enter="send" ref="input" class="input" contenteditable="true"></div>
   </section>
 </template>
 
 <script>
+import wfc from "@/wfc/client/wfc";
+import TextMessageContent from "@/wfc/messages/textMessageContent";
+import store from "@/store";
+
 export default {
   name: "MessageInputView",
+  data() {
+    return {
+      sharedConversation: store.state.conversation,
+    }
+  },
+  methods: {
+    send() {
+      let text = this.$refs['input'].innerHTML;
+      let textMessageContent = new TextMessageContent(text)
+      let conversation = this.sharedConversation.currentConversationInfo.conversation;
+      wfc.sendConversationMessage(conversation, textMessageContent);
+    }
+  },
 };
 </script>
 
