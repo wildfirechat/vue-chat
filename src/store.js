@@ -82,7 +82,21 @@ let store = {
             this._loadDefaultConversationList();
         })
 
-        this._loadFriendList();
+        wfc.eventEmitter.on(EventType.SendMessage, (message) => {
+            if (!message.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+                return;
+            }
+            let length = this.state.conversation.currentConversationMessageList.length;
+            let lastTimestamp = 0;
+            if (length > 0) {
+                let lastMessage = this.state.conversation.currentConversationMessageList[length - 1];
+                lastTimestamp = lastMessage.timestamp;
+            }
+            this._patchMessage(message, lastTimestamp)
+
+            this.state.conversation.currentConversationMessageList.push(message);
+        });
+
     },
 
     // conversation actions
@@ -119,17 +133,20 @@ let store = {
         let msgs = wfc.getMessages(conversation);
         let lastTimestamp = 0;
         msgs.forEach(m => {
-            // TODO
-            // _from
-            // _showTime
-            m._from = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
-            if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 60 * 1000) {
-                m._showTime = true;
-                lastTimestamp = m.timestamp;
-            }
+            this._patchMessage(m, lastTimestamp);
+            lastTimestamp = m.timestamp;
         });
-        console.log('loaddc', msgs)
         this.state.conversation.currentConversationMessageList = msgs;
+    },
+
+    _patchMessage(m, lastTimestamp) {
+        // TODO
+        // _from
+        // _showTime
+        m._from = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
+        if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 60 * 1000) {
+            m._showTime = true;
+        }
     },
 
     // contact actions
