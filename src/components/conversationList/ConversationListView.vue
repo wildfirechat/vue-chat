@@ -5,20 +5,28 @@
           @click="showConversation(conversationInfo)"
           v-for="conversationInfo in sharedConversationState.conversationInfoList"
           :key="conversationInfoKey(conversationInfo)"
-          v-bind:class="{active:/*TODO conversation 比较*/ sharedConversationState.currentConversationInfo && sharedConversationState.currentConversationInfo.conversation === conversationInfo.conversation}"
+          v-bind:class="{active: sharedConversationState.currentConversationInfo && sharedConversationState.currentConversationInfo.conversation === conversationInfo.conversation,
+                          top:conversationInfo.isTop}"
           @contextmenu.prevent="$refs.menu.open($event,conversationInfo)"
       >
         <ConversationItemView :conversation-info="conversationInfo"/>
       </li>
     </ul>
 
-    <vue-context ref="menu" v-slot="{data}">
-      <!--      TODO -->
-      <li v-if="data === 1">
-        <a @click.prevent="onClick(data)">Option 1</a>
+
+    <vue-context ref="menu" v-slot="{data:conversationInfo}">
+      <li>
+        <a @click.prevent="setConversationTop(conversationInfo)">{{
+            conversationInfo && conversationInfo.isTop ? '取消置顶' : '置顶'
+          }}</a>
       </li>
       <li>
-        <a @click.prevent="onClick(data)">Option 2</a>
+        <a @click.prevent="setConversationSilent(conversationInfo)">{{
+            conversationInfo && conversationInfo.isSilent ? '允许消息通知' : '消息免打扰'
+          }}</a>
+      </li>
+      <li>
+        <a @click.prevent="delConversation(conversationInfo)">删除</a>
       </li>
     </vue-context>
   </section>
@@ -41,8 +49,21 @@ export default {
     showConversation(conversationInfo) {
       store.setCurrentConversationInfo(conversationInfo);
     },
+
+    setConversationTop(conversationInfo) {
+      console.log('setConversationTop', conversationInfo)
+    },
+
+    setConversationSilent(conversationInfo) {
+      console.log('setSilent', conversationInfo);
+    },
+
+    delConversation(conversationInfo) {
+      console.log('delete', conversationInfo)
+    },
+
     onClick(v) {
-      console.log('test', v)
+      console.log('xxx', v)
     },
 
     conversationInfoKey(conversationInfo) {
@@ -78,7 +99,10 @@ export default {
 
 .conversation-list ul li.top {
   background-color: #f1f1f1;
+}
 
+.conversation-list ul li.active.top {
+  background-color: #d6d6d6;
 }
 
 </style>
