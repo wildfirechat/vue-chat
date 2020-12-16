@@ -1,13 +1,11 @@
 # vue-chat
 
-这是一个最简的野火IM vue demo，演示如何将野火IM的能力集成到vue项目。
+野火IM VUE Demo，演示如何将野火IM的能力集成到VUE项目。
 
 ## 重要提示
-dev 分支正在活跃开发中，目前不可用。
+项目在活跃开发中，更完整项目，请参考 [web-chat](https://github.com/wildfirechat/web-chat) 。
 
-## 开发测试
+## 开发
 1. ```npm install```
 2. ```npm run serve```
 
-
-更多信息，请参考[web-chat](https://github.com/wildfirechat/web-chat)
