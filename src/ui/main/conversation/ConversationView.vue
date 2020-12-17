@@ -45,13 +45,13 @@
 </template>
 
 <script>
-import SingleConversationInfoView from "@/ui/components/conversation/SingleConversationInfoView";
-import GroupConversationInfoView from "@/ui/components/conversation/GroupConversationInfoView";
-import MessageInputView from "@/ui/components/conversation/MessageInputView";
+import SingleConversationInfoView from "@/ui/main/conversation/SingleConversationInfoView";
+import GroupConversationInfoView from "@/ui/main/conversation/GroupConversationInfoView";
+import MessageInputView from "@/ui/main/conversation/MessageInputView";
 import ClickOutside from 'vue-click-outside'
-import NormalOutMessageContentView from "@/ui/components/conversation/message/NormalOutMessageContentContainerView";
-import NormalInMessageContentView from "@/ui/components/conversation/message/NormalInMessageContentContainerView";
-import NotificationMessageContentView from "@/ui/components/conversation/message/NotificationMessageContentView";
+import NormalOutMessageContentView from "@/ui/main/conversation/message/NormalOutMessageContentContainerView";
+import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInMessageContentContainerView";
+import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import store from "@/store";
 

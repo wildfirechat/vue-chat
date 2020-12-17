@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import FriendListVue from "@/ui/components/contact/FriendListVue";
+import FriendListVue from "@/ui/main/contact/FriendListVue";
 import store from "@/store";
 
 export default {

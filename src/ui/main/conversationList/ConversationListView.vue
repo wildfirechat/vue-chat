@@ -34,7 +34,7 @@
 
 <script>
 
-import ConversationItemView from "@/ui/components/conversationList/ConversationItemView";
+import ConversationItemView from "@/ui/main/conversationList/ConversationItemView";
 import store from "@/store";
 
 export default {

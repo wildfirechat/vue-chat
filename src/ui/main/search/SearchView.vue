@@ -11,7 +11,7 @@
 
 <script>
 import store from "@/store";
-import PickContactView from "@/ui/components/pick/PickContactView";
+import PickContactView from "@/ui/main/pick/PickContactView";
 
 export default {
   name: "SearchView",

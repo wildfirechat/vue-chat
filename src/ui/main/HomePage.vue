@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import UserCardView from "@/ui/components/user/UserCardView";
+import UserCardView from "@/ui/main/user/UserCardView";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
 import EventType from "@/wfc/client/wfcEvent";

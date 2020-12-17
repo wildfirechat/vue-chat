@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import InviteConversationMember from "@/ui/components/conversation/InviteConversationMember";
+import InviteConversationMember from "@/ui/main/conversation/InviteConversationMember";
 
 export default {
   name: "SingleConversationInfoView",

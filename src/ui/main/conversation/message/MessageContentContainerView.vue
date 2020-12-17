@@ -9,8 +9,8 @@
 
 <script>
 import Message from "@/wfc/messages/message";
-import TextMessageContentView from "@/ui/components/conversation/message/content/TextMessageContentView";
-import ImageMessageContentView from "@/ui/components/conversation/message/content/ImageMessageContentView";
+import TextMessageContentView from "@/ui/main/conversation/message/content/TextMessageContentView";
+import ImageMessageContentView from "@/ui/main/conversation/message/content/ImageMessageContentView";
 
 export default {
   name: "MessageContentContainerView",

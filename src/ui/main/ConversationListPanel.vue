@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import ConversationListView from "@/ui/components/conversationList/ConversationListView";
+import ConversationListView from "@/ui/main/conversationList/ConversationListView";
 import store from "@/store";
-import SearchResultView from "@/ui/components/search/SearchResultView";
-import SearchView from "@/ui/components/search/SearchView";
+import SearchResultView from "@/ui/main/search/SearchResultView";
+import SearchView from "@/ui/main/search/SearchView";
 
 export default {
   name: 'ConversationListPanel',

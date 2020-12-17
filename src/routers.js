@@ -1,8 +1,8 @@
-import HomePage from './ui/components/HomePage'
-import LoginPage from './ui/components/LoginPage'
-import ConversationPage from './ui/components/ConversationPage'
-import ContactPage from './ui/components/ContactPage'
-import SettingPage from './ui/components/SettingPage'
+import HomePage from './ui/main/HomePage'
+import LoginPage from './ui/main/LoginPage'
+import ConversationPage from './ui/main/ConversationPage'
+import ContactPage from './ui/main/ContactPage'
+import SettingPage from './ui/main/SettingPage'
 import Single from "@/ui/voip/Single";
 
 const routers = [

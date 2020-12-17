@@ -1,8 +1,11 @@
 <template>
   <section>
     <div class="message-time-container">
-      <p class="time">16:58</p>
+      <p class="time">16:57</p>
       <div class="message-avatar-content-container">
+        <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
+        <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
+        <MessageContentContainerView :message="message"/>
         <div>
           <tippy
               :to="'infoTrigger' + this.message.messageId"
@@ -21,11 +24,6 @@
                class="avatar"
                src="@/assets/images/user-fallback.png">
         </div>
-        <!--消息内容 根据情况，if-else-->
-        <div class="message-name-content-container">
-          <p class="name">{{ message._from.name }}</p>
-          <MessageContentContainerView :message="message"/>
-        </div>
       </div>
     </div>
   </section>
@@ -33,26 +31,35 @@
 </template>
 
 <script>
-import TextMessageContentView from "@/ui/components/conversation/message/content/TextMessageContentView";
-import UserCardView from "@/ui/components/user/UserCardView";
-import MessageContentContainerView from "@/ui/components/conversation/message/MessageContentContainerView";
+import ImageMessageContentView from "@/ui/main/conversation/message/content/ImageMessageContentView";
+import UserCardView from "@/ui/main/user/UserCardView";
+import Message from "@/wfc/messages/message";
+import TextMessageContentView from "@/ui/main/conversation/message/content/TextMessageContentView";
+import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 
 export default {
-  name: "NormalInMessageContentView",
+  name: "NormalOutMessageContentView",
   props: {
-    message: null,
+    message: {
+      type: Message,
+      required: true,
+    },
+  },
+  components: {
+    MessageContentContainerView,
+    TextMessageContentView,
+    ImageMessageContentView,
+    UserCardView,
+    // TextMessageContentView,
+
   },
   methods: {
     closeUserCard() {
       console.log('closeUserCard')
       this.$refs["userCardTippy"]._tippy.hide();
     },
-  },
-  components: {
-    MessageContentContainerView,
-    TextMessageContentView,
-    UserCardView,
-  },
+  }
+
 }
 </script>
 
@@ -63,7 +70,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 .message-time-container .time {
@@ -86,19 +93,6 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 3px;
-}
-
-.message-name-content-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-
-.message-name-content-container .name {
-  margin-left: 10px;
-  color: #bdbdbd;
-  font-size: 12px;
-  margin-bottom: 2px;
 }
 
 </style>
