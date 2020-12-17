@@ -1,10 +1,10 @@
 <template>
   <section>
     <ul>
-      <li v-for="(friend, index) in sharedContactState.friendList" :key="friend.uid">
+      <li v-for="(friend ) in sharedContactState.friendList" :key="friend.uid">
         <div class="contact-item">
-          <div v-if="contactLabel(friend, index)" class="label">
-            <p>{{ contactLabel(friend, index) }}</p>
+          <div v-if="friend._category" class="label">
+            <p>{{ friend._category.toUpperCase() }}</p>
           </div>
           <div class="content"
                v-bind:class="{active: sharedContactState.currentFriend === friend}"
@@ -13,7 +13,7 @@
                    v-model="sharedPickState.users">
             <img class="avatar" :src="friend.portrait">
             <span
-                class="single-line"> {{friendName(friend)}}</span>
+                class="single-line"> {{ friendName(friend) }}</span>
           </div>
         </div>
       </li>

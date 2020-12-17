@@ -4,6 +4,7 @@ import EventType from "@/wfc/client/wfcEvent";
 import ConversationType from "@/wfc/model/conversationType";
 import {gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
+import convert, {compare as pinyinCp} from 'pinyin'
 
 let store = {
     debug: true,
@@ -173,6 +174,53 @@ let store = {
         let friends = wfc.getMyFriendList(false);
         if (friends && friends.length > 0) {
             let friendList = wfc.getUserInfos(friends, '');
+            friendList = friendList.map(u => {
+                u._pinyin = convert(u.displayName, {style: 0}).join('')
+                u._firstLetters = convert(u.displayName, {style: 4}).join('');
+                return u;
+            }).sort((a, b) => pinyinCp(a.displayName, b.displayName));
+
+            let firstAIndex = friendList.findIndex((u => u._firstLetters[0] === 'a'))
+            if (firstAIndex > -1) {
+                friendList = friendList.slice(firstAIndex, friendList.length).concat(friendList.slice(0, firstAIndex));
+            }
+
+            let lastFirstLetter = null;
+            friendList.forEach(u => {
+                let uFirstLetter = u._firstLetters[0];
+                if (uFirstLetter < 'a') {
+                    if (!lastFirstLetter) {
+                        u._category = '*';
+                        lastFirstLetter = u._category;
+                    }
+                } else if (uFirstLetter > 'z') {
+                    if (lastFirstLetter !== '#') {
+                        u._category = '#';
+                        lastFirstLetter = u._category;
+                    }
+                } else {
+                    if (lastFirstLetter !== uFirstLetter) {
+                        u._category = uFirstLetter;
+                        lastFirstLetter = u._category;
+                    }
+                }
+                // if (!lastFirstLetter) {
+                //     if (uFirstLetter < 'a') {
+                //         u._category = '*';
+                //     } else if (uFirstLetter > 'z') {
+                //         u._category = '#';
+                //     } else {
+                //         u._category = uFirstLetter;
+                //     }
+                //     lastFirstLetter = u._category;
+                // } else {
+                //     if (lastFirstLetter !== uFirstLetter) {
+                //         u._category = uFirstLetter;
+                //         lastFirstLetter = u._category;
+                //     }
+                // }
+            });
+
             this.state.contact.friendList = friendList;
         }
         // TODO group
