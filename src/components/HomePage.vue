@@ -84,21 +84,21 @@ export default {
 
   methods: {
     go2Conversation() {
-      if (this.$router.currentRoute.path !== '/home') {
+      if (this.$router.currentRoute.path === '/home') {
         return
       }
       this.currentTab = 'conversation';
       this.$router.replace("/home");
     },
     go2Contact() {
-      if (this.$router.currentRoute.path !== '/home/contact') {
-        return
+      if (this.$router.currentRoute.path === '/home/contact') {
+        return;
       }
       this.currentTab = 'contact';
       this.$router.replace("/home/contact");
     },
     go2Setting() {
-      if (this.$router.currentRoute.path !== '/home/setting') {
+      if (this.$router.currentRoute.path === '/home/setting') {
         return;
       }
       this.currentTab = 'setting';
