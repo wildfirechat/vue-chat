@@ -31,9 +31,9 @@
   </section>
 </template>
 <script>
-import FriendRequestListView from "@/components/contact/FriendRequestListView";
-import GroupListVue from "@/components/contact/GroupListView";
-import FriendListVue from "@/components/contact/FriendListVue";
+import FriendRequestListView from "@/ui/components/contact/FriendRequestListView";
+import GroupListVue from "@/ui/components/contact/GroupListView";
+import FriendListVue from "@/ui/components/contact/FriendListVue";
 import store from "@/store";
 
 export default {

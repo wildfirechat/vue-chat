@@ -7,7 +7,7 @@
 
 <script>
 import ConversationView from "./conversation/ConversationView";
-import ConversationListPanel from "@/components/ConversationListPanel";
+import ConversationListPanel from "@/ui/components/ConversationListPanel";
 
 export default {
   name: "ConversationPage",

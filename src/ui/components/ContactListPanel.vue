@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import SearchView from "@/components/search/SearchView";
-import ContactListView from "@/components/contact/ContactListView";
+import SearchView from "@/ui/components/search/SearchView";
+import ContactListView from "@/ui/components/contact/ContactListView";
 import store from "@/store";
-import SearchResultView from "@/components/search/SearchResultView";
+import SearchResultView from "@/ui/components/search/SearchResultView";
 
 export default {
   name: 'ContactListPanel',

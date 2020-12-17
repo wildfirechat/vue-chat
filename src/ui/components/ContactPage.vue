@@ -13,10 +13,10 @@
 </template>
 
 <script>
-import ContactListPanel from "@/components/ContactListPanel";
-import GroupDetailView from "@/components/contact/GroupDetailView";
+import ContactListPanel from "@/ui/components/ContactListPanel";
+import GroupDetailView from "@/ui/components/contact/GroupDetailView";
 import store from "@/store";
-import UserDetailView from "@/components/contact/UserDetailView";
+import UserDetailView from "@/ui/components/contact/UserDetailView";
 
 export default {
   name: 'ContactPage',

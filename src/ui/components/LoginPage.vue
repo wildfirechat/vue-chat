@@ -10,7 +10,7 @@
 <script>
 import axios from 'axios'
 import Config from "@/config";
-import wfc from '../wfc/client/wfc'
+import wfc from '../../wfc/client/wfc'
 import PCSession from "@/wfc/model/pcsession";
 import jrQRCode from 'jr-qrcode'
 import ConnectionStatus from "@/wfc/client/connectionStatus";
