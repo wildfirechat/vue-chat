@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "anchorme": "^2.1.2",
     "atob": "^2.1.2",
     "axios": "^0.20.0",
     "base64-arraybuffer": "^0.2.0",
@@ -19,6 +20,7 @@
     "js-base64": "^3.4.5",
     "long": "^4.0.0",
     "qrcode.vue": "^1.7.0",
+    "universal-emoji-parser": "^0.5.28",
     "vue": "^2.6.11",
     "vue-click-outside": "^1.1.0",
     "vue-context": "^6.0.0",
