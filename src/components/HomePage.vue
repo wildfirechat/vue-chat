@@ -89,6 +89,8 @@ export default {
     go2Setting() {
       this.currentTab = 'setting';
       this.$router.push({path: "/home/setting"});
+      // let routeData = this.$router.resolve({name: 'voip', query: {data: "single"}});
+      // window.open(routeData.href, '_blank', 'width=360,height=640,left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable');
     },
 
     closeUserCard() {
