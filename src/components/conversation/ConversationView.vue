@@ -162,7 +162,7 @@ export default {
     // refer to http://iamdustan.com/smoothscroll/
     if (this.shouldAutoScrollToBottom) {
       let messageListElement = this.$refs['conversationMessageList'];
-      messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'smooth'})
+      messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
     } else {
       // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
     }
