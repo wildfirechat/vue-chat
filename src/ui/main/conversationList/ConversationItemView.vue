@@ -8,7 +8,7 @@
       <div class="content">
         <div class="title-time-container">
           <h2 class="title single-line">{{ conversationInfo.conversation._target.name }}</h2>
-          <p class="time">10:43</p>
+          <p class="time">{{conversationInfo._timeStr}}</p>
         </div>
         <div>
           <p class="draft single-line" v-if="conversationInfo.draft">{{ conversationInfo.draft }}</p>

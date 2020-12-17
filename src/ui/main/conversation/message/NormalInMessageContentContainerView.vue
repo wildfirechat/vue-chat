@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="message-time-container">
-      <p class="time">16:58</p>
+      <p v-if="this.message._showTime" class="time">{{message._timeStr}}</p>
       <div class="message-avatar-content-container">
         <div>
           <tippy
@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import TextMessageContentView from "@/ui/main/conversation/message/content/TextMessageContentView";
 import UserCardView from "@/ui/main/user/UserCardView";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 
@@ -50,7 +49,6 @@ export default {
   },
   components: {
     MessageContentContainerView,
-    TextMessageContentView,
     UserCardView,
   },
 }

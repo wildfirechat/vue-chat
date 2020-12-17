@@ -2,7 +2,8 @@ import ConnectionStatus from "@/wfc/client/connectionStatus";
 import wfc from "@/wfc/client/wfc";
 import EventType from "@/wfc/client/wfcEvent";
 import ConversationType from "@/wfc/model/conversationType";
-import {numberValue} from "@/wfc/util/longUtil";
+import {gt, numberValue} from "@/wfc/util/longUtil";
+import helper from "@/ui/util/helper";
 
 let store = {
     debug: true,
@@ -111,11 +112,7 @@ let store = {
     loadConversationList(conversationType = [0, 1], lines = [0]) {
         let conversationList = wfc.getConversationList(conversationType, lines);
         conversationList.forEach(info => {
-            if (info.conversation.type === ConversationType.Single) {
-                info.conversation._target = wfc.getUserInfo(info.conversation.target, false);
-            } else if (info.conversation.type === ConversationType.Group) {
-                info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
-            }
+            this._patchConversationInfo(info);
         });
         this.state.conversation.conversationInfoList = conversationList;
     },
@@ -147,8 +144,22 @@ let store = {
         // _from
         // _showTime
         m._from = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
-        if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 60 * 1000) {
+        if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 5 * 60 * 1000) {
             m._showTime = true;
+            m._timeStr = helper.timeFormat(m.timestamp)
+        }
+    },
+
+    _patchConversationInfo(info) {
+        if (info.conversation.type === ConversationType.Single) {
+            info.conversation._target = wfc.getUserInfo(info.conversation.target, false);
+        } else if (info.conversation.type === ConversationType.Group) {
+            info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
+        }
+        if (gt(info.timestamp, 0)) {
+            info._timeStr = helper.dateFormat(info.timestamp);
+        } else {
+            info._timeStr = '';
         }
     },
 

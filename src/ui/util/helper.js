@@ -1,4 +1,3 @@
-import axios from 'axios';
 // ie11 not support browser-md5-file
 // import MD5 from 'browser-md5-file';
 import {numberValue} from '../../wfc/util/longUtil'
@@ -170,11 +169,30 @@ const helper = {
     },
 
     /**
+     * 会话时间显示
+     */
+
+    dateFormat(date) {
+        if (!date) return ''
+        if ((typeof date) === 'object') {
+            date = numberValue(date);
+        }
+        let today = new Date().setHours(0, 0, 0, 0);
+        let that = new Date(date).setHours(0, 0, 0, 0);
+        if (today === that) {
+            return this.timeFormat(date);
+        } else {
+            let thatDate = new Date(date);
+            return thatDate.getFullYear() + '/' + thatDate.getMonth() + '/' + thatDate.getDay();
+        }
+    },
+
+    /**
      * 消息会话时间显示
      */
     timeFormat: (date) => {
         if (!date) return ''
-        if((typeof date) === 'object'){
+        if ((typeof date) === 'object') {
             date = numberValue(date);
         }
         let newtime;
@@ -218,30 +236,6 @@ const helper = {
         return newtime
     },
 
-    dateFormat: (date, fmt) => {
-        if (!date) return ''
-        if (date.constructor !== Date) {
-            date = new Date(date)
-        }
-        const o = {
-            'M+': date.getMonth() + 1, // 月份
-            'd+': date.getDate(), // 日
-            'h+': date.getHours(), // 小时
-            'm+': date.getMinutes(), // 分
-            's+': date.getSeconds(), // 秒
-            'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
-            'S': date.getMilliseconds() // 毫秒
-        }
-        if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
-        }
-        for (let k in o) {
-            if (new RegExp('(' + k + ')').test(fmt)) {
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
-            }
-        }
-        return fmt
-    }
 };
 
 

@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="message-time-container">
-      <p class="time">16:57</p>
+      <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
       <div class="message-avatar-content-container">
         <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
         <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
@@ -31,10 +31,8 @@
 </template>
 
 <script>
-import ImageMessageContentView from "@/ui/main/conversation/message/content/ImageMessageContentView";
 import UserCardView from "@/ui/main/user/UserCardView";
 import Message from "@/wfc/messages/message";
-import TextMessageContentView from "@/ui/main/conversation/message/content/TextMessageContentView";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 
 export default {
@@ -47,8 +45,6 @@ export default {
   },
   components: {
     MessageContentContainerView,
-    TextMessageContentView,
-    ImageMessageContentView,
     UserCardView,
     // TextMessageContentView,
 
