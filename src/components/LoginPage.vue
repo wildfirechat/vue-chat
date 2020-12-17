@@ -118,7 +118,7 @@ export default {
       }
       this.status = status;
       if (status === ConnectionStatus.ConnectionStatusConnected) {
-        this.$router.push({path: "/home"});
+        this.$router.replace({path: "/home"});
       }
     }
 

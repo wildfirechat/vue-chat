@@ -25,6 +25,8 @@ let store = {
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
+
+            selfUserInfo: null,
         },
 
         search: {
@@ -48,6 +50,7 @@ let store = {
             this.state.misc.connectionStatus = status;
             this._loadFavGroupList();
             this._loadFriendList();
+            this._loadSelfUserInfo();
         });
 
         wfc.eventEmitter.on(EventType.UserInfosUpdate, (userInfos) => {
@@ -150,6 +153,10 @@ let store = {
     },
 
     // contact actions
+
+    _loadSelfUserInfo() {
+        this.state.contact.selfUserInfo = wfc.getUserInfo(wfc.getUserId(), false);
+    },
 
     _loadFriendList() {
         let friends = wfc.getMyFriendList(false);

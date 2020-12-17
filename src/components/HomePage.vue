@@ -15,7 +15,7 @@
               trigger="click"
               arrow
           >
-            <UserCardView v-on:close="closeUserCard" :user-info="{name:'Imndx'}"/>
+            <UserCardView v-on:close="closeUserCard" :user-info="sharedContactState.selfUserInfo"/>
             <!--            <div class="user-info-container">-->
             <!--              <h3>Header</h3>-->
             <!--              <p style="color: black">TODO - data binding</p>-->
@@ -27,7 +27,7 @@
               ref="userCardTippy"
               name="infoTrigger"
               class="avatar"
-              src="@/assets/images/user-fallback.png"
+              :src="sharedContactState.selfUserInfo.portrait"
               alt=""
           /></a>
         </div>
@@ -69,24 +69,38 @@
 
 <script>
 import UserCardView from "@/components/user/UserCardView";
+import store from "@/store";
+import wfc from "@/wfc/client/wfc";
+import EventType from "@/wfc/client/wfcEvent";
+import ConnectionStatus from "@/wfc/client/connectionStatus";
 
 export default {
   data() {
     return {
       currentTab: 'conversation',
+      sharedContactState: store.state.contact,
     };
   },
 
   methods: {
     go2Conversation() {
+      if (this.$router.currentRoute.path !== '/home') {
+        return
+      }
       this.currentTab = 'conversation';
-      this.$router.push("/home");
+      this.$router.replace("/home");
     },
     go2Contact() {
+      if (this.$router.currentRoute.path !== '/home/contact') {
+        return
+      }
       this.currentTab = 'contact';
-      this.$router.push("/home/contact");
+      this.$router.replace("/home/contact");
     },
     go2Setting() {
+      if (this.$router.currentRoute.path !== '/home/setting') {
+        return;
+      }
       this.currentTab = 'setting';
       this.$router.push({path: "/home/setting"});
       // let routeData = this.$router.resolve({name: 'voip', query: {data: "single"}});
@@ -97,7 +111,31 @@ export default {
       console.log('closeUserCard')
       this.$refs["userCardTippy"]._tippy.hide();
     },
+
+    onConnectionStatusChange(status) {
+      if (status === ConnectionStatus.ConnectionStatusRejected
+          || status === ConnectionStatus.ConnectionStatusLogout
+          || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
+          || status === ConnectionStatus.ConnectionStatusTokenIncorrect
+          || status === ConnectionStatus.ConnectionStatusUnconnected
+          || wfc.getUserId() === '') {
+
+        if (this.$router.currentRoute.path !== '/') {
+          this.$router.push({path: "/"});
+        }
+      }
+    }
   },
+
+  created() {
+    wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
+    this.onConnectionStatusChange(wfc.getConnectionStatus())
+  },
+  destroyed() {
+    wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange);
+    console.log('home destroy')
+  },
+
   components: {UserCardView},
 };
 </script>
