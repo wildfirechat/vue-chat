@@ -76,7 +76,7 @@ let store = {
                 return;
             }
             this._loadDefaultConversationList();
-            if (msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+            if (this.state.conversation.currentConversationInfo && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
                 this._loadCurrentConversationMessages();
             }
         });
@@ -86,7 +86,7 @@ let store = {
         })
 
         wfc.eventEmitter.on(EventType.SendMessage, (message) => {
-            if (!message.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+            if (!this.state.conversation.currentConversationInfo || !message.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
                 return;
             }
             let length = this.state.conversation.currentConversationMessageList.length;
