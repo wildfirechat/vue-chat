@@ -5,7 +5,9 @@
       <div class="message-avatar-content-container">
         <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
         <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
-        <MessageContentContainerView :message="message"/>
+        <MessageContentContainerView :message="message"
+                                     @contextmenu.prevent.native="openMessageContextMenu($event, message)"
+        />
         <div>
           <tippy
               :to="'infoTrigger' + this.message.messageId"
@@ -54,6 +56,9 @@ export default {
       console.log('closeUserCard')
       this.$refs["userCardTippy"]._tippy.hide();
     },
+    openMessageContextMenu(event, message) {
+      this.$parent.$emit('openMessageContextMenu', event, message)
+    }
   }
 
 }

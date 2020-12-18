@@ -18,10 +18,10 @@
                 :key="message.messageId">
               <!--todo 不同的消息类型 notification in out-->
 
-              <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-              <NormalOutMessageContentView :message="message"
+              <NotificationMessageContentView id="n" :message="message" v-if="isNotificationMessage(message)"/>
+              <NormalOutMessageContentView id="o" :message="message"
                                            v-else-if="message.direction === 0"/>
-              <NormalInMessageContentView :message="message" v-else/>
+              <NormalInMessageContentView id="i" :message="message" v-else/>
             </li>
           </ul>
         </div>
@@ -39,6 +39,16 @@
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
+
+        <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true">
+          <!--          更多menu item-->
+          <li v-if="isCopyable(message)">
+            <a @click.prevent="">复制</a>
+          </li>
+          <li>
+            <a @click.prevent="">删除</a>
+          </li>
+        </vue-context>
       </div>
     </div>
   </section>
@@ -53,6 +63,7 @@ import NormalOutMessageContentView from "@/ui/main/conversation/message/NormalOu
 import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInMessageContentContainerView";
 import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
+import TextMessageContent from "@/wfc/messages/textMessageContent";
 import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
@@ -91,16 +102,27 @@ export default {
     },
 
     isNotificationMessage(message) {
-      return message.messageContent instanceof NotificationMessageContent;
+      return message && message.messageContent instanceof NotificationMessageContent;
+    },
+
+    openMessageContextMenu(event, message) {
+      if (!message || message.messageContent instanceof NotificationMessageContent) {
+        return;
+      }
+      this.$refs.menu.open(event, message);
     },
 
     onScroll(e) {
+      // hide tippy userCard
       for (const popper of document.querySelectorAll('.tippy-popper')) {
         const instance = popper._tippy;
         if (instance.state.isVisible) {
           instance.hide();
         }
       }
+      // hide message context menu
+      this.$refs.menu.close();
+
       // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
       if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
         this.shouldAutoScrollToBottom = false;
@@ -139,6 +161,10 @@ export default {
 
     dragEnd() {
       this.isHandlerDragging = false;
+    },
+
+    isCopyable(message) {
+      return message && message.messageContent instanceof TextMessageContent;
     }
   },
 
@@ -146,6 +172,11 @@ export default {
     this.popupItem = this.$refs['setting'];
     document.addEventListener('mouseup', this.dragEnd);
     document.addEventListener('mousemove', this.drag);
+
+    this.$on('openMessageContextMenu', function (event, message) {
+      console.log('open ...', event, message)
+      this.$refs.menu.open(event, message);
+    })
   },
 
   unmounted() {
@@ -163,7 +194,7 @@ export default {
     } else {
       // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
     }
-    if(this.sharedConversationState.currentConversationInfo){
+    if (this.sharedConversationState.currentConversationInfo) {
       wfc.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
     }
   },

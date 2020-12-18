@@ -24,7 +24,9 @@
         <!--消息内容 根据情况，if-else-->
         <div class="message-name-content-container">
           <p class="name">{{ message._from.displayName }}</p>
-          <MessageContentContainerView :message="message"/>
+          <MessageContentContainerView :message="message"
+                                       @contextmenu.prevent.native="openMessageContextMenu($event, message)"
+          />
         </div>
       </div>
     </div>
@@ -46,6 +48,9 @@ export default {
       console.log('closeUserCard')
       this.$refs["userCardTippy"]._tippy.hide();
     },
+    openMessageContextMenu(event, message) {
+      this.$parent.$emit('openMessageContextMenu', event, message)
+    }
   },
   components: {
     MessageContentContainerView,
