@@ -28,13 +28,15 @@
       </ul>
     </div>
     <div class="footer">
-      <a>发消息</a>
+      <a @click="this.chat">发消息</a>
     </div>
   </section>
 </template>
 
 <script>
 import store from "@/store";
+import ConversationType from "@/wfc/model/conversationType";
+import Conversation from "@/wfc/model/conversation";
 
 export default {
   name: "UserDetailView",
@@ -44,6 +46,14 @@ export default {
   data() {
     return {
       sharedStateContact: store.state.contact,
+    }
+  },
+
+  methods: {
+    chat() {
+      let conversation = new Conversation(ConversationType.Single, this.user.uid, 0);
+      store.setCurrentConversation(conversation);
+      this.$router.replace('/home');
     }
   },
   computed: {

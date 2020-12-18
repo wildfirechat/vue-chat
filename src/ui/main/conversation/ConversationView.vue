@@ -6,7 +6,7 @@
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1>{{ sharedConversationState.currentConversationInfo.conversation._target.name }}</h1>
+          <h1>{{ conversationTitle }}</h1>
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
@@ -53,6 +53,7 @@ import NormalOutMessageContentView from "@/ui/main/conversation/message/NormalOu
 import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInMessageContentContainerView";
 import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
+import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
 
 export default {
@@ -165,6 +166,17 @@ export default {
       messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
     } else {
       // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
+    }
+  },
+
+  computed: {
+    conversationTitle() {
+      let info = this.sharedConversationState.currentConversationInfo;
+      if (info.conversation.type === ConversationType.Single) {
+        return info.conversation._target.displayName;
+      } else {
+        return info.conversation._target.name;
+      }
     }
   },
 

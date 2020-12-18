@@ -5,13 +5,15 @@
         <img src="@/assets/images/default_group_avatar.png">
         <p>群名称 {{ sharedContactState.currentGroup.name }}</p>
       </div>
-      <a>进入群聊</a>
+      <a @click="chat">进入群聊</a>
     </div>
   </section>
 </template>
 
 <script>
 import store from "@/store";
+import Conversation from "@/wfc/model/conversation";
+import ConversationType from "@/wfc/model/conversationType";
 
 export default {
   name: "GroupDetailView",
@@ -19,6 +21,13 @@ export default {
   data() {
     return {
       sharedContactState: store.state.contact,
+    }
+  },
+  methods: {
+    chat() {
+      let conversation = new Conversation(ConversationType.Group, this.sharedContactState.currentGroup.target, 0);
+      store.setCurrentConversation(conversation);
+      this.$router.replace('/home');
     }
   }
 

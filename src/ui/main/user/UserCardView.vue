@@ -3,7 +3,7 @@
     <div class="header">
       <div class="desc">
         <h2>{{ userInfo.name }}</h2>
-        <label>野火ID: {{userInfo.name}}</label>
+        <label>野火ID: {{ userInfo.name }}</label>
       </div>
       <div>
         <img class="avatar" v-bind:src="userInfo.portrait"/>
@@ -36,6 +36,9 @@
 
 <script>
 import UserInfo from "@/wfc/model/userInfo";
+import store from "@/store";
+import Conversation from "@/wfc/model/conversation";
+import ConversationType from "@/wfc/model/conversationType";
 
 export default {
   name: "UserCardView",
@@ -51,14 +54,13 @@ export default {
       this.close();
     },
     chat() {
-      // TODO chat
+      let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
+      store.setCurrentConversation(conversation)
       this.close();
     },
 
     close() {
-      console.log('emit close')
       this.$emit('close');
-      console.log('emit close end')
     }
   }
 };

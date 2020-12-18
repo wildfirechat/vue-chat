@@ -7,8 +7,8 @@
       </div>
       <div class="content">
         <div class="title-time-container">
-          <h2 class="title single-line">{{ conversationInfo.conversation._target.name }}</h2>
-          <p class="time">{{conversationInfo._timeStr}}</p>
+          <h2 class="title single-line">{{ conversationTitle }}</h2>
+          <p class="time">{{ conversationInfo._timeStr }}</p>
         </div>
         <div>
           <p class="draft single-line" v-if="conversationInfo.draft">{{ conversationInfo.draft }}</p>
@@ -22,6 +22,7 @@
 
 <script>
 import ConversationInfo from "@/wfc/model/conversationInfo";
+import ConversationType from "@/wfc/model/conversationType";
 
 export default {
   name: "ConversationItemView",
@@ -36,6 +37,14 @@ export default {
   },
   methods: {},
   computed: {
+    conversationTitle() {
+      let info = this.conversationInfo;
+      if (info.conversation.type === ConversationType.Single) {
+        return info.conversation._target.displayName;
+      } else {
+        return info.conversation._target.name;
+      }
+    },
     conversationDesc: function () {
       let conversationInfo = this.conversationInfo;
       return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest() : '';

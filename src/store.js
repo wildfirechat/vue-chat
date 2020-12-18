@@ -118,6 +118,19 @@ let store = {
         this.state.conversation.conversationInfoList = conversationList;
     },
 
+    setCurrentConversation(conversation) {
+        let convs = this.state.conversation.conversationInfoList.filter(info => info.conversation.equal(conversation));
+        if (convs && convs.length > 0) {
+            this.setCurrentConversationInfo(convs[0]);
+        } else {
+            wfc.setConversationTimestamp(conversation, new Date().getTime());
+            let info = wfc.getConversationInfo(conversation);
+            this._patchConversationInfo(info);
+            this.state.conversation.currentConversationInfo = info;
+            this._loadDefaultConversationList();
+        }
+    },
+
     setCurrentConversationInfo(conversationInfo) {
         if (this.debug) {
             console.log('setCurrentConversation', this.state.currentConversation, conversationInfo);
