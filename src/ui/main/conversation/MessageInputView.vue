@@ -1,8 +1,16 @@
 <template>
   <section class="message-input-container">
     <section class="input-action-container">
+      <VEmojiPicker
+          id="emoji"
+          v-show="showEmojiDialog"
+          labelSearch="Search"
+          lang="pt-BR"
+          v-click-outside="hideEmojiView"
+          @select="onSelectEmoji"
+      />
       <ul>
-        <li><i class="icon-ion-ios-heart"></i></li>
+        <li><i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"></i></li>
         <li><i class="icon-ion-android-attach"></i></li>
       </ul>
       <ul>
@@ -18,12 +26,15 @@
 import wfc from "@/wfc/client/wfc";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
 import store from "@/store";
+import {VEmojiPicker} from "v-emoji-picker";
+import ClickOutside from "vue-click-outside";
 
 export default {
   name: "MessageInputView",
   data() {
     return {
       sharedConversation: store.state.conversation,
+      showEmojiDialog: false,
     }
   },
   methods: {
@@ -32,12 +43,35 @@ export default {
       if (!text.trim()) {
         return;
       }
-      this.$refs['input'].textContent ='';
+      this.$refs['input'].textContent = '';
       let textMessageContent = new TextMessageContent(text)
       let conversation = this.sharedConversation.currentConversationInfo.conversation;
       wfc.sendConversationMessage(conversation, textMessageContent);
+    },
+
+    toggleEmojiView() {
+      this.$nextTick(() => {
+        this.showEmojiDialog = !this.showEmojiDialog;
+      });
+    },
+
+    hideEmojiView(e) {
+      if (e.target.id !== 'showEmoji') {
+        this.showEmojiDialog = false;
+      }
+    },
+
+    onSelectEmoji(emoji) {
+      console.log('onSelect emoji', emoji)
+      this.showEmojiDialog = false;
     }
   },
+  components: {
+    VEmojiPicker
+  },
+  directives: {
+    ClickOutside
+  }
 };
 </script>
 
@@ -46,6 +80,13 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+#emoji {
+  position: absolute;
+  bottom: 55px;
+  left: -100px;
 }
 
 .input-action-container {
@@ -53,6 +94,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .input {
