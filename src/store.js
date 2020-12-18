@@ -2,7 +2,7 @@ import ConnectionStatus from "@/wfc/client/connectionStatus";
 import wfc from "@/wfc/client/wfc";
 import EventType from "@/wfc/client/wfcEvent";
 import ConversationType from "@/wfc/model/conversationType";
-import {gt, numberValue} from "@/wfc/util/longUtil";
+import {eq, gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
 import convert from 'pinyin'
 
@@ -91,7 +91,33 @@ let store = {
 
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
             this._loadDefaultConversationList();
-        })
+            if (this.state.conversation.currentConversationMessageList) {
+                this.state.conversation.currentConversationMessageList.map(msg => {
+                    if (eq(msg.messageUid, messageUid)) {
+                        return wfc.getMessageByUid(messageUid);
+                    }
+                    return msg;
+                });
+            }
+        });
+
+        // 服务端删除
+        wfc.eventEmitter.on(EventType.MessageDeleted, (messageUid) => {
+            this._loadDefaultConversationList();
+            console.log('on message delete', messageUid)
+            if (this.state.conversation.currentConversationMessageList) {
+                this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
+            }
+        });
+        // 本地删除
+        wfc.eventEmitter.on(EventType.DeleteMessage, (messageId) => {
+            this._loadDefaultConversationList();
+            console.log('on delete message', messageId)
+            if (this.state.conversation.currentConversationMessageList) {
+                this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => msg.messageId !== messageId)
+            }
+        });
+
 
         wfc.eventEmitter.on(EventType.SendMessage, (message) => {
             if (!this.state.conversation.currentConversationInfo || !message.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {

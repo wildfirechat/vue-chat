@@ -47,7 +47,7 @@ export default {
     },
     conversationDesc: function () {
       let conversationInfo = this.conversationInfo;
-      return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest() : '';
+      return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest(conversationInfo.lastMessage) : '';
     },
     unread: function () {
       let conversationInfo = this.conversationInfo;

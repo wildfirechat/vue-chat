@@ -12,6 +12,7 @@ import Long from 'long';
 import impl from '../proto/proto.min';
 import Config from "../../config";
 import avenginekit from "../av/engine/avenginekitproxy";
+import ConversationType from "../model/conversationType";
 
 
 export class WfcManager {
@@ -254,6 +255,16 @@ export class WfcManager {
      */
     getOutgoingFriendRequest() {
         return impl.getOutgoingFriendRequest();
+    }
+
+    /**
+     * 获取单条好友请求
+     * @param {string} userId 对方的用户id
+     * @param {boolean} incoming 是否是收到的好友请求
+     * @return {FriendRequest|null}
+     */
+    getOneFriendRequest(userId, incoming = true){
+        return impl.getOneFriendRequest(userId, incoming);
     }
 
     /**
@@ -865,7 +876,7 @@ export class WfcManager {
     /**
      * 获取会话列表
      * @param {[number]} types 想获取的会话类型，可选值参考{@link ConversationType}
-     * @param {[number]} lines 想获取哪些会话线路的会话，默认传[0]即可
+     * @param {[0]} lines 想获取哪些会话线路的会话，默认传[0]即可
      * @returns {[ConversationInfo]}
      */
     getConversationList(types, lines) {
@@ -884,11 +895,11 @@ export class WfcManager {
     /**
      * 搜索会话
      * @param {string} keyword 关键字
-     * @param {[ConversationType]} types 从哪些类型的会话中进行搜索，可选值可参考{@link ConversationType}
+     * @param {[number]} types 从哪些类型的会话中进行搜索，可选值可参考{@link ConversationType}
      * @param {[number]} lines 从哪些会话线路进行搜索，默认传[0]即可
      * @returns {[ConversationInfo]}
      */
-    searchConversation(keyword, types = [], lines = []) {
+    searchConversation(keyword, types = [0, 1, 2], lines = [0, 1]) {
         return impl.searchConversation(keyword, types, lines);
     }
 
@@ -994,6 +1005,34 @@ export class WfcManager {
     }
 
     /**
+     * 获取星标用户id列表
+     * @returns {[string]}
+     */
+    getFavUsers() {
+        return impl.getFavUsers();
+    }
+
+    /**
+     *  判断用户是否是星标用户
+     * @param {string} userId
+     * @returns {boolean}
+     */
+     isFavUser(userId) {
+        return impl.isFavUser(userId);
+    }
+
+     /**
+     * 设置或取消星标用户
+     * @param {string} userId 用户id
+     * @param {boolean} fav true，保存到通讯录；false，从通讯录移除
+     * @param {function ()} successCB
+     * @param {function (number)} failCB
+     * @returns {Promise<void>}
+     */
+    async setFavUser(userId, fav, successCB, failCB) {
+        impl.setFavUser(userId, fav, successCB, failCB);
+    }
+    /**
      * 发送好友请求
      * @param {string} userId 目标用户id
      * @param {string} reason 发送好友请求的原因
@@ -1076,6 +1115,14 @@ export class WfcManager {
         return impl.getUserMessagesEx(userId, conversationTypes, lines, fromIndex, before, count, contentTypes);
     }
 
+    /**
+     * 获取会话第一条未读消息的消息id
+     * @param {Conversation} conversation
+     * @return {number}
+     */
+    getFirstUnreadMessageId(conversation){
+        return impl.getFirstUnreadMessageId(conversation);
+    }
 
     /**
      * 已废弃，请使用{@link loadRemoteConversationMessages}
@@ -1236,7 +1283,7 @@ export class WfcManager {
      * @param {Number} serverTime 服务器时间，精度到毫秒
      */
     insertMessage(conversation, messageContent, status, notify = false, serverTime = 0) {
-        impl.insertMessage(conversation, messageContent, this.getUserId(), status, notify, serverTime);
+        impl.insertMessage(conversation, messageContent, status, notify, serverTime);
     }
 
     /**
@@ -1339,13 +1386,14 @@ export class WfcManager {
     /**
      * 获取会话中的文件记录
      * @param {Conversation} conversation 会话
+     * @param {String} fromUser 来源用户
      * @param {Long} beforeMessageUid 消息uid，表示获取此消息uid之前的文件记录
      * @param {number} count 数量
      * @param {function ([FileRecord])} successCB 成功回调
      * @param {function (number)} failCB 失败回调
      */
-    getConversationFileRecords(conversation, beforeMessageUid, count, successCB, failCB){
-        impl.getConversationFileRecords(conversation, beforeMessageUid, count, successCB, failCB);
+    getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, successCB, failCB){
+        impl.getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, successCB, failCB);
     }
 
     /**

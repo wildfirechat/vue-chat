@@ -10,6 +10,7 @@ import GroupNotificationContent from './groupNotification';
 export default class ModifyGroupAliasNotification extends GroupNotificationContent {
     operator = '';
     alias = '';
+    memberId = '';
 
     constructor(creator, alias) {
         super(MessageContentType.ModifyGroupAlias_Notification);
@@ -18,11 +19,37 @@ export default class ModifyGroupAliasNotification extends GroupNotificationConte
     }
 
     formatNotification() {
+        let notificationStr = '';
         if (this.fromSelf) {
-            return '您修改群昵称为 ' + this.alias;
+            notificationStr += '你';
         } else {
-            return wfc.getUserDisplayName(this.operator) + '修改群昵称为 ' + this.alias;
+            let userInfo = wfc.getUserInfo(this.operator, false, this.groupId)
+            if(userInfo.groupAlias){
+                notificationStr += userInfo.groupAlias;
+            }else if (userInfo.friendAlias){
+                notificationStr += userInfo.friendAlias;
+            }else if(userInfo.displayName){
+                notificationStr += userInfo.displayName;
+            }else {
+                notificationStr += this.operator;
         }
+        }
+        notificationStr += '修改';
+        if(this.memberId){
+            let userInfo = wfc.getUserInfo(this.memberId, false);
+            if(userInfo.friendAlias){
+                notificationStr += userInfo.friendAlias;
+            }else if (userInfo.displayName) {
+                notificationStr += userInfo.displayName;
+            }else {
+                notificationStr += this.memberId;
+            }
+            notificationStr += '的';
+        }
+        notificationStr += '群昵称为';
+        notificationStr += this.alias;
+
+        return notificationStr;
     }
 
     encode() {
@@ -31,6 +58,7 @@ export default class ModifyGroupAliasNotification extends GroupNotificationConte
             g: this.groupId,
             n: this.alias,
             o: this.operator,
+            m: this.memberId,
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
         return payload;
@@ -43,5 +71,6 @@ export default class ModifyGroupAliasNotification extends GroupNotificationConte
         this.groupId = obj.g;
         this.operator = obj.o;
         this.alias = obj.n;
+        this.memberId = obj.m;
     }
 }

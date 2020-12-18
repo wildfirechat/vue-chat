@@ -1,6 +1,6 @@
 <template>
   <div class="notification-container">
-    <p class="notification">Notification Message Content</p>
+    <p class="notification">{{message.messageContent.digest(message)}}</p>
   </div>
 </template>
 

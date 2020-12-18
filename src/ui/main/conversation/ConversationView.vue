@@ -46,7 +46,19 @@
             <a @click.prevent="">复制</a>
           </li>
           <li>
-            <a @click.prevent="">删除</a>
+            <a @click.prevent="delMessage(message)">删除</a>
+          </li>
+          <li v-if="isForwardable(message)">
+            <a @click.prevent="">转发</a>
+          </li>
+          <li v-if="isFavable">
+            <a @click.prevent="">收藏</a>
+          </li>
+          <li>
+            <a @click.prevent="">引用</a>
+          </li>
+          <li v-if="isRecallable(message)">
+            <a @click.prevent="recallMessage(message)">撤回</a>
           </li>
         </vue-context>
       </div>
@@ -67,6 +79,7 @@ import TextMessageContent from "@/wfc/messages/textMessageContent";
 import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
+import {numberValue} from "@/wfc/util/longUtil";
 
 export default {
   components: {
@@ -163,9 +176,31 @@ export default {
       this.isHandlerDragging = false;
     },
 
+    // message context menu
     isCopyable(message) {
       return message && message.messageContent instanceof TextMessageContent;
+    },
+
+    isForwardable(message) {
+      return true;
+    },
+
+    isFavable(message) {
+      return true;
+    },
+
+    isRecallable(message) {
+      return message && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000;
+    },
+
+    recallMessage(message) {
+      wfc.recallMessage(message.messageUid)
+    },
+
+    delMessage(message) {
+      wfc.deleteMessage(message.messageId);
     }
+
   },
 
   mounted() {
@@ -174,7 +209,6 @@ export default {
     document.addEventListener('mousemove', this.drag);
 
     this.$on('openMessageContextMenu', function (event, message) {
-      console.log('open ...', event, message)
       this.$refs.menu.open(event, message);
     })
   },

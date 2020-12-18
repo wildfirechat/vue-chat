@@ -19,7 +19,7 @@ export default class MessageContent {
         this.mentionedTargets = mentionedTargets;
     }
 
-    digest() {
+    digest(message) {
         return '...digest...';
     }
 
