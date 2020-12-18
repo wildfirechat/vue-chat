@@ -55,6 +55,7 @@ import NotificationMessageContentView from "@/ui/main/conversation/message/Notif
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
+import wfc from "@/wfc/client/wfc";
 
 export default {
   components: {
@@ -153,12 +154,7 @@ export default {
 
   },
 
-  created() {
-    console.log("conversationView created", this.conversation);
-  },
-
   updated() {
-    console.log("conversationView updated", this.conversation);
     this.popupItem = this.$refs['setting'];
     // refer to http://iamdustan.com/smoothscroll/
     if (this.shouldAutoScrollToBottom) {
@@ -166,6 +162,9 @@ export default {
       messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
     } else {
       // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
+    }
+    if(this.sharedConversationState.currentConversationInfo){
+      wfc.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
     }
   },
 
