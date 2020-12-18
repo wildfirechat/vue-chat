@@ -6,6 +6,12 @@ import {gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
 import convert from 'pinyin'
 
+/**
+ * 一些说明
+ * _开头的字段，是为了UI层展示方便，而打补丁上出去的
+ * __开头的字段，仅内部使用
+ * _开头的函数，是内部函数
+ */
 let store = {
     debug: true,
     state: {
@@ -199,7 +205,6 @@ let store = {
                 return u;
             }).sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
 
-            console.log('so', friendList)
             let lastFirstLetter = null;
             friendList.forEach(u => {
                 let uFirstLetter = u.__sortPinyin[1];
