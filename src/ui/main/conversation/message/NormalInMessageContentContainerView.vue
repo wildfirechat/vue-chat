@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="message-time-container">
-      <p v-if="this.message._showTime" class="time">{{message._timeStr}}</p>
+      <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
       <div class="message-avatar-content-container">
         <div>
           <tippy
@@ -19,11 +19,11 @@
           <img ref="userCardTippy"
                :name="'infoTrigger' + this.message.messageId"
                class="avatar"
-               src="@/assets/images/user-fallback.png">
+               :src="message._from.portrait">
         </div>
         <!--消息内容 根据情况，if-else-->
         <div class="message-name-content-container">
-          <p class="name">{{ message._from.name }}</p>
+          <p class="name">{{ message._from.displayName }}</p>
           <MessageContentContainerView :message="message"/>
         </div>
       </div>

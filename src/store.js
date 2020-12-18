@@ -4,7 +4,7 @@ import EventType from "@/wfc/client/wfcEvent";
 import ConversationType from "@/wfc/model/conversationType";
 import {gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
-import convert, {compare as pinyinCp} from 'pinyin'
+import convert from 'pinyin'
 
 let store = {
     debug: true,
@@ -188,50 +188,32 @@ let store = {
         if (friends && friends.length > 0) {
             let friendList = wfc.getUserInfos(friends, '');
             friendList = friendList.map(u => {
-                u._pinyin = convert(u.displayName, {style: 0}).join('')
-                u._firstLetters = convert(u.displayName, {style: 4}).join('');
+                u._pinyin = convert(u.friendAlias ? u.friendAlias : u.displayName, {style: 0}).join('').trim().toLowerCase();
+                let firstLetter = u._pinyin[0];
+                if (firstLetter >= 'a' && firstLetter <= 'z') {
+                    u.__sortPinyin = 'a' + u._pinyin;
+                } else {
+                    u.__sortPinyin = 'z' + u._pinyin;
+                }
+                u._firstLetters = convert(u.displayName, {style: 4}).join('').trim().toLowerCase();
                 return u;
-            }).sort((a, b) => pinyinCp(a.displayName, b.displayName));
+            }).sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
 
-            let firstAIndex = friendList.findIndex((u => u._firstLetters[0] === 'a'))
-            if (firstAIndex > -1) {
-                friendList = friendList.slice(firstAIndex, friendList.length).concat(friendList.slice(0, firstAIndex));
-            }
-
+            console.log('so', friendList)
             let lastFirstLetter = null;
             friendList.forEach(u => {
-                let uFirstLetter = u._firstLetters[0];
-                if (uFirstLetter < 'a') {
-                    if (!lastFirstLetter) {
-                        u._category = '*';
+                let uFirstLetter = u.__sortPinyin[1];
+                if (uFirstLetter >= 'a' && uFirstLetter <= 'z') {
+                    if (!lastFirstLetter || lastFirstLetter !== uFirstLetter) {
+                        u._category = uFirstLetter;
                         lastFirstLetter = u._category;
                     }
-                } else if (uFirstLetter > 'z') {
+                } else {
                     if (lastFirstLetter !== '#') {
                         u._category = '#';
                         lastFirstLetter = u._category;
                     }
-                } else {
-                    if (lastFirstLetter !== uFirstLetter) {
-                        u._category = uFirstLetter;
-                        lastFirstLetter = u._category;
-                    }
                 }
-                // if (!lastFirstLetter) {
-                //     if (uFirstLetter < 'a') {
-                //         u._category = '*';
-                //     } else if (uFirstLetter > 'z') {
-                //         u._category = '#';
-                //     } else {
-                //         u._category = uFirstLetter;
-                //     }
-                //     lastFirstLetter = u._category;
-                // } else {
-                //     if (lastFirstLetter !== uFirstLetter) {
-                //         u._category = uFirstLetter;
-                //         lastFirstLetter = u._category;
-                //     }
-                // }
             });
 
             this.state.contact.friendList = friendList;
