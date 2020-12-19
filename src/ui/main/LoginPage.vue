@@ -26,9 +26,15 @@ export default {
     }
   },
   created() {
-    axios.defaults.baseURL = Config.APP_SERVER;
-    this.createPCLoginSession(null);
+    let userId = sessionStorage.getItem('userId');
+    let token = sessionStorage.getItem('token');
     wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
+    if (userId && token) {
+      wfc.connect(userId, token);
+    } else {
+      axios.defaults.baseURL = Config.APP_SERVER;
+      this.createPCLoginSession(null);
+    }
   },
 
   beforeDestroy() {
@@ -82,6 +88,8 @@ export default {
             let userId = response.data.result.userId;
             let imToken = response.data.result.token;
             wfc.connect(userId, imToken);
+            sessionStorage.setItem('userId', userId);
+            sessionStorage.setItem('token', imToken);
             break;
           case 9:
             console.log('qrcode scaned', response.data);
