@@ -78,43 +78,62 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
-            console.log('jooo', msg, hasMore)
-            if (hasMore) {
-                // do nothing
-                return;
+            if (!hasMore) {
+                this._loadDefaultConversationList();
             }
-            this._loadDefaultConversationList();
             if (this.state.conversation.currentConversationInfo && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
-                this._loadCurrentConversationMessages();
+                // 会把下来加载更多加载的历史消息给清理了
+                let lastTimestamp = 0;
+                let msgListLength = this.state.conversation.currentConversationMessageList.length;
+                if (msgListLength > 0) {
+                    lastTimestamp = this.state.conversation.currentConversationMessageList[msgListLength - 1].timestamp;
+                }
+                this._patchMessage(msg, lastTimestamp);
+                this.state.conversation.currentConversationMessageList.push(msg);
             }
+            console.log('this 1', this)
         });
 
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
             this._loadDefaultConversationList();
-            if (this.state.conversation.currentConversationMessageList) {
-                this.state.conversation.currentConversationMessageList.map(msg => {
-                    if (eq(msg.messageUid, messageUid)) {
-                        return wfc.getMessageByUid(messageUid);
+            if (this.state.conversation.currentConversationInfo) {
+                let msg = wfc.getMessageByUid(messageUid);
+                if (msg && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+                    if (this.state.conversation.currentConversationMessageList) {
+                        let lastTimestamp = 0;
+                        this.state.conversation.currentConversationMessageList.map(msg => {
+                            if (eq(msg.messageUid, messageUid)) {
+                                let newMsg = wfc.getMessageByUid(messageUid);
+                                this._patchMessage(newMsg, lastTimestamp);
+                                return newMsg;
+                            }
+                            lastTimestamp = msg.timestamp;
+                            return msg;
+                        });
                     }
-                    return msg;
-                });
+                }
             }
         });
 
         // 服务端删除
         wfc.eventEmitter.on(EventType.MessageDeleted, (messageUid) => {
             this._loadDefaultConversationList();
-            console.log('on message delete', messageUid)
-            if (this.state.conversation.currentConversationMessageList) {
-                this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
+            if (this.state.conversation.currentConversationInfo) {
+                let msg = wfc.getMessageByUid(messageUid);
+                if (msg && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+                    if (this.state.conversation.currentConversationMessageList) {
+                        this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
+                    }
+                }
             }
         });
         // 本地删除
         wfc.eventEmitter.on(EventType.DeleteMessage, (messageId) => {
             this._loadDefaultConversationList();
-            console.log('on delete message', messageId)
-            if (this.state.conversation.currentConversationMessageList) {
-                this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => msg.messageId !== messageId)
+            if (this.state.conversation.currentConversationInfo) {
+                if (this.state.conversation.currentConversationMessageList) {
+                    this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => msg.messageId !== messageId)
+                }
             }
         });
 
@@ -194,6 +213,8 @@ let store = {
             m._showTime = true;
             m._timeStr = helper.timeFormat(m.timestamp)
         }
+
+        return m;
     },
 
     _patchConversationInfo(info) {
@@ -207,6 +228,7 @@ let store = {
         } else {
             info._timeStr = '';
         }
+        return info;
     },
 
     // contact actions
