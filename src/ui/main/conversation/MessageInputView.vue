@@ -45,7 +45,7 @@ export default {
       }
       this.$refs['input'].textContent = '';
       // 发送消息时，会话消息列表需要滚动到最后
-      this.$parent.$data.shouldAutoScrollToBottom = true;
+      store.setShouldAutoScrollToBottom(true)
 
       let textMessageContent = new TextMessageContent(text)
       let conversation = this.sharedConversation.currentConversationInfo.conversation;

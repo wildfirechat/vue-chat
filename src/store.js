@@ -19,6 +19,8 @@ let store = {
             currentConversationInfo: null,
             conversationInfoList: [],
             currentConversationMessageList: [],
+
+            shouldAutoScrollToBottom: true,
         },
 
         contact: {
@@ -55,7 +57,7 @@ let store = {
 
     init() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
-            this.state.misc.connectionStatus = status;
+            miscState.connectionStatus = status;
             this._loadFavGroupList();
             this._loadFriendList();
             this._loadSelfUserInfo();
@@ -81,27 +83,27 @@ let store = {
             if (!hasMore) {
                 this._loadDefaultConversationList();
             }
-            if (this.state.conversation.currentConversationInfo && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+            if (conversationState.currentConversationInfo && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
                 // 会把下来加载更多加载的历史消息给清理了
                 let lastTimestamp = 0;
-                let msgListLength = this.state.conversation.currentConversationMessageList.length;
+                let msgListLength = conversationState.currentConversationMessageList.length;
                 if (msgListLength > 0) {
-                    lastTimestamp = this.state.conversation.currentConversationMessageList[msgListLength - 1].timestamp;
+                    lastTimestamp = conversationState.currentConversationMessageList[msgListLength - 1].timestamp;
                 }
                 this._patchMessage(msg, lastTimestamp);
-                this.state.conversation.currentConversationMessageList.push(msg);
+                conversationState.currentConversationMessageList.push(msg);
             }
             console.log('this 1', this)
         });
 
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
             this._loadDefaultConversationList();
-            if (this.state.conversation.currentConversationInfo) {
+            if (conversationState.currentConversationInfo) {
                 let msg = wfc.getMessageByUid(messageUid);
-                if (msg && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
-                    if (this.state.conversation.currentConversationMessageList) {
+                if (msg && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                    if (conversationState.currentConversationMessageList) {
                         let lastTimestamp = 0;
-                        this.state.conversation.currentConversationMessageList.map(msg => {
+                        conversationState.currentConversationMessageList.map(msg => {
                             if (eq(msg.messageUid, messageUid)) {
                                 let newMsg = wfc.getMessageByUid(messageUid);
                                 this._patchMessage(newMsg, lastTimestamp);
@@ -118,11 +120,11 @@ let store = {
         // 服务端删除
         wfc.eventEmitter.on(EventType.MessageDeleted, (messageUid) => {
             this._loadDefaultConversationList();
-            if (this.state.conversation.currentConversationInfo) {
+            if (conversationState.currentConversationInfo) {
                 let msg = wfc.getMessageByUid(messageUid);
-                if (msg && msg.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
-                    if (this.state.conversation.currentConversationMessageList) {
-                        this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
+                if (msg && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                    if (conversationState.currentConversationMessageList) {
+                        conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
                     }
                 }
             }
@@ -130,27 +132,27 @@ let store = {
         // 本地删除
         wfc.eventEmitter.on(EventType.DeleteMessage, (messageId) => {
             this._loadDefaultConversationList();
-            if (this.state.conversation.currentConversationInfo) {
-                if (this.state.conversation.currentConversationMessageList) {
-                    this.state.conversation.currentConversationMessageList = this.state.conversation.currentConversationMessageList.filter(msg => msg.messageId !== messageId)
+            if (conversationState.currentConversationInfo) {
+                if (conversationState.currentConversationMessageList) {
+                    conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.filter(msg => msg.messageId !== messageId)
                 }
             }
         });
 
 
         wfc.eventEmitter.on(EventType.SendMessage, (message) => {
-            if (!this.state.conversation.currentConversationInfo || !message.conversation.equal(this.state.conversation.currentConversationInfo.conversation)) {
+            if (!conversationState.currentConversationInfo || !message.conversation.equal(conversationState.currentConversationInfo.conversation)) {
                 return;
             }
-            let length = this.state.conversation.currentConversationMessageList.length;
+            let length = conversationState.currentConversationMessageList.length;
             let lastTimestamp = 0;
             if (length > 0) {
-                let lastMessage = this.state.conversation.currentConversationMessageList[length - 1];
+                let lastMessage = conversationState.currentConversationMessageList[length - 1];
                 lastTimestamp = lastMessage.timestamp;
             }
             this._patchMessage(message, lastTimestamp)
 
-            this.state.conversation.currentConversationMessageList.push(message);
+            conversationState.currentConversationMessageList.push(message);
         });
 
     },
@@ -166,42 +168,52 @@ let store = {
         conversationList.forEach(info => {
             this._patchConversationInfo(info);
         });
-        this.state.conversation.conversationInfoList = conversationList;
+        conversationState.conversationInfoList = conversationList;
     },
 
     setCurrentConversation(conversation) {
-        let convs = this.state.conversation.conversationInfoList.filter(info => info.conversation.equal(conversation));
+        if (conversationState.currentConversationInfo && conversation.equal(conversationState.currentConversationInfo.conversation)) {
+            return;
+        }
+        let convs = conversationState.conversationInfoList.filter(info => info.conversation.equal(conversation));
         if (convs && convs.length > 0) {
             this.setCurrentConversationInfo(convs[0]);
         } else {
             wfc.setConversationTimestamp(conversation, new Date().getTime());
             let info = wfc.getConversationInfo(conversation);
             this._patchConversationInfo(info);
-            this.state.conversation.currentConversationInfo = info;
+            conversationState.currentConversationInfo = info;
             this._loadDefaultConversationList();
         }
-    },
-
-    setCurrentConversationInfo(conversationInfo) {
-        if (this.debug) {
-            console.log('setCurrentConversation', this.state.currentConversation, conversationInfo);
-        }
-        this.state.conversation.currentConversationInfo = conversationInfo;
+        conversationState.shouldAutoScrollToBottom = true;
         this._loadCurrentConversationMessages();
     },
 
-    _loadCurrentConversationMessages() {
-        if (!this.state.conversation.currentConversationInfo) {
+    setCurrentConversationInfo(conversationInfo) {
+        if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
             return;
         }
-        let conversation = this.state.conversation.currentConversationInfo.conversation;
+        conversationState.currentConversationInfo = conversationInfo;
+        conversationState.shouldAutoScrollToBottom = true;
+        this._loadCurrentConversationMessages();
+    },
+
+    setShouldAutoScrollToBottom(scroll) {
+        conversationState.shouldAutoScrollToBottom = scroll;
+    },
+
+    _loadCurrentConversationMessages() {
+        if (!conversationState.currentConversationInfo) {
+            return;
+        }
+        let conversation = conversationState.currentConversationInfo.conversation;
         let msgs = wfc.getMessages(conversation);
         let lastTimestamp = 0;
         msgs.forEach(m => {
             this._patchMessage(m, lastTimestamp);
             lastTimestamp = m.timestamp;
         });
-        this.state.conversation.currentConversationMessageList = msgs;
+        conversationState.currentConversationMessageList = msgs;
     },
 
     _patchMessage(m, lastTimestamp) {
@@ -234,7 +246,7 @@ let store = {
     // contact actions
 
     _loadSelfUserInfo() {
-        this.state.contact.selfUserInfo = wfc.getUserInfo(wfc.getUserId(), false);
+        contactState.selfUserInfo = wfc.getUserInfo(wfc.getUserId(), false);
     },
 
     _loadFriendList() {
@@ -269,62 +281,62 @@ let store = {
                 }
             });
 
-            this.state.contact.friendList = friendList;
+            contactState.friendList = friendList;
         }
         // TODO group
     },
 
     _loadFavGroupList() {
-        this.state.contact.favGroupList = wfc.getFavGroupList();
+        contactState.favGroupList = wfc.getFavGroupList();
     },
 
     setCurrentFriendRequest(friendRequest) {
-        this.state.contact.currentFriendRequest = friendRequest;
-        this.state.contact.currentFriend = null;
-        this.state.contact.currentGroup = null;
+        contactState.currentFriendRequest = friendRequest;
+        contactState.currentFriend = null;
+        contactState.currentGroup = null;
     },
 
     setCurrentFriend(friend) {
-        this.state.contact.currentFriendRequest = null;
-        this.state.contact.currentFriend = friend;
-        this.state.contact.currentGroup = null;
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = friend;
+        contactState.currentGroup = null;
     },
 
     setCurrentGroup(group) {
-        this.state.contact.currentFriendRequest = null;
-        this.state.contact.currentFriend = null;
-        this.state.contact.currentGroup = group;
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = null;
+        contactState.currentGroup = group;
     },
 
     toggleGroupList() {
-        this.state.contact.expandGroup = !this.state.contact.expandGroup;
+        contactState.expandGroup = !contactState.expandGroup;
     },
 
     toggleFriendRequestList() {
-        this.state.contact.expandFriendRequestList = !this.state.contact.expandFriendRequestList;
+        contactState.expandFriendRequestList = !contactState.expandFriendRequestList;
     },
 
     toggleFriendList() {
-        this.state.contact.expandFriendList = !this.state.contact.expandFriendList;
+        contactState.expandFriendList = !contactState.expandFriendList;
     },
 
     // search actions
     toggleSearchView(show) {
-        console.log('ts', show, this.state.search.show);
-        this.state.search.show = show
+        console.log('ts', show, searchState.show);
+        searchState.show = show
     },
 
     setSearchQuery(query) {
-        this.state.search.query = query;
+        searchState.query = query;
     },
 
     // pick actions
     pickUser(user, pick = true) {
         if (pick) {
-            this.state.pick.users.push(user);
+            pickState.users.push(user);
         } else {
             // TODO 根据user.uid 判断
-            this.state.pick.users = this.state.pick.users.filter(u => user.uid !== u.uid)
+            pickState.users = pickState.users.filter(u => user.uid !== u.uid)
         }
     },
 
@@ -333,6 +345,12 @@ let store = {
 
     // misc actions
 }
+
+let conversationState = store.state.conversation;
+let contactState = store.state.contact;
+let searchState = store.state.search;
+let pickState = store.state.pick;
+let miscState = store.state.misc;
 
 export default store
 

@@ -98,7 +98,6 @@ export default {
       isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
       isHandlerDragging: false,
-      shouldAutoScrollToBottom: true,
     };
   },
 
@@ -138,9 +137,9 @@ export default {
 
       // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
       if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
-        this.shouldAutoScrollToBottom = false;
+        store.setShouldAutoScrollToBottom(false)
       } else {
-        this.shouldAutoScrollToBottom = true;
+        store.setShouldAutoScrollToBottom(true)
       }
     },
 
@@ -222,7 +221,8 @@ export default {
   updated() {
     this.popupItem = this.$refs['setting'];
     // refer to http://iamdustan.com/smoothscroll/
-    if (this.shouldAutoScrollToBottom) {
+    console.log('conversationView updated', this.sharedConversationState.shouldAutoScrollToBottom)
+    if (this.sharedConversationState.shouldAutoScrollToBottom) {
       let messageListElement = this.$refs['conversationMessageList'];
       messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
     } else {
