@@ -11,6 +11,7 @@ import convert from 'pinyin'
  * _开头的字段，是为了UI层展示方便，而打补丁上出去的
  * __开头的字段，仅内部使用
  * _开头的函数，是内部函数
+ * 外部不直接更新字段，而是通过提供各种action方法更新
  */
 let store = {
     debug: true,

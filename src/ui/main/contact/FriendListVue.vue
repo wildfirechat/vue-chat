@@ -63,17 +63,11 @@ export default {
       }
       return name;
     },
-
-    contactLabel(friend, index) {
-      // TODO 和前一个比较
-      if (index === 0) {
-        return 'A';
-      } else if (index === 7) {
-        return 'B';
-      }
-      return null;
-    }
-  }
+  },
+  activated() {
+    let el = this.$el.getElementsByClassName("active")[0];
+    el && el.scrollIntoView({behavior: "instant", block: "center"});
+  },
 }
 </script>
 
