@@ -190,7 +190,7 @@ export default {
     },
 
     isRecallable(message) {
-      return message && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000;
+      return message && message.direction === 0 && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000;
     },
 
     recallMessage(message) {
