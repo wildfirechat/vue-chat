@@ -11,13 +11,14 @@
 
 <script>
 import store from "@/store";
-import PickContactView from "@/ui/main/pick/PickContactView";
+import PickContactView from "@/ui/main/pick/PickUserView";
 
 export default {
   name: "SearchView",
   data() {
     return {
       sharedSearchState: store.state.search,
+      sharedContactState: store.state.contact,
     };
   },
   methods: {
@@ -29,7 +30,7 @@ export default {
       this.$modal.show(
           PickContactView,
           {
-            contacts: [{name: 2, uid: 'u1'}, {name: 2, uid: 'u2'}, {name: 3, uid: 'u3'}, {name: 4, uid: 'u4'}, {name: 5, uid: 'u5'}, {name: 6, uid: 'u6'}, {name: 7, uid: 'u7'}, {name: 8, uid: 'u9'}, {name: 10, uid: 'u10'}, {name: 11, uid: 'u11'}, {name: 12, uid: 'u12'}]
+            users: this.sharedContactState.friendList,
           }, {
             name: 'invite-modal',
             width: 600,
@@ -47,6 +48,13 @@ export default {
     beforeClose(event) {
       console.log('Closing...', event, event.params)
       // What a gamble... 50% chance to cancel closing
+      if (event.params.confirm) {
+        console.log('confirm')
+        // TODO create group and clear pick state
+      } else {
+        console.log('cancel')
+        // TODO clear pick state
+      }
     },
     closed(event) {
       console.log('Close...', event)

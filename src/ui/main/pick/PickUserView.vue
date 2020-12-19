@@ -5,44 +5,79 @@
         <input type="text" placeholder="搜索">
       </div>
       <div class="friend-list-container">
-        <FriendListVue :enable-pick="true" :friends="contacts"/>
+        <UserListVue :enable-pick="true" :users="users"/>
       </div>
     </section>
     <section class="checked-contact-list-container">
       <header>
         <h2>发起群聊</h2>
-        <span>已选择联系人</span>
+        <span>已选择联系人 {{ sharedPickState.users.length > 0 ? sharedPickState.users.length : '' }}</span>
       </header>
       <div class="content">
         <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
           <div class="picked-user">
-            <img class="avatar" src="@/assets/images/user-fallback.png" :alt="user + index">
-            <button class="unpick-button">x</button>
+            <img class="avatar" :src="user.portrait" :alt="user + index">
+            <button @click="unpick(user)" class="unpick-button">x</button>
           </div>
-          <span class="name single-line">我的名字是imndx</span>
+          <span class="name single-line">{{ user.displayName }}</span>
         </div>
       </div>
       <footer>
-        <button class="cancel">取消</button>
-        <button class="confirm">创建</button>
+        <button @click="cancel" class="cancel">取消</button>
+        <button @click="confirm" class="confirm">创建</button>
       </footer>
     </section>
   </div>
 </template>
 
 <script>
-import FriendListVue from "@/ui/main/contact/FriendListVue";
 import store from "@/store";
+import UserListVue from "@/ui/main/user/UserListVue";
 
 export default {
-  name: "PickContactView",
+  name: "PickUserView",
+  props: {
+    users: {
+      type: Array,
+      required: true,
+    },
+    initialCheckedUsers: {
+      type: Array,
+      required: false,
+      default: null,
+    },
+    title: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    confirmTitle: {
+      type: String,
+      required: false,
+      default: '',
+    }
+
+  },
   data() {
     return {
       sharedPickState: store.state.pick,
     }
   },
-  components: {FriendListVue},
-  props: ['contacts', 'initialCheckedContacts', 'uncheckableContacts', 'title', 'confirmTitle'],
+  methods: {
+    unpick(user) {
+      store.pickUser(user, false);
+    },
+
+    cancel() {
+      this.$modal.hide('invite-modal', {confirm: false})
+    },
+
+    confirm() {
+      this.$modal.hide('invite-modal', {confirm: true})
+    },
+  },
+
+  components: {UserListVue},
 }
 </script>
 

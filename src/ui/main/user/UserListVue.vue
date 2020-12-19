@@ -1,19 +1,18 @@
 <template>
   <section>
     <ul>
-      <li v-for="(friend ) in sharedContactState.friendList" :key="friend.uid">
+      <li v-for="(user ) in users" :key="user.uid">
         <div class="contact-item">
-          <div v-if="friend._category" class="label">
-            <p>{{ friend._category.toUpperCase() }}</p>
+          <div v-if="user._category" class="label">
+            <p>{{ user._category.toUpperCase() }}</p>
           </div>
           <div class="content"
-               v-bind:class="{active: sharedContactState.currentFriend === friend}"
-               @click="clickFriendItem(friend)">
-            <input class="checkbox" v-bind:value="friend" v-if="enablePick" type="checkbox"
+               @click="clickUserItem(user)">
+            <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
                    v-model="sharedPickState.users">
-            <img class="avatar" :src="friend.portrait">
+            <img class="avatar" :src="user.portrait">
             <span
-                class="single-line"> {{ friendName(friend) }}</span>
+                class="single-line"> {{ userName(user) }}</span>
           </div>
         </div>
       </li>
@@ -26,19 +25,25 @@
 import store from "@/store";
 
 export default {
-  name: "FriendListVue",
+  name: "UserListVue",
   props: {
-    enablePick: null,
+    enablePick: {
+      type: Boolean,
+      default: false,
+    },
+    users: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
-      sharedContactState: store.state.contact,
       sharedPickState: store.state.pick,
     }
   },
   methods: {
 
-    clickFriendItem(friend) {
+    clickUserItem(friend) {
       // const test = this.sharedPickState.users.map(u => u.uid);
       // console.log('clickFriendItem t', friend, test, Array.from(test));
       if (this.enablePick) {
@@ -52,14 +57,15 @@ export default {
       }
     },
 
-    friendName(friend) {
-      let name;
-      if (friend.friendAlias) {
-        name = friend.friendAlias;
-      } else if (friend.displayName) {
-        name = friend.displayName;
+    userName(user) {
+      if (user.groupAlias) {
+        name = user.groupAlias;
+      } else if (user.friendAlias) {
+        name = user.friendAlias;
+      } else if (user.displayName) {
+        name = user.displayName;
       } else {
-        name = friend.name;
+        name = user.name;
       }
       return name;
     },

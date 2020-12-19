@@ -25,7 +25,8 @@
             <span class="desc">{{ sharedContactState.friendList.length }}</span>
           </div>
         </div>
-        <FriendListVue :enable-pick="false" v-if="sharedContactState.expandFriendList"/>
+        <UserListVue :enable-pick="false" :users="sharedContactState.friendList"
+                     v-if="sharedContactState.expandFriendList"/>
       </li>
     </ul>
   </section>
@@ -33,12 +34,12 @@
 <script>
 import FriendRequestListView from "@/ui/main/contact/FriendRequestListView";
 import GroupListVue from "@/ui/main/contact/GroupListView";
-import FriendListVue from "@/ui/main/contact/FriendListVue";
 import store from "@/store";
+import UserListVue from "@/ui/main/user/UserListVue";
 
 export default {
   name: "ContactListView",
-  components: {FriendListVue, GroupListVue, NewFriendListView: FriendRequestListView},
+  components: {UserListVue, GroupListVue, NewFriendListView: FriendRequestListView},
   data() {
     return {
       sharedContactState: store.state.contact,
