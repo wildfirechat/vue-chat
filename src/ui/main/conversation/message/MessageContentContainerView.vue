@@ -4,6 +4,8 @@
                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
   <ImageMessageContentView :message="message" v-else-if="message.messageContent.type === 3"
                            v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+  <VideoMessageContentView :message="message" v-else-if="message.messageContent.type === 6"
+                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
   <p v-else>unknown</p>
 </template>
 
@@ -11,6 +13,7 @@
 import Message from "@/wfc/messages/message";
 import TextMessageContentView from "@/ui/main/conversation/message/content/TextMessageContentView";
 import ImageMessageContentView from "@/ui/main/conversation/message/content/ImageMessageContentView";
+import VideoMessageContentView from "@/ui/main/conversation/message/content/VideoMessageContentView";
 
 export default {
   name: "MessageContentContainerView",
@@ -22,7 +25,8 @@ export default {
   },
   components: {
     TextMessageContentView,
-    ImageMessageContentView
+    ImageMessageContentView,
+    VideoMessageContentView,
   }
 }
 </script>
