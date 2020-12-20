@@ -11,7 +11,8 @@
     <section class="checked-contact-list-container">
       <header>
         <h2>发起群聊</h2>
-        <span>已选择联系人 {{ sharedPickState.users.length > 0 ? sharedPickState.users.length : '' }}</span>
+        <span v-if="sharedPickState.users.length === 0">已选择联系人</span>
+        <span v-else>已选择联系人 {{ this.sharedPickState.users.length }}</span>
       </header>
       <div class="content">
         <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
@@ -69,11 +70,14 @@ export default {
     },
 
     cancel() {
+      this.sharedPickState.users.length = 0
       this.$modal.hide('invite-modal', {confirm: false})
     },
 
     confirm() {
-      this.$modal.hide('invite-modal', {confirm: true})
+      let pickedUsers = [...this.sharedPickState.users];
+      this.sharedPickState.users.length = 0
+      this.$modal.hide('invite-modal', {confirm: true, users: pickedUsers})
     },
   },
 

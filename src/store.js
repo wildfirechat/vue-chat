@@ -5,6 +5,10 @@ import ConversationType from "@/wfc/model/conversationType";
 import {eq, gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
 import convert from 'pinyin'
+import GroupType from "@/wfc/model/groupType";
+import {mergeImages} from "@/ui/util/imageUtil";
+import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
+import Conversation from "@/wfc/model/conversation";
 
 /**
  * 一些说明
@@ -345,6 +349,44 @@ let store = {
 
 
     // misc actions
+    createGroup(users) {
+        if (users.length === 1) {
+            this.setCurrentConversation(new Conversation(ConversationType.Single, users[0].uid, 0));
+            return;
+        }
+
+        let groupName = contactState.selfUserInfo.displayName;
+        let groupMemberIds = [];
+        let groupMemberPortraits = [];
+        for (let i = 0; i < users.length; i++) {
+            groupMemberIds.push(users[i].uid)
+            if (i <= 3) {
+                groupName += '、' + users[i].displayName;
+            }
+            if (i < 9) {
+                groupMemberPortraits.push(users[i].portrait)
+            }
+        }
+        groupName = groupName.substr(0, groupName.length - 1);
+
+        mergeImages(groupMemberPortraits)
+            .then((groupPortrait) => {
+                wfc.uploadMedia('', groupPortrait, MessageContentMediaType.Portrait,
+                    (remoteUrl) => {
+                        console.log('upload media success', remoteUrl);
+                        wfc.createGroup(null, GroupType.Restricted, groupName, remoteUrl, groupMemberIds, [0], null,
+                            (groupId) => {
+                                this._loadDefaultConversationList();
+                                this.setCurrentConversation(new Conversation(ConversationType.Group, groupId, 0))
+                            }, (error) => {
+                                console.log('create group error', error)
+                            });
+                    },
+                    (error) => {
+                        console.log('upload media error', error);
+                    });
+            });
+    }
 }
 
 let conversationState = store.state.conversation;

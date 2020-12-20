@@ -143,6 +143,7 @@ export default {
 
 .content .message {
   color: #b8b8b8;
+  font-size: 13px;
 }
 
 

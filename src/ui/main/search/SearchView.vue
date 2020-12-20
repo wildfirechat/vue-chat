@@ -49,8 +49,10 @@ export default {
       console.log('Closing...', event, event.params)
       // What a gamble... 50% chance to cancel closing
       if (event.params.confirm) {
+        let users = event.params.users;
+        store.createGroup(users);
+
         console.log('confirm')
-        // TODO create group and clear pick state
       } else {
         console.log('cancel')
         // TODO clear pick state
