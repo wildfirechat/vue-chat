@@ -1,5 +1,10 @@
 <template>
   <section>
+    <CoolLightBox
+        :items="sharedConversationState.previewMediaItems"
+        :index="sharedConversationState.previewMediaIndex"
+        @close="sharedConversationState.previewMediaIndex = null">
+    </CoolLightBox>
     <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
       <h2>no conversation is select</h2>
     </div>
@@ -80,6 +85,8 @@ import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
 import {numberValue} from "@/wfc/util/longUtil";
+import CoolLightBox from 'vue-cool-lightbox'
+import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 
 export default {
   components: {
@@ -89,6 +96,7 @@ export default {
     MessageInputView,
     GroupConversationInfoView,
     SingleConversationInfoView,
+    CoolLightBox,
   },
   // props: ["conversation"],
   data() {
@@ -98,6 +106,13 @@ export default {
       isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
       isHandlerDragging: false,
+      items: [
+        'https://picsum.photos/id/13/200',
+        'https://picsum.photos/id/13/600',
+        'https://vimeo.com/43338103',
+        'https://picsum.photos/id/13/600',
+      ],
+      index: null,
     };
   },
 
@@ -105,6 +120,7 @@ export default {
     toggleConversationInfo() {
       console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
+      this.index = 0;
     },
     hideConversationInfo() {
       // TODO

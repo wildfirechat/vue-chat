@@ -9,6 +9,7 @@ import GroupType from "@/wfc/model/groupType";
 import {mergeImages} from "@/ui/util/imageUtil";
 import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
 import Conversation from "@/wfc/model/conversation";
+import MessageContentType from "@/wfc/messages/messageContentType";
 
 /**
  * 一些说明
@@ -26,6 +27,9 @@ let store = {
             currentConversationMessageList: [],
 
             shouldAutoScrollToBottom: true,
+
+            previewMediaItems: [],
+            previewMediaIndex: null,
         },
 
         contact: {
@@ -205,6 +209,23 @@ let store = {
 
     setShouldAutoScrollToBottom(scroll) {
         conversationState.shouldAutoScrollToBottom = scroll;
+    },
+
+    previewMessage(message) {
+        conversationState.previewMediaItems.length = 0;
+        conversationState.previewMediaIndex = null;
+        let mediaMsgs = conversationState.currentConversationMessageList.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) > -1)
+        let msg;
+        for (let i = 0; i < mediaMsgs.length; i++) {
+            msg = mediaMsgs[i];
+            if (msg.messageId === message.messageId) {
+                conversationState.previewMediaIndex = i;
+            }
+            conversationState.previewMediaItems.push({
+                src: msg.messageContent.remotePath,
+                thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail
+            });
+        }
     },
 
     _loadCurrentConversationMessages() {
