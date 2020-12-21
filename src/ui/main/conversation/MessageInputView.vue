@@ -82,6 +82,7 @@ export default {
 .message-input-container {
   height: 100%;
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   position: relative;
 }
