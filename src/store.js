@@ -30,6 +30,9 @@ let store = {
 
             previewMediaItems: [],
             previewMediaIndex: null,
+
+            enableMessageMultiSelection: false,
+            selectedMessages: [],
         },
 
         contact: {
@@ -195,6 +198,9 @@ let store = {
         }
         conversationState.shouldAutoScrollToBottom = true;
         this._loadCurrentConversationMessages();
+
+        conversationState.enableMessageMultiSelection = false;
+        conversationState.selectedMessages.length = 0;
     },
 
     setCurrentConversationInfo(conversationInfo) {
@@ -204,6 +210,23 @@ let store = {
         conversationState.currentConversationInfo = conversationInfo;
         conversationState.shouldAutoScrollToBottom = true;
         this._loadCurrentConversationMessages();
+
+        conversationState.enableMessageMultiSelection = false;
+        conversationState.selectedMessages.length = 0;
+    },
+
+    toggleMessageMultiSelection() {
+        conversationState.enableMessageMultiSelection = !conversationState.enableMessageMultiSelection;
+        conversationState.selectedMessages.length = 0;
+    },
+
+    selectOrDeselectMessage(message) {
+        let index = conversationState.selectedMessages.findIndex(m => m.messageId === message.messageId);
+        if (index >= 0) {
+            conversationState.selectedMessages.splice(index, 1);
+        } else {
+            conversationState.selectedMessages.push(message);
+        }
     },
 
     setShouldAutoScrollToBottom(scroll) {

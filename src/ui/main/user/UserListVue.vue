@@ -7,10 +7,10 @@
             <p>{{ user._category.toUpperCase() }}</p>
           </div>
           <div class="content"
-               @click="clickUserItem(user)">
+               @click.stop="clickUserItem(user)">
             <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
-                   v-model="sharedPickState.users">
-            <img class="avatar" :src="user.portrait">
+                   v-model="sharedPickState.users" placeholder="">
+            <img class="avatar" :src="user.portrait" alt="">
             <span
                 class="single-line"> {{ userName(user) }}</span>
           </div>

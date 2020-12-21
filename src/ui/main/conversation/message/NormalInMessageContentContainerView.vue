@@ -1,9 +1,9 @@
 <template>
-  <section>
+  <section class="container">
     <div class="message-time-container">
       <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
       <div class="message-avatar-content-container">
-        <div>
+        <div class="avatar-container">
           <tippy
               :to="'infoTrigger' + this.message.messageId"
               interactive
@@ -16,6 +16,9 @@
           >
             <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
           </tippy>
+          <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
+                 :value="message"
+                 v-model="sharedConversationState.selectedMessages"/>
           <img ref="userCardTippy"
                :name="'infoTrigger' + this.message.messageId"
                class="avatar"
@@ -37,11 +40,17 @@
 <script>
 import UserCardView from "@/ui/main/user/UserCardView";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
+import store from "@/store";
 
 export default {
   name: "NormalInMessageContentView",
   props: {
     message: null,
+  },
+  data() {
+    return {
+      sharedConversationState: store.state.conversation,
+    }
   },
   methods: {
     closeUserCard() {
@@ -61,6 +70,11 @@ export default {
 
 <style lang="css" scoped>
 
+.container {
+  display: flex;
+  align-items: flex-start;
+}
+
 .message-time-container {
   width: 100%;
   display: flex;
@@ -73,6 +87,7 @@ export default {
   align-self: center;
   margin-bottom: 20px;
   color: #b4b4b4;
+  height: 20px;
   font-size: 10px;
 }
 
@@ -85,10 +100,20 @@ export default {
   text-overflow: ellipsis;
 }
 
-.message-avatar-content-container .avatar {
+.avatar-container .avatar {
   width: 40px;
   height: 40px;
   border-radius: 3px;
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-container input {
+  margin-right: 20px;
+  flex: 1;
 }
 
 .message-name-content-container {

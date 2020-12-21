@@ -13,7 +13,7 @@
       <header>
         <div class="title-container">
           <h1>{{ conversationTitle }}</h1>
-          <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
+          <a href="#"><img ref="setting" @click="toggleMessageMultiSelectionActionView" src="" alt="setting"/></a>
         </div>
       </header>
       <div ref="conversationContentContainer" class="conversation-content-container">
@@ -26,15 +26,23 @@
                 :key="message.messageId">
               <!--todo 不同的消息类型 notification in out-->
 
-              <NotificationMessageContentView id="n" :message="message" v-if="isNotificationMessage(message)"/>
-              <NormalOutMessageContentView id="o" :message="message"
-                                           v-else-if="message.direction === 0"/>
-              <NormalInMessageContentView id="i" :message="message" v-else/>
+              <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
+              <NormalOutMessageContentView
+                  @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                  :message="message"
+                  v-else-if="message.direction === 0"/>
+              <NormalInMessageContentView
+                  @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
+                  :message="message"
+                  v-else/>
             </li>
           </ul>
         </div>
-        <div v-on:mousedown="dragStart" class="handler"></div>
-        <MessageInputView class="message-input-container"/>
+        <div v-show="!sharedConversationState.enableMessageMultiSelection" v-on:mousedown="dragStart"
+             class="divider-handler"></div>
+        <MessageInputView v-show="!sharedConversationState.enableMessageMultiSelection"
+                          class="message-input-container"/>
+        <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
         <SingleConversationInfoView
             v-if="sharedConversationState.currentConversationInfo === 1"
             v-click-outside="hideConversationInfo"
@@ -65,6 +73,9 @@
           <li>
             <a @click.prevent="">引用</a>
           </li>
+          <li>
+            <a @click.prevent="multiSelect">多选</a>
+          </li>
           <li v-if="isRecallable(message)">
             <a @click.prevent="recallMessage(message)">撤回</a>
           </li>
@@ -91,9 +102,11 @@ import {numberValue} from "@/wfc/util/longUtil";
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import InfiniteLoading from 'vue-infinite-loading';
+import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
 
 export default {
   components: {
+    MultiSelectActionView,
     NotificationMessageContentView,
     NormalInMessageContentView,
     NormalOutMessageContentView,
@@ -111,13 +124,9 @@ export default {
       isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
       isHandlerDragging: false,
-      items: [
-        'https://picsum.photos/id/13/200',
-        'https://picsum.photos/id/13/600',
-        'https://vimeo.com/43338103',
-        'https://picsum.photos/id/13/600',
-      ],
-      index: null,
+
+      savedMessageListViewHeight: -1,
+      saveMessageListViewFlexGrow: -1,
     };
   },
 
@@ -125,8 +134,37 @@ export default {
     toggleConversationInfo() {
       console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
-      this.index = 0;
+
     },
+
+    toggleMessageMultiSelectionActionView() {
+      if (!this.sharedConversationState.enableMessageMultiSelection) {
+        this.saveMessageListViewFlexGrow = this.$refs['conversationMessageList'].style.flexGrow;
+        this.savedMessageListViewHeight = this.$refs['conversationMessageList'].style.height;
+        this.$refs['conversationMessageList'].style.flexGrow = 1;
+      } else {
+        if (this.saveMessageListViewFlexGrow !== -1 && this.savedMessageListViewHeight !== -1) {
+          this.$refs['conversationMessageList'].style.height = this.savedMessageListViewHeight;
+          this.$refs['conversationMessageList'].style.flexGrow = this.saveMessageListViewFlexGrow;
+        }
+      }
+      this.sharedConversationState.selectedMessages.forEach(m => console.log(m.messageId));
+      store.toggleMessageMultiSelection();
+    },
+
+    clickMessageItem(event, message) {
+      console.log('xxx', event, message);
+      if (message.messageContent instanceof NotificationMessageContent) {
+        console.log('nnn')
+        return;
+      }
+      if (this.sharedConversationState.enableMessageMultiSelection) {
+        store.selectOrDeselectMessage(message);
+        event.stopPropagation();
+        console.log('l', this.sharedConversationState.selectedMessages.length)
+      }
+    },
+
     hideConversationInfo() {
       // TODO
       // 是否在创建群聊，或者是在查看会话参与者信息
@@ -219,6 +257,10 @@ export default {
 
     delMessage(message) {
       wfc.deleteMessage(message.messageId);
+    },
+
+    multiSelect() {
+      this.toggleMessageMultiSelectionActionView();
     },
 
     infiniteHandler($state) {
@@ -315,7 +357,7 @@ export default {
   border-left: 1px solid #e6e6e6;
 }
 
-.concont-container header {
+.conversation-container header {
   width: 100%;
   height: 60px;
   display: flex;
@@ -349,7 +391,7 @@ export default {
 /*  background-color: #e2e2e2;*/
 /*}*/
 
-.handler::before {
+.divider-handler::before {
   cursor: row-resize;
   content: '';
   display: block;

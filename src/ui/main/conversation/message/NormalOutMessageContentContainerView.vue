@@ -2,29 +2,34 @@
   <section>
     <div class="message-time-container">
       <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
-      <div class="message-avatar-content-container">
-        <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
-        <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
-        <MessageContentContainerView :message="message"
-                                     @contextmenu.prevent.native="openMessageContextMenu($event, message)"
-        />
-        <div>
-          <tippy
-              :to="'infoTrigger' + this.message.messageId"
-              interactive
-              :animate-fill="false"
-              placement="left"
-              distant="7"
-              theme="light"
-              animation="fade"
-              trigger="click"
-          >
-            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
-          </tippy>
-          <img ref="userCardTippy"
-               :name="'infoTrigger' + this.message.messageId"
-               class="avatar"
-               src="@/assets/images/user-fallback.png">
+      <div class="message-content-container">
+        <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox" class="checkbox"
+               :value="message" placeholder="" v-model="sharedConversationState.selectedMessages">
+
+        <div class="message-avatar-content-container">
+          <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
+          <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
+          <MessageContentContainerView :message="message"
+                                       @contextmenu.prevent.native="openMessageContextMenu($event, message)"
+          />
+          <div>
+            <tippy
+                :to="'infoTrigger' + this.message.messageId"
+                interactive
+                :animate-fill="false"
+                placement="left"
+                distant="7"
+                theme="light"
+                animation="fade"
+                trigger="click"
+            >
+              <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+            </tippy>
+            <img ref="userCardTippy"
+                 :name="'infoTrigger' + this.message.messageId"
+                 class="avatar"
+                 src="@/assets/images/user-fallback.png">
+          </div>
         </div>
       </div>
     </div>
@@ -36,6 +41,7 @@
 import UserCardView from "@/ui/main/user/UserCardView";
 import Message from "@/wfc/messages/message";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
+import store from "@/store";
 
 export default {
   name: "NormalOutMessageContentView",
@@ -44,6 +50,11 @@ export default {
       type: Message,
       required: true,
     },
+  },
+  data() {
+    return {
+      sharedConversationState: store.state.conversation,
+    }
   },
   components: {
     MessageContentContainerView,
@@ -81,12 +92,20 @@ export default {
   font-size: 10px;
 }
 
+.message-content-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .message-avatar-content-container {
   display: flex;
   max-width: calc(100% - 60px);
   align-items: flex-start;
   overflow: hidden;
   max-height: 800px;
+  margin-left: auto;
   text-overflow: ellipsis;
 }
 
