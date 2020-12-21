@@ -2,7 +2,7 @@
   <div class="video-content-container">
     <video @click="preview(message)" v-if="message.messageContent.localPath" preload="metadata" controls
            :src="message.messageContent.localPath + '#t=0.1'"/>
-    <video @click="preview(message)" v-else preload="metadata"
+    <video @click.prevent="preview(message)" v-else preload="metadata"
            :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail" controls
            :src="message.messageContent.remotePath +'#t=0.1'"/>
   </div>

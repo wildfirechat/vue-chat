@@ -3,6 +3,7 @@
     <CoolLightBox
         :items="sharedConversationState.previewMediaItems"
         :index="sharedConversationState.previewMediaIndex"
+        :slideshow="false"
         @close="sharedConversationState.previewMediaIndex = null">
     </CoolLightBox>
     <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">

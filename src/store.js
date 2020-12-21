@@ -223,7 +223,8 @@ let store = {
             }
             conversationState.previewMediaItems.push({
                 src: msg.messageContent.remotePath,
-                thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail
+                thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail,
+                autoplay: true,
             });
         }
     },
