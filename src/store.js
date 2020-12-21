@@ -102,7 +102,6 @@ let store = {
                 this._patchMessage(msg, lastTimestamp);
                 conversationState.currentConversationMessageList.push(msg);
             }
-            console.log('this 1', this)
         });
 
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
@@ -241,6 +240,33 @@ let store = {
             lastTimestamp = m.timestamp;
         });
         conversationState.currentConversationMessageList = msgs;
+    },
+
+    loadConversationHistoryMessages(loadedCB, completeCB) {
+        if (!conversationState.currentConversationInfo) {
+            return;
+        }
+        let conversation = conversationState.currentConversationInfo.conversation;
+        let firstMsgUid = conversationState.currentConversationMessageList.length > 0 ? conversationState.currentConversationMessageList[0].messageUid : 0;
+        wfc.loadRemoteConversationMessages(conversation, firstMsgUid, 20,
+            (msgs) => {
+                if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                    let lastTimestamp = 0;
+                    msgs.forEach(m => {
+                        this._patchMessage(m, lastTimestamp);
+                        lastTimestamp = m.timestamp;
+                    });
+                    conversationState.currentConversationMessageList = msgs.concat(conversationState.currentConversationMessageList);
+                }
+                if (msgs.length === 0) {
+                    completeCB();
+                } else {
+                    loadedCB();
+                }
+            },
+            (error) => {
+                completeCB();
+            });
     },
 
     _patchMessage(m, lastTimestamp) {

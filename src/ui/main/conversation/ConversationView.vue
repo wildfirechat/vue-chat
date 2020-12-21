@@ -17,7 +17,9 @@
         </div>
       </header>
       <div ref="conversationContentContainer" class="conversation-content-container">
-        <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll">
+        <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
+          <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
+                            @infinite="infiniteHandler"/>
           <ul>
             <!--todo item.messageId or messageUid as key-->
             <li v-for="(message) in sharedConversationState.currentConversationMessageList"
@@ -88,6 +90,7 @@ import wfc from "@/wfc/client/wfc";
 import {numberValue} from "@/wfc/util/longUtil";
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
+import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
   components: {
@@ -98,6 +101,7 @@ export default {
     GroupConversationInfoView,
     SingleConversationInfoView,
     CoolLightBox,
+    InfiniteLoading,
   },
   // props: ["conversation"],
   data() {
@@ -210,12 +214,24 @@ export default {
     },
 
     recallMessage(message) {
-      wfc.recallMessage(message.messageUid)
+      wfc.recallMessage(message.messageUid, null, null);
     },
 
     delMessage(message) {
       wfc.deleteMessage(message.messageId);
-    }
+    },
+
+    infiniteHandler($state) {
+      console.log('toload more message');
+      store.loadConversationHistoryMessages(() => {
+        console.log('loaded')
+        $state.loaded();
+      }, () => {
+        console.log('complete')
+        $state.complete()
+      });
+    },
+
 
   },
 
@@ -258,6 +274,10 @@ export default {
       } else {
         return info.conversation._target.name;
       }
+    },
+    loadingIdentifier() {
+      let conversation = this.sharedConversationState.currentConversationInfo.conversation;
+      return conversation.type + '-' + conversation.target + '-' + conversation.line;
     }
   },
 
@@ -294,6 +314,17 @@ export default {
   flex-direction: column;
   border-left: 1px solid #e6e6e6;
 }
+
+.concont-container header {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e6e6e6;
+}
+
 
 .conversation-content-container {
   flex: 1;
