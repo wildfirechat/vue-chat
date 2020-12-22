@@ -1,3 +1,37 @@
-.flex {
-
+.flex-row {
+    display: flex;
 }
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-justify-center {
+    justify-content: center;
+}
+
+.flex-justify-start {
+    justify-content: flex-start;
+}
+
+.flex-justify-end {
+    justify-content: flex-end;
+}
+
+.flex-align-start {
+    align-items: flex-start;
+}
+
+.flex-align-center {
+    align-items: center;
+}
+
+.flex-align-end {
+    align-items: flex-end;
+}
+

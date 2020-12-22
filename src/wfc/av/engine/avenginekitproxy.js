@@ -352,7 +352,8 @@ export class AvEngineKitProxy {
             win.loadURL(path.join('file://', AppPath, 'src/index.html?' + type));
             win.show();
         } else {
-            let win = window.open(window.location.origin + '?' + type, '_blank', 'width=360,height=640,left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable');
+            let win = window.open(window.location.origin + '#/' + 'voip?data=single', '_blank', 'width=360,height=640,left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable');
+            // let win = window.open(routeData.href, '_blank', 'width=360,height=640,left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable');
             if(!win){
                 console.log('can not open voip window');
                 return;

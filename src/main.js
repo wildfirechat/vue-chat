@@ -9,6 +9,7 @@ import VueContext from 'vue-context';
 
 import VModal from 'vue-js-modal'
 import './global.css'
+import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "@/store";
 
