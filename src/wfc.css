@@ -35,3 +35,14 @@
     align-items: flex-end;
 }
 
+.relative {
+    position: relative;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.full-width {
+    width: 100%;
+}
