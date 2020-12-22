@@ -54,10 +54,10 @@
           <div class="action">
             <img @click="answer" class="action-img" src='@/assets/images/av_video_answer.png'/>
           </div>
-          <div v-if="!audioOnly" class="action">
-            <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>
-            <p>切换到语音聊天</p>
-          </div>
+<!--          <div v-if="!audioOnly" class="action">-->
+<!--            <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>-->
+<!--            <p>切换到语音聊天</p>-->
+<!--          </div>-->
         </div>
         <!--outgoing-->
         <div v-if="status === 1" class="action-container">
@@ -88,6 +88,7 @@
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
+import store from "@/store";
 
 export default {
   name: 'Single',
@@ -149,14 +150,15 @@ export default {
       this.session.hangup();
     },
     down2voice() {
-      this.session.down2voice();
+      this.session.downgrade2Voice();
     },
     screenShare() {
-      this.session.screenShare();
+      this.session.startScreenShare();
     }
   },
 
   mounted() {
+    console.log('xxx', store.state)
     avenginekit.setup();
     this.setupSessionCallback();
   }
