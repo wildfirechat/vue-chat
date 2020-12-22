@@ -229,6 +229,18 @@ let store = {
         }
     },
 
+    deleteSelectedMessages() {
+        conversationState.enableMessageMultiSelection = false;
+        if (conversationState.selectedMessages.length < 1) {
+            return;
+        }
+        conversationState.selectedMessages.sort((m1, m2) => m1.messageId - m2.messageId);
+        conversationState.selectedMessages.forEach(m => {
+            wfc.deleteMessage(m.messageId);
+        });
+        conversationState.selectedMessages.length = 0;
+    },
+
     setShouldAutoScrollToBottom(scroll) {
         conversationState.shouldAutoScrollToBottom = scroll;
     },

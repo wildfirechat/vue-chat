@@ -13,7 +13,7 @@
       <header>
         <div class="title-container">
           <h1>{{ conversationTitle }}</h1>
-          <a href="#"><img ref="setting" @click="toggleMessageMultiSelectionActionView" src="" alt="setting"/></a>
+          <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
       <div ref="conversationContentContainer" class="conversation-content-container">
@@ -153,15 +153,12 @@ export default {
     },
 
     clickMessageItem(event, message) {
-      console.log('xxx', event, message);
       if (message.messageContent instanceof NotificationMessageContent) {
-        console.log('nnn')
         return;
       }
       if (this.sharedConversationState.enableMessageMultiSelection) {
         store.selectOrDeselectMessage(message);
         event.stopPropagation();
-        console.log('l', this.sharedConversationState.selectedMessages.length)
       }
     },
 
@@ -264,7 +261,7 @@ export default {
     },
 
     infiniteHandler($state) {
-      console.log('toload more message');
+      console.log('to load more message');
       store.loadConversationHistoryMessages(() => {
         console.log('loaded')
         $state.loaded();

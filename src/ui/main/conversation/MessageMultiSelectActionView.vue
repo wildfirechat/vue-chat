@@ -27,7 +27,7 @@
       </li>
       <li>
         <div class="action">
-          <div class="icon">
+          <div @click="deleteMultiMessage" class="icon">
             <i class="icon-ion-android-remove"></i>
           </div>
           <p>删除</p>
@@ -35,7 +35,7 @@
       </li>
       <li>
         <div class="action">
-          <i class="icon-ion-close"></i>
+          <i @click="hideMultiSelectionActionView" class="icon-ion-close"></i>
         </div>
       </li>
     </ul>
@@ -43,8 +43,19 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
-  name: "MessageMultiSelectionActionView"
+  name: "MessageMultiSelectionActionView",
+  methods: {
+    deleteMultiMessage() {
+      store.deleteSelectedMessages();
+    },
+    hideMultiSelectionActionView() {
+      store.toggleMessageMultiSelection();
+    },
+  },
+
 }
 </script>
 
