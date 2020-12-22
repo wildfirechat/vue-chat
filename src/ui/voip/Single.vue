@@ -13,10 +13,10 @@
       <section class="full-height full-width">
         <!--audio-->
         <div class="content-container" v-if="audioOnly">
-          <div class="local-audio-container">
+          <div class="local-media-container">
             <img class="avatar" src="@/assets/images/user-fallback.png">
           </div>
-          <div class="remote-audio-container">
+          <div class="remote-media-container">
             <img class="avatar" src="@/assets/images/user-fallback.png">
             <p>remote user name</p>
             <p v-if="status === 1">等待对方接听</p>
@@ -27,10 +27,20 @@
 
         <!--video-->
         <div v-else class="content-container">
-          <video ref="localVideo" class="localVideo" playsInline autoPlay muted>
-          </video>
-          <video ref="remoteVideo" class="remoteVideo" playsInline autoPlay>
-          </video>
+          <div class="local-media-container">
+            <img v-if="status === 2" class="avatar" src="@/assets/images/user-fallback.png">
+            <video v-else ref="localVideo" class="localVideo" playsInline autoPlay muted/>
+          </div>
+          <div class="remote-media-container">
+            <video v-if="status ===4" ref="remoteVideo" class="remoteVideo" playsInline autoPlay/>
+            <div v-else class="flex-column flex-justify-center flex-align-center">
+              <img class="avatar" src="@/assets/images/user-fallback.png">
+              <p>remote user name</p>
+              <p v-if="status === 1">等待对方接听</p>
+              <p v-else-if="status === 2">邀请你视频聊天</p>
+              <p v-else-if="status === 3">接听中...</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -39,30 +49,34 @@
         <!--incoming-->
         <div v-if="status === 2" class="action-container">
           <div class="action">
-            <img class="action-img" src='@/assets/images/av_hang_up.png'/>
+            <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
           </div>
           <div class="action">
-            <img class="action-img" src='@/assets/images/av_video_answer.png'/>
+            <img @click="answer" class="action-img" src='@/assets/images/av_video_answer.png'/>
           </div>
           <div v-if="!audioOnly" class="action">
-            <img class="action-img" src='@/assets/images/av_float_audio.png'/>
+            <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>
             <p>切换到语音聊天</p>
           </div>
         </div>
         <!--outgoing-->
         <div v-if="status === 1" class="action-container">
           <div class="action">
-            <img class="action-img" src='@/assets/images/av_hang_up.png'/>
+            <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
           </div>
         </div>
 
         <!--connected-->
         <div v-if="status === 4" class="action-container">
           <div class="action">
-            <img class="action-img" src='@/assets/images/av_hang_up.png'/>
+            <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
           </div>
           <div v-if="!audioOnly" class="action">
-            <img class="action-img" src='@/assets/images/av_share.png'/>
+            <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
+          </div>
+          <div v-if="!audioOnly" class="action">
+            <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>
+            <p>切换到语音聊天</p>
           </div>
 
         </div>
@@ -80,9 +94,9 @@ export default {
   data() {
     return {
       session: null,
-      audioOnly: true,
+      audioOnly: false,
       muted: false,
-      status: 1,
+      status: 0,
     }
   },
   methods: {
@@ -129,6 +143,16 @@ export default {
 
     answer() {
       this.session.call();
+    },
+
+    hangup() {
+      this.session.hangup();
+    },
+    down2voice() {
+      this.session.down2voice();
+    },
+    screenShare() {
+      this.session.screenShare();
     }
   },
 
@@ -183,7 +207,7 @@ export default {
   height: 60px;
 }
 
-.remote-audio-container {
+.remote-media-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -193,10 +217,15 @@ export default {
   background-color: rebeccapurple;
 }
 
-.local-audio-container {
+.local-media-container {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 0;
+  left: 0;
+}
+
+.local-media-container .avatar {
+  margin-left: 20px;
+  margin-top: 20px;
 }
 
 .localVideo {
