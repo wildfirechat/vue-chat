@@ -17,7 +17,7 @@
 }
 
 .single-line {
-    width: 100%;
+    max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;

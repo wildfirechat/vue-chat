@@ -12,29 +12,35 @@
     <div class="container">
       <section>
         <!--audio-->
-        <div class="content-container">
+        <div ref="test" class="content-container">
+          <!--self-->
           <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-            <video v-if="status ===4 && !audioOnly" ref="remoteVideo" class="remoteVideo" playsInline autoPlay/>
-            <p class="single-line">iimnndsssssimnndsssssmnndsssss</p>
+            <video v-show="status ===4 && !audioOnly"
+                   class="remoteVideo"
+                   ref="localVideo"
+                   playsInline
+                   autoPlay/>
+            <div v-show="!(status ===4 && !audioOnly)" class="flex-column flex-justify-center flex-align-center">
+              <img class="avatar" :src="selfUserInfo.portrait">
+              <p>self</p>
+            </div>
           </div>
-          <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
+
+          <!--participants-->
+          <div v-for="(participant) in participantUserInfos" :key="participant.uid"
+               class="participant-container">
+            <video v-show="status ===4 && !audioOnly" class="remoteVideo"
+                   :class="'video' + participant.uid"
+                   playsInline
+                   autoPlay/>
+            <div v-show="!(status ===4 && !audioOnly)" class="flex-column flex-justify-center flex-align-center">
+              <img class="avatar" :src="participant.portrait" :alt="participant">
+              <p class="single-line">{{ userName(participant) }}</p>
+            </div>
           </div>
-          <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-          </div>
-          <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-          </div>
-          <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-          </div>
-          <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-          </div>
-          <div class="participant-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
+          <!--add more-->
+          <div v-if="participantUserInfos.length < 8" class="participant-container">
+            <img @click="invite" class="avatar" src="@/assets/images/add.png">
           </div>
         </div>
       </section>
@@ -69,7 +75,6 @@
           <div v-if="!audioOnly" class="action">
             <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
           </div>
-
         </div>
       </footer>
     </div>
@@ -88,6 +93,10 @@ export default {
       audioOnly: false,
       muted: false,
       status: 1,
+      selfUserInfo: null,
+      initiatorUserInfo: null,
+      participantUserInfos: [1, 2, 3, 4, 5, 6, 7, 8],
+      groupMemberUserInfos: [],
     }
   },
   methods: {
@@ -106,9 +115,15 @@ export default {
         console.log('status change', state)
       };
 
-      sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos) => {
+      sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos, groupMemberUserInfos) => {
         this.session = session;
         this.audioOnly = session.audioOnly;
+        this.selfUserInfo = selfUserInfo;
+        this.initiatorUserInfo = initiatorUserInfo;
+        this.participantUserInfos = participantUserInfos;
+        this.groupMemberUserInfos = groupMemberUserInfos;
+
+        console.log('init', selfUserInfo, participantUserInfos)
       };
 
       sessionCallback.didChangeMode = (audioOnly) => {
@@ -116,19 +131,49 @@ export default {
       };
 
       sessionCallback.didCreateLocalVideoTrack = (stream) => {
-        this.$refs['localVideo'].srcObject = stream;
+        console.log('crete l track', stream)
+        this.$nextTick(() => {
+          // this.selfUserInfo._videoSrc = stream;
+          this.$refs['localVideo'].srcObject = stream;
+        });
       };
 
       sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
-        this.$refs['remoteVideo'].srcObject = stream;
+        this.$nextTick(() => {
+
+          let video = this.$refs['test'].getElementsByClassName('video' + userId)[0];
+          video.srcObject = stream;
+          // let p;
+          // for (let i = 0; i < this.participantUserInfos.length; i++) {
+          //   p = this.participantUserInfos[i];
+          //   if (p.uid === userId) {
+          //     console.log('receive r track', userId, stream)
+          //     p._videoSrc = stream;
+          //     break;
+          //   }
+          // }
+        });
       };
+
+      sessionCallback.didParticipantJoined = (userId, userInfo) => {
+        console.log('didParticipantJoined', userId)
+        this.participantUserInfos.push(userInfo);
+      }
+
+      sessionCallback.didParticipantLeft = (userId) => {
+        console.log('didParticipantLeft', userId, this.participantUserInfos.length)
+        this.participantUserInfos = this.participantUserInfos.filter(p => p.uid !== userId);
+        console.log('didParticipantLeft d', userId, this.participantUserInfos.length)
+      }
 
       sessionCallback.didCallEndWithReason = (reason) => {
         console.log('callEndWithReason', reason)
       }
+
       sessionCallback.didVideoMuted = (userId, muted) => {
         this.muted = muted;
       };
+
       avenginekit.sessionCallback = sessionCallback;
     },
 
@@ -144,7 +189,25 @@ export default {
     },
     screenShare() {
       this.session.screenShare();
-    }
+    },
+
+    invite() {
+      // todo
+      console.log('to invite');
+    },
+
+    userName(user) {
+      if (user.groupAlias) {
+        name = user.groupAlias;
+      } else if (user.friendAlias) {
+        name = user.friendAlias;
+      } else if (user.displayName) {
+        name = user.displayName;
+      } else {
+        name = user.name;
+      }
+      return name;
+    },
   },
 
   mounted() {
@@ -158,8 +221,9 @@ export default {
 <style lang="css" scoped>
 
 .container {
-  width: 360px;
-  height: 640px;
+  width: 600px;
+  background-color: red;
+  height: 720px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -170,20 +234,27 @@ export default {
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
   align-content: flex-start;
 }
 
-.content-container > div {
+.participant-container {
   display: flex;
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   background-color: rebeccapurple;
-  border: 1px solid #e2e2e2;
 
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.participant-container > video {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .action-container {

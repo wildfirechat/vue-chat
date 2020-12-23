@@ -54,10 +54,10 @@
           <div class="action">
             <img @click="answer" class="action-img" src='@/assets/images/av_video_answer.png'/>
           </div>
-<!--          <div v-if="!audioOnly" class="action">-->
-<!--            <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>-->
-<!--            <p>切换到语音聊天</p>-->
-<!--          </div>-->
+          <!--          <div v-if="!audioOnly" class="action">-->
+          <!--            <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>-->
+          <!--            <p>切换到语音聊天</p>-->
+          <!--          </div>-->
         </div>
         <!--outgoing-->
         <div v-if="status === 1" class="action-container">
@@ -126,11 +126,15 @@ export default {
       };
 
       sessionCallback.didCreateLocalVideoTrack = (stream) => {
-        this.$refs['localVideo'].srcObject = stream;
+        this.$nextTick(() => {
+          this.$refs['localVideo'].srcObject = stream;
+        });
       };
 
       sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
-        this.$refs['remoteVideo'].srcObject = stream;
+        this.$nextTick(() => {
+          this.$refs['remoteVideo'].srcObject = stream;
+        });
       };
 
       sessionCallback.didCallEndWithReason = (reason) => {

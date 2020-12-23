@@ -104,7 +104,8 @@ export default {
       // }
       // this.$router.push({path: "/home/setting"});
       let routeData = this.$router.resolve({name: 'voip', query: {data: "single"}});
-      window.open(routeData.href, '_blank', 'width=360,height=640,left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable');
+      let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=600,height=300,left=100,top=100`;
+      window.open(routeData.href, 'test', params);
     },
 
     closeUserCard() {

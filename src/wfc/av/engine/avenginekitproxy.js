@@ -366,7 +366,20 @@ export class AvEngineKitProxy {
             }
             url += '/' + type
 
-            let win = window.open(url, '_blank', 'width=360,height=640,left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable');
+            let width = 360;
+            let height = 640;
+            switch (type) {
+                case 'single':
+                    width = 360;
+                    height = 640;
+                    break;
+                case 'multi':
+                case 'conference':
+                    width = 600
+                    height = 800;
+                    break;
+            }
+            let win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable`);
             if (!win) {
                 console.log('can not open voip window');
                 return;
