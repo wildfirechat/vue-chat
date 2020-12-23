@@ -10,6 +10,8 @@ import {mergeImages} from "@/ui/util/imageUtil";
 import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
 import Conversation from "@/wfc/model/conversation";
 import MessageContentType from "@/wfc/messages/messageContentType";
+import MessageConfig from "@/wfc/client/messageConfig";
+import PersistFlag from "@/wfc/messages/persistFlag";
 
 /**
  * 一些说明
@@ -92,6 +94,10 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
+            if (!this._isDisplayMessage(msg)) {
+                return;
+            }
+
             if (!hasMore) {
                 this._loadDefaultConversationList();
             }
@@ -152,6 +158,9 @@ let store = {
 
 
         wfc.eventEmitter.on(EventType.SendMessage, (message) => {
+            if (!this._isDisplayMessage(message)) {
+                return;
+            }
             if (!conversationState.currentConversationInfo || !message.conversation.equal(conversationState.currentConversationInfo.conversation)) {
                 return;
             }
@@ -169,6 +178,10 @@ let store = {
     },
 
     // conversation actions
+
+    _isDisplayMessage(message) {
+        return [PersistFlag.Persist, PersistFlag.Persist_And_Count].indexOf(MessageConfig.getMessageContentPersitFlag(message.messageContent.type)) > -1;
+    },
 
     _loadDefaultConversationList() {
         this.loadConversationList([0, 1], [0])
