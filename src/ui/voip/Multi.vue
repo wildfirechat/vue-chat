@@ -15,12 +15,13 @@
         <div ref="test" class="content-container">
           <!--self-->
           <div class="participant-container">
-            <video v-show="status ===4 && !audioOnly"
+            <video v-if="!audioOnly && selfUserInfo._stream != null"
                    class="remoteVideo"
                    ref="localVideo"
+                   :srcObject.prop="selfUserInfo._stream"
                    playsInline
                    autoPlay/>
-            <div v-show="!(status ===4 && !audioOnly)" class="flex-column flex-justify-center flex-align-center">
+            <div v-else class="flex-column flex-justify-center flex-align-center">
               <img class="avatar" :src="selfUserInfo.portrait">
               <p>self</p>
             </div>
@@ -29,11 +30,12 @@
           <!--participants-->
           <div v-for="(participant) in participantUserInfos" :key="participant.uid"
                class="participant-container">
-            <video v-show="status ===4 && !audioOnly" class="remoteVideo"
+            <video v-if="participant._stream != null" class="remoteVideo"
+                   :srcObject.prop="participant._stream"
                    :class="'video' + participant.uid"
                    playsInline
                    autoPlay/>
-            <div v-show="!(status ===4 && !audioOnly)" class="flex-column flex-justify-center flex-align-center">
+            <div v-else class="flex-column flex-justify-center flex-align-center">
               <img class="avatar" :src="participant.portrait" :alt="participant">
               <p class="single-line">{{ userName(participant) }}</p>
             </div>
@@ -95,7 +97,7 @@ export default {
       status: 1,
       selfUserInfo: null,
       initiatorUserInfo: null,
-      participantUserInfos: [1, 2, 3, 4, 5, 6, 7, 8],
+      participantUserInfos: [],
       groupMemberUserInfos: [],
     }
   },
@@ -117,13 +119,20 @@ export default {
 
       sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos, groupMemberUserInfos) => {
         this.session = session;
+
+
         this.audioOnly = session.audioOnly;
         this.selfUserInfo = selfUserInfo;
         this.initiatorUserInfo = initiatorUserInfo;
         this.participantUserInfos = participantUserInfos;
         this.groupMemberUserInfos = groupMemberUserInfos;
 
-        console.log('init', selfUserInfo, participantUserInfos)
+        // 让vue能observer到，但是不太明白，为什么参数进来的selfUserInfo等，已经是reactive的了
+        // pls refer to: https://vuejs.org/v2/guide/reactivity.html
+        this.$set(this.selfUserInfo, '_stream', null)
+        participantUserInfos.forEach(p => this.$set(p, "_stream", null))
+        groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
+
       };
 
       sessionCallback.didChangeMode = (audioOnly) => {
@@ -131,32 +140,23 @@ export default {
       };
 
       sessionCallback.didCreateLocalVideoTrack = (stream) => {
-        console.log('crete l track', stream)
-        this.$nextTick(() => {
-          // this.selfUserInfo._videoSrc = stream;
-          this.$refs['localVideo'].srcObject = stream;
-        });
+        this.selfUserInfo._stream = stream;
       };
 
       sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
-        this.$nextTick(() => {
-
-          let video = this.$refs['test'].getElementsByClassName('video' + userId)[0];
-          video.srcObject = stream;
-          // let p;
-          // for (let i = 0; i < this.participantUserInfos.length; i++) {
-          //   p = this.participantUserInfos[i];
-          //   if (p.uid === userId) {
-          //     console.log('receive r track', userId, stream)
-          //     p._videoSrc = stream;
-          //     break;
-          //   }
-          // }
-        });
+        let p;
+        for (let i = 0; i < this.participantUserInfos.length; i++) {
+          p = this.participantUserInfos[i];
+          if (p.uid === userId) {
+            p._stream = stream;
+            break;
+          }
+        }
       };
 
       sessionCallback.didParticipantJoined = (userId, userInfo) => {
         console.log('didParticipantJoined', userId)
+        userInfo._stream = null;
         this.participantUserInfos.push(userInfo);
       }
 
