@@ -1,6 +1,7 @@
 <template>
-  <div class="text-message-container">
-    <p class="text">{{this.message.messageContent.digest()}}</p>
+  <div class="text-message-container"
+       v-bind:class="{out:message.direction === 0}">
+    <p class="text">{{ this.message.messageContent.digest() }}</p>
   </div>
 </template>
 
@@ -22,10 +23,15 @@ export default {
 .text-message-container {
   margin: 0 10px;
   padding: 10px;
-  background-color: #98ea70;
+  background-color: white;
   position: relative;
   border-radius: 5px;
 }
+
+.text-message-container.out {
+  background-color: #98ea70;
+}
+
 
 .text-message-container .text {
   color: #050505;

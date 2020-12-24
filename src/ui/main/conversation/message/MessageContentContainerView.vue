@@ -2,11 +2,11 @@
   <TextMessageContentView :message="message"
                           v-if="message.messageContent.type === 1"
                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-  <ImageMessageContentView :message="message" v-else-if="message.messageContent.type === 3"
-                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-  <VideoMessageContentView :message="message" v-else-if="message.messageContent.type === 6"
-                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-  <p v-else>unknown</p>
+  <ImageMessageContentView :message="message" v-else-if="message.messageContent.type === 3"/>
+  <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
+  <VideoMessageContentView :message="message" v-else-if="message.messageContent.type === 6"/>
+  <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
+  <p v-else>unknown message type</p>
 </template>
 
 <script>
@@ -31,7 +31,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="css" scoped>
+
 
 .leftarrow:before {
   /*right: -10px;*/
@@ -47,7 +48,7 @@ export default {
 
 .leftarrow:before {
   border-color: transparent;
-  border-right-color: #98ea70;
+  border-right-color: white;
   border-width: 5px;
 }
 
