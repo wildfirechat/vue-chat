@@ -127,7 +127,6 @@ export default {
         this.participantUserInfos = participantUserInfos;
         this.groupMemberUserInfos = groupMemberUserInfos;
 
-        // 让vue能observer到，但是不太明白，为什么参数进来的selfUserInfo等，已经是reactive的了
         // pls refer to: https://vuejs.org/v2/guide/reactivity.html
         this.$set(this.selfUserInfo, '_stream', null)
         participantUserInfos.forEach(p => this.$set(p, "_stream", null))
@@ -213,8 +212,13 @@ export default {
   mounted() {
     avenginekit.setup();
     this.setupSessionCallback();
-  }
+  },
 
+  destroyed() {
+    // reset
+    this.$set(this.selfUserInfo, '_stream', null)
+    groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
+  }
 }
 </script>
 

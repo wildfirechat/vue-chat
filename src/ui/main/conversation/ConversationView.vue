@@ -6,6 +6,14 @@
         :slideshow="false"
         @close="sharedConversationState.previewMediaIndex = null">
     </CoolLightBox>
+    <!--用来实现视频缩略图-->
+    <div id="styled_video_container" class="styled_video_container">
+      <video class="styled_video_container" id="bgvid" playsinline autoplay muted loop>
+        <!-- <source src="http://thenewcode.com/assets/videos/polina.webm" type="video/webm">
+        <source src="http://thenewcode.com/assets/videos/polina.mp4" type="video/mp4"> -->
+      </video>
+    </div>
+
     <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
       <h2>no conversation is select</h2>
     </div>
@@ -335,6 +343,20 @@ export default {
   align-items: center;
   background-color: white;
   /*border-left: 1px solid #e6e6e6;*/
+}
+
+.styled_video_container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -999;
+  transform: translateX(-50%) translateY(-50%);
+  background-size: cover;
+  transition: 1s opacity;
 }
 
 .title-container {

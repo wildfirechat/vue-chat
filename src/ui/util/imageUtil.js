@@ -312,4 +312,89 @@ async function getGroupPortrait(groupId) {
     }
 }
 
-export {mergeImages, getConversationPortrait};
+// return data uri
+function imageThumbnail(file) {
+    return new Promise((resolve, reject) => {
+        var img = new Image();
+        img.setAttribute('crossOrigin', 'anonymous');
+        img.onload = () => {
+            let resizedCanvas = resizeImage.resize2Canvas(img, 320, 240);
+            resizedCanvas.toBlob((blob) => {
+                var reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    let base64data = reader.result;
+                    resolve(base64data);
+                }
+                reader.onerror = () => {
+                    resolve(null);
+                }
+            }, 'image/jpeg', 0.6);
+        };
+        img.onerror = () => {
+            resolve(null);
+        }
+        if (file.path) {
+            img.src = file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name; // local image url
+        } else {
+            let reader = new FileReader();
+            reader.onload = function (event) {
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// return data uri
+function videoThumbnail(file) {
+    return new Promise(
+        (resolve, reject) => {
+            let video = document.getElementById('bgvid');
+            video.onplay = () => {
+                console.log('------------ video onplay');
+
+                var canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d')
+                    .drawImage(video, 0, 0, canvas.width, canvas.height);
+                var img = document.createElement("img");
+                img.src = canvas.toDataURL();
+                img.onload = () => {
+                    let resizedCanvas = resizeImage.resize2Canvas(img, 320, 240);
+                    resizedCanvas.toBlob((blob) => {
+                        var reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {
+                            let base64data = reader.result;
+                            resolve(base64data);
+                            video.src = null;
+                        };
+                        reader.onerror = () => {
+                            resolve(null);
+                        }
+                    }, 'image/jpeg', 0.6);
+                };
+                img.onerror = () => {
+                    resolve(null);
+                };
+            };
+            video.onerror = () => {
+                resolve(null);
+            };
+            if (file.path) {
+                video.src = file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name; // local video url
+            } else {
+                let reader = new FileReader();
+                reader.onload = function (event) {
+                    video.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            console.log('----------', video);
+        });
+}
+
+
+export {mergeImages, getConversationPortrait, videoThumbnail, imageThumbnail};

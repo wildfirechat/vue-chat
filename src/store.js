@@ -6,12 +6,16 @@ import {eq, gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
 import convert from 'pinyin'
 import GroupType from "@/wfc/model/groupType";
-import {mergeImages} from "@/ui/util/imageUtil";
+import {imageThumbnail, mergeImages, videoThumbnail} from "@/ui/util/imageUtil";
 import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
 import Conversation from "@/wfc/model/conversation";
 import MessageContentType from "@/wfc/messages/messageContentType";
 import MessageConfig from "@/wfc/client/messageConfig";
 import PersistFlag from "@/wfc/messages/persistFlag";
+import Message from "@/wfc/messages/message";
+import ImageMessageContent from "@/wfc/messages/imageMessageContent";
+import VideoMessageContent from "@/wfc/messages/videoMessageContent";
+import FileMessageContent from "@/wfc/messages/fileMessageContent";
 
 /**
  * 一些说明
@@ -24,6 +28,7 @@ let store = {
     debug: true,
     state: {
         conversation: {
+            _wfc: wfc,
             currentConversationInfo: null,
             conversationInfoList: [],
             currentConversationMessageList: [],
@@ -274,6 +279,57 @@ let store = {
                 autoplay: true,
             });
         }
+    },
+    async sendFile(file) {
+        let msg = new Message();
+        msg.conversation = conversationState.currentConversationInfo.conversation;
+
+        var mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
+        var messageContentmediaType = {
+            'pic': MessageContentMediaType.Image,
+            'video': MessageContentMediaType.Video,
+            'doc': MessageContentMediaType.File,
+        }[mediaType];
+
+        let messageContent;
+        switch (messageContentmediaType) {
+            case MessageContentMediaType.Image:
+                let iThumbnail = await imageThumbnail(file);
+                if (iThumbnail === null) {
+                    return false;
+                }
+                // let img64 = self.imgDataUriToBase64(imageThumbnail);
+                messageContent = new ImageMessageContent(file, null, iThumbnail.split(',')[1]);
+                break;
+            case MessageContentMediaType.Video:
+                let vThumbnail = await videoThumbnail(file);
+                if (vThumbnail === null) {
+                    return false;
+                }
+                // let video64 = self.imgDataUriToBase64(videoThumbnail);
+                messageContent = new VideoMessageContent(file, null, vThumbnail.split(',')[1]);
+                break;
+            case MessageContentMediaType.File:
+                messageContent = new FileMessageContent(file);
+                break;
+            default:
+                return false;
+        }
+        msg.messageContent = messageContent;
+        wfc.sendMessage(msg,
+            (messageId) => {
+
+            },
+            (progress, total) => {
+                // TODO
+            },
+            (messageUid) => {
+
+            },
+            (error) => {
+
+            }
+        );
     },
 
     _loadCurrentConversationMessages() {

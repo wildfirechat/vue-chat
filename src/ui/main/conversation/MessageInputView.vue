@@ -11,7 +11,10 @@
       />
       <ul>
         <li><i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"></i></li>
-        <li><i class="icon-ion-android-attach"></i></li>
+        <li><i @click="pickFile" class="icon-ion-android-attach"></i>
+          <input ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                 style="display: none">
+        </li>
       </ul>
       <ul>
         <li><i class="icon-ion-ios-telephone"></i></li>
@@ -67,7 +70,35 @@ export default {
     onSelectEmoji(emoji) {
       console.log('onSelect emoji', emoji)
       this.showEmojiDialog = false;
-    }
+    },
+
+    pickFile() {
+      this.$refs['fileInput'].click();
+    },
+
+    onPickFile(event) {
+      // this.batchProcess(e.target.files[0]);
+      console.log('onPickFile', event.target.files[0]);
+      let file = event.target.files[0];
+      event.target.value = '';
+
+      // TODO
+      // var showMessage = snackbar.showMessage;
+      //
+      // if (!file || file.size === 0) {
+      //   showMessage('You can\'t send an empty file.');
+      //   return false;
+      // }
+      //
+      // if (!file
+      //     || file.size >= 100 * 1024 * 1024) {
+      //   showMessage('Send file not allowed to exceed 100M.');
+      //   return false;
+      // }
+
+      store.sendFile(file);
+    },
+
   },
   components: {
     VEmojiPicker
