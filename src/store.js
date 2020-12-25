@@ -410,37 +410,44 @@ let store = {
         let friends = wfc.getMyFriendList(false);
         if (friends && friends.length > 0) {
             let friendList = wfc.getUserInfos(friends, '');
-            friendList = friendList.map(u => {
-                u._pinyin = convert(u.friendAlias ? u.friendAlias : u.displayName, {style: 0}).join('').trim().toLowerCase();
-                let firstLetter = u._pinyin[0];
-                if (firstLetter >= 'a' && firstLetter <= 'z') {
-                    u.__sortPinyin = 'a' + u._pinyin;
-                } else {
-                    u.__sortPinyin = 'z' + u._pinyin;
-                }
-                u._firstLetters = convert(u.displayName, {style: 4}).join('').trim().toLowerCase();
-                return u;
-            }).sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
-
-            let lastFirstLetter = null;
-            friendList.forEach(u => {
-                let uFirstLetter = u.__sortPinyin[1];
-                if (uFirstLetter >= 'a' && uFirstLetter <= 'z') {
-                    if (!lastFirstLetter || lastFirstLetter !== uFirstLetter) {
-                        u._category = uFirstLetter;
-                        lastFirstLetter = u._category;
-                    }
-                } else {
-                    if (lastFirstLetter !== '#') {
-                        u._category = '#';
-                        lastFirstLetter = u._category;
-                    }
-                }
-            });
-
-            contactState.friendList = friendList;
+            contactState.friendList = this._patchAndSortUserInfos(friendList, '');
         }
-        // TODO group
+    },
+
+    _patchAndSortUserInfos(userInfos, groupId = '') {
+        userInfos = userInfos.map(u => {
+            if (groupId) {
+                u._displayName = wfc.getGroupMemberDisplayNameEx(u);
+            } else {
+                u._displayName = wfc.getUserDisplayNameEx(u);
+            }
+            u._pinyin = convert(u._displayName, {style: 0}).join('').trim().toLowerCase();
+            let firstLetter = u._pinyin[0];
+            if (firstLetter >= 'a' && firstLetter <= 'z') {
+                u.__sortPinyin = 'a' + u._pinyin;
+            } else {
+                u.__sortPinyin = 'z' + u._pinyin;
+            }
+            u._firstLetters = convert(u._displayName, {style: 4}).join('').trim().toLowerCase();
+            return u;
+        }).sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
+
+        let lastFirstLetter = null;
+        userInfos.forEach(u => {
+            let uFirstLetter = u.__sortPinyin[1];
+            if (uFirstLetter >= 'a' && uFirstLetter <= 'z') {
+                if (!lastFirstLetter || lastFirstLetter !== uFirstLetter) {
+                    u._category = uFirstLetter;
+                    lastFirstLetter = u._category;
+                }
+            } else {
+                if (lastFirstLetter !== '#') {
+                    u._category = '#';
+                    lastFirstLetter = u._category;
+                }
+            }
+        });
+        return userInfos;
     },
 
     _loadFavGroupList() {
@@ -538,7 +545,19 @@ let store = {
                         console.log('upload media error', error);
                     });
             });
+    },
+
+    getGroupMemberUserInfos(groupId, includeSelf = true) {
+
+        let memberIds = wfc.getGroupMemberIds(groupId);
+        let userInfos = wfc.getUserInfos(memberIds, groupId);
+        if (!includeSelf) {
+            userInfos = userInfos.filter(u => u.uid !== wfc.getUserId())
+        }
+        let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+        return this._patchAndSortUserInfos(userInfosCloneCopy, groupId);
     }
+
 }
 
 let conversationState = store.state.conversation;

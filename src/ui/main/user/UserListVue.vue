@@ -12,7 +12,7 @@
                    v-model="sharedPickState.users" placeholder="">
             <img class="avatar" :src="user.portrait" alt="">
             <span
-                class="single-line"> {{ userName(user) }}</span>
+                class="single-line"> {{ user._displayName }}</span>
           </div>
         </div>
       </li>
@@ -55,19 +55,6 @@ export default {
       } else {
         store.setCurrentFriend(friend)
       }
-    },
-
-    userName(user) {
-      if (user.groupAlias) {
-        name = user.groupAlias;
-      } else if (user.friendAlias) {
-        name = user.friendAlias;
-      } else if (user.displayName) {
-        name = user.displayName;
-      } else {
-        name = user.name;
-      }
-      return name;
     },
   },
   activated() {

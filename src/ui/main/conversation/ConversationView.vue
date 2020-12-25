@@ -48,7 +48,7 @@
         </div>
         <div v-show="!sharedConversationState.enableMessageMultiSelection" v-on:mousedown="dragStart"
              class="divider-handler"></div>
-        <MessageInputView v-show="!sharedConversationState.enableMessageMultiSelection"
+        <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo" v-show="!sharedConversationState.enableMessageMultiSelection"
                           class="message-input-container"/>
         <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
         <SingleConversationInfoView
