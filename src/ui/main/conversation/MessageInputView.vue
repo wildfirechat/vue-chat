@@ -21,7 +21,7 @@
         <li><i class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
-    <div @keyup.enter="send" ref="input" class="input" contenteditable="true"></div>
+    <div @keyup.enter="send($event)" ref="input" class="input" contenteditable="true"></div>
   </section>
 </template>
 
@@ -35,6 +35,12 @@ import Tribute from "tributejs";
 import '../../../tribute.css'
 import ConversationType from "@/wfc/model/conversationType";
 import ConversationInfo from "@/wfc/model/conversationInfo";
+import GroupInfo from "@/wfc/model/groupInfo";
+import GroupType from "@/wfc/model/groupType";
+import GroupMemberType from "@/wfc/model/groupMemberType";
+import Message from "@/wfc/messages/message";
+import QuoteInfo from "@/wfc/model/quoteInfo";
+import Draft from "@/ui/util/draft";
 
 export default {
   name: "MessageInputView",
@@ -44,6 +50,11 @@ export default {
       required: true,
       default: null,
     },
+    quotedMessage: {
+      type: Message,
+      required: false,
+      default: null,
+    }
   },
   data() {
     return {
@@ -55,22 +66,91 @@ export default {
     }
   },
   methods: {
-    send() {
+    canisend() {
+      let target = this.conversationInfo.conversation._target;
+      if (target instanceof GroupInfo) {
+        let groupInfo = target;
+        if (groupInfo.type === GroupType.Restricted) {
+          let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
+          if (groupInfo.mute === 1 && groupMember.type === GroupMemberType.Normal) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    },
+    send(e) {
       if (this.isMention) {
         this.isMention = false;
         return;
       }
-      let text = this.$refs['input'].textContent;
-      if (!text.trim()) {
+
+      // let text = this.$refs['input'].textContent;
+      // if (!text.trim()) {
+      //   return;
+      // }
+      // this.$refs['input'].textContent = '';
+      // // 发送消息时，会话消息列表需要滚动到最后
+      // store.setShouldAutoScrollToBottom(true)
+      //
+      // let textMessageContent = this.handleMention(text)
+      // let conversation = this.conversationInfo.conversation;
+      // wfc.sendConversationMessage(conversation, textMessageContent);
+      //
+
+      let message = this.$refs['input'].innerHTML.trim();
+      let conversation = this.conversationInfo.conversation;
+
+      if (
+          !conversation
+          || !this.canisend()
+          || !message
+      ) return;
+
+      if (e.ctrlKey) {
+        // e.preventDefault();
+        // this.refs.input.innerHTML = this.refs.input.innerHTML+ "<div><br></div>";
+        document.execCommand('InsertHTML', true, '<br>');
+        if (window.getSelection) {
+          let selection = window.getSelection(),
+              range = selection.getRangeAt(0),
+              br = document.createElement("br");
+          range.deleteContents();
+          range.insertNode(br);
+          range.setStartAfter(br);
+          range.setEndAfter(br);
+          // range.collapse(false);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          // return false;
+        }
         return;
       }
-      this.$refs['input'].textContent = '';
-      // 发送消息时，会话消息列表需要滚动到最后
-      store.setShouldAutoScrollToBottom(true)
 
-      let textMessageContent = this.handleMention(text)
-      let conversation = this.conversationInfo.conversation;
+      // if(!message.startsWith('<')){
+      //     message = message.replace(/<br>/g, '\n').trim()
+      // }
+
+      message = message.replace(/<br>/g, '\n')
+          .replace(/<div>/g, '\n')
+          .replace(/<\/div>/g, '')
+          .replace(/&nbsp;/g, ' ');
+
+      message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
+          .replace(/" src="assets\/twemoji\/72x72\/[0-9a-z-]+\.png">/g, '')
+
+      let textMessageContent = this.handleMention(message);
+      let quotedMessage = this.quotedMessage;
+      if (quotedMessage) {
+        let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
+        textMessageContent.setQuoteInfo(quoteInfo);
+      }
       wfc.sendConversationMessage(conversation, textMessageContent);
+      this.$refs['input'].innerHTML = '';
+      //stores.chat.cancelQuote();
+      this.$parent.$emit('clearQuotedMessage')
+      Draft.setConversationDraft(conversation, '', null);
     },
 
     toggleEmojiView() {
@@ -178,7 +258,7 @@ export default {
 
     handleMention(text) {
       let textMessageContent = new TextMessageContent();
-      textMessageContent.content = text;
+      textMessageContent.content = text.trim();
       this.mentions.forEach(e => {
         if (text.indexOf(e.key) > -1) {
           if (e.value === '@' + this.conversationInfo.conversation.target) {

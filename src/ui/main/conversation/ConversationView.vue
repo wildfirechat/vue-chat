@@ -48,7 +48,9 @@
         </div>
         <div v-show="!sharedConversationState.enableMessageMultiSelection" v-on:mousedown="dragStart"
              class="divider-handler"></div>
-        <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo" v-show="!sharedConversationState.enableMessageMultiSelection"
+        <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
+                          :quoted-message="quotedMessage"
+                          v-show="!sharedConversationState.enableMessageMultiSelection"
                           class="message-input-container"/>
         <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
         <SingleConversationInfoView
@@ -79,7 +81,7 @@
             <a @click.prevent="">收藏</a>
           </li>
           <li>
-            <a @click.prevent="">引用</a>
+            <a @click.prevent="quoteMessage(message)">引用</a>
           </li>
           <li>
             <a @click.prevent="multiSelect">多选</a>
@@ -135,6 +137,8 @@ export default {
 
       savedMessageListViewHeight: -1,
       saveMessageListViewFlexGrow: -1,
+
+      quotedMessage: null,
     };
   },
 
@@ -264,6 +268,9 @@ export default {
       wfc.deleteMessage(message.messageId);
     },
 
+    quoteMessage(message) {
+      this.quotedMessage = message;
+    },
     multiSelect() {
       this.toggleMessageMultiSelectionActionView();
     },
@@ -289,7 +296,10 @@ export default {
 
     this.$on('openMessageContextMenu', function (event, message) {
       this.$refs.menu.open(event, message);
-    })
+    });
+    this.$on('clearQuotedMessage', function (event) {
+      this.quotedMessage = null;
+    });
   },
 
   unmounted() {
