@@ -7,11 +7,11 @@
                :value="message" placeholder="" v-model="sharedConversationState.selectedMessages">
 
         <div class="message-avatar-content-container">
-          <!--消息内容 根据情况，if-else，并根据情况添加right-arrow-->
-          <!--        <TextMessageContentView class="right-arrow right-arrow-primary-color"/>-->
+          <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
+          <!--          <button>progress...</button>-->
+          <LoadingView v-show="false"/>
           <MessageContentContainerView :message="message"
-                                       @contextmenu.prevent.native="openMessageContextMenu($event, message)"
-          />
+                                       @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
           <div>
             <tippy
                 :to="'infoTrigger' + this.message.messageId"
@@ -32,6 +32,7 @@
           </div>
         </div>
       </div>
+      <p v-show="false" class="receipt">已读回执</p>
     </div>
   </section>
 
@@ -42,6 +43,7 @@ import UserCardView from "@/ui/main/user/UserCardView";
 import Message from "@/wfc/messages/message";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 import store from "@/store";
+import LoadingView from "@/ui/common/LoadingView";
 
 export default {
   name: "NormalOutMessageContentView",
@@ -57,6 +59,7 @@ export default {
     }
   },
   components: {
+    LoadingView,
     MessageContentContainerView,
     UserCardView,
     // TextMessageContentView,
@@ -92,21 +95,26 @@ export default {
   font-size: 10px;
 }
 
+.message-time-container .receipt {
+  margin-right: 50px;
+}
+
 .message-content-container {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .message-avatar-content-container {
   display: flex;
   max-width: calc(100% - 60px);
-  align-items: flex-start;
   overflow: hidden;
   max-height: 800px;
   margin-left: auto;
   text-overflow: ellipsis;
+  align-items: center;
 }
 
 .message-avatar-content-container .avatar {
