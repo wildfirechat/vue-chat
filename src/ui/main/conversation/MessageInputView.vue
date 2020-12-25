@@ -21,7 +21,10 @@
         <li><i class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
-    <div @keyup.enter="send($event)" ref="input" class="input" contenteditable="true"></div>
+    <div @keyup.enter="send($event)" v-focus @focus="restoreSelection($event)" @blur="onBlur"
+         @mouseup="saveSelection($event)" @keyup="saveSelection"
+         ref="input" class="input"
+         placeholder="hello" contenteditable="true"></div>
   </section>
 </template>
 
@@ -41,6 +44,8 @@ import GroupMemberType from "@/wfc/model/groupMemberType";
 import Message from "@/wfc/messages/message";
 import QuoteInfo from "@/wfc/model/quoteInfo";
 import Draft from "@/ui/util/draft";
+import {parser as emojiParse} from '@/ui/util/emoji';
+import {focus} from 'vue-focus';
 
 export default {
   name: "MessageInputView",
@@ -63,6 +68,9 @@ export default {
       tribute: null,
       mentions: [],
       isMention: false,
+      selectionOffset: null,
+      savedRange: null,
+      isInFocus: false,
     }
   },
   methods: {
@@ -163,9 +171,97 @@ export default {
       }
     },
 
+    onBlur() {
+      this.isInFocus = false;
+    },
+
     onSelectEmoji(emoji) {
-      console.log('onSelect emoji', emoji)
       this.showEmojiDialog = false;
+      this.restoreSelection();
+      this.insertTextAtCaret(emojiParse(emoji.data));
+      this.$nextTick(()=>{
+        this.placeCaretAtEnd();
+      })
+    },
+
+    createElementFromHTML(htmlString) {
+      let div = document.createElement('div');
+      div.innerHTML = htmlString.trim();
+
+      // Change this to div.childNodes to support multiple top-level nodes
+      return div.firstChild;
+    },
+
+    insertTextAtCaret(text) {
+      let sel, range;
+      if (window.getSelection()) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+          range = sel.getRangeAt(0);
+          range.collapse(false);
+          if (text.startsWith('<')) {
+            let imgEmoji = this.createElementFromHTML(text);
+            range.insertNode(imgEmoji);
+            range = document.createRange();
+            range.selectNodeContents(imgEmoji);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          } else {
+            range.insertNode(document.createTextNode(text));
+          }
+        }
+      } else if (document.selection && document.selection.createRange) {
+        document.selection.createRange().text = text;
+      }
+    },
+
+    saveSelection() {
+      if (window.getSelection)//non IE Browsers
+      {
+        this.savedRange = window.getSelection().getRangeAt(0);
+      } else if (document.selection)//IE
+      {
+        this.savedRange = document.selection.createRange();
+      }
+    },
+
+    restoreSelection() {
+      this.isInFocus = true;
+      this.$refs['input'].focus();
+      if (this.savedRange != null) {
+        if (window.getSelection)//non IE and there is already a selection
+        {
+          let s = window.getSelection();
+          if (s.rangeCount > 0)
+            s.removeAllRanges();
+          s.addRange(this.savedRange);
+        } else if (document.createRange)//non IE and no selection
+        {
+          window.getSelection().addRange(this.savedRange);
+        } else if (document.selection)//IE
+        {
+          this.savedRange.select();
+        }
+      }
+    },
+
+    placeCaretAtEnd() {
+      let el = this.$refs['input'];
+      el.focus();
+      if (typeof window.getSelection != "undefined"
+          && typeof document.createRange != "undefined") {
+        let sel = window.getSelection();
+        let range = sel.getRangeAt(0);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else if (typeof document.body.createTextRange != "undefined") {
+        let textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+      }
     },
 
     pickFile() {
@@ -228,7 +324,6 @@ export default {
         });
       });
 
-
       this.tribute = new Tribute({
         // menuContainer: document.getElementById('content'),
         values: mentionMenuItems,
@@ -287,7 +382,8 @@ export default {
     VEmojiPicker
   },
   directives: {
-    ClickOutside
+    ClickOutside,
+    focus,
   }
 };
 </script>
@@ -317,6 +413,9 @@ export default {
 
 .input {
   flex: 1 1 auto;
+  outline: none;
+  padding: 0 20px;
+  overflow: auto;
 }
 
 ul li {
@@ -337,4 +436,5 @@ i {
 i:hover {
   color: #34b7f1;
 }
+
 </style>

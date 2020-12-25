@@ -16,6 +16,15 @@
     border-right: 8px solid white !important;
 }
 
+
+img.emoji {
+    height: 1em !important;
+    width: 1em !important;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+    user-select: none;
+}
+
 .single-line {
     max-width: 100%;
     text-overflow: ellipsis;
