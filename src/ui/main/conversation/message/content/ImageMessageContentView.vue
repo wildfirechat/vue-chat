@@ -1,6 +1,9 @@
 <template>
   <div class="image-content-container">
-    <img @click="preview(message)" v-bind:src="message.messageContent.remotePath">
+    <img v-show="imageLoaded === false" @click="preview(message)"
+         v-bind:src="'data:video/jpeg;base64,' + message.messageContent.thumbnail">
+    <img v-show="imageLoaded" @click="preview(message)" @load="onImageLoaded"
+         v-bind:src="message.messageContent.remotePath">
   </div>
 </template>
 
@@ -16,10 +19,18 @@ export default {
       required: true,
     }
   },
+  data() {
+    return {
+      imageLoaded: false,
+    }
+  },
   methods: {
     preview(message) {
       console.log('preview', message);
       store.previewMessage(message);
+    },
+    onImageLoaded() {
+      this.imageLoaded = true
     }
   }
 }
