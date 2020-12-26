@@ -149,8 +149,8 @@ export default {
   height: calc(100vh - 100px);
   justify-content: center;
   align-items: center;
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
+  background-color: white;
+  border-radius: 3px;
 }
 
 .menu-container {

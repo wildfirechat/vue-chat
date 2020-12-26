@@ -370,7 +370,6 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #e6e6e6;
 }
 
 .conversation-container header {
