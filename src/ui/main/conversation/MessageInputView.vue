@@ -25,6 +25,7 @@
          @mouseup="saveSelection($event)" @keyup="saveSelection"
          ref="input" class="input"
          placeholder="hello" contenteditable="true"></div>
+    <QuoteMessageView v-if="shareConversationState.quotedMessage !== null"/>
   </section>
 </template>
 
@@ -41,11 +42,11 @@ import ConversationInfo from "@/wfc/model/conversationInfo";
 import GroupInfo from "@/wfc/model/groupInfo";
 import GroupType from "@/wfc/model/groupType";
 import GroupMemberType from "@/wfc/model/groupMemberType";
-import Message from "@/wfc/messages/message";
 import QuoteInfo from "@/wfc/model/quoteInfo";
 import Draft from "@/ui/util/draft";
 import {parser as emojiParse} from '@/ui/util/emoji';
 import {focus} from 'vue-focus';
+import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 
 export default {
   name: "MessageInputView",
@@ -55,15 +56,10 @@ export default {
       required: true,
       default: null,
     },
-    quotedMessage: {
-      type: Message,
-      required: false,
-      default: null,
-    }
   },
   data() {
     return {
-      currentConversation: null,
+      shareConversationState: store.state.conversation,
       showEmojiDialog: false,
       tribute: null,
       mentions: [],
@@ -156,8 +152,7 @@ export default {
       }
       wfc.sendConversationMessage(conversation, textMessageContent);
       this.$refs['input'].innerHTML = '';
-      //stores.chat.cancelQuote();
-      this.$parent.$emit('clearQuotedMessage')
+      store.quoteMessage(null);
       Draft.setConversationDraft(conversation, '', null);
     },
 
@@ -179,7 +174,7 @@ export default {
       this.showEmojiDialog = false;
       this.restoreSelection();
       this.insertTextAtCaret(emojiParse(emoji.data));
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.placeCaretAtEnd();
       })
     },
@@ -379,6 +374,7 @@ export default {
   },
 
   components: {
+    QuoteMessageView,
     VEmojiPicker
   },
   directives: {

@@ -40,6 +40,7 @@ let store = {
 
             enableMessageMultiSelection: false,
             selectedMessages: [],
+            quotedMessage: null,
         },
 
         contact: {
@@ -219,6 +220,7 @@ let store = {
 
         conversationState.enableMessageMultiSelection = false;
         conversationState.selectedMessages.length = 0;
+        conversationState.quotedMessage = null;
     },
 
     setCurrentConversationInfo(conversationInfo) {
@@ -231,6 +233,7 @@ let store = {
 
         conversationState.enableMessageMultiSelection = false;
         conversationState.selectedMessages.length = 0;
+        conversationState.quotedMessage = null;
     },
 
     toggleMessageMultiSelection() {
@@ -318,18 +321,25 @@ let store = {
         msg.messageContent = messageContent;
         wfc.sendMessage(msg,
             (messageId) => {
+                console.log('sf, p', messageId)
 
             },
             (progress, total) => {
-                // TODO
+                console.log('sf pp', progress, total)
             },
             (messageUid) => {
+                console.log('sf s', messageUid)
 
             },
             (error) => {
+                console.log('sf e', error)
 
             }
         );
+    },
+
+    quoteMessage(message) {
+        conversationState.quotedMessage = message;
     },
 
     _loadCurrentConversationMessages() {
@@ -378,6 +388,11 @@ let store = {
         // _from
         // _showTime
         m._from = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
+        if (m.conversation.type === ConversationType.Group) {
+            m._from._displayName = wfc.getGroupMemberDisplayNameEx(m._from);
+        } else {
+            m._from._displayName = wfc.getUserDisplayNameEx(m._from);
+        }
         if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 5 * 60 * 1000) {
             m._showTime = true;
             m._timeStr = helper.timeFormat(m.timestamp)

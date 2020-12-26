@@ -49,7 +49,6 @@
         <div v-show="!sharedConversationState.enableMessageMultiSelection" v-on:mousedown="dragStart"
              class="divider-handler"></div>
         <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
-                          :quoted-message="quotedMessage"
                           v-show="!sharedConversationState.enableMessageMultiSelection"
                           class="message-input-container"/>
         <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
@@ -138,7 +137,6 @@ export default {
       savedMessageListViewHeight: -1,
       saveMessageListViewFlexGrow: -1,
 
-      quotedMessage: null,
     };
   },
 
@@ -269,7 +267,7 @@ export default {
     },
 
     quoteMessage(message) {
-      this.quotedMessage = message;
+      store.quoteMessage(message);
     },
     multiSelect() {
       this.toggleMessageMultiSelectionActionView();
@@ -296,9 +294,6 @@ export default {
 
     this.$on('openMessageContextMenu', function (event, message) {
       this.$refs.menu.open(event, message);
-    });
-    this.$on('clearQuotedMessage', function (event) {
-      this.quotedMessage = null;
     });
   },
 
