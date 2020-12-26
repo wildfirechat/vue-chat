@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="login">
     <div v-show="status !== 1">
       <p>请使用野火IM 移动端扫码登录</p>
       <img v-bind:src="qrCode">
@@ -136,17 +136,18 @@ export default {
 </script>
 
 <style lang="css" scoped>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+#login {
+  width: calc(100vw - 160px);
+  height: calc(100vh - 100px);
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 p {
-  color: red;
+  color: white;
+  padding: 20px;
 
 }
 </style>

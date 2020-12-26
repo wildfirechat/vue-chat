@@ -6,21 +6,13 @@
         :slideshow="false"
         @close="sharedConversationState.previewMediaIndex = null">
     </CoolLightBox>
-    <!--用来实现视频缩略图-->
-    <div id="styled_video_container" class="styled_video_container">
-      <video class="styled_video_container" id="bgvid" playsinline autoplay muted loop>
-        <!-- <source src="http://thenewcode.com/assets/videos/polina.webm" type="video/webm">
-        <source src="http://thenewcode.com/assets/videos/polina.mp4" type="video/mp4"> -->
-      </video>
-    </div>
-
     <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
       <h2>no conversation is select</h2>
     </div>
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1>{{ conversationTitle }}</h1>
+          <h1 class="single-line">{{ conversationTitle }}</h1>
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
@@ -144,7 +136,6 @@ export default {
     toggleConversationInfo() {
       console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
-
     },
 
     toggleMessageMultiSelectionActionView() {
@@ -352,21 +343,9 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: white;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
   /*border-left: 1px solid #e6e6e6;*/
-}
-
-.styled_video_container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  z-index: -999;
-  transform: translateX(-50%) translateY(-50%);
-  background-size: cover;
-  transition: 1s opacity;
 }
 
 .title-container {
@@ -377,9 +356,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   background-color: #f5f5f5;
-  font-size: 15px;
-  font-weight: normal;
   border-bottom: 1px solid #e6e6e6;
+  border-top-right-radius: 3px;
+}
+
+.title-container h1 {
+  font-size: 16px;
+  border-top-right-radius: 3px;
+  font-weight: normal;
 }
 
 .conversation-container {
@@ -387,6 +371,10 @@ export default {
   display: flex;
   flex-direction: column;
   border-left: 1px solid #e6e6e6;
+}
+
+.conversation-container header {
+  border-top-right-radius: 3px;
 }
 
 .conversation-container header {
@@ -407,6 +395,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #f3f3f3;
+  border-bottom-right-radius: 3px;
 }
 
 .conversation-message-list {
@@ -436,6 +425,7 @@ export default {
 .message-input-container {
   height: 200px;
   min-height: 200px;
+  border-bottom-right-radius: 20px;
 }
 
 .conversation-info-container {

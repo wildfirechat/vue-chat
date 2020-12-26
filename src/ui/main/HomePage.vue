@@ -142,18 +142,15 @@ export default {
 </script>
 
 <style lang="css" scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-
-  list-style: none;
-}
 
 .home {
   display: flex;
-  width: 100vw;
-  height: 100vh;
+  width: calc(100vw - 160px);
+  height: calc(100vh - 100px);
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .menu-container {

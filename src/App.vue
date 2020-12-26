@@ -1,5 +1,78 @@
 <template>
-  <div @contextmenu.prevent="">
-    <router-view></router-view>
+  <div id="app" @contextmenu.prevent="">
+    <div class="blur-container">
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50"
+           class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
+        <filter id="blur_mkvvpnf">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="50"></feGaussianBlur>
+        </filter>
+        <image x="0" y="0" width="100%" height="100%" externalResourcesRequired="true"
+               xmlns:xlink="http://www.w3.org/1999/xlink"
+               xlink:href="https://p1.music.126.net/F5x7VgIRu_awduoWu2sDeA==/109951163302871673.jpg"
+               style="filter:url(#blur_mkvvpnf)" preserveAspectRatio="none"></image>
+      </svg>
+      <div class="blur-mask"></div>
+    </div>
+    <!--用来实现视频缩略图-->
+    <div id="styled_video_container" class="styled_video_container">
+      <video id="bgvid" playsinline autoplay muted loop>
+        <!-- <source src="http://thenewcode.com/assets/videos/polina.webm" type="video/webm">
+        <source src="http://thenewcode.com/assets/videos/polina.mp4" type="video/mp4"> -->
+      </video>
+    </div>
+
+    <router-view class="content-container"></router-view>
   </div>
 </template>
+
+<style lang="css" scoped>
+#app {
+  background-color: red;
+  position: relative;
+}
+
+.blur-container {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  z-index: -10;
+  position: fixed;
+  margin: 0;
+}
+
+.blur-container .blur-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, .2);
+  overflow: hidden;
+}
+
+.styled_video_container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  z-index: -999;
+  background-size: cover;
+  transition: 1s opacity;
+}
+
+.content-container {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /*如果修改这儿，需要一同修改.home*/
+  margin: 50px 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+</style>

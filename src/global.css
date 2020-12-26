@@ -32,9 +32,19 @@ img.emoji {
     white-space: nowrap;
 }
 
+ul,
+ol{
+    list-style: none;
+}
+
 img,
 video {
     outline: none;
+}
+
+p,
+div {
+    word-break: break-all;
 }
 
 @import '~vue-context/dist/css/vue-context.css';

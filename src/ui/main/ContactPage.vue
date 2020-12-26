@@ -38,6 +38,7 @@ export default {
 .contact-page {
   display: flex;
   flex: 1;
+  height: 100%;
 }
 
 .contact-list-panel {
