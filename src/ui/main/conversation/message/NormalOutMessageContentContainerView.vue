@@ -114,7 +114,7 @@ export default {
   max-height: 800px;
   margin-left: auto;
   text-overflow: ellipsis;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .message-avatar-content-container .avatar {

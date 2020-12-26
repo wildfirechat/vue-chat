@@ -146,7 +146,7 @@ export default {
           .replace(/&nbsp;/g, ' ');
 
       message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
-          .replace(/" src="assets\/twemoji\/72x72\/[0-9a-z-]+\.png">/g, '')
+          .replace(/" src="https:\/\/static\.wildfirechat\.cn\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
 
       let textMessageContent = this.handleMention(message);
       let quotedMessage = this.quotedMessage;

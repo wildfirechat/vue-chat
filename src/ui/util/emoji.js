@@ -388,7 +388,7 @@ function parser(text) {
     // });
 
     let emoji = uEmojiParser.parse(decodeText);
-    emoji = emoji.replace(/src="https:\/\/twemoji\.maxcdn\.com\/v\/12\.1\.6\//g, 'src="assets/twemoji/')
+    emoji = emoji.replace(/src="https:\/\/twemoji\.maxcdn\.com\/v\/13\.0\.1\//g, 'src="https:\/\/static\.wildfirechat\.cn\/twemoji\/assets\/')
     return emoji;
 }
 
