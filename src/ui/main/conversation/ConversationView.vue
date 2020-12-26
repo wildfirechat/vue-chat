@@ -74,7 +74,7 @@
             <a @click.prevent="delMessage(message)">删除</a>
           </li>
           <li v-if="isForwardable(message)">
-            <a @click.prevent="">转发</a>
+            <a @click.prevent="forward(message)">转发</a>
           </li>
           <li v-if="isFavable">
             <a @click.prevent="">收藏</a>
@@ -266,6 +266,11 @@ export default {
       wfc.deleteMessage(message.messageId);
     },
 
+    forward(message) {
+      // TODO
+
+    },
+
     quoteMessage(message) {
       store.quoteMessage(message);
     },
@@ -368,9 +373,12 @@ export default {
   width: 100%;
   height: 60px;
   display: flex;
+  padding: 0 20px;
   justify-content: space-between;
   align-items: center;
   background-color: #f5f5f5;
+  font-size: 15px;
+  font-weight: normal;
   border-bottom: 1px solid #e6e6e6;
 }
 

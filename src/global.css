@@ -32,4 +32,9 @@ img.emoji {
     white-space: nowrap;
 }
 
+img,
+video {
+    outline: none;
+}
+
 @import '~vue-context/dist/css/vue-context.css';
