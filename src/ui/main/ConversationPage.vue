@@ -1,5 +1,5 @@
 <template>
-  <section class="conversation-page">
+  <section id="conversation-content" class="conversation-page">
     <ConversationListPanel class="conversation-list-panel"/>
     <ConversationView class="conversation-view"/>
   </section>

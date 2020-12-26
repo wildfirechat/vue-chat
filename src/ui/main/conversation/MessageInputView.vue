@@ -320,7 +320,6 @@ export default {
       });
 
       this.tribute = new Tribute({
-        // menuContainer: document.getElementById('content'),
         values: mentionMenuItems,
         selectTemplate: (item) => {
           if (typeof item === 'undefined') return null;
@@ -341,7 +340,7 @@ export default {
         lookup: (item) => {
           return item.searchKey;
         },
-        menuContainer: document.body,
+        menuContainer: document.getElementById('conversation-content'),
       });
       this.tribute.attach(this.$refs['input']);
     },
@@ -366,9 +365,14 @@ export default {
       return textMessageContent;
     }
   },
+
+  mounted() {
+    if (this.conversationInfo) {
+      this.initMention(this.conversationInfo.conversation)
+    }
+  },
   watch: {
-    conversationInfo(newC, oldC) {
-      console.log('conversation changed', oldC, newC)
+    conversationInfo(oldC) {
       this.initMention(this.conversationInfo.conversation)
     }
   },
