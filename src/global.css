@@ -33,10 +33,11 @@ img.emoji {
 }
 
 ul,
-ol{
+ol {
     list-style: none;
 }
 
+button,
 img,
 video {
     outline: none;

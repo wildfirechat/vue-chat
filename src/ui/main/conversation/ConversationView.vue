@@ -7,7 +7,7 @@
         @close="sharedConversationState.previewMediaIndex = null">
     </CoolLightBox>
     <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
-      <h2>no conversation is select</h2>
+      <h1>^~^</h1>
     </div>
     <div v-else class="conversation-container">
       <header>
@@ -24,7 +24,7 @@
       >
         <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
           <div class="drag-drop">
-            <p>Drag and Drop</p>
+            <p>拖拽到此发送给{{ conversationTitle }}</p>
           </div>
         </div>
         <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
@@ -450,6 +450,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.conversation-content-container .drag-drop p{
+  padding-bottom: 100px;
 }
 
 .conversation-message-list {
