@@ -26,7 +26,7 @@
           }}</a>
       </li>
       <li>
-        <a @click.prevent="delConversation(conversationInfo)">删除</a>
+        <a @click.prevent="removeConversation(conversationInfo)">删除</a>
       </li>
     </vue-context>
   </section>
@@ -51,19 +51,15 @@ export default {
     },
 
     setConversationTop(conversationInfo) {
-      console.log('setConversationTop', conversationInfo)
+      store.setConversationTop(conversationInfo.conversation, !conversationInfo.isTop);
     },
 
     setConversationSilent(conversationInfo) {
-      console.log('setSilent', conversationInfo);
+      store.setConversationSilent(conversationInfo.conversation, !conversationInfo.isSilent);
     },
 
-    delConversation(conversationInfo) {
-      console.log('delete', conversationInfo)
-    },
-
-    onClick(v) {
-      console.log('xxx', v)
+    removeConversation(conversationInfo) {
+      store.removeConversation(conversationInfo.conversation);
     },
 
     conversationInfoKey(conversationInfo) {

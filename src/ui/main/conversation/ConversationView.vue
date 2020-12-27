@@ -419,7 +419,6 @@ export default {
   border-bottom: 1px solid #e6e6e6;
 }
 
-
 .conversation-content-container {
   flex: 1;
   height: calc(100% - 60px);
