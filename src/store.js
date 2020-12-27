@@ -383,6 +383,34 @@ let store = {
             });
     },
 
+    setConversationTop(conversation, top) {
+        wfc.setConversationTop(conversation, top,
+            () => {
+                this._loadDefaultConversationList();
+            },
+            (err) => {
+                console.log('setConversationTop error', err)
+            });
+    },
+
+    setConversationSilent(conversation, silent) {
+        wfc.setConversationSlient(conversation, silent,
+            () => {
+                this._loadDefaultConversationList();
+            },
+            (err) => {
+                console.log('setConversationSilent error', err)
+            });
+    },
+
+    removeConversation(conversation) {
+        wfc.removeConversation(conversation, false);
+        if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversation)) {
+            conversationState.currentConversationInfo = null;
+        }
+        this._loadDefaultConversationList();
+    },
+
     _patchMessage(m, lastTimestamp) {
         // TODO
         // _from

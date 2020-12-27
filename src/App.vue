@@ -22,7 +22,7 @@
       </video>
     </div>
 
-    <router-view class="content-container"></router-view>
+    <router-view class="main-content-container"></router-view>
   </div>
 </template>
 
@@ -73,7 +73,7 @@
   transition: 1s opacity;
 }
 
-.content-container {
+.main-content-container {
   z-index: 999;
   position: absolute;
   top: 0;

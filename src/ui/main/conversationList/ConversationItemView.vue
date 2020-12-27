@@ -11,15 +11,16 @@
         <img class="avatar" :src="conversationInfo.conversation._target.portrait" alt=""/>
         <em v-if="unread > 0" class="badge">{{ unread }}</em>
       </div>
-      <div class="content">
+      <div class="content-container">
         <div class="title-time-container">
           <h2 class="title single-line">{{ conversationTitle }}</h2>
           <p class="time single-line">{{ conversationInfo._timeStr }}</p>
         </div>
-        <div>
+        <div class="content">
           <p class="draft single-line" v-if="conversationInfo.draft">{{ conversationInfo.draft }}</p>
           <p class="message single-line" v-else>
             {{ conversationDesc }}</p>
+          <i v-if="conversationInfo.isSilent" class="icon-ion-android-volume-mute"></i>
         </div>
       </div>
     </div>
@@ -143,23 +144,23 @@ export default {
   top: 8px;
 }
 
-.content {
+.content-container {
   width: 100%;
   height: 50px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  padding-right: 12px;
 }
 
-.content .title-time-container {
+.content-container .title-time-container {
   display: flex;
   width: 100%;
-  padding-right: 12px;
   justify-content: space-between;
 }
 
-.content .title-time-container .title {
+.content-container .title-time-container .title {
   display: inline-block;
   font-size: 14px;
   color: #262626;
@@ -168,10 +169,15 @@ export default {
   padding-right: 10px;
 }
 
-.content .title-time-container .time {
+.content-container .title-time-container .time {
   display: inline-block;
   color: gray;
   font-size: 10px;
+}
+
+.content-container .content {
+  display: flex;
+  justify-content: space-between;
 }
 
 .content .draft {
@@ -181,6 +187,10 @@ export default {
 .content .message {
   color: #b8b8b8;
   font-size: 13px;
+}
+
+.content i {
+  color: #b8b8b8;
 }
 
 
