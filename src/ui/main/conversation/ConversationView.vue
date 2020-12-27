@@ -377,8 +377,8 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: white;
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-top-right-radius: var(--main-border-radius);
+  border-bottom-right-radius: var(--main-border-radius);
   /*border-left: 1px solid #e6e6e6;*/
 }
 
@@ -391,12 +391,11 @@ export default {
   align-items: center;
   background-color: #f5f5f5;
   border-bottom: 1px solid #e6e6e6;
-  border-top-right-radius: 3px;
+  border-top-right-radius: var(--main-border-radius);
 }
 
 .title-container h1 {
   font-size: 16px;
-  border-top-right-radius: 3px;
   font-weight: normal;
 }
 
@@ -407,7 +406,7 @@ export default {
 }
 
 .conversation-container header {
-  border-top-right-radius: 3px;
+  border-top-right-radius: var(--main-border-radius);
 }
 
 .conversation-container header {
@@ -428,7 +427,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #f3f3f3;
-  border-bottom-right-radius: 3px;
+  border-bottom-right-radius: var(--main-border-radius);
 }
 
 .conversation-content-container .drag-drop-container {
@@ -482,7 +481,6 @@ export default {
 .message-input-container {
   height: 200px;
   min-height: 200px;
-  border-bottom-right-radius: 20px;
 }
 
 .conversation-info-container {

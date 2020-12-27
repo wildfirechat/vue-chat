@@ -145,12 +145,12 @@ export default {
 
 .home {
   display: flex;
-  width: calc(100vw - 160px);
-  height: calc(100vh - 100px);
+  width: calc(100vw - var(--main-margin-left) - var(--main-margin-right));
+  height: calc(100vh - var(--main-margin-top) - var(--main-margin-bottom));
   justify-content: center;
   align-items: center;
   background-color: white;
-  border-radius: 3px;
+  border-radius: var(--main-border-radius);
 }
 
 .menu-container {
@@ -161,8 +161,8 @@ export default {
   flex-direction: column;
   align-items: center;
   background: linear-gradient(180deg, #292a2c 0%, #483a3a 100%);
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
+  border-top-left-radius: var(--main-border-radius);
+  border-bottom-left-radius: var(--main-border-radius);
   padding: 20px 0;
 }
 

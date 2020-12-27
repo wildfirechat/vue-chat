@@ -1,12 +1,10 @@
 <template>
-  <section>
-    <div class="group-info-container">
-      <div class="group-info">
-        <img src="@/assets/images/default_group_avatar.png">
-        <p>群名称 {{ sharedContactState.currentGroup.name }}</p>
-      </div>
-      <a @click="chat">进入群聊</a>
+  <section class="group-info-container">
+    <div class="group-info">
+      <img src="@/assets/images/default_group_avatar.png">
+      <p>群名称 {{ sharedContactState.currentGroup.name }}</p>
     </div>
+    <a @click="chat">进入群聊</a>
   </section>
 </template>
 
@@ -42,6 +40,8 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-top-right-radius: var(--main-border-radius);
+  border-bottom-right-radius: var(--main-border-radius);
 }
 
 .group-info-container a {

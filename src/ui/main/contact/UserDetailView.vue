@@ -78,6 +78,8 @@ export default {
 .user-detail-container {
   margin-left: 90px;
   margin-right: 90px;
+  border-top-right-radius: var(--main-border-radius);
+  border-bottom-right-radius: var(--main-border-radius);
 }
 
 .header {

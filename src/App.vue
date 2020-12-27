@@ -26,7 +26,17 @@
   </div>
 </template>
 
-<style lang="css" scoped>
+<!--should not scoped-->
+<style lang="css">
+
+:root {
+  --main-border-radius: 10px;
+  --main-margin-left: 80px;
+  --main-margin-right: 80px;
+  --main-margin-top: 50px;
+  --main-margin-bottom: 50px
+}
+
 #app {
   background-color: red;
   position: relative;
@@ -68,8 +78,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  /*如果修改这儿，需要一同修改.home*/
-  margin: 50px 80px;
+  margin: var(--main-margin-top) var(--main-margin-right) var(--main-margin-bottom) var(--main-margin-left);
   display: flex;
   justify-content: center;
   align-items: center;
