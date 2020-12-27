@@ -283,9 +283,9 @@ let store = {
             });
         }
     },
-    async sendFile(file) {
+    async sendFile(conversation, file) {
         let msg = new Message();
-        msg.conversation = conversationState.currentConversationInfo.conversation;
+        msg.conversation = conversation;
 
         var mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
         var messageContentmediaType = {

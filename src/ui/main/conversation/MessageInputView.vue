@@ -283,7 +283,7 @@ export default {
       //   return false;
       // }
 
-      store.sendFile(file);
+      store.sendFile(this.conversationInfo.conversation, file);
     },
 
     initMention(conversation) {

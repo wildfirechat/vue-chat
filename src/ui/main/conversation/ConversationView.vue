@@ -16,7 +16,17 @@
           <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
         </div>
       </header>
-      <div ref="conversationContentContainer" class="conversation-content-container">
+      <div ref="conversationContentContainer" class="conversation-content-container"
+           @dragover="dragEvent($event, 'dragover')"
+           @dragleave="dragEvent($event, 'dragleave')"
+           @dragenter="dragEvent($event,'dragenter')"
+           @drop="dragEvent($event, 'drop')"
+      >
+        <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
+          <div class="drag-drop">
+            <p>Drag and Drop</p>
+          </div>
+        </div>
         <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
           <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
                             @infinite="infiniteHandler"/>
@@ -129,10 +139,34 @@ export default {
       savedMessageListViewHeight: -1,
       saveMessageListViewFlexGrow: -1,
 
+      dragAndDropEnterCount: 0,
+
     };
   },
 
   methods: {
+    dragEvent(e, v) {
+      if (v === 'dragenter') {
+        this.dragAndDropEnterCount++;
+      } else if (v === 'dragleave') {
+        this.dragAndDropEnterCount--;
+      } else if (v === 'drop') {
+        this.dragAndDropEnterCount--;
+        let length = e.dataTransfer.files.length;
+        if (length > 0 && length < 5) {
+          for (let i = 0; i < length; i++) {
+            store.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
+          }
+        } else {
+          // TODO
+          // toast
+          console.log('一次最多发送5个文件');
+        }
+      } else if (v === 'dragover') {
+        // If not st as 'copy', electron will open the drop file
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    },
     toggleConversationInfo() {
       console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
@@ -395,6 +429,27 @@ export default {
   flex-direction: column;
   background-color: #f3f3f3;
   border-bottom-right-radius: 3px;
+}
+
+.conversation-content-container .drag-drop-container {
+  position: absolute;
+  background-color: #f2f2f2a5;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  height: 100%;
+  padding: 20px 15px 15px 15px;
+}
+
+.conversation-content-container .drag-drop {
+  border: 2px dashed #b2b2b2;
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .conversation-message-list {

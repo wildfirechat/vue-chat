@@ -70,7 +70,6 @@ export default {
       let conv = conversationInfo.conversation;
       return conv.target + '-' + conv.type + '-' + conv.line;
     },
-
   },
   components: {
     ConversationItemView,

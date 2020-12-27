@@ -1,5 +1,11 @@
 <template>
-  <div class="conversation-item-container">
+  <div class="conversation-item-container"
+       @dragover="dragEvent($event, 'dragover')"
+       @dragleave="dragEvent($event, 'dragleave')"
+       @dragenter="dragEvent($event,'dragenter')"
+       @drop="dragEvent($event, 'drop')"
+       v-bind:class="{drag: dragAndDropEnterCount > 0}"
+  >
     <div class="conversation-item">
       <div class="header">
         <img class="avatar" :src="conversationInfo.conversation._target.portrait" alt=""/>
@@ -23,6 +29,7 @@
 <script>
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import ConversationType from "@/wfc/model/conversationType";
+import store from "@/store";
 
 export default {
   name: "ConversationItemView",
@@ -33,9 +40,35 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      dragAndDropEnterCount: 0
+    };
   },
-  methods: {},
+  methods: {
+    dragEvent(e, v) {
+      console.log('ci', this.dragAndDropEnterCount)
+      if (v === 'dragenter') {
+        this.dragAndDropEnterCount++;
+      } else if (v === 'dragleave') {
+        this.dragAndDropEnterCount--;
+      } else if (v === 'drop') {
+        this.dragAndDropEnterCount--;
+        let length = e.dataTransfer.files.length;
+        if (length > 0 && length < 5) {
+          for (let i = 0; i < length; i++) {
+            store.sendFile(this.conversationInfo.conversation, e.dataTransfer.files[i]);
+          }
+        } else {
+          // TODO
+          // toast
+          console.log('一次最多发送5个文件');
+        }
+      } else if (v === 'dragover') {
+        // If not st as 'copy', electron will open the drop file
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    },
+  },
   computed: {
     conversationTitle() {
       let info = this.conversationInfo;
@@ -57,13 +90,17 @@ export default {
       let unreadCount = conversationInfo.unreadCount;
       return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
     }
-  }
+  },
 };
 </script>
 
 <style scoped>
 .conversation-item-container {
   padding-left: 12px;
+}
+
+.conversation-item-container.drag {
+  border: 1px solid #d6d6d6;
 }
 
 .conversation-item {
