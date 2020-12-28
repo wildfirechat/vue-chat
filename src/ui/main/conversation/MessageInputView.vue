@@ -370,6 +370,7 @@ export default {
     if (this.conversationInfo) {
       this.initMention(this.conversationInfo.conversation)
     }
+    this.$refs['input'].focus();
   },
   watch: {
     conversationInfo(oldC) {

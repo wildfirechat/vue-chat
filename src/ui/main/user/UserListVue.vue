@@ -7,6 +7,7 @@
             <p>{{ user._category.toUpperCase() }}</p>
           </div>
           <div class="content"
+               v-bind:class="{active: user.uid === sharedContactState.currentFriend.uid}"
                @click.stop="clickUserItem(user)">
             <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
                    v-model="sharedPickState.users" placeholder="">
@@ -39,6 +40,7 @@ export default {
   data() {
     return {
       sharedPickState: store.state.pick,
+      sharedContactState: store.state.contact,
     }
   },
   methods: {
