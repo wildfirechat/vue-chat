@@ -17,8 +17,8 @@
         </li>
       </ul>
       <ul>
-        <li><i class="icon-ion-ios-telephone"></i></li>
-        <li><i class="icon-ion-ios-videocam"></i></li>
+        <li><i @click="startAudioCall" class="icon-ion-ios-telephone"></i></li>
+        <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
     <div @keyup.enter="send($event)" v-focus @focus="restoreSelection($event)" @blur="onBlur"
@@ -47,6 +47,7 @@ import Draft from "@/ui/util/draft";
 import {parser as emojiParse} from '@/ui/util/emoji';
 import {focus} from 'vue-focus';
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
+import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 
 export default {
   name: "MessageInputView",
@@ -264,6 +265,27 @@ export default {
       this.$refs['fileInput'].click();
     },
 
+    startAudioCall() {
+      // TODO
+      let conversation = this.conversationInfo.conversation;
+      if (conversation.type === ConversationType.Single) {
+        avenginekitproxy.startCall(conversation, true, [conversation.target])
+      } else {
+        // TODO
+      }
+    },
+
+    startVideoCall() {
+      // TODO
+      let conversation = this.conversationInfo.conversation;
+      if (conversation.type === ConversationType.Single) {
+        avenginekitproxy.startCall(conversation, false, [conversation.target])
+      } else {
+        // TODO
+      }
+
+    },
+
     onPickFile(event) {
       // this.batchProcess(e.target.files[0]);
       console.log('onPickFile', event.target.files[0]);
@@ -368,7 +390,7 @@ export default {
   },
 
   activated() {
-    this.$nextTick(()=>{
+    this.$nextTick(() => {
       this.$refs['input'].focus();
     })
   },
