@@ -114,6 +114,7 @@ import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
+import ForwardMessageView from "@/ui/main/conversation/ForwardMessageByPickConversationView";
 
 export default {
   components: {
@@ -134,6 +135,7 @@ export default {
       isInviteConversationMember: false,
       isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
+      sharedContactState: store.state.contact,
       isHandlerDragging: false,
 
       savedMessageListViewHeight: -1,
@@ -292,8 +294,7 @@ export default {
     },
 
     forward(message) {
-      // TODO
-
+      this.showForwardMessageModal(message);
     },
 
     quoteMessage(message) {
@@ -314,6 +315,33 @@ export default {
       });
     },
 
+    showForwardMessageModal() {
+      this.$modal.show(
+          ForwardMessageView,
+          {
+            users: this.sharedContactState.friendList,
+          }, {
+            name: 'invite-modal',
+            width: 600,
+            height: 480,
+            clickToClose: false,
+          }, {
+            'before-close': this.beforeForwardMessageModalClose,
+          })
+    },
+    beforeForwardMessageModalClose(event) {
+      console.log('Closing...', event, event.params)
+      // What a gamble... 50% chance to cancel closing
+      if (event.params.confirm) {
+        let users = event.params.users;
+        store.createGroup(users);
+
+        console.log('confirm')
+      } else {
+        console.log('cancel')
+        // TODO clear pick state
+      }
+    },
 
   },
 
@@ -449,7 +477,8 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.conversation-content-container .drag-drop p{
+
+.conversation-content-container .drag-drop p {
   padding-bottom: 100px;
 }
 

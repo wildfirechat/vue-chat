@@ -37,15 +37,12 @@ export default {
   },
 
   created() {
-    console.log('app', window.location)
     if (window.location.href.indexOf('voip') >= 0) {
-      console.log('app---')
       let root = document.documentElement;
-      root.style.setProperty('--main-margin-left', 0);
-      root.style.setProperty('--main-margin-right', 0);
-      root.style.setProperty('--main-margin-top', 0);
-      root.style.setProperty('--main-margin-bottom', 0);
-      console.log('app---end')
+      root.style.setProperty('--main-margin-left', '0');
+      root.style.setProperty('--main-margin-right', '0');
+      root.style.setProperty('--main-margin-top', '0');
+      root.style.setProperty('--main-margin-bottom', '0');
     }
   }
 }
