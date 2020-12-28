@@ -158,6 +158,7 @@ export default {
 
     toggleEmojiView() {
       this.showEmojiDialog = !this.showEmojiDialog;
+      this.$refs['input'].focus();
     },
 
     hideEmojiView(e) {
@@ -366,15 +367,23 @@ export default {
     }
   },
 
+  activated() {
+    this.$nextTick(()=>{
+      this.$refs['input'].focus();
+    })
+  },
+
   mounted() {
     if (this.conversationInfo) {
       this.initMention(this.conversationInfo.conversation)
     }
     this.$refs['input'].focus();
   },
+
   watch: {
-    conversationInfo(oldC) {
+    conversationInfo() {
       this.initMention(this.conversationInfo.conversation)
+      this.$refs['input'].focus();
     }
   },
 

@@ -81,7 +81,7 @@ export default {
 }
 
 .conversation-list ul li {
-  background-color: #fbfbfb;
+  background-color: #f8f8f8;
 }
 
 /*.conversation-list ul li:hover {*/
