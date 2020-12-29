@@ -39,16 +39,7 @@
           <span class="name single-line">{{ conversation._target._displayName }}</span>
         </div>
       </div>
-      <div class="forward-message">
-        <img v-if="[3, 6].indexOf(message.messageContent.type) >= 0"
-             :src="'data:video/jpeg;base64,' + message.messageContent.thumbnail" alt="">
-        <p v-else>
-          {{ this.forwardMessageStr }}
-        </p>
-      </div>
-      <label>
-        <input type="text" placeholder="给朋友留言" v-model="extraMessageText">
-      </label>
+      <ForwardMessageView ref="forwardMessageView" :message="message"/>
       <footer>
         <button @click="cancel" class="cancel">取消</button>
         <button @click="confirm" class="confirm">发送</button>
@@ -60,7 +51,7 @@
 <script>
 import store from "@/store";
 import Message from "@/wfc/messages/message";
-import MessageContentType from "@/wfc/messages/messageContentType";
+import ForwardMessageView from "@/ui/main/conversation/ForwardMessageView";
 
 export default {
   name: "ForwardMessageByPickConversationView",
@@ -74,7 +65,6 @@ export default {
     return {
       sharedConversation: store.state.conversation,
       sharedPickState: store.state.pick,
-      extraMessageText: '',
     }
   },
   methods: {
@@ -86,6 +76,7 @@ export default {
     },
 
     showForwardByCreateConversationModal() {
+      this.sharedPickState.conversations.length = 0;
       this.$modal.hide('forward-by-pick-conversation-modal',
           {
             toCreateConversation: true,
@@ -106,21 +97,12 @@ export default {
             confirm: true,
             conversations: pickedConversations,
             message: this.message,
-            extraMessageText: this.extraMessageText,
+            extraMessageText: this.$refs['forwardMessageView'].extraMessageText,
           })
     },
   },
-  computed: {
-    forwardMessageStr() {
-      let str = this.message._from._displayName + ':';
-      if ([MessageContentType.Image, MessageContentType.Video].indexOf(this.message.messageContent.type) < 0) {
-        str += this.message.messageContent.digest(this.quotedMessage);
-      }
-      return str;
-    }
-  },
 
-  components: {},
+  components: {ForwardMessageView},
 }
 </script>
 
@@ -167,7 +149,6 @@ export default {
 
 .conversation-list-panel .create-group:active {
   background-color: #e5e5e5;
-
 }
 
 .conversation-list-container {
@@ -193,6 +174,10 @@ export default {
   align-items: center;
   justify-content: flex-start;
   padding-left: 15px;
+}
+
+.conversation-item:active {
+  background-color: #d6d6d6;
 }
 
 .conversation-item .header {
@@ -327,42 +312,5 @@ export default {
   height: 30px;
 }
 
-.checked-conversation-list-container label input {
-  width: 100%;
-  height: 100%;
-  outline: none;
-  border-top: 0;
-  border-right: 0;
-  border-left: 0;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-
-.forward-message {
-  display: flex;
-  max-width: 100%;
-  border-radius: 5px;
-  margin: 5px 10px;
-  justify-content: center;
-  max-height: 100px;
-}
-
-.forward-message p {
-  padding: 5px 10px;
-  border-radius: 5px;
-  word-wrap: break-word;
-  word-break: break-all;
-  color: #aaaaaa;
-  font-size: 13px;
-  overflow: hidden;
-  background-color: #e7e7e7;
-  text-overflow: ellipsis;
-}
-
-.forward-message img {
-  max-width: 200px;
-  max-height: 200px;
-  border-radius: 3px;
-}
 
 </style>

@@ -50,7 +50,7 @@ export default {
       // What a gamble... 50% chance to cancel closing
       if (event.params.confirm) {
         let users = event.params.users;
-        store.createGroup(users);
+        store.createConversation(users);
 
         console.log('confirm')
       } else {

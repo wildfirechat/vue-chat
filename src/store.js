@@ -558,11 +558,12 @@ let store = {
         }
     },
 
-
     // misc actions
-    createGroup(users) {
+    createConversation(users, successCB, failCB) {
         if (users.length === 1) {
-            this.setCurrentConversation(new Conversation(ConversationType.Single, users[0].uid, 0));
+            let conversation = new Conversation(ConversationType.Single, users[0].uid, 0);
+            this.setCurrentConversation(conversation);
+            successCB && successCB(conversation);
             return;
         }
 
@@ -588,9 +589,12 @@ let store = {
                         wfc.createGroup(null, GroupType.Restricted, groupName, remoteUrl, groupMemberIds, [0], null,
                             (groupId) => {
                                 this._loadDefaultConversationList();
-                                this.setCurrentConversation(new Conversation(ConversationType.Group, groupId, 0))
+                                let conversation = new Conversation(ConversationType.Group, groupId, 0)
+                                this.setCurrentConversation(conversation);
+                                successCB && successCB(conversation);
                             }, (error) => {
                                 console.log('create group error', error)
+                                failCB && failCB(error);
                             });
                     },
                     (error) => {

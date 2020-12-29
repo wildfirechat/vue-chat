@@ -324,7 +324,7 @@ export default {
           }, {
             name: 'forward-by-pick-conversation-modal',
             width: 600,
-            height: 280,
+            height: 480,
             clickToClose: false,
           }, {
             'before-close': this.beforeForwardMessageByPickConversationModalClose,
@@ -335,6 +335,7 @@ export default {
       this.$modal.show(
           ForwardMessageByCreateConversationView,
           {
+            users: this.sharedContactState.friendList,
             message: message,
           }, {
             name: 'forward-by-create-conversation-modal',
@@ -342,7 +343,7 @@ export default {
             height: 480,
             clickToClose: false,
           }, {
-            'before-close': this.beforeForwardMessageByPickConversationModalClose,
+            'before-close': this.beforeForwardMessageByCreateConversationModalClose,
           })
     },
 
@@ -374,6 +375,30 @@ export default {
       }
     },
 
+    beforeForwardMessageByCreateConversationModalClose(event) {
+      console.log('Closing...', event, event.params)
+      if (event.params.backPickConversation) {
+        this.showForwardMessageByPickConversationModal(event.params.message)
+      } else if (event.params.confirm) {
+        let users = event.params.users;
+        let message = event.params.message;
+        let extraMessageText = event.params.extraMessageText;
+        store.createConversation(users,
+            (conversation) => {
+              wfc.sendConversationMessage(conversation, message.messageContent);
+              if (extraMessageText) {
+                let textMessage = new TextMessageContent(extraMessageText)
+                wfc.sendConversationMessage(conversation, textMessage);
+              }
+            },
+            (err) => {
+
+            })
+      } else {
+        console.log('cancel')
+        // TODO clear pick state
+      }
+    },
   },
 
   mounted() {

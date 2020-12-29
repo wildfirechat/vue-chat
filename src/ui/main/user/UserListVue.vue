@@ -7,7 +7,7 @@
             <p>{{ user._category.toUpperCase() }}</p>
           </div>
           <div class="content"
-               v-bind:class="{active: sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
+               v-bind:class="{active: !enablePick && sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
                @click.stop="clickUserItem(user)">
             <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
                    v-model="sharedPickState.users" placeholder="">
@@ -107,6 +107,10 @@ ul {
 }
 
 .contact-item .content.active {
+  background-color: #d6d6d6;
+}
+
+.contact-item .content:active {
   background-color: #d6d6d6;
 }
 
