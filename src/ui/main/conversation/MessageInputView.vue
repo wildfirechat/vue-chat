@@ -24,6 +24,7 @@
     <div @keyup.enter="send($event)" v-focus @focus="restoreSelection($event)" @blur="onBlur"
          @mouseup="saveSelection($event)" @keyup="saveSelection"
          ref="input" class="input"
+         autofocus
          placeholder="hello" contenteditable="true"></div>
     <QuoteMessageView v-if="shareConversationState.quotedMessage !== null"/>
   </section>
@@ -159,7 +160,7 @@ export default {
 
     toggleEmojiView() {
       this.showEmojiDialog = !this.showEmojiDialog;
-      this.$refs['input'].focus();
+      this.focusInput();
     },
 
     hideEmojiView(e) {
@@ -214,6 +215,11 @@ export default {
     },
 
     saveSelection() {
+      if (!this.$refs['input'].innerHTML) {
+        this.savedRange = null;
+        console.log('not save')
+        return;
+      }
       if (window.getSelection)//non IE Browsers
       {
         this.savedRange = window.getSelection().getRangeAt(0);
@@ -225,7 +231,6 @@ export default {
 
     restoreSelection() {
       this.isInFocus = true;
-      this.$refs['input'].focus();
       if (this.savedRange != null) {
         if (window.getSelection)//non IE and there is already a selection
         {
@@ -240,6 +245,8 @@ export default {
         {
           this.savedRange.select();
         }
+      } else {
+        // do nothing
       }
     },
 
@@ -386,26 +393,37 @@ export default {
 
       this.mentions.length = 0;
       return textMessageContent;
+    },
+
+    focusInput() {
+      this.$nextTick(() => {
+        this.$refs['input'].focus();
+        console.log('focus end')
+      })
     }
   },
 
   activated() {
-    this.$nextTick(() => {
-      this.$refs['input'].focus();
-    })
+    this.focusInput();
+  },
+
+  deactivated() {
+    // TODO  draft
+    this.$refs['input'].innerHTML = '';
   },
 
   mounted() {
     if (this.conversationInfo) {
       this.initMention(this.conversationInfo.conversation)
     }
-    this.$refs['input'].focus();
+    this.focusInput();
   },
 
   watch: {
     conversationInfo() {
       this.initMention(this.conversationInfo.conversation)
-      this.$refs['input'].focus();
+      this.$refs['input'].innerHTML = '';
+      this.focusInput();
     }
   },
 
