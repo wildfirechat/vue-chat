@@ -1,25 +1,30 @@
 <template>
   <section>
     <ul>
-      <li v-for="(user ) in users" :key="user.uid">
+      <li v-for="(groupUser) in groupedUsers" :key="groupUser.category">
         <div class="contact-item">
-          <div v-if="user._category" class="label">
-            <p>{{ user._category.toUpperCase() }}</p>
+          <div class="label"
+               v-bind:class="{sticky:enableCategoryLabelSticky}">
+            <p>{{ groupUser.category.toUpperCase() }}</p>
           </div>
-          <div class="content"
-               v-bind:class="{active: !enablePick && sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
-               @click.stop="clickUserItem(user)">
-            <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
-                   v-model="sharedPickState.users" placeholder="">
-            <img class="avatar" :src="user.portrait" alt="">
-            <span
-                class="single-line"> {{ user._displayName }}</span>
-          </div>
+          <ul>
+            <li v-for="(user) in groupUser.users" :key="user.uid">
+              <div class="content"
+                   v-bind:class="{active: !enablePick && sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
+                   @click.stop="clickUserItem(user)">
+                <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
+                       v-model="sharedPickState.users" placeholder="">
+                <img class="avatar" :src="user.portrait" alt="">
+                <span
+                    class="single-line"> {{ user._displayName }}</span>
+              </div>
+
+            </li>
+          </ul>
         </div>
       </li>
     </ul>
   </section>
-
 </template>
 
 <script>
@@ -36,6 +41,11 @@ export default {
       type: Array,
       required: true,
     },
+    enableCategoryLabelSticky: {
+      type: Boolean,
+      required: false,
+      default: false,
+    }
   },
   data() {
     return {
@@ -44,7 +54,6 @@ export default {
     }
   },
   methods: {
-
     clickUserItem(friend) {
       // const test = this.sharedPickState.users.map(u => u.uid);
       // console.log('clickFriendItem t', friend, test, Array.from(test));
@@ -59,6 +68,25 @@ export default {
     let el = this.$el.getElementsByClassName("active")[0];
     el && el.scrollIntoView({behavior: "instant", block: "center"});
   },
+
+  computed: {
+    groupedUsers() {
+      let groupedUsers = [];
+      let current = {};
+      this.users.forEach((user) => {
+        if (user._category) {
+          current = {
+            category: user._category,
+            users: [user],
+          };
+          groupedUsers.push(current);
+        } else {
+          current.users.push(user);
+        }
+      });
+      return groupedUsers;
+    }
+  }
 }
 </script>
 
@@ -88,12 +116,19 @@ ul {
 .contact-item .label {
   width: 100%;
   padding-left: 30px;
+  background-color: #f7f7f7;
 }
 
 .contact-item .label p {
   padding: 5px 5px 5px 0;
   border-bottom: 1px solid #e0e0e0;
 }
+
+.contact-item .label.sticky {
+  position: sticky;
+  top: 0;
+}
+
 
 .contact-item .content {
   padding: 5px 5px 5px 30px;

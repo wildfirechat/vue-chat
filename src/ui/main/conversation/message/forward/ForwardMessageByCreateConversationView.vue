@@ -8,7 +8,7 @@
         <div class="back" @click="backPickConversation">
           <p>返回</p>
         </div>
-        <UserListVue class="user-list" :enable-pick="true" :users="users"/>
+        <UserListVue class="user-list" :enable-pick="true" :users="users" :enable-category-label-sticky="true"/>
       </div>
     </section>
     <section class="checked-user-list-container">
