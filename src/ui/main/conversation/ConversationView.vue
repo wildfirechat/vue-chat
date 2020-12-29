@@ -114,8 +114,8 @@ import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
-import ForwardMessageByPickConversationView from "@/ui/main/conversation/ForwardMessageByPickConversationView";
-import ForwardMessageByCreateConversationView from "@/ui/main/conversation/ForwardMessageByCreateConversationView";
+import ForwardMessageByPickConversationView from "@/ui/main/conversation/message/forward/ForwardMessageByPickConversationView";
+import ForwardMessageByCreateConversationView from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
 
 export default {
   components: {

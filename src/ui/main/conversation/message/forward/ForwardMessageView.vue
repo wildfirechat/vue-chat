@@ -77,7 +77,7 @@ export default {
 
 .forward-message-container label input {
   width: 100%;
-  margin-top: 10px;
+  margin: 20px 0;
   outline: none;
   border-top: 0;
   border-right: 0;

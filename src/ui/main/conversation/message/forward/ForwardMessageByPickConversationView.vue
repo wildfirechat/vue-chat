@@ -39,7 +39,7 @@
           <span class="name single-line">{{ conversation._target._displayName }}</span>
         </div>
       </div>
-      <ForwardMessageView ref="forwardMessageView" :message="message"/>
+      <ForwardMessageView ref="forwardMessageView" v-if="sharedPickState.conversations.length > 0" :message="message"/>
       <footer>
         <button @click="cancel" class="cancel">取消</button>
         <button @click="confirm" class="confirm">发送</button>
@@ -51,7 +51,7 @@
 <script>
 import store from "@/store";
 import Message from "@/wfc/messages/message";
-import ForwardMessageView from "@/ui/main/conversation/ForwardMessageView";
+import ForwardMessageView from "@/ui/main/conversation/message/forward/ForwardMessageView";
 
 export default {
   name: "ForwardMessageByPickConversationView",
