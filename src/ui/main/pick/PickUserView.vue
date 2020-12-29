@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     unpick(user) {
-      store.pickUser(user, false);
+      store.pickOrUnpickUser(user);
     },
 
     cancel() {

@@ -114,7 +114,8 @@ import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
-import ForwardMessageView from "@/ui/main/conversation/ForwardMessageByPickConversationView";
+import ForwardMessageByPickConversationView from "@/ui/main/conversation/ForwardMessageByPickConversationView";
+import ForwardMessageByCreateConversationView from "@/ui/main/conversation/ForwardMessageByCreateConversationView";
 
 export default {
   components: {
@@ -294,7 +295,7 @@ export default {
     },
 
     forward(message) {
-      this.showForwardMessageModal(message);
+      this.showForwardMessageByPickConversationModal(message);
     },
 
     quoteMessage(message) {
@@ -315,28 +316,58 @@ export default {
       });
     },
 
-    showForwardMessageModal() {
+    showForwardMessageByPickConversationModal(message) {
       this.$modal.show(
-          ForwardMessageView,
+          ForwardMessageByPickConversationView,
           {
-            users: this.sharedContactState.friendList,
+            message: message
           }, {
-            name: 'invite-modal',
+            name: 'forward-by-pick-conversation-modal',
+            width: 600,
+            height: 280,
+            clickToClose: false,
+          }, {
+            'before-close': this.beforeForwardMessageByPickConversationModalClose,
+          })
+    },
+
+    showForwardMessageByCreateConversationModal(message) {
+      this.$modal.show(
+          ForwardMessageByCreateConversationView,
+          {
+            message: message,
+          }, {
+            name: 'forward-by-create-conversation-modal',
             width: 600,
             height: 480,
             clickToClose: false,
           }, {
-            'before-close': this.beforeForwardMessageModalClose,
+            'before-close': this.beforeForwardMessageByPickConversationModalClose,
           })
     },
-    beforeForwardMessageModalClose(event) {
+
+    beforeForwardMessageByPickConversationModalClose(event) {
       console.log('Closing...', event, event.params)
       // What a gamble... 50% chance to cancel closing
-      if (event.params.confirm) {
-        let users = event.params.users;
-        store.createGroup(users);
+      if (event.params.toCreateConversation) {
+        console.log('to show')
+        this.showForwardMessageByCreateConversationModal(event.params.message)
+      } else if (event.params.confirm) {
+        let conversations = event.params.conversations;
+        let message = event.params.message;
+        let extraMessageText = event.params.extraMessageText;
+        conversations.forEach(conversation => {
+          // let msg =new Message(conversation, message.messageContent)
+          // wfc.sendMessage(msg)
+          // 或者下面这种
+          wfc.sendConversationMessage(conversation, message.messageContent);
 
-        console.log('confirm')
+          if (extraMessageText) {
+            let textMessage = new TextMessageContent(extraMessageText)
+            wfc.sendConversationMessage(conversation, textMessage);
+          }
+        });
+
       } else {
         console.log('cancel')
         // TODO clear pick state

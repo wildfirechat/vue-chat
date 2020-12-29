@@ -49,11 +49,7 @@ export default {
       // const test = this.sharedPickState.users.map(u => u.uid);
       // console.log('clickFriendItem t', friend, test, Array.from(test));
       if (this.enablePick) {
-        if (this.sharedPickState.users.findIndex(value => value.uid === friend.uid) >= 0) {
-          store.pickUser(friend, false);
-        } else {
-          store.pickUser(friend, true);
-        }
+        store.pickOrUnpickUser(friend)
       } else {
         store.setCurrentFriend(friend)
       }

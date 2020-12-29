@@ -5,14 +5,14 @@
         <input type="text" placeholder="搜索">
       </div>
       <section class="conversation-list-container">
-        <div class="create-group">
+        <div class="create-group" @click="showForwardByCreateConversationModal">
           <p>创建群聊</p>
         </div>
         <p>最近聊天</p>
         <ul class="conversation-list">
           <li v-for="(conversationInfo, index) in sharedConversation.conversationInfoList"
               :key="index">
-            <div class="conversation-item">
+            <div class="conversation-item" @click.stop="onConversationItemClick(conversationInfo.conversation)">
               <input class="checkbox" v-bind:value="conversationInfo.conversation" type="checkbox"
                      v-model="sharedPickState.conversations" placeholder="">
               <div class="header">
@@ -27,21 +27,31 @@
     <section class="checked-conversation-list-container">
       <header>
         <h2>分别发送给</h2>
-        <span v-if="sharedPickState.users.length === 0">已选择联系人</span>
-        <span v-else>已选择联系人 {{ this.sharedPickState.users.length }}</span>
+        <span v-if="sharedPickState.conversations.length === 0">未选择聊天</span>
+        <span v-else>已选择{{ this.sharedPickState.conversations.length }}个聊天</span>
       </header>
       <div class="content">
-        <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
+        <div class="picked-user-container" v-for="(conversation, index) in sharedPickState.conversations" :key="index">
           <div class="picked-user">
-            <img class="avatar" :src="user.portrait" :alt="user + index">
-            <button @click="unpick(user)" class="unpick-button">x</button>
+            <img class="avatar" :src="conversation._target.portrait">
+            <button @click="unpConversation(conversation)" class="unpick-button">x</button>
           </div>
-          <span class="name single-line">{{ user.displayName }}</span>
+          <span class="name single-line">{{ conversation._target._displayName }}</span>
         </div>
       </div>
+      <div class="forward-message">
+        <img v-if="[3, 6].indexOf(message.messageContent.type) >= 0"
+             :src="'data:video/jpeg;base64,' + message.messageContent.thumbnail" alt="">
+        <p v-else>
+          {{ this.forwardMessageStr }}
+        </p>
+      </div>
+      <label>
+        <input type="text" placeholder="给朋友留言" v-model="extraMessageText">
+      </label>
       <footer>
         <button @click="cancel" class="cancel">取消</button>
-        <button @click="confirm" class="confirm">创建</button>
+        <button @click="confirm" class="confirm">发送</button>
       </footer>
     </section>
   </div>
@@ -49,52 +59,65 @@
 
 <script>
 import store from "@/store";
+import Message from "@/wfc/messages/message";
+import MessageContentType from "@/wfc/messages/messageContentType";
 
 export default {
-  name: "ForwardMessageView",
+  name: "ForwardMessageByPickConversationView",
   props: {
-    users: {
-      type: Array,
+    message: {
+      type: Message,
       required: true,
     },
-    initialCheckedUsers: {
-      type: Array,
-      required: false,
-      default: null,
-    },
-    title: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    confirmTitle: {
-      type: String,
-      required: false,
-      default: '',
-    }
-
   },
   data() {
     return {
       sharedConversation: store.state.conversation,
       sharedPickState: store.state.pick,
+      extraMessageText: '',
     }
   },
   methods: {
-    unpick(user) {
-      store.pickUser(user, false);
+    onConversationItemClick(conversation) {
+      store.pickOrUnpickConversation(conversation, true)
+    },
+    unpConversation(conversation) {
+      store.pickOrUnpickConversation(conversation, false);
+    },
+
+    showForwardByCreateConversationModal() {
+      this.$modal.hide('forward-by-pick-conversation-modal',
+          {
+            toCreateConversation: true,
+            message: this.message
+          })
     },
 
     cancel() {
-      this.sharedPickState.users.length = 0
-      this.$modal.hide('invite-modal', {confirm: false})
+      this.sharedPickState.conversations.length = 0
+      this.$modal.hide('forward-by-pick-conversation-modal', {confirm: false})
     },
 
     confirm() {
-      let pickedUsers = [...this.sharedPickState.users];
-      this.sharedPickState.users.length = 0
-      this.$modal.hide('invite-modal', {confirm: true, users: pickedUsers})
+      let pickedConversations = [...this.sharedPickState.conversations];
+      this.sharedPickState.conversations.length = 0
+      this.$modal.hide('forward-by-pick-conversation-modal',
+          {
+            confirm: true,
+            conversations: pickedConversations,
+            message: this.message,
+            extraMessageText: this.extraMessageText,
+          })
     },
+  },
+  computed: {
+    forwardMessageStr() {
+      let str = this.message._from._displayName + ':';
+      if ([MessageContentType.Image, MessageContentType.Video].indexOf(this.message.messageContent.type) < 0) {
+        str += this.message.messageContent.digest(this.quotedMessage);
+      }
+      return str;
+    }
   },
 
   components: {},
@@ -298,5 +321,48 @@ export default {
   margin-right: 20px;
 }
 
+.checked-conversation-list-container label {
+  width: 100%;
+  padding: 5px 10px;
+  height: 30px;
+}
+
+.checked-conversation-list-container label input {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+
+.forward-message {
+  display: flex;
+  max-width: 100%;
+  border-radius: 5px;
+  margin: 5px 10px;
+  justify-content: center;
+  max-height: 100px;
+}
+
+.forward-message p {
+  padding: 5px 10px;
+  border-radius: 5px;
+  word-wrap: break-word;
+  word-break: break-all;
+  color: #aaaaaa;
+  font-size: 13px;
+  overflow: hidden;
+  background-color: #e7e7e7;
+  text-overflow: ellipsis;
+}
+
+.forward-message img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 3px;
+}
 
 </style>

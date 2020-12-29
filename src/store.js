@@ -540,16 +540,23 @@ let store = {
     },
 
     // pick actions
-    pickUser(user, pick = true) {
-        if (pick) {
-            pickState.users.push(user);
-        } else {
-            // TODO 根据user.uid 判断
+    pickOrUnpickUser(user) {
+        let index = pickState.users.findIndex(u => u.uid === user.uid);
+        if (index >= 0) {
             pickState.users = pickState.users.filter(u => user.uid !== u.uid)
+        } else {
+            pickState.users.push(user);
         }
     },
 
-    // TODO pickConversation
+    pickOrUnpickConversation(conversation) {
+        let index = pickState.conversations.findIndex(c => (conversation.target === c.target && conversation.line === c.line && conversation.type === c.type))
+        if (index >= 0) {
+            pickState.conversations = pickState.conversations.filter(c => !(conversation.target === c.target && conversation.line === c.line && conversation.type === c.type))
+        } else {
+            pickState.conversations.push(conversation);
+        }
+    },
 
 
     // misc actions

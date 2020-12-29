@@ -2,6 +2,9 @@
   <TextMessageContentView :message="message"
                           v-if="message.messageContent.type === 1"
                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+  <FileMessageContentView :message="message"
+                          v-else-if="message.messageContent.type === 5"
+                          v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
   <ImageMessageContentView :message="message"
                            v-else-if="message.messageContent.type === 3"/>
   <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
@@ -19,6 +22,7 @@ import TextMessageContentView from "@/ui/main/conversation/message/content/TextM
 import ImageMessageContentView from "@/ui/main/conversation/message/content/ImageMessageContentView";
 import VideoMessageContentView from "@/ui/main/conversation/message/content/VideoMessageContentView";
 import UnsupportMessageContentView from "@/ui/main/conversation/message/content/UnsupportMessageContentView";
+import FileMessageContentView from "@/ui/main/conversation/message/content/FileMessageContentView";
 
 export default {
   name: "MessageContentContainerView",
@@ -33,6 +37,7 @@ export default {
     TextMessageContentView,
     ImageMessageContentView,
     VideoMessageContentView,
+    FileMessageContentView,
   }
 }
 </script>
