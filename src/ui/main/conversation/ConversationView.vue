@@ -55,14 +55,16 @@
                           class="message-input-container"/>
         <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
         <SingleConversationInfoView
-            v-if="sharedConversationState.currentConversationInfo === 1"
+            v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
             v-click-outside="hideConversationInfo"
+            :conversation-info="sharedConversationState.currentConversationInfo"
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
         <GroupConversationInfoView
+            v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 1"
             v-click-outside="hideConversationInfo"
-            v-if="sharedConversationState.currentConversationInfo === 2"
+            :conversation-info="sharedConversationState.currentConversationInfo"
             v-bind:class="{ active: showConversationInfo }"
             class="conversation-info-container"
         />
@@ -114,8 +116,10 @@ import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
-import ForwardMessageByPickConversationView from "@/ui/main/conversation/message/forward/ForwardMessageByPickConversationView";
-import ForwardMessageByCreateConversationView from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
+import ForwardMessageByPickConversationView
+  from "@/ui/main/conversation/message/forward/ForwardMessageByPickConversationView";
+import ForwardMessageByCreateConversationView
+  from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
 
 export default {
   components: {
@@ -171,7 +175,6 @@ export default {
       }
     },
     toggleConversationInfo() {
-      console.log("toggle conversationInfo");
       this.showConversationInfo = !this.showConversationInfo;
     },
 
@@ -204,7 +207,6 @@ export default {
       // TODO
       // 是否在创建群聊，或者是在查看会话参与者信息
       this.showConversationInfo && (this.showConversationInfo = false);
-      console.log('hide conv')
     },
 
     isNotificationMessage(message) {
@@ -574,7 +576,8 @@ export default {
   top: 0;
   right: 0;
   position: absolute;
-  background-color: aquamarine;
+  background-color: #fffffff5;
+  border-left: 1px solid #e6e6e6;
 }
 
 .conversation-info-container.active {

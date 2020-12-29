@@ -2,14 +2,16 @@
   <section>
     <ul>
       <li v-for="(groupUser) in groupedUsers" :key="groupUser.category">
-        <div class="contact-item">
-          <div class="label"
+        <div ref="contactItem" class="contact-item">
+          <div v-if="showCategoryLabel" class="label"
+               :style="paddingStyle"
                v-bind:class="{sticky:enableCategoryLabelSticky}">
             <p>{{ groupUser.category.toUpperCase() }}</p>
           </div>
           <ul>
             <li v-for="(user) in groupUser.users" :key="user.uid">
               <div class="content"
+                   :style="paddingStyle"
                    v-bind:class="{active: !enablePick && sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
                    @click.stop="clickUserItem(user)">
                 <input class="checkbox" v-bind:value="user" v-if="enablePick" type="checkbox"
@@ -41,10 +43,24 @@ export default {
       type: Array,
       required: true,
     },
+    showCategoryLabel: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     enableCategoryLabelSticky: {
       type: Boolean,
       required: false,
       default: false,
+    },
+    clickUserItemFunc: {
+      type: Function,
+      required: false,
+    },
+    paddingLeft: {
+      type: String,
+      required: false,
+      default: '5px'
     }
   },
   data() {
@@ -54,13 +70,11 @@ export default {
     }
   },
   methods: {
-    clickUserItem(friend) {
-      // const test = this.sharedPickState.users.map(u => u.uid);
-      // console.log('clickFriendItem t', friend, test, Array.from(test));
+    clickUserItem(user) {
       if (this.enablePick) {
-        store.pickOrUnpickUser(friend)
+        store.pickOrUnpickUser(user)
       } else {
-        store.setCurrentFriend(friend)
+        this.clickUserItemFunc && this.clickUserItemFunc(user);
       }
     },
   },
@@ -85,15 +99,25 @@ export default {
         }
       });
       return groupedUsers;
+    },
+    paddingStyle() {
+      return {
+        paddingLeft: this.paddingLeft
+      }
     }
-  }
+  },
 }
 </script>
 
 <style lang="css" scoped>
 
+.contact-item {
+  --user-item-padding-left: 30px;
+}
+
 ul {
   list-style: none;
+  width: 100%;
 }
 
 .avatar {
@@ -115,8 +139,7 @@ ul {
 
 .contact-item .label {
   width: 100%;
-  padding-left: 30px;
-  background-color: #f7f7f7;
+  background-color: #fafafa;
 }
 
 .contact-item .label p {
@@ -131,7 +154,7 @@ ul {
 
 
 .contact-item .content {
-  padding: 5px 5px 5px 30px;
+  padding: 5px 5px 5px 0;
   display: flex;
   width: 100%;
   align-items: center;

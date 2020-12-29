@@ -612,8 +612,19 @@ let store = {
         }
         let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
         return this._patchAndSortUserInfos(userInfosCloneCopy, groupId);
-    }
+    },
 
+    getConversationMemberUsrInfos(conversation) {
+        let userInfos = [];
+        if (conversation.type === 0) {
+            userInfos.push(wfc.getUserInfo(wfc.getUserId(), false));
+            userInfos.push(wfc.getUserInfo(conversation.target, false));
+            userInfos = this._patchAndSortUserInfos(userInfos, '');
+        } else if (conversation.type === 1) {
+            userInfos = this.getGroupMemberUserInfos(conversation.target, true);
+        }
+        return userInfos;
+    }
 }
 
 let conversationState = store.state.conversation;

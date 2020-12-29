@@ -25,7 +25,10 @@
             <span class="desc">{{ sharedContactState.friendList.length }}</span>
           </div>
         </div>
-        <UserListVue :enable-pick="false" :users="sharedContactState.friendList"
+        <UserListVue :enable-pick="false"
+                     :users="sharedContactState.friendList"
+                     :click-user-item-func="setCurrentUser"
+                     :padding-left="'30px'"
                      v-if="sharedContactState.expandFriendList"/>
       </li>
     </ul>
@@ -47,6 +50,9 @@ export default {
     }
   },
   methods: {
+    setCurrentUser(userInfo) {
+      store.setCurrentFriend(userInfo)
+    },
     showNewFriends() {
       store.toggleFriendRequestList();
     },
@@ -66,10 +72,6 @@ export default {
 .contact-list {
   height: 100%;
   overflow: auto;
-}
-
-.contact-list ul {
-  list-style: none;
 }
 
 .category-item-container {
