@@ -88,7 +88,7 @@ export default {
     },
 
     isUserInitialChecked(user) {
-      return this.initialCheckedUsers && this.initialCheckedUsers.users.findIndex((u) => u.uid === user.uid) >= 0
+      return this.initialCheckedUsers && this.initialCheckedUsers.findIndex(u => u.uid === user.uid) >= 0
     },
 
     isUserUncheckable(user) {

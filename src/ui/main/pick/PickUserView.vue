@@ -16,11 +16,11 @@
     <section class="checked-contact-list-container">
       <header>
         <h2>发起群聊</h2>
-        <span v-if="sharedPickState.users.length === 0">已选择联系人</span>
-        <span v-else>已选择联系人 {{ this.sharedPickState.users.length }}</span>
+        <span v-if="checkedUsers.length === 0">已选择联系人</span>
+        <span v-else>已选择联系人 {{ this.checkedUsers.length }}</span>
       </header>
       <div class="content">
-        <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
+        <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="index">
           <div class="picked-user">
             <img class="avatar" :src="user.portrait" alt="">
             <button @click="unpick(user)" class="unpick-button">x</button>
@@ -30,7 +30,7 @@
       </div>
       <footer>
         <button @click="cancel" class="cancel">取消</button>
-        <button @click="confirm" class="confirm">创建</button>
+        <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0}">创建</button>
       </footer>
     </section>
   </div>
@@ -96,6 +96,17 @@ export default {
       this.sharedPickState.users.length = 0
       this.$modal.hide('invite-modal', {confirm: true, users: pickedUsers})
     },
+  },
+  computed: {
+    checkedUsers() {
+      let users = this.sharedPickState.users;
+      if (!this.initialCheckedUsers || this.initialCheckedUsers.length === 0) {
+        return users;
+      }
+      return users.filter(u => {
+        return this.initialCheckedUsers.findIndex(iu => iu.uid === u.uid) === -1
+      })
+    }
   },
 
   components: {CheckableUserListView},
@@ -226,17 +237,21 @@ export default {
   margin-bottom: 10px;
 }
 
-.checked-contact-list-container footer button {
+footer button {
   padding: 5px 30px;
   border-radius: 4px;
   border: 1px solid #cccccc;
 }
 
-.checked-contact-list-container footer button.confirm {
+footer button.confirm {
   background-color: #20bf64;
   margin-left: 20px;
   margin-right: 20px;
 }
 
+footer button.confirm.disable {
+  background-color: #f2f2f2;
+  color: #c2c2c2;
+}
 
 </style>
