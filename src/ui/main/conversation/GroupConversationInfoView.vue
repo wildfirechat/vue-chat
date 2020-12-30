@@ -37,7 +37,6 @@ export default {
   methods: {
     showCreateConversationModal() {
       let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
-      console.log('xxx', groupMemberUserInfos)
       this.$modal.show(
           PickUserView,
           {

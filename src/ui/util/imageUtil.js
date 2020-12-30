@@ -1,7 +1,5 @@
 import resizeImage from "resize-image";
 import wfc from '../../wfc/client/wfc';
-import GroupInfo from "../../wfc/model/groupInfo";
-import GroupMember from "../../wfc/model/groupMember";
 import {lt} from "../../wfc/util/longUtil";
 import ConversationType from "../../wfc/model/conversationType";
 import Config from "../../config";
@@ -297,7 +295,7 @@ async function getGroupPortrait(groupId) {
     let portrait = groupPortraitMap.get(groupId);
     if (!portrait || lt(portrait.timestamp, groupInfo.updateDt)) {
         let groupMembers = wfc.getGroupMembers(groupId, false);
-        if(!groupMembers || groupMembers.length === 0){
+        if (!groupMembers || groupMembers.length === 0) {
             return Config.DEFAULT_PORTRAIT_URL;
         }
         let groupMemberPortraits = [];
@@ -396,5 +394,28 @@ function videoThumbnail(file) {
         });
 }
 
+function dataURItoBlob(dataURI) {
+    // convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+    let byteString = atob(dataURI.split(',')[1]);
 
-export {mergeImages, getConversationPortrait, videoThumbnail, imageThumbnail};
+    // separate out the mime component
+    let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    let ab = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], {type: mimeString});
+}
+
+function fileFromDataUri(dataUri, fileName) {
+    const blob = dataURItoBlob(dataUri);
+    const resultFile = new File([blob], fileName);
+    return resultFile;
+}
+
+
+export {mergeImages, getConversationPortrait, videoThumbnail, imageThumbnail, fileFromDataUri};

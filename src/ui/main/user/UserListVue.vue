@@ -101,7 +101,6 @@ export default {
   },
 
   mounted() {
-    console.log('xxx, m')
     this.scrollActiveElementCenter();
     this.tippyStyleFix()
 

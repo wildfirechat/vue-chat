@@ -25,7 +25,8 @@
          @mouseup="saveSelection($event)" @keyup="saveSelection"
          ref="input" class="input"
          autofocus
-         placeholder="hello" contenteditable="true"></div>
+         placeholder="hello" contenteditable="true">
+    </div>
     <QuoteMessageView v-if="shareConversationState.quotedMessage !== null"/>
   </section>
 </template>
@@ -49,6 +50,7 @@ import {parser as emojiParse} from '@/ui/util/emoji';
 import {focus} from 'vue-focus';
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
+import {fileFromDataUri} from "@/ui/util/imageUtil";
 
 export default {
   name: "MessageInputView",
@@ -105,7 +107,8 @@ export default {
       // wfc.sendConversationMessage(conversation, textMessageContent);
       //
 
-      let message = this.$refs['input'].innerHTML.trim();
+      let input = this.$refs['input'];
+      let message = input.innerHTML.trim();
       let conversation = this.conversationInfo.conversation;
 
       if (
@@ -137,6 +140,17 @@ export default {
       // if(!message.startsWith('<')){
       //     message = message.replace(/<br>/g, '\n').trim()
       // }
+
+      let imgs = input.getElementsByTagName('img');
+      if (imgs) {
+        imgs.forEach(img => {
+          let src = img.src;
+          let file = fileFromDataUri(src, new Date().getTime() + '.png');
+          store.sendFile(this.conversationInfo.conversation, file)
+          input.removeChild(img);
+        });
+      }
+      message = input.innerHTML.trim();
 
       message = message.replace(/<br>/g, '\n')
           .replace(/<div>/g, '\n')
@@ -458,6 +472,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: red;
   position: relative;
 }
 
@@ -487,4 +502,12 @@ i:hover {
   color: #34b7f1;
 }
 
+</style>
+
+<style lang="css">
+.input img {
+  width: auto;
+  max-width: 100px;
+  max-height: 100px;
+}
 </style>

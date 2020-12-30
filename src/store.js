@@ -457,7 +457,6 @@ let store = {
             let friendList = wfc.getUserInfos(friends, '');
             contactState.friendList = this._patchAndSortUserInfos(friendList, '');
         }
-        console.log('xxx', contactState.friendList);
     },
 
     _patchAndSortUserInfos(userInfos, groupId = '') {

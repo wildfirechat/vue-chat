@@ -162,7 +162,6 @@ export default {
   },
 
   mounted() {
-    console.log('xxx', store.state)
     avenginekit.setup();
     this.setupSessionCallback();
   }
