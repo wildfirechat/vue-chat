@@ -17,7 +17,6 @@
                    @click.stop="clickUserItem(user)">
                 <input class="checkbox"
                        v-bind:value="user"
-                       :checked="isUserInitialChecked(user)"
                        :disabled="isUserUncheckable(user)"
                        type="checkbox"
                        v-model="sharedPickState.users" placeholder="">
@@ -98,7 +97,11 @@ export default {
 
   mounted() {
     if (this.initialCheckedUsers) {
-      this.initialCheckedUsers.forEach(u => store.pickOrUnpickUser(u))
+      // why?
+      // 1. checkbox :checked 和 v-model冲突，以v-model为准
+      // 2. v-model 的实现里，应当是采用引用比较，而不是值比较
+      let oriCUs = this.users.filter(u => this.initialCheckedUsers.findIndex((iu => iu.uid === u.uid)) > -1);
+      oriCUs.forEach(u => store.pickOrUnpickUser(u))
     }
   },
 

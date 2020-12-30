@@ -30,7 +30,8 @@
       </div>
       <footer>
         <button @click="cancel" class="cancel">取消</button>
-        <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0}">创建</button>
+        <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0}">{{ confirmTitle }}
+        </button>
       </footer>
     </section>
   </div>
@@ -65,7 +66,7 @@ export default {
     confirmTitle: {
       type: String,
       required: false,
-      default: '',
+      default: '确定',
     }
 
   },

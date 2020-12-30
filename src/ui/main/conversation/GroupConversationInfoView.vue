@@ -1,7 +1,7 @@
 <template>
   <div class="conversation-info">
     <div class="conversation-action-container">
-      <div class="action">
+      <div @click="showCreateConversationModal" class="action">
         <img src="@/assets/images/add.png">
         <p>添加成员</p>
       </div>
@@ -9,7 +9,7 @@
     <UserListVue :users="users"
                  :show-category-label="false"
                  :padding-left="'20px'"
-                 />
+    />
   </div>
 </template>
 
@@ -17,6 +17,7 @@
 import UserListVue from "@/ui/main/user/UserListVue";
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import store from "@/store";
+import PickUserView from "@/ui/main/pick/PickUserView";
 
 export default {
   name: "SingleConversationInfoView",
@@ -29,10 +30,32 @@ export default {
   data() {
     return {
       users: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
+      sharedContactState: store.state.contact,
     }
   },
   components: {UserListVue},
   methods: {
+    showCreateConversationModal() {
+      let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
+      console.log('xxx', groupMemberUserInfos)
+      this.$modal.show(
+          PickUserView,
+          {
+            users: this.sharedContactState.friendList,
+            initialCheckedUsers: groupMemberUserInfos,
+            uncheckableUsers: groupMemberUserInfos,
+            confirmTitle: '添加',
+          }, {
+            name: 'invite-modal',
+            width: 600,
+            height: 480,
+            clickToClose: false,
+          }, {
+            'before-open': this.beforeOpen,
+            'before-close': this.beforeClose,
+            'closed': this.closed,
+          })
+    },
     showUserInfo(user) {
       console.log('todo show userInfo', user);
     },
@@ -56,6 +79,7 @@ export default {
 .conversation-info {
   height: 100%;
   overflow: auto;
+  position: relative;
 }
 
 .action {
@@ -72,6 +96,7 @@ export default {
 
 .action p {
   margin-left: 10px;
+  font-size: 13px;
 }
 
 .action:active {

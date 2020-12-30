@@ -42,6 +42,7 @@ export default {
             users: this.sharedContactState.friendList,
             initialCheckedUsers: [this.conversationInfo.conversation._target],
             uncheckableUsers: [this.conversationInfo.conversation._target],
+            confirmTitle: '添加',
           }, {
             name: 'invite-modal',
             width: 600,
@@ -93,6 +94,7 @@ export default {
 
 .action p {
   margin-left: 10px;
+  font-size: 13px;
 }
 
 .action:active {

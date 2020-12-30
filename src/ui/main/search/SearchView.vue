@@ -31,6 +31,7 @@ export default {
           PickContactView,
           {
             users: this.sharedContactState.friendList,
+            confirmTitle: '创建',
           }, {
             name: 'invite-modal',
             width: 600,
