@@ -570,13 +570,13 @@ let store = {
 
         let groupName = contactState.selfUserInfo.displayName;
         let groupMemberIds = [];
-        let groupMemberPortraits = [];
+        let groupMemberPortraits = [contactState.selfUserInfo.portrait];
         for (let i = 0; i < users.length; i++) {
             groupMemberIds.push(users[i].uid)
             if (i <= 3) {
                 groupName += '、' + users[i].displayName;
             }
-            if (i < 9) {
+            if (i < 8) {
                 groupMemberPortraits.push(users[i].portrait)
             }
         }

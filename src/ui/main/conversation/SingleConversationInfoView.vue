@@ -62,7 +62,11 @@ export default {
     },
     beforeClose(event) {
       console.log('Closing...', event, event.params)
-      // What a gamble... 50% chance to cancel closing
+      if (event.params.confirm) {
+        let newPickedUsers = event.params.users;
+        newPickedUsers.push(this.conversationInfo.conversation._target)
+        store.createConversation(newPickedUsers)
+      }
     },
     closed(event) {
       console.log('Close...', event)

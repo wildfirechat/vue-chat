@@ -93,11 +93,17 @@ export default {
     },
 
     confirm() {
-      let pickedUsers = [...this.sharedPickState.users];
+      let pickedUsers = this.sharedPickState.users;
+      if (this.initialCheckedUsers) {
+        pickedUsers = this.sharedPickState.users.filter(u => this.initialCheckedUsers.findIndex(iu => iu.uid === u.uid) === -1);
+      } else {
+        pickedUsers = this.sharedPickState.users;
+      }
       this.sharedPickState.users.length = 0
       this.$modal.hide('invite-modal', {confirm: true, users: pickedUsers})
     },
   },
+
   computed: {
     checkedUsers() {
       let users = this.sharedPickState.users;

@@ -28,6 +28,10 @@ export default {
   border-radius: 5px;
 }
 
+.text-message-container p {
+  user-select: text;
+}
+
 .text-message-container.out {
   background-color: #98ea70;
 }

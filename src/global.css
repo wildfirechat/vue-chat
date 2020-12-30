@@ -46,6 +46,7 @@ video {
 p,
 div {
     word-break: break-all;
+    user-select: none;
 }
 
 @import '~vue-context/dist/css/vue-context.css';
