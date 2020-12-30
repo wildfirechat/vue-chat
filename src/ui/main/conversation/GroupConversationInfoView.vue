@@ -1,10 +1,21 @@
 <template>
   <div class="conversation-info">
-    <div class="conversation-action-container">
-      <div @click="showCreateConversationModal" class="action">
-        <img src="@/assets/images/add.png">
-        <p>添加成员</p>
-      </div>
+    <header>
+      <label>
+        群名
+        <input type="text" :placeholder="conversationInfo.conversation._target._displayName">
+      </label>
+      <label>
+        群公告
+        <input type="text" placeholder="点击编辑群公告">
+      </label>
+    </header>
+    <div class="search-container">
+      <input type="text" placeholder="搜索">
+    </div>
+    <div @click="showCreateConversationModal" class="action">
+      <img src="@/assets/images/add.png" alt="">
+      <p>添加成员</p>
     </div>
     <UserListVue :users="users"
                  :show-category-label="false"
@@ -18,6 +29,7 @@ import UserListVue from "@/ui/main/user/UserListVue";
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import store from "@/store";
 import PickUserView from "@/ui/main/pick/PickUserView";
+import wfc from "@/wfc/client/wfc";
 
 export default {
   name: "SingleConversationInfoView",
@@ -63,7 +75,11 @@ export default {
     },
     beforeClose(event) {
       console.log('Closing...', event, event.params)
-      // What a gamble... 50% chance to cancel closing
+      if (event.params.confirm) {
+        let newPickedUsers = event.params.users;
+        let ids = newPickedUsers.map(u => u.uid);
+        wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, [0])
+      }
     },
     closed(event) {
       console.log('Close...', event)
@@ -79,6 +95,48 @@ export default {
   height: 100%;
   overflow: auto;
   position: relative;
+}
+
+header {
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+header label {
+  width: 100%;
+  display: flex;
+  margin-top: 15px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  font-size: 14px;
+  color: #999999;
+}
+
+header label:last-of-type {
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ececec;
+}
+
+header label input {
+  flex: 1;
+  margin-top: 5px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+}
+
+.search-container {
+  padding: 10px 20px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 1px 5px;
 }
 
 .action {

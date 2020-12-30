@@ -576,7 +576,8 @@ export default {
   top: 0;
   right: 0;
   position: absolute;
-  background-color: #fffffff5;
+  background-color: #ffffffe5;
+  backdrop-filter: blur(6px);
   border-left: 1px solid #e6e6e6;
 }
 
