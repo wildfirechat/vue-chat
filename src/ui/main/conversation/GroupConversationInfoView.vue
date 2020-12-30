@@ -127,7 +127,9 @@ header label input {
   margin-top: 5px;
   border: none;
   outline: none;
+  width: 100%;
   font-size: 13px;
+  background-color: transparent;
 }
 
 .search-container {
