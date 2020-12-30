@@ -9,7 +9,7 @@
     <UserListVue :users="users"
                  :show-category-label="false"
                  :padding-left="'20px'"
-                 :click-user-item-func="showUserInfo"/>
+                 />
   </div>
 </template>
 

@@ -57,7 +57,14 @@ export default {
   --main-margin-left: 80px;
   --main-margin-right: 80px;
   --main-margin-top: 50px;
-  --main-margin-bottom: 50px
+  --main-margin-bottom: 50px;
+  --tippy-right: 0px;
+}
+
+.tippy-tooltip {
+  right: var(--tippy-right) !important;
+  border: 1px solid #f5f5f5 !important;
+  background-color: #fcfcfc !important;
 }
 
 #app {

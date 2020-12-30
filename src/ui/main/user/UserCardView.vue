@@ -2,7 +2,7 @@
   <section class="user-info-container">
     <div class="header">
       <div class="desc">
-        <h2>{{ userInfo.name }}</h2>
+        <h2>{{ userInfo._displayName}}</h2>
         <label>野火ID: {{ userInfo.name }}</label>
       </div>
       <div>
@@ -74,7 +74,7 @@ export default {
   justify-content: center;
   align-items: center;
   color: #292a2c;
-  background-color: white;
+  background-color: #fcfcfc;
 }
 
 .user-info-container .avatar {

@@ -457,6 +457,7 @@ let store = {
             let friendList = wfc.getUserInfos(friends, '');
             contactState.friendList = this._patchAndSortUserInfos(friendList, '');
         }
+        console.log('xxx', contactState.friendList);
     },
 
     _patchAndSortUserInfos(userInfos, groupId = '') {
@@ -603,6 +604,7 @@ let store = {
             });
     },
 
+    // clone一下，别影响到好友列表
     getGroupMemberUserInfos(groupId, includeSelf = true) {
 
         let memberIds = wfc.getGroupMemberIds(groupId);
@@ -614,12 +616,14 @@ let store = {
         return this._patchAndSortUserInfos(userInfosCloneCopy, groupId);
     },
 
+    // clone一下，别影响到好友列表
     getConversationMemberUsrInfos(conversation) {
         let userInfos = [];
         if (conversation.type === 0) {
             userInfos.push(wfc.getUserInfo(wfc.getUserId(), false));
             userInfos.push(wfc.getUserInfo(conversation.target, false));
-            userInfos = this._patchAndSortUserInfos(userInfos, '');
+            let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+            userInfos = this._patchAndSortUserInfos(userInfosCloneCopy, '');
         } else if (conversation.type === 1) {
             userInfos = this.getGroupMemberUserInfos(conversation.target, true);
         }

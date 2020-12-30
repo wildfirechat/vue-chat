@@ -10,30 +10,21 @@
           </div>
           <ul>
             <li v-for="(user) in groupUser.users" :key="user.uid">
-              <tippy
-                  v-if="!clickUserItemFunc"
-                  :to="'user-' + user.uid"
-                  interactive
-                  theme="light"
-                  :animate-fill="false"
-                  placement="left"
-                  distant="7"
-                  animation="fade"
-                  trigger="click"
-                  :style="tippyStyleFix"
-              >
-                <UserCardView :user-info="user"/>
-              </tippy>
               <div class="content"
                    :name="'user-'+user.uid"
                    :style="paddingStyle"
-                   v-bind:class="{active: sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
+                   v-bind:class="{disabled: isUserUncheckable(user)}"
                    @click.stop="clickUserItem(user)">
+                <input class="checkbox"
+                       v-bind:value="user"
+                       :checked="isUserInitialChecked(user)"
+                       :disabled="isUserUncheckable(user)"
+                       type="checkbox"
+                       v-model="sharedPickState.users" placeholder="">
                 <img class="avatar" :src="user.portrait" alt="">
                 <span
                     class="single-line"> {{ user._displayName }}</span>
               </div>
-
             </li>
           </ul>
         </div>
@@ -44,14 +35,27 @@
 
 <script>
 import store from "@/store";
-import UserCardView from "@/ui/main/user/UserCardView";
 
 export default {
-  name: "UserListVue",
+  name: "CheckableUserListView",
   props: {
+    enablePick: {
+      type: Boolean,
+      default: false,
+    },
     users: {
       type: Array,
       required: true,
+    },
+    initialCheckedUsers: {
+      type: Array,
+      required: false,
+      default: null,
+    },
+    uncheckableUsers: {
+      type: Array,
+      required: false,
+      default: null,
     },
     showCategoryLabel: {
       type: Boolean,
@@ -63,10 +67,6 @@ export default {
       required: false,
       default: false,
     },
-    clickUserItemFunc: {
-      type: Function,
-      required: false,
-    },
     paddingLeft: {
       type: String,
       required: false,
@@ -75,40 +75,31 @@ export default {
   },
   data() {
     return {
+      sharedPickState: store.state.pick,
       sharedContactState: store.state.contact,
     }
   },
   methods: {
     clickUserItem(user) {
-      this.clickUserItemFunc && this.clickUserItemFunc(user);
+      if (this.isUserUncheckable(user)) {
+        return;
+      }
+      store.pickOrUnpickUser(user)
     },
 
-    scrollActiveElementCenter() {
-      let el = this.$el.getElementsByClassName("active")[0];
-      el && el.scrollIntoView({behavior: "instant", block: "center"});
+    isUserInitialChecked(user) {
+      return this.initialCheckedUsers && this.initialCheckedUsers.users.findIndex((u) => u.uid === user.uid) >= 0
     },
 
-    tippyStyleFix() {
-      let root = document.documentElement;
-      root.style.setProperty('--tippy-right', '250px');
+    isUserUncheckable(user) {
+      return this.uncheckableUsers && this.uncheckableUsers.findIndex(u => u.uid === user.uid) >= 0;
     },
-
-    tippyStyleReset() {
-      let root = document.documentElement;
-      root.style.setProperty('--tippy-right', '0');
-    }
-
   },
 
   mounted() {
-    console.log('xxx, m')
-    this.scrollActiveElementCenter();
-    this.tippyStyleFix()
-
-  },
-
-  destroyed() {
-    this.tippyStyleReset()
+    if (this.initialCheckedUsers) {
+      this.initialCheckedUsers.forEach(u => store.pickOrUnpickUser(u))
+    }
   },
 
   computed: {
@@ -133,9 +124,6 @@ export default {
         paddingLeft: this.paddingLeft
       }
     },
-  },
-  components: {
-    UserCardView,
   },
 }
 </script>
@@ -202,16 +190,7 @@ ul {
   background-color: #d6d6d6;
 }
 
-/*.contact-item .content:hover {*/
-/*  background-color: red;*/
-/*}*/
-
+.disabled {
+  pointer-events: none;
+}
 </style>
-
-<!--<style>-->
-<!--.tippy-tooltip {-->
-<!--  right: 250px !important;-->
-<!--  border: 1px solid #f5f5f5 !important;-->
-<!--  background-color: #fcfcfc !important;-->
-<!--}-->
-<!--</style>-->

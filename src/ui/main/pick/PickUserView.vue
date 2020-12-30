@@ -5,7 +5,12 @@
         <input type="text" placeholder="搜索">
       </div>
       <div class="friend-list-container">
-        <UserListVue :enable-pick="true" :users="users"/>
+        <CheckableUserListView :enable-pick="true"
+                               :users="users"
+                               :initial-checked-users="initialCheckedUsers"
+                               :uncheckable-users="uncheckableUsers"
+                               :padding-left="'20px'"
+                               enable-category-label-sticky/>
       </div>
     </section>
     <section class="checked-contact-list-container">
@@ -17,7 +22,7 @@
       <div class="content">
         <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
           <div class="picked-user">
-            <img class="avatar" :src="user.portrait" :alt="user + index">
+            <img class="avatar" :src="user.portrait" alt="">
             <button @click="unpick(user)" class="unpick-button">x</button>
           </div>
           <span class="name single-line">{{ user.displayName }}</span>
@@ -33,7 +38,7 @@
 
 <script>
 import store from "@/store";
-import UserListVue from "@/ui/main/user/UserListVue";
+import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
 
 export default {
   name: "PickUserView",
@@ -43,6 +48,11 @@ export default {
       required: true,
     },
     initialCheckedUsers: {
+      type: Array,
+      required: false,
+      default: null,
+    },
+    uncheckableUsers: {
       type: Array,
       required: false,
       default: null,
@@ -66,7 +76,14 @@ export default {
   },
   methods: {
     unpick(user) {
+      if (this.isUserUncheckable(user)) {
+        return;
+      }
       store.pickOrUnpickUser(user);
+    },
+
+    isUserUncheckable(user) {
+      return this.uncheckableUsers && this.uncheckableUsers.findIndex(u => u.uid === user.uid) >= 0;
     },
 
     cancel() {
@@ -81,7 +98,7 @@ export default {
     },
   },
 
-  components: {UserListVue},
+  components: {CheckableUserListView},
 }
 </script>
 
@@ -107,7 +124,7 @@ export default {
 
 .contact-list-container input {
   height: 25px;
-  margin: 15px 20px 15px 15px;
+  margin: 15px 20px 0 15px;
   flex: 1;
   border-radius: 3px;
   border: 1px solid #ededed;
@@ -119,7 +136,6 @@ export default {
 .contact-list-container .friend-list-container {
   height: 100%;
   overflow: auto;
-  margin-left: -10px;
 }
 
 .checked-contact-list-container {

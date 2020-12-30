@@ -8,7 +8,11 @@
         <div class="back" @click="backPickConversation">
           <p>返回</p>
         </div>
-        <UserListVue class="user-list" :enable-pick="true" :users="users" :enable-category-label-sticky="true"/>
+        <CheckableUserListView class="user-list"
+                               :enable-pick="true"
+                               :users="users"
+                               :padding-left="'20px'"
+                               :enable-category-label-sticky="true"/>
       </div>
     </section>
     <section class="checked-user-list-container">
@@ -38,9 +42,9 @@
 
 <script>
 import store from "@/store";
-import UserListVue from "@/ui/main/user/UserListVue";
 import Message from "@/wfc/messages/message";
 import ForwardMessageView from "@/ui/main/conversation/message/forward/ForwardMessageView";
+import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
 
 export default {
   name: "ForwardMessageByCreateConversationView",
@@ -92,7 +96,7 @@ export default {
   },
 
   components: {
-    UserListVue,
+    CheckableUserListView,
     ForwardMessageView
   },
 }
@@ -145,10 +149,6 @@ export default {
 
 .user-list-container .back:active {
   background-color: #e5e5e5;
-}
-
-.user-list-container .user-list {
-  margin-left: -10px;
 }
 
 .checked-user-list-container {
