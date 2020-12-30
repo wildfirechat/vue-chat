@@ -99,13 +99,10 @@ export default {
       this.$router.replace("/home/contact");
     },
     go2Setting() {
-      // if (this.$router.currentRoute.path === '/home/setting') {
-      //   return;
-      // }
-      // this.$router.push({path: "/home/setting"});
-      let routeData = this.$router.resolve({name: 'voip', query: {data: "single"}});
-      let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=600,height=300,left=100,top=100`;
-      window.open(routeData.href, 'test', params);
+      if (this.$router.currentRoute.path === '/home/setting') {
+        return;
+      }
+      this.$router.push({path: "/home/setting"});
     },
 
     closeUserCard() {

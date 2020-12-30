@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1>Setting</h1>
+  <div class="setting-container">
+    <h1>Setting---TODO</h1>
   </div>
 </template>
 
@@ -11,5 +11,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.setting-container {
+  height: 100%;
+  flex: 1;
+}
+
 
 </style>
