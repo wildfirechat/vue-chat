@@ -9,7 +9,8 @@
         <div class="message-avatar-content-container">
           <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
           <!--          <button>progress...</button>-->
-          <LoadingView v-show="false"/>
+          <LoadingView v-if="message.status === 0"/>
+          <i v-if="message.status === 2" class="icon-ion-close-circled" style="color: red" @click="resend"/>
           <MessageContentContainerView :message="message"
                                        @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
           <div>
@@ -44,6 +45,7 @@ import Message from "@/wfc/messages/message";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 import store from "@/store";
 import LoadingView from "@/ui/common/LoadingView";
+import wfc from "@/wfc/client/wfc";
 
 export default {
   name: "NormalOutMessageContentView",
@@ -69,6 +71,10 @@ export default {
     closeUserCard() {
       console.log('closeUserCard')
       this.$refs["userCardTippy"]._tippy.hide();
+    },
+    resend() {
+      wfc.deleteMessage(this.message.messageId);
+      wfc.sendMessage(this.message);
     },
     openMessageContextMenu(event, message) {
       this.$parent.$emit('openMessageContextMenu', event, message)
@@ -114,7 +120,7 @@ export default {
   max-height: 800px;
   margin-left: auto;
   text-overflow: ellipsis;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .message-avatar-content-container .avatar {

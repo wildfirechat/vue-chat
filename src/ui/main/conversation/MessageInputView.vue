@@ -144,6 +144,9 @@ export default {
       let imgs = input.getElementsByTagName('img');
       if (imgs) {
         imgs.forEach(img => {
+          if (img.className.indexOf('emoji') >= 0) {
+            return;
+          }
           let src = img.src;
           let file = fileFromDataUri(src, new Date().getTime() + '.png');
           store.sendFile(this.conversationInfo.conversation, file)
