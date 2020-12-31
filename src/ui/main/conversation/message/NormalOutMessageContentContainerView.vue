@@ -49,6 +49,7 @@ import LoadingView from "@/ui/common/LoadingView";
 import wfc from "@/wfc/client/wfc";
 import ConversationType from "@/wfc/model/conversationType";
 import {gte} from "@/wfc/util/longUtil";
+import MessageReceiptDetailView from "@/ui/main/conversation/message/MessageReceiptDetailView";
 
 export default {
   name: "NormalOutMessageContentView",
@@ -88,16 +89,58 @@ export default {
       if (conversation.type === ConversationType.Single) {
         return;
       }
-      // TODO
 
-    }
+      let timestamp = this.message.timestamp;
+      let deliveries = this.sharedConversationState.currentConversationDeliveries;
+      let readEntries = this.sharedConversationState.currentConversationRead;
+
+      if (conversation.type === ConversationType.Group) {
+        let groupMembers = wfc.getGroupMemberIds(conversation.target, false);
+        if (!groupMembers || groupMembers.length === 0) {
+          // do nothing
+        } else {
+          let receivedUserIds = [];
+          let readUserIds = [];
+          let unReceiveUserIds = [];
+          let groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false)
+          groupMembers.forEach(memberId => {
+            let recvDt = deliveries ? deliveries.get(memberId) : 0;
+            let readDt = readEntries ? readEntries.get(memberId) : 0;
+            if (readDt && gte(readDt, timestamp)) {
+              readUserIds.push(memberId);
+            } else if (recvDt && gte(recvDt, timestamp)) {
+              receivedUserIds.push(memberId)
+            } else {
+              unReceiveUserIds.push(memberId)
+            }
+          });
+          let readUsers = store.getUserInfos(readUserIds, conversation.target)
+          let receivedUsers = store.getUserInfos(receivedUserIds, conversation.target)
+          let unreceiveUsers = store.getUserInfos(unReceiveUserIds, conversation.target)
+
+          this.$modal.show(
+              MessageReceiptDetailView,
+              {
+                readUsers: readUsers,
+                receivedUsers: receivedUsers,
+                unreceiveUsers: unreceiveUsers,
+              }, {
+                name: 'message-receipt-detail-modal',
+                width: 480,
+                height: 300,
+                clickToClose: true,
+              }, {
+              })
+        }
+      }
+    },
   },
 
   computed: {
     messageReceipt() {
       let conversation = this.message.conversation;
       let timestamp = this.message.timestamp;
-      let receiptDesc = 'test'
+      let receiptDesc = ''
       let deliveries = this.sharedConversationState.currentConversationDeliveries;
       let readEntries = this.sharedConversationState.currentConversationRead;
 
@@ -123,22 +166,28 @@ export default {
           let recvCount = 0;
           let readCount = 0;
 
+          let receivedUserIds = [];
+          let readUserIds = [];
+          let unReceiveUserIds = [];
           groupMembers.forEach(memberId => {
             let recvDt = deliveries ? deliveries.get(memberId) : 0;
             let readDt = readEntries ? readEntries.get(memberId) : 0;
             if (readDt && gte(readDt, timestamp)) {
               readCount++;
+              readUserIds.push(memberId);
               recvCount++;
             } else if (recvDt && gte(recvDt, timestamp)) {
               recvCount++;
+              receivedUserIds.push(memberId)
+            } else {
+              unReceiveUserIds.push(memberId)
             }
           });
           receiptDesc = `已送达 ${recvCount}/${memberCount}，已读 ${readCount}/${memberCount}`
         }
       }
       return receiptDesc;
-    }
-    ,
+    },
   }
 
 }

@@ -622,6 +622,13 @@ let store = {
     },
 
     // clone一下，别影响到好友列表
+    getUserInfos(userIds, groupId) {
+        let userInfos = wfc.getUserInfos(userIds, groupId);
+        let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+        return this._patchAndSortUserInfos(userInfosCloneCopy, groupId);
+    },
+
+    // clone一下，别影响到好友列表
     getGroupMemberUserInfos(groupId, includeSelf = true) {
 
         let memberIds = wfc.getGroupMemberIds(groupId);
