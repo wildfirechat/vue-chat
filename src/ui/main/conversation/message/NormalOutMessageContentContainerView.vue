@@ -33,7 +33,8 @@
           </div>
         </div>
       </div>
-      <p v-show="false" class="receipt">已读回执</p>
+      <p v-if="sharedConversationState.isMessageReceiptEnable" class="receipt" @click="showMessageReceiptDetail">
+        {{ messageReceipt }}</p>
     </div>
   </section>
 
@@ -46,6 +47,8 @@ import MessageContentContainerView from "@/ui/main/conversation/message/MessageC
 import store from "@/store";
 import LoadingView from "@/ui/common/LoadingView";
 import wfc from "@/wfc/client/wfc";
+import ConversationType from "@/wfc/model/conversationType";
+import {gte} from "@/wfc/util/longUtil";
 
 export default {
   name: "NormalOutMessageContentView",
@@ -78,7 +81,64 @@ export default {
     },
     openMessageContextMenu(event, message) {
       this.$parent.$emit('openMessageContextMenu', event, message)
+    },
+
+    showMessageReceiptDetail() {
+      let conversation = this.message.conversation;
+      if (conversation.type === ConversationType.Single) {
+        return;
+      }
+      // TODO
+
     }
+  },
+
+  computed: {
+    messageReceipt() {
+      let conversation = this.message.conversation;
+      let timestamp = this.message.timestamp;
+      let receiptDesc = 'test'
+      let deliveries = this.sharedConversationState.currentConversationDeliveries;
+      let readEntries = this.sharedConversationState.currentConversationRead;
+
+      if (conversation.type === ConversationType.Single) {
+        let readDt = readEntries ? readEntries.get(conversation.target) : 0
+        readDt = readDt ? readDt : 0;
+        let recvDt = deliveries ? deliveries.get(conversation.target) : 0;
+        recvDt = recvDt ? recvDt : 0;
+
+        if (gte(readDt, timestamp)) {
+          receiptDesc = "已读";
+        } else if (gte(recvDt, timestamp)) {
+          receiptDesc = "已送达";
+        } else {
+          receiptDesc = "未送达";
+        }
+      } else {
+        let groupMembers = wfc.getGroupMemberIds(conversation.target, false);
+        if (!groupMembers || groupMembers.length === 0) {
+          receiptDesc = '';
+        } else {
+          let memberCount = groupMembers.length;
+          let recvCount = 0;
+          let readCount = 0;
+
+          groupMembers.forEach(memberId => {
+            let recvDt = deliveries ? deliveries.get(memberId) : 0;
+            let readDt = readEntries ? readEntries.get(memberId) : 0;
+            if (readDt && gte(readDt, timestamp)) {
+              readCount++;
+              recvCount++;
+            } else if (recvDt && gte(recvDt, timestamp)) {
+              recvCount++;
+            }
+          });
+          receiptDesc = `已送达 ${recvCount}/${memberCount}，已读 ${readCount}/${memberCount}`
+        }
+      }
+      return receiptDesc;
+    }
+    ,
   }
 
 }
@@ -103,6 +163,8 @@ export default {
 
 .message-time-container .receipt {
   margin-right: 50px;
+  font-size: 12px;
+  color: #b4b4b4;
 }
 
 .message-content-container {

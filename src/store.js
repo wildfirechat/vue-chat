@@ -33,6 +33,12 @@ let store = {
             conversationInfoList: [],
             currentConversationMessageList: [],
 
+            currentConversationDeliveries: null,
+            currentConversationRead: null,
+
+            // TODO disable 时，需要更新
+            isMessageReceiptEnable: false,
+
             shouldAutoScrollToBottom: true,
 
             previewMediaItems: [],
@@ -81,6 +87,7 @@ let store = {
             this._loadFavGroupList();
             this._loadFriendList();
             this._loadSelfUserInfo();
+            conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         });
 
         wfc.eventEmitter.on(EventType.UserInfosUpdate, (userInfos) => {
@@ -181,6 +188,18 @@ let store = {
             conversationState.currentConversationMessageList.push(message);
         });
 
+        wfc.eventEmitter.on(EventType.MessageReceived, (delivery) => {
+            if (conversationState.currentConversationInfo) {
+                conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationState.currentConversationInfo.conversation);
+            }
+        });
+
+        wfc.eventEmitter.on(EventType.MessageRead, (readEntries) => {
+            // optimization
+            if (conversationState.currentConversationInfo) {
+                conversationState.currentConversationRead = wfc.getConversationRead(conversationState.currentConversationInfo.conversation);
+            }
+        });
     },
 
     // conversation actions
@@ -206,21 +225,17 @@ let store = {
             return;
         }
         let convs = conversationState.conversationInfoList.filter(info => info.conversation.equal(conversation));
+        let info;
         if (convs && convs.length > 0) {
-            this.setCurrentConversationInfo(convs[0]);
+            info = convs[0];
         } else {
             wfc.setConversationTimestamp(conversation, new Date().getTime());
-            let info = wfc.getConversationInfo(conversation);
+            info = wfc.getConversationInfo(conversation);
             this._patchConversationInfo(info);
             conversationState.currentConversationInfo = info;
             this._loadDefaultConversationList();
         }
-        conversationState.shouldAutoScrollToBottom = true;
-        this._loadCurrentConversationMessages();
-
-        conversationState.enableMessageMultiSelection = false;
-        conversationState.selectedMessages.length = 0;
-        conversationState.quotedMessage = null;
+        this.setCurrentConversationInfo(info);
     },
 
     setCurrentConversationInfo(conversationInfo) {
@@ -230,6 +245,9 @@ let store = {
         conversationState.currentConversationInfo = conversationInfo;
         conversationState.shouldAutoScrollToBottom = true;
         this._loadCurrentConversationMessages();
+
+        conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
+        conversationInfo.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
 
         conversationState.enableMessageMultiSelection = false;
         conversationState.selectedMessages.length = 0;
