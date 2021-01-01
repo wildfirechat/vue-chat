@@ -23,8 +23,7 @@
         <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
-    <div @keyup.enter="send($event)" v-focus @focus="restoreSelection($event)" @blur="onBlur"
-         @mouseup="saveSelection($event)" @keyup="saveSelection"
+    <div @keyup.enter="send($event)"
          ref="input" class="input"
          autofocus
          placeholder="hello" contenteditable="true">
@@ -71,9 +70,6 @@ export default {
       tribute: null,
       mentions: [],
       isMention: false,
-      selectionOffset: null,
-      savedRange: null,
-      isInFocus: false,
       emojiCategories: categoriesDefault,
       emojis: emojisDefault,
     }
@@ -191,10 +187,6 @@ export default {
       }
     },
 
-    onBlur() {
-      this.isInFocus = false;
-    },
-
     onSelectEmoji(emoji) {
       this.showEmojiDialog = false;
       if (emoji.data.indexOf('http') >= 0) {
@@ -204,11 +196,9 @@ export default {
         return;
       }
 
-      this.restoreSelection();
-      this.insertTextAtCaret(emojiParse(emoji.data));
-      this.$nextTick(() => {
-        this.placeCaretAtEnd();
-      })
+      this.$refs.input.focus();
+      this.insertHTML(emojiParse(emoji.data));
+      this.focusInput();
     },
 
     createElementFromHTML(htmlString) {
@@ -219,81 +209,24 @@ export default {
       return div.firstChild;
     },
 
-    insertTextAtCaret(text) {
+
+    insertHTML(html) {
       let sel, range;
-      if (window.getSelection()) {
-        sel = window.getSelection();
-        if (sel.getRangeAt && sel.rangeCount) {
-          range = sel.getRangeAt(0);
-          range.collapse(false);
-          if (text.startsWith('<')) {
-            let imgEmoji = this.createElementFromHTML(text);
-            range.insertNode(imgEmoji);
-            range = document.createRange();
-            range.selectNodeContents(imgEmoji);
-            range.collapse(false);
-            sel.removeAllRanges();
-            sel.addRange(range);
-          } else {
-            range.insertNode(document.createTextNode(text));
-          }
-        }
-      } else if (document.selection && document.selection.createRange) {
-        document.selection.createRange().text = text;
-      }
-    },
 
-    saveSelection() {
-      if (!this.$refs['input'].innerHTML) {
-        this.savedRange = null;
-        console.log('not save')
-        return;
-      }
-      if (window.getSelection)//non IE Browsers
-      {
-        this.savedRange = window.getSelection().getRangeAt(0);
-      } else if (document.selection)//IE
-      {
-        this.savedRange = document.selection.createRange();
-      }
-    },
+      if (window.getSelection && (sel = window.getSelection())) {
+        range = sel.getRangeAt(0);
+        range.collapse(true);
+        let imgEmoji = this.createElementFromHTML(html);
+        range.insertNode(imgEmoji);
 
-    restoreSelection() {
-      this.isInFocus = true;
-      if (this.savedRange != null) {
-        if (window.getSelection)//non IE and there is already a selection
-        {
-          let s = window.getSelection();
-          if (s.rangeCount > 0)
-            s.removeAllRanges();
-          s.addRange(this.savedRange);
-        } else if (document.createRange)//non IE and no selection
-        {
-          window.getSelection().addRange(this.savedRange);
-        } else if (document.selection)//IE
-        {
-          this.savedRange.select();
-        }
-      } else {
-        // do nothing
-      }
-    },
-
-    placeCaretAtEnd() {
-      let el = this.$refs['input'];
-      el.focus();
-      if (typeof window.getSelection != "undefined"
-          && typeof document.createRange != "undefined") {
-        let sel = window.getSelection();
-        let range = sel.getRangeAt(0);
-        range.collapse(false);
+        // Move the caret immediately after the inserted span
+        range.setStartAfter(imgEmoji);
+        range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
-      } else if (typeof document.body.createTextRange != "undefined") {
-        let textRange = document.body.createTextRange();
-        textRange.moveToElementText(el);
-        textRange.collapse(false);
-        textRange.select();
+        console.log('in 10')
+      } else if (document.selection && document.selection.createRange) {
+        document.selection.createRange().text = html;
       }
     },
 
@@ -505,6 +438,8 @@ export default {
   outline: none;
   padding: 0 20px;
   overflow: auto;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 ul li {
