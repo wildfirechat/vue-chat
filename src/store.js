@@ -644,7 +644,9 @@ let store = {
     getConversationMemberUsrInfos(conversation) {
         let userInfos = [];
         if (conversation.type === 0) {
-            userInfos.push(wfc.getUserInfo(wfc.getUserId(), false));
+            if (conversation.target !== contactState.selfUserInfo.uid) {
+                userInfos.push(wfc.getUserInfo(wfc.getUserId(), false));
+            }
             userInfos.push(wfc.getUserInfo(conversation.target, false));
             let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
             userInfos = this._patchAndSortUserInfos(userInfosCloneCopy, '');

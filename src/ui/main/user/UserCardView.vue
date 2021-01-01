@@ -1,5 +1,5 @@
 <template>
-  <section class="user-info-container">
+  <section @click.stop="" class="user-info-container">
     <div class="header">
       <div class="desc">
         <h2>{{ userInfo._displayName}}</h2>
@@ -14,7 +14,7 @@
         <li>
           <label>备注</label>
           <div class="alias">
-            <input type="text" placeholder="备注名"/>
+            <input @click.stop="" type="text" placeholder="备注名"/>
           </div>
         </li>
         <li>
