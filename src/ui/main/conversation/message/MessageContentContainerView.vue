@@ -11,6 +11,8 @@
   <VideoMessageContentView :message="message"
                            v-else-if="message.messageContent.type === 6"/>
   <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
+  <StickerMessageContentView :message="message"
+                             v-else-if="message.messageContent.type === 7"/>
   <UnsupportMessageContentView :message="message"
                                v-else
                                v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
@@ -23,6 +25,7 @@ import ImageMessageContentView from "@/ui/main/conversation/message/content/Imag
 import VideoMessageContentView from "@/ui/main/conversation/message/content/VideoMessageContentView";
 import UnsupportMessageContentView from "@/ui/main/conversation/message/content/UnsupportMessageContentView";
 import FileMessageContentView from "@/ui/main/conversation/message/content/FileMessageContentView";
+import StickerMessageContentView from "@/ui/main/conversation/message/content/StickerMessageContentView";
 
 export default {
   name: "MessageContentContainerView",
@@ -38,6 +41,7 @@ export default {
     ImageMessageContentView,
     VideoMessageContentView,
     FileMessageContentView,
+    StickerMessageContentView,
   }
 }
 </script>

@@ -9,10 +9,9 @@
 
 <script>
 import Message from "@/wfc/messages/message";
-import store from "@/store";
 
 export default {
-  name: "ImageMessageContentView",
+  name: "StickerMessageContentView",
   props: {
     message: {
       type: Message,
@@ -26,8 +25,8 @@ export default {
   },
   methods: {
     preview(message) {
-      console.log('preview', message);
-      store.previewMessage(message);
+      // TODO
+      console.log('TODO, preview sticker collection');
     },
     onImageLoaded() {
       this.imageLoaded = true
@@ -45,8 +44,8 @@ export default {
 }
 
 .sticker-content-container img {
-  max-height: 400px;
-  max-width: 400px;
+  max-height: 200px;
+  max-width: 200px;
   border-radius: 5px;
   overflow: hidden;
 }

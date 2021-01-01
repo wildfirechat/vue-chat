@@ -114,5 +114,9 @@ export default {
   align-items: center;
 }
 
+.container-emoji{
+  height: 300px;
+}
+
 
 </style>

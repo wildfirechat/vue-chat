@@ -7,6 +7,8 @@
           labelSearch="Search"
           lang="pt-BR"
           v-click-outside="hideEmojiView"
+          :customEmojis="emojis"
+          :customCategories="emojiCategories"
           @select="onSelectEmoji"
       />
       <ul>
@@ -35,7 +37,7 @@
 import wfc from "@/wfc/client/wfc";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
 import store from "@/store";
-import {VEmojiPicker} from "v-emoji-picker";
+import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker"
 import ClickOutside from "vue-click-outside";
 import Tribute from "tributejs";
 import '../../../tribute.css'
@@ -51,6 +53,7 @@ import {focus} from 'vue-focus';
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import {fileFromDataUri} from "@/ui/util/imageUtil";
+import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 
 export default {
   name: "MessageInputView",
@@ -71,6 +74,8 @@ export default {
       selectionOffset: null,
       savedRange: null,
       isInFocus: false,
+      emojiCategories: categoriesDefault,
+      emojis: emojisDefault,
     }
   },
   methods: {
@@ -192,6 +197,13 @@ export default {
 
     onSelectEmoji(emoji) {
       this.showEmojiDialog = false;
+      if (emoji.data.indexOf('http') >= 0) {
+        let sticker = new StickerMessageContent('', emoji.data, 200, 200)
+        wfc.sendConversationMessage(this.conversationInfo.conversation, sticker);
+
+        return;
+      }
+
       this.restoreSelection();
       this.insertTextAtCaret(emojiParse(emoji.data));
       this.$nextTick(() => {
@@ -333,6 +345,11 @@ export default {
       store.sendFile(this.conversationInfo.conversation, file);
     },
 
+    initEmojiPicker() {
+      // 自定义吧
+      this.emojiCategories = [categoriesDefault[0], categoriesDefault[1], categoriesDefault[categoriesDefault.length - 1]]
+    },
+
     initMention(conversation) {
       // TODO group, channel
 
@@ -432,6 +449,7 @@ export default {
   mounted() {
     if (this.conversationInfo) {
       this.initMention(this.conversationInfo.conversation)
+      this.initEmojiPicker()
     }
     this.focusInput();
   },
@@ -467,7 +485,12 @@ export default {
 #emoji {
   position: absolute;
   bottom: 55px;
-  left: -100px;
+  left: -50px;
+}
+
+/*pls refer to https://vue-loader.vuejs.org/guide/scoped-css.html#child-component-root-elements*/
+#emoji >>> .container-emoji {
+  height: 280px;
 }
 
 .input-action-container {
