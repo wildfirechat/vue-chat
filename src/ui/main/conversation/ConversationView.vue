@@ -48,6 +48,10 @@
             </li>
           </ul>
         </div>
+        <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
+          <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>
+          <ScaleLoader :color="'#d2d2d2'" :height="'15px'" :width="'3px'"/>
+        </div>
         <div v-show="!sharedConversationState.enableMessageMultiSelection" v-on:mousedown="dragStart"
              class="divider-handler"></div>
         <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
@@ -108,7 +112,6 @@ import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInM
 import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
-import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
 import {numberValue} from "@/wfc/util/longUtil";
@@ -120,6 +123,7 @@ import ForwardMessageByPickConversationView
   from "@/ui/main/conversation/message/forward/ForwardMessageByPickConversationView";
 import ForwardMessageByCreateConversationView
   from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
+import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 
 export default {
   components: {
@@ -132,6 +136,7 @@ export default {
     SingleConversationInfoView,
     CoolLightBox,
     InfiniteLoading,
+    ScaleLoader,
   },
   // props: ["conversation"],
   data() {
@@ -437,11 +442,7 @@ export default {
   computed: {
     conversationTitle() {
       let info = this.sharedConversationState.currentConversationInfo;
-      if (info.conversation.type === ConversationType.Single) {
-        return info.conversation._target.displayName;
-      } else {
-        return info.conversation._target.name;
-      }
+      return info.conversation._target._displayName;
     },
     loadingIdentifier() {
       let conversation = this.sharedConversationState.currentConversationInfo.conversation;
@@ -553,6 +554,19 @@ export default {
 /*  height: 1px;*/
 /*  background-color: #e2e2e2;*/
 /*}*/
+
+.inputting-container {
+  display: flex;
+  padding: 10px 20px;
+  align-items: center;
+}
+
+.inputting-container .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 3px;
+  margin-right: 20px;
+}
 
 .divider-handler::before {
   cursor: row-resize;

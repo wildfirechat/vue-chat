@@ -10,8 +10,6 @@ import {imageThumbnail, mergeImages, videoThumbnail} from "@/ui/util/imageUtil";
 import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
 import Conversation from "@/wfc/model/conversation";
 import MessageContentType from "@/wfc/messages/messageContentType";
-import MessageConfig from "@/wfc/client/messageConfig";
-import PersistFlag from "@/wfc/messages/persistFlag";
 import Message from "@/wfc/messages/message";
 import ImageMessageContent from "@/wfc/messages/imageMessageContent";
 import VideoMessageContent from "@/wfc/messages/videoMessageContent";
@@ -36,8 +34,11 @@ let store = {
             currentConversationDeliveries: null,
             currentConversationRead: null,
 
-            // TODO disable 时，需要更新
+            // TODO 调用setUserEnableReceipt时，需要更新
             isMessageReceiptEnable: false,
+
+            inputtingUser: null,
+            inputClearHandler: null,
 
             shouldAutoScrollToBottom: true,
 
@@ -107,14 +108,34 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
-            if (!this._isDisplayMessage(msg)) {
-                return;
-            }
-
-            if (!hasMore) {
-                this._loadDefaultConversationList();
-            }
             if (conversationState.currentConversationInfo && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                // 移动端，目前只有单聊会发送typing消息
+                if (msg.messageContent.type === MessageContentType.Typing) {
+                    let groupId = msg.conversation.type === 1 ? msg.conversation.target : '';
+                    let userInfo = wfc.getUserInfo(msg.from, groupId)
+                    userInfo = Object.assign({}, userInfo);
+                    userInfo._displayName = wfc.getGroupMemberDisplayNameEx(userInfo);
+                    conversationState.inputtingUser = userInfo;
+
+                    if (!conversationState.inputClearHandler) {
+                        conversationState.inputClearHandler = () => {
+                            conversationState.inputtingUser = null;
+                        }
+                    }
+                    clearTimeout(conversationState.inputClearHandler);
+                    setTimeout(conversationState.inputClearHandler, 3000)
+                } else {
+                    clearTimeout(conversationState.inputClearHandler);
+                    conversationState.inputtingUser = null;
+                }
+
+                if (!this._isDisplayMessage(msg)) {
+                    return;
+                }
+
+                if (!hasMore) {
+                    this._loadDefaultConversationList();
+                }
                 // 会把下来加载更多加载的历史消息给清理了
                 let lastTimestamp = 0;
                 let msgListLength = conversationState.currentConversationMessageList.length;
@@ -205,7 +226,8 @@ let store = {
     // conversation actions
 
     _isDisplayMessage(message) {
-        return [PersistFlag.Persist, PersistFlag.Persist_And_Count].indexOf(MessageConfig.getMessageContentPersitFlag(message.messageContent.type)) > -1;
+        // return [PersistFlag.Persist, PersistFlag.Persist_And_Count].indexOf(MessageConfig.getMessageContentPersitFlag(message.messageContent.type)) > -1;
+        return message.messageId !== 0;
     },
 
     _loadDefaultConversationList() {
@@ -252,6 +274,9 @@ let store = {
         conversationState.enableMessageMultiSelection = false;
         conversationState.selectedMessages.length = 0;
         conversationState.quotedMessage = null;
+
+        clearTimeout(conversationState.inputClearHandler);
+        conversationState.inputtingUser = null;
     },
 
     toggleMessageMultiSelection() {
