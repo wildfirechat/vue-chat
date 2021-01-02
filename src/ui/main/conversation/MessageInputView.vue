@@ -52,6 +52,7 @@ import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import {fileFromDataUri} from "@/ui/util/imageUtil";
 import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
+import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
 
 export default {
   name: "MessageInputView",
@@ -278,8 +279,9 @@ export default {
     },
 
     initEmojiPicker() {
-      // 自定义吧
-      this.emojiCategories = [categoriesDefault[0], categoriesDefault[1], categoriesDefault[categoriesDefault.length - 1]]
+      let config = emojiConfig();
+      this.emojiCategories = config.emojiCategories;
+      this.emojis = config.emojis;
     },
 
     initMention(conversation) {
