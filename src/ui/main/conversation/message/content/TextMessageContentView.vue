@@ -30,6 +30,7 @@ export default {
 
 .text-message-container p {
   user-select: text;
+  white-space: pre-line;
 }
 
 .text-message-container.out {
