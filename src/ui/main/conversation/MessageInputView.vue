@@ -48,7 +48,6 @@ import GroupMemberType from "@/wfc/model/groupMemberType";
 import QuoteInfo from "@/wfc/model/quoteInfo";
 import Draft from "@/ui/util/draft";
 import {parser as emojiParse} from '@/ui/util/emoji';
-import {focus} from 'vue-focus';
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import {fileFromDataUri} from "@/ui/util/imageUtil";
