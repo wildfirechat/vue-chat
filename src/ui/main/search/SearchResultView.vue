@@ -1,5 +1,5 @@
 <template>
-  <section class="search-container"
+  <section class="search-result-container"
            v-if="sharedSearchState.show"
            v-bind:class="{active:sharedSearchState.show}"
            v-click-outside="hideSearchView">
@@ -118,18 +118,19 @@ export default {
 
 <style lang="css" scoped>
 
-.search-container {
+.search-result-container {
   display: none;
 }
 
-.search-container.active {
+.search-result-container.active {
   display: block;
   z-index: 100;
+  overflow: auto;
   /*background-color: red;*/
   background-color: #f3f3f3e5;
 }
 
-.search-container ul {
+.search-result-container ul {
   list-style: none;
   background-color: white;
 }

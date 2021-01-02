@@ -50,6 +50,7 @@ export default {
 
 .panel {
   height: calc(100% - 60px);
+  max-height: calc(100% - 60px) ;
   position: relative;
   background-color: #f3f3f3;
   flex: 1;
