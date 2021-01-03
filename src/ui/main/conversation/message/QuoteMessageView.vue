@@ -5,8 +5,10 @@
         {{ this.quotedMessageStr }}
       </p>
 
-      <img v-if="[3, 6].indexOf(this.message.messageContent.type) >= 0"
-           :src="'data:video/jpeg;base64,' + message.messageContent.thumbnail" alt="">
+      <img v-if="[3, 6, 7].indexOf(this.message.messageContent.type) >= 0"
+           :src="mediaSrc" alt=""
+           @click="preview"
+      >
     </div>
     <i v-if="showCloseButton" @click="cancelQuoteMessage" class="icon-ion-close"></i>
   </div>
@@ -33,6 +35,11 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+    enableMediaPreview: {
+      type: Boolean,
+      required: false,
+      default: false,
     }
   },
 
@@ -45,19 +52,32 @@ export default {
     cancelQuoteMessage() {
       this.$emit('cancelQuoteMessage')
     },
+
+    preview() {
+      if (this.message) {
+        store.previewMessage(this.message, false);
+      }
+    }
   },
   computed: {
     quotedMessageStr() {
       let str = '';
       if (this.message) {
         str = this.message._from._displayName + ':';
-        if ([MessageContentType.Image, MessageContentType.Video].indexOf(this.message.messageContent.type) < 0) {
+        if ([MessageContentType.Image, MessageContentType.Video, MessageContentType.Sticker].indexOf(this.message.messageContent.type) < 0) {
           str += this.message.messageContent.digest(this.message);
         }
       } else {
         str = this.messageDigest;
       }
       return str;
+    },
+    mediaSrc() {
+      let src;
+      let msgCnt = this.message.messageContent;
+      src = msgCnt.thumbnail ? 'data:video/jpeg;base64,' + msgCnt.thumbnail : msgCnt.remotePath;
+      console.log('src', src)
+      return src;
     }
   },
 }
@@ -90,6 +110,8 @@ export default {
 }
 
 .quoted-message img {
+  margin-left: 10px;
+  border-radius: 3px;
   max-width: 100px;
   max-height: 100px;
 }

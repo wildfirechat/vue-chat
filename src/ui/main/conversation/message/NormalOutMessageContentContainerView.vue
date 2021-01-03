@@ -17,6 +17,7 @@
             <QuoteMessageView style="padding: 5px 0"
                               v-if="quotedMessage"
                               :message="quotedMessage"
+                              :enable-media-preview="true"
                               :message-digest="this.message.messageContent.quoteInfo.messageDigest"
                               :show-close-button="false"/>
           </div>

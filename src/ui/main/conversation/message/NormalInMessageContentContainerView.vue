@@ -33,6 +33,7 @@
             <QuoteMessageView style="padding: 5px 0; max-width: 60%; max-height: 60px"
                               v-if="quotedMessage"
                               :message="quotedMessage"
+                              :enable-media-preview="true"
                               :message-digest="this.message.messageContent.quoteInfo.messageDigest"
                               :show-close-button="false"/>
           </div>
