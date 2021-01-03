@@ -87,6 +87,7 @@ let store = {
             miscState.connectionStatus = status;
             this._loadFavGroupList();
             this._loadFriendList();
+            this._loadFriendRequest();
             this._loadSelfUserInfo();
             conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         });
@@ -96,7 +97,16 @@ let store = {
             this._loadDefaultConversationList();
             this._loadCurrentConversationMessages();
             this._loadFriendList();
+            this._loadFriendRequest();
             // TODO 其他相关逻辑
+        });
+
+        wfc.eventEmitter.on(EventType.FriendRequestUpdate, (newFrs) => {
+            this._loadFriendRequest();
+        });
+
+        wfc.eventEmitter.on(EventType.FriendListUpdate, (updatedFriendIds) => {
+            this._loadFriendList();
         });
 
         wfc.eventEmitter.on(EventType.GroupInfosUpdate, (groupInfos) => {
@@ -500,6 +510,17 @@ let store = {
             let friendList = wfc.getUserInfos(friends, '');
             contactState.friendList = this._patchAndSortUserInfos(friendList, '');
         }
+    },
+
+    _loadFriendRequest() {
+        let requests = wfc.getIncommingFriendRequest()
+        requests = requests.concat(wfc.getOutgoingFriendRequest());
+        requests.sort((a, b) => numberValue(a.timestamp) - numberValue(b.timestamp))
+        requests.forEach(fr => {
+            fr._target = wfc.getUserInfo(fr.target, false);
+        });
+
+        contactState.friendRequestList = requests;
     },
 
     _patchAndSortUserInfos(userInfos, groupId = '') {

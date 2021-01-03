@@ -6,7 +6,7 @@
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
           <span class="title">新的朋友</span>
         </div>
-        <NewFriendListView v-if="sharedContactState.expandFriendRequestList" :new-friends="newFriends"/>
+        <NewFriendListView v-if="sharedContactState.expandFriendRequestList" />
       </li>
       <li>
         <div @click="showGroups" class="category-item-container">
@@ -46,7 +46,6 @@ export default {
   data() {
     return {
       sharedContactState: store.state.contact,
-      newFriends: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     }
   },
   methods: {
