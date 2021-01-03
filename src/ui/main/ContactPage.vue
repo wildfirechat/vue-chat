@@ -9,6 +9,9 @@
         v-if="sharedContactState.currentFriend"
         :user="sharedContactState.currentFriend"
         class="contact-detail-container"/>
+    <FriendRequestDetailView
+        v-if="sharedContactState.currentFriendRequest"
+        class="contact-detail-container"/>
   </div>
 </template>
 
@@ -17,6 +20,7 @@ import ContactListPanel from "@/ui/main/ContactListPanel";
 import GroupDetailView from "@/ui/main/contact/GroupDetailView";
 import store from "@/store";
 import UserDetailView from "@/ui/main/contact/UserDetailView";
+import FriendRequestDetailView from "@/ui/main/contact/FrienRequestDetailView";
 
 export default {
   name: 'ContactPage',
@@ -26,6 +30,7 @@ export default {
     }
   },
   components: {
+    FriendRequestDetailView,
     UserDetailView,
     GroupDetailView,
     ContactListPanel,
