@@ -15,6 +15,8 @@ export default {
       type: Message,
       required: true,
     }
+  },
+  mounted() {
   }
 }
 </script>

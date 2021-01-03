@@ -27,7 +27,7 @@ export default {
   methods: {
     preview(message) {
       console.log('preview', message);
-      store.previewMessage(message);
+      store.previewMessage(message, true);
     },
     onImageLoaded() {
       this.imageLoaded = true

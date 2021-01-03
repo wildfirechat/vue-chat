@@ -23,7 +23,7 @@ export default {
   methods: {
     preview(message) {
       console.log('preview', message);
-      store.previewMessage(message);
+      store.previewMessage(message, false);
     }
   }
 }

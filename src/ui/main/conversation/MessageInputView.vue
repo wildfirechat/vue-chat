@@ -28,7 +28,9 @@
          autofocus
          placeholder="hello" contenteditable="true">
     </div>
-    <QuoteMessageView v-if="shareConversationState.quotedMessage !== null"/>
+    <QuoteMessageView style="padding: 10px 20px" v-if="shareConversationState.quotedMessage !== null"
+                      v-on:cancelQuoteMessage="cancelQuoteMessage"
+                      :message="shareConversationState.quotedMessage" :show-close-button="true"/>
   </section>
 </template>
 
@@ -89,6 +91,11 @@ export default {
 
       return true;
     },
+
+    cancelQuoteMessage() {
+      store.quoteMessage(null)
+    },
+
     send(e) {
       if (this.isMention) {
         this.isMention = false;
@@ -165,7 +172,7 @@ export default {
           .replace(/" src="https:\/\/static\.wildfirechat\.cn\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
 
       let textMessageContent = this.handleMention(message);
-      let quotedMessage = this.quotedMessage;
+      let quotedMessage = this.shareConversationState.quotedMessage;
       if (quotedMessage) {
         let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
         textMessageContent.setQuoteInfo(quoteInfo);

@@ -27,9 +27,15 @@
         <!--消息内容 根据情况，if-else-->
         <div class="message-name-content-container">
           <p class="name">{{ message._from.displayName }}</p>
-          <MessageContentContainerView :message="message"
-                                       @contextmenu.prevent.native="openMessageContextMenu($event, message)"
-          />
+          <div class="flex-column flex-align-start">
+            <MessageContentContainerView :message="message"
+                                         @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+            <QuoteMessageView style="padding: 5px 0; max-width: 60%; max-height: 60px"
+                              v-if="quotedMessage"
+                              :message="quotedMessage"
+                              :message-digest="this.message.messageContent.quoteInfo.messageDigest"
+                              :show-close-button="false"/>
+          </div>
         </div>
       </div>
     </div>
@@ -40,7 +46,9 @@
 <script>
 import UserCardView from "@/ui/main/user/UserCardView";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
+import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import store from "@/store";
+import wfc from "@/wfc/client/wfc";
 
 export default {
   name: "NormalInMessageContentView",
@@ -61,9 +69,20 @@ export default {
       this.$parent.$emit('openMessageContextMenu', event, message)
     }
   },
+  computed: {
+    quotedMessage() {
+      if (this.message.messageContent.quoteInfo) {
+        let messageUid = this.message.messageContent.quoteInfo.messageUid;
+        return wfc.getMessageByUid(messageUid);
+      } else {
+        return null;
+      }
+    }
+  },
   components: {
     MessageContentContainerView,
     UserCardView,
+    QuoteMessageView,
   },
 }
 </script>

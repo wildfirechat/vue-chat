@@ -11,8 +11,16 @@
           <!--          <button>progress...</button>-->
           <LoadingView v-if="message.status === 0"/>
           <i v-if="message.status === 2" class="icon-ion-close-circled" style="color: red" @click="resend"/>
-          <MessageContentContainerView :message="message"
-                                       @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+          <div class="flex-column flex-align-end">
+            <MessageContentContainerView :message="message"
+                                         @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+            <QuoteMessageView style="padding: 5px 0"
+                              v-if="quotedMessage"
+                              :message="quotedMessage"
+                              :message-digest="this.message.messageContent.quoteInfo.messageDigest"
+                              :show-close-button="false"/>
+          </div>
+
           <div>
             <tippy
                 :to="'infoTrigger' + this.message.messageId"
@@ -50,6 +58,7 @@ import wfc from "@/wfc/client/wfc";
 import ConversationType from "@/wfc/model/conversationType";
 import {gte} from "@/wfc/util/longUtil";
 import MessageReceiptDetailView from "@/ui/main/conversation/message/MessageReceiptDetailView";
+import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 
 export default {
   name: "NormalOutMessageContentView",
@@ -65,6 +74,7 @@ export default {
     }
   },
   components: {
+    QuoteMessageView,
     LoadingView,
     MessageContentContainerView,
     UserCardView,
@@ -129,8 +139,7 @@ export default {
                 width: 480,
                 height: 300,
                 clickToClose: true,
-              }, {
-              })
+              }, {})
         }
       }
     },
@@ -188,6 +197,15 @@ export default {
       }
       return receiptDesc;
     },
+
+    quotedMessage() {
+      if (this.message.messageContent.quoteInfo) {
+        let messageUid = this.message.messageContent.quoteInfo.messageUid;
+        return wfc.getMessageByUid(messageUid);
+      } else {
+        return null;
+      }
+    }
   }
 
 }
@@ -231,7 +249,7 @@ export default {
   max-height: 800px;
   margin-left: auto;
   text-overflow: ellipsis;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .message-avatar-content-container .avatar {

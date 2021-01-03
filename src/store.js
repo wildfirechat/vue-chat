@@ -319,23 +319,38 @@ let store = {
         conversationState.shouldAutoScrollToBottom = scroll;
     },
 
-    previewMessage(message) {
+    /**
+     *
+     * @param message
+     * @param {Boolean} continuous  true，预览周围的媒体消息；false，只预览第一个参数传入的那条媒体消息
+     */
+    previewMessage(message, continuous) {
         conversationState.previewMediaItems.length = 0;
         conversationState.previewMediaIndex = null;
-        let mediaMsgs = conversationState.currentConversationMessageList.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) > -1)
-        let msg;
-        for (let i = 0; i < mediaMsgs.length; i++) {
-            msg = mediaMsgs[i];
-            if (msg.messageId === message.messageId) {
-                conversationState.previewMediaIndex = i;
+        if (continuous) {
+            let mediaMsgs = conversationState.currentConversationMessageList.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) > -1)
+            let msg;
+            for (let i = 0; i < mediaMsgs.length; i++) {
+                msg = mediaMsgs[i];
+                if (msg.messageId === message.messageId) {
+                    conversationState.previewMediaIndex = i;
+                }
+                conversationState.previewMediaItems.push({
+                    src: msg.messageContent.remotePath,
+                    thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail,
+                    autoplay: true,
+                });
             }
+        } else {
+            conversationState.previewMediaIndex = 0;
             conversationState.previewMediaItems.push({
-                src: msg.messageContent.remotePath,
-                thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail,
+                src: message.messageContent.remotePath,
+                thumb: 'data:image/png;base64,' + message.messageContent.thumbnail,
                 autoplay: true,
             });
         }
     },
+
     async sendFile(conversation, file) {
         let msg = new Message();
         msg.conversation = conversation;

@@ -1,5 +1,5 @@
 import wfc from "../client/wfc";
-import { stringValue } from "../util/longUtil";
+import {stringValue} from "../util/longUtil";
 import Long from "long";
 
 export default class QuoteInfo {
@@ -25,7 +25,7 @@ export default class QuoteInfo {
 
     encode() {
         let obj = {
-            u: stringValue(this.messageUid),
+            us: stringValue(this.messageUid),
             i: this.userId,
             n: this.userDisplayName,
             d: this.messageDigest,
@@ -34,7 +34,8 @@ export default class QuoteInfo {
     }
 
     decode(obj) {
-        this.messageUid = Long.fromValue(obj.u);
+        console.log('quoteInfo', obj)
+        this.messageUid = Long.fromValue(obj.us);
         this.userId = obj.i;
         this.userDisplayName = obj.n;
         this.messageDigest = obj.d;
