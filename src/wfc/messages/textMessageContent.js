@@ -38,7 +38,9 @@ export default class TextMessageContent extends MessageContent {
         super.decode(payload);
         this.content = payload.searchableContent;
         if(payload.binaryContent && payload.binaryContent.length > 0){
-            let obj = JSON.parse(wfc.b64_to_utf8(payload.binaryContent)).quote;
+            let quoteInfoStr = wfc.b64_to_utf8(payload.binaryContent)
+            quoteInfoStr = quoteInfoStr.replace(/"u":([0-9]+),/, '"u":"$1",')
+            let obj = JSON.parse(quoteInfoStr).quote
 
             this.quoteInfo = new QuoteInfo();
             this.quoteInfo.decode(obj);

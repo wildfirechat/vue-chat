@@ -25,7 +25,7 @@ export default class QuoteInfo {
 
     encode() {
         let obj = {
-            us: stringValue(this.messageUid),
+            u: stringValue(this.messageUid),
             i: this.userId,
             n: this.userDisplayName,
             d: this.messageDigest,
@@ -34,8 +34,7 @@ export default class QuoteInfo {
     }
 
     decode(obj) {
-        console.log('quoteInfo', obj)
-        this.messageUid = Long.fromValue(obj.us);
+        this.messageUid = Long.fromValue(obj.u);
         this.userId = obj.i;
         this.userDisplayName = obj.n;
         this.messageDigest = obj.d;

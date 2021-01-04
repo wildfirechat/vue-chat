@@ -76,7 +76,6 @@ export default {
       let src;
       let msgCnt = this.message.messageContent;
       src = msgCnt.thumbnail ? 'data:video/jpeg;base64,' + msgCnt.thumbnail : msgCnt.remotePath;
-      console.log('src', src)
       return src;
     }
   },
