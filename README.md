@@ -9,3 +9,11 @@
 1. ```npm install```
 2. ```npm run serve```
 
+## 截图
+![](./image/contact.png)
+![](./image/group-conversation-info.png)
+![](./image/home.png)
+![](./image/picker-user.png)
+![](./image/quote.png)
+![](./image/sticker.png)
+

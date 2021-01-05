@@ -222,14 +222,13 @@ export default {
   height: 45px;
   margin: 10px 10px;
   border-radius: 3px;
-  border: 1px solid red;
 }
 
 .checked-contact-list-container .content .unpick-button {
   position: absolute;
   width: 20px;
   height: 20px;
-  border: 1px solid red;
+  border: 1px solid white;
   border-radius: 10px;
   top: 0;
   right: 0;
