@@ -1,12 +1,13 @@
 <template>
   <div class="text-message-container"
        v-bind:class="{out:message.direction === 0}">
-    <p class="text">{{ this.message.messageContent.digest() }}</p>
+    <p class="text" v-html="this.textContent"></p>
   </div>
 </template>
 
 <script>
 import Message from "@/wfc/messages/message";
+import {parser as emojiParse} from "@/ui/util/emoji";
 
 export default {
   name: "TextMessageContentView",
@@ -17,6 +18,12 @@ export default {
     }
   },
   mounted() {
+  },
+
+  computed: {
+    textContent() {
+      return emojiParse(this.message.messageContent.digest(this.message))
+    }
   }
 }
 </script>
