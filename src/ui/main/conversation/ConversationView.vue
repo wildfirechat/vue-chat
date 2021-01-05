@@ -13,7 +13,7 @@
       <header>
         <div class="title-container">
           <h1 class="single-line">{{ conversationTitle }}</h1>
-          <a href="#"><img ref="setting" @click="toggleConversationInfo" src="" alt="setting"/></a>
+          <a href="#"><i class="icon-ion-ios-settings-strong" ref="setting" @click="toggleConversationInfo"/></a>
         </div>
       </header>
       <div ref="conversationContentContainer" class="conversation-content-container"
