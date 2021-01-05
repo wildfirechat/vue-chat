@@ -143,9 +143,6 @@ let store = {
                     return;
                 }
 
-                if (!hasMore) {
-                    this._loadDefaultConversationList();
-                }
                 // 会把下来加载更多加载的历史消息给清理了
                 let lastTimestamp = 0;
                 let msgListLength = conversationState.currentConversationMessageList.length;
@@ -154,6 +151,10 @@ let store = {
                 }
                 this._patchMessage(msg, lastTimestamp);
                 conversationState.currentConversationMessageList.push(msg);
+            }
+
+            if (!hasMore) {
+                this._loadDefaultConversationList();
             }
         });
 
