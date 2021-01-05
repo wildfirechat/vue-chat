@@ -302,7 +302,7 @@ export default {
     },
 
     forward(message) {
-      this.showForwardMessageByPickConversationModal(message);
+      this.pickConversationAndForwardMessage(message);
     },
 
     quoteMessage(message) {
@@ -323,7 +323,35 @@ export default {
       });
     },
 
-    showForwardMessageByPickConversationModal(message) {
+    pickConversationAndForwardMessage(message) {
+      let beforeClose = (event) => {
+        console.log('Closing...', event, event.params)
+        // What a gamble... 50% chance to cancel closing
+        if (event.params.toCreateConversation) {
+          console.log('to show')
+          this.createConversationAndForwardMessage(event.params.message)
+        } else if (event.params.confirm) {
+          let conversations = event.params.conversations;
+          let message = event.params.message;
+          let extraMessageText = event.params.extraMessageText;
+          conversations.forEach(conversation => {
+            // let msg =new Message(conversation, message.messageContent)
+            // wfc.sendMessage(msg)
+            // 或者下面这种
+            wfc.sendConversationMessage(conversation, message.messageContent);
+
+            if (extraMessageText) {
+              let textMessage = new TextMessageContent(extraMessageText)
+              wfc.sendConversationMessage(conversation, textMessage);
+            }
+          });
+
+        } else {
+          console.log('cancel')
+          // TODO clear pick state
+        }
+      };
+
       this.$modal.show(
           ForwardMessageByPickConversationView,
           {
@@ -334,11 +362,34 @@ export default {
             height: 480,
             clickToClose: false,
           }, {
-            'before-close': this.beforeForwardMessageByPickConversationModalClose,
+            'before-close': beforeClose,
           })
     },
 
-    showForwardMessageByCreateConversationModal(message) {
+    createConversationAndForwardMessage(message) {
+      let beforeClose = (event) => {
+        console.log('Closing...', event, event.params)
+        if (event.params.backPickConversation) {
+          this.pickConversationAndForwardMessage(event.params.message)
+        } else if (event.params.confirm) {
+          let users = event.params.users;
+          let message = event.params.message;
+          let extraMessageText = event.params.extraMessageText;
+          store.createConversation(users,
+              (conversation) => {
+                wfc.sendConversationMessage(conversation, message.messageContent);
+                if (extraMessageText) {
+                  let textMessage = new TextMessageContent(extraMessageText)
+                  wfc.sendConversationMessage(conversation, textMessage);
+                }
+              },
+              (err) => {
+
+              })
+        } else {
+          console.log('cancel')
+        }
+      };
       this.$modal.show(
           ForwardMessageByCreateConversationView,
           {
@@ -350,61 +401,8 @@ export default {
             height: 480,
             clickToClose: false,
           }, {
-            'before-close': this.beforeForwardMessageByCreateConversationModalClose,
+            'before-close': beforeClose,
           })
-    },
-
-    beforeForwardMessageByPickConversationModalClose(event) {
-      console.log('Closing...', event, event.params)
-      // What a gamble... 50% chance to cancel closing
-      if (event.params.toCreateConversation) {
-        console.log('to show')
-        this.showForwardMessageByCreateConversationModal(event.params.message)
-      } else if (event.params.confirm) {
-        let conversations = event.params.conversations;
-        let message = event.params.message;
-        let extraMessageText = event.params.extraMessageText;
-        conversations.forEach(conversation => {
-          // let msg =new Message(conversation, message.messageContent)
-          // wfc.sendMessage(msg)
-          // 或者下面这种
-          wfc.sendConversationMessage(conversation, message.messageContent);
-
-          if (extraMessageText) {
-            let textMessage = new TextMessageContent(extraMessageText)
-            wfc.sendConversationMessage(conversation, textMessage);
-          }
-        });
-
-      } else {
-        console.log('cancel')
-        // TODO clear pick state
-      }
-    },
-
-    beforeForwardMessageByCreateConversationModalClose(event) {
-      console.log('Closing...', event, event.params)
-      if (event.params.backPickConversation) {
-        this.showForwardMessageByPickConversationModal(event.params.message)
-      } else if (event.params.confirm) {
-        let users = event.params.users;
-        let message = event.params.message;
-        let extraMessageText = event.params.extraMessageText;
-        store.createConversation(users,
-            (conversation) => {
-              wfc.sendConversationMessage(conversation, message.messageContent);
-              if (extraMessageText) {
-                let textMessage = new TextMessageContent(extraMessageText)
-                wfc.sendConversationMessage(conversation, textMessage);
-              }
-            },
-            (err) => {
-
-            })
-      } else {
-        console.log('cancel')
-        // TODO clear pick state
-      }
     },
   },
 

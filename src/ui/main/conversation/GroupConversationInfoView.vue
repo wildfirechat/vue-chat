@@ -48,6 +48,21 @@ export default {
   components: {UserListVue},
   methods: {
     showCreateConversationModal() {
+
+      let beforeOpen = (event) => {
+        console.log('Opening...')
+      };
+      let beforeClose = (event) => {
+        console.log('Closing...', event, event.params)
+        if (event.params.confirm) {
+          let newPickedUsers = event.params.users;
+          let ids = newPickedUsers.map(u => u.uid);
+          wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, [0])
+        }
+      };
+      let closed = (event) => {
+        console.log('Close...', event)
+      };
       let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
       this.$modal.show(
           PickUserView,
@@ -62,27 +77,13 @@ export default {
             height: 480,
             clickToClose: false,
           }, {
-            'before-open': this.beforeOpen,
-            'before-close': this.beforeClose,
-            'closed': this.closed,
+            'before-open': beforeOpen,
+            'before-close': beforeClose,
+            'closed': closed,
           })
     },
     showUserInfo(user) {
       console.log('todo show userInfo', user);
-    },
-    beforeOpen(event) {
-      console.log('Opening...')
-    },
-    beforeClose(event) {
-      console.log('Closing...', event, event.params)
-      if (event.params.confirm) {
-        let newPickedUsers = event.params.users;
-        let ids = newPickedUsers.map(u => u.uid);
-        wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, [0])
-      }
-    },
-    closed(event) {
-      console.log('Close...', event)
     },
   },
 
