@@ -12,7 +12,7 @@ export default {
   methods: {
     closeModal() {
       console.log(' to hide modal');
-      this.$modal.hide('invite-modal', {result: 'invite result'});
+      this.$modal.hide('pick-user-modal', {result: 'invite result'});
     }
   }
 

@@ -184,10 +184,10 @@ export default {
       this.session.hangup();
     },
     down2voice() {
-      this.session.down2voice();
+      this.session.downgrade2Voice();
     },
     screenShare() {
-      this.session.screenShare();
+      this.session.startScreenShare();
     },
 
     invite() {

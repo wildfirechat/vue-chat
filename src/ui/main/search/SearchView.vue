@@ -33,7 +33,7 @@ export default {
             users: this.sharedContactState.friendList,
             confirmTitle: '创建',
           }, {
-            name: 'invite-modal',
+            name: 'pick-user-modal',
             width: 600,
             height: 480,
             clickToClose: false,

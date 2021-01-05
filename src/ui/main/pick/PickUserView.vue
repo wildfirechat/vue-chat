@@ -15,7 +15,7 @@
     </section>
     <section class="checked-contact-list-container">
       <header>
-        <h2>发起群聊</h2>
+        <h2>选择联系人</h2>
         <span v-if="checkedUsers.length === 0">已选择联系人</span>
         <span v-else>已选择联系人 {{ this.checkedUsers.length }}</span>
       </header>
@@ -89,9 +89,12 @@ export default {
 
     cancel() {
       this.sharedPickState.users.length = 0
-      this.$modal.hide('invite-modal', {confirm: false})
+      this.$modal.hide('pick-user-modal', {confirm: false})
     },
 
+    /**
+     * 不包含默认选中的用户
+     */
     confirm() {
       let pickedUsers = this.sharedPickState.users;
       if (this.initialCheckedUsers) {
@@ -100,7 +103,7 @@ export default {
         pickedUsers = this.sharedPickState.users;
       }
       this.sharedPickState.users.length = 0
-      this.$modal.hide('invite-modal', {confirm: true, users: pickedUsers})
+      this.$modal.hide('pick-user-modal', {confirm: true, users: pickedUsers})
     },
   },
 

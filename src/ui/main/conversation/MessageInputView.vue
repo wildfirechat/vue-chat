@@ -55,6 +55,7 @@ import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import {fileFromDataUri} from "@/ui/util/imageUtil";
 import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
+import PickUserView from "@/ui/main/pick/PickUserView";
 
 export default {
   name: "MessageInputView",
@@ -68,6 +69,7 @@ export default {
   data() {
     return {
       shareConversationState: store.state.conversation,
+      shareContactState: store.state.contact,
       showEmojiDialog: false,
       tribute: null,
       mentions: [],
@@ -247,7 +249,7 @@ export default {
       if (conversation.type === ConversationType.Single) {
         avenginekitproxy.startCall(conversation, true, [conversation.target])
       } else {
-        // TODO
+        this.startGroupVoip(true);
       }
     },
 
@@ -257,9 +259,44 @@ export default {
       if (conversation.type === ConversationType.Single) {
         avenginekitproxy.startCall(conversation, false, [conversation.target])
       } else {
-        // TODO
+        this.startGroupVoip(false);
+      }
+    },
+
+    startGroupVoip(isAudioOnly) {
+      let beforeOpen = (event) => {
+        console.log('Opening...')
+      }
+      let beforeClose = (event) => {
+        console.log('Closing...', event, event.params)
+        if (event.params.confirm) {
+          let newPickedUsers = event.params.users;
+          let participantIds = newPickedUsers.map(u => u.uid);
+          avenginekitproxy.startCall(this.conversationInfo.conversation, isAudioOnly, participantIds)
+        }
       }
 
+      let closed = (event) => {
+        console.log('Close...', event)
+      }
+
+      this.$modal.show(
+          PickUserView,
+          {
+            users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true),
+            initialCheckedUsers: [this.shareContactState.selfUserInfo],
+            uncheckableUsers: [this.shareContactState.selfUserInfo],
+            confirmTitle: '确定',
+          }, {
+            name: 'pick-user-modal',
+            width: 600,
+            height: 480,
+            clickToClose: false,
+          }, {
+            'before-open': beforeOpen,
+            'before-close': beforeClose,
+            'closed': closed,
+          })
     },
 
     onPickFile(event) {

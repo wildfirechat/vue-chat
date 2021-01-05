@@ -44,7 +44,7 @@ export default {
             uncheckableUsers: [this.conversationInfo.conversation._target],
             confirmTitle: '添加',
           }, {
-            name: 'invite-modal',
+            name: 'pick-user-modal',
             width: 600,
             height: 480,
             clickToClose: false,
