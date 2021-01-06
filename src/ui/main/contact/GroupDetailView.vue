@@ -1,7 +1,7 @@
 <template>
   <section class="group-info-container">
     <div class="group-info">
-      <img src="@/assets/images/default_group_avatar.png">
+      <img :src="sharedContactState.currentGroup.portrait">
       <p>群名称 {{ sharedContactState.currentGroup.name }}</p>
     </div>
     <a @click="chat">进入群聊</a>
@@ -67,7 +67,6 @@ export default {
 .group-info img {
   height: 120px;
   width: 120px;
-  border: 1px solid red;
   border-radius: 5px;
 }
 

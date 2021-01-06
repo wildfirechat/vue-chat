@@ -1,6 +1,6 @@
 <template>
   <div class="setting-container">
-    <h1>Setting---TODO</h1>
+    <h1>TODO ^~^</h1>
   </div>
 </template>
 
@@ -14,6 +14,9 @@ export default {
 .setting-container {
   height: 100%;
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
