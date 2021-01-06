@@ -5,33 +5,39 @@
            v-click-outside="hideSearchView">
     <div class="search-result">
       <ul>
-        <li class="category-item" v-if="contactResultList.length > 0">
+        <li class="category-item" v-if="sharedSearchState.contactSearchResult.length > 0">
           <label>联系人</label>
           <ul>
             <li v-for="(contact, index) in toShowContactList" :key="index">
-              <div class="search-result-item contact">
-                <img src="@/assets/images/user-fallback.png">
-                <span>我是imndx {{ contact }}</span>
+              <div class="search-result-item contact" @click.stop="chatToContact(contact)">
+                <img :src="contact.portrait">
+                <span>{{ contact._displayName }}</span>
               </div>
             </li>
           </ul>
-          <div v-if="!shouldShowAllContact && this.contactResultList.length > 5"
+          <div v-if="!shouldShowAllContact && this.sharedSearchState.contactSearchResult.length > 5"
                class="show-all"
                @click.stop="showAllContact">
-            查看全部({{ this.contactResultList.length }})
+            查看全部({{ this.sharedSearchState.contactSearchResult.length }})
           </div>
         </li>
-        <li class="category-item">
+        <li class="category-item" v-if="sharedSearchState.groupSearchResult.length > 0">
           <label>群聊</label>
           <ul>
-            <li>
-              <div class="search-result-item group">
-                hello group
+            <li v-for="(group, index) in toShowGroupList" :key="index">
+              <div class="search-result-item group" @click="chatToGroup(group)">
+                <img :src="group.portrait">
+                <span>{{ group.name }}</span>
               </div>
             </li>
           </ul>
+          <div v-if="!shouldShowAllGroup && this.sharedSearchState.groupSearchResult.length > 5"
+               class="show-all"
+               @click.stop="showAllGroup">
+            查看全部({{ this.sharedSearchState.groupSearchResult.length }})
+          </div>
         </li>
-        <li class="category-item">
+        <li class="category-item" v-if="sharedSearchState.messageSearchResult.length > 0">
           <label>聊天记录</label>
           <div class="search-result-item message">
             搜索聊天记录...
@@ -45,6 +51,8 @@
 <script>
 import ClickOutside from "vue-click-outside";
 import store from "@/store";
+import Conversation from "@/wfc/model/conversation";
+import ConversationType from "@/wfc/model/conversationType";
 
 export default {
   name: "SearchResultView",
@@ -54,10 +62,8 @@ export default {
   data() {
     return {
       sharedSearchState: store.state.search,
-      messageResultList: [],
-      contactResultList: [1, 2, 3, 4, 5, 6, 7],
-      groupResultList: [],
       shouldShowAllContact: false,
+      shouldShowAllGroup: false,
     }
   },
 
@@ -82,11 +88,7 @@ export default {
     // or
     query() {
       console.log('searchView query changed:', this.query)
-      // TODO just for test
-      if (!this.query) {
-        return
-      }
-      this.contactResultList = this.contactResultList.filter((v) => v % this.query.length === 0);
+      store.setSearchQuery(this.query)
     }
   },
 
@@ -95,17 +97,36 @@ export default {
       this.shouldShowAllContact = true;
     },
 
+    showAllGroup() {
+      this.shouldShowAllGroup = true;
+    },
+
     hideSearchView(e) {
       if (e.target.id !== 'searchInput') {
         store.toggleSearchView(false)
       }
     },
 
+    chatToContact(contact) {
+      let conversation = new Conversation(ConversationType.Single, contact.uid, 0);
+      store.setCurrentConversation(conversation);
+      store.toggleSearchView(false);
+    },
+
+    chatToGroup(group) {
+      let conversation = new Conversation(ConversationType.Group, group.target, 0);
+      store.setCurrentConversation(conversation);
+      store.toggleSearchView(false);
+    }
+
   },
 
   computed: {
     toShowContactList: function () {
-      return !this.shouldShowAllContact && this.contactResultList.length > 5 ? this.contactResultList.slice(0, 4) : this.contactResultList;
+      return !this.shouldShowAllContact && this.sharedSearchState.contactSearchResult.length > 5 ? this.sharedSearchState.contactSearchResult.slice(0, 4) : this.sharedSearchState.contactSearchResult;
+    },
+    toShowGroupList: function () {
+      return !this.shouldShowAllGroup && this.sharedSearchState.groupSearchResult.length > 5 ? this.sharedSearchState.groupSearchResult.slice(0, 4) : this.sharedSearchState.groupSearchResult;
     }
   },
 
@@ -171,6 +192,23 @@ export default {
 }
 
 .search-result-item.contact span {
+  font-size: 14px;
+  padding-left: 10px;
+}
+
+.search-result-item.group {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.search-result-item.group img {
+  width: 34px;
+  height: 34px;
+  border-radius: 2px;
+}
+
+.search-result-item.group span {
   font-size: 14px;
   padding-left: 10px;
 }

@@ -69,6 +69,11 @@ let store = {
         search: {
             query: null,
             show: false,
+            contactSearchResult: [],
+            groupSearchResult: [],
+            conversationSearchResult: [],
+            messageSearchResult: [],
+
         },
 
         pick: {
@@ -617,6 +622,60 @@ let store = {
 
     setSearchQuery(query) {
         searchState.query = query;
+        if (query) {
+            console.log('search', query)
+            searchState.contactSearchResult = this.searchContact(query);
+            searchState.groupSearchResult = this.searchFavGroup(query);
+            searchState.conversationSearchResult = this.searchConversation(query);
+            searchState.messageSearchResult = this.searchMessage(query);
+
+        } else {
+            searchState.contactSearchResult.length = 0;
+            searchState.conversationSearchResult.length = 0;
+            searchState.groupSearchResult.length = 0;
+            searchState.messageSearchResult.length = 0;
+        }
+    },
+
+    // TODO 到底是什么匹配了
+    searchContact(query) {
+        let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
+        let result = contactState.friendList.filter(u => {
+            return u._displayName.indexOf(query) > -1 || u._displayName.indexOf(queryPinyin) > -1
+                || u._pinyin.indexOf(query) > -1 || u._pinyin.indexOf(queryPinyin) > -1
+                || u._firstLetters.indexOf(query) > -1 || u._firstLetters.indexOf(queryPinyin) > -1
+        });
+
+        console.log('friend searchResult', result)
+        return result;
+
+    },
+
+    // TODO 匹配类型，是群名称匹配上了，还是群成员的名称匹配上了？
+    // 目前只搜索群名称
+    searchFavGroup(query) {
+        console.log('to search group', contactState.favGroupList)
+        let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
+        let result = contactState.favGroupList.filter(g => {
+            let groupNamePinyin = convert(g.name, {style: 0}).join('').trim().toLowerCase();
+            return g.name.indexOf(query) > -1 || g.name.indexOf(queryPinyin) > -1
+                || groupNamePinyin.indexOf(query) > -1 || groupNamePinyin.indexOf(queryPinyin) > -1
+        });
+
+        console.log('group searchResult', result)
+        return result;
+    },
+
+    // TODO
+    searchConversation(query) {
+
+        return [];
+    },
+
+    // TODO
+    searchMessage(query) {
+
+        return [];
     },
 
     // pick actions
