@@ -11,6 +11,17 @@ export default class CallStartMessageContent extends MessageContent {
   targetIds = [];
   connectTime;
   endTime;
+  /**
+   * 0, UnKnown,
+   * 1, Busy,
+   * 2, SignalError,
+   * 3, Hangup,
+   * 4, MediaError,
+   * 5, RemoteHangup,
+   * 6, OpenCameraFailure,
+   * 7, Timeout,
+   * 8, AcceptByOtherClient
+   */
   status;
   audioOnly;
   pin;

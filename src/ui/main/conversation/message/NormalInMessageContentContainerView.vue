@@ -30,7 +30,7 @@
           <div class="flex-column flex-align-start">
             <MessageContentContainerView :message="message"
                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
-            <QuoteMessageView style="padding: 5px 0; max-width: 60%; max-height: 60px"
+            <QuoteMessageView style="padding: 5px 0"
                               v-if="quotedMessage"
                               :message="quotedMessage"
                               :enable-media-preview="true"
