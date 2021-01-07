@@ -1,9 +1,14 @@
 <template>
   <div class="video-content-container">
-    <video @click="preview(message)" v-if="message.messageContent.localPath" preload="metadata" controls
+    <video @click="preview(message)" v-if="message.messageContent.localPath" preload="metadata"
+           controls
+           disablePictureInPicture
            :src="message.messageContent.localPath + '#t=0.1'"/>
     <video @click.prevent="preview(message)" v-else preload="metadata"
-           :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail" controls
+           controls
+           controlsList="nodownload"
+           disablePictureInPicture
+           :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail"
            :src="message.messageContent.remotePath +'#t=0.1'"/>
   </div>
 </template>

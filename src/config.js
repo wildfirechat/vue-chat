@@ -63,6 +63,10 @@ export default class Config {
      */
     static KEEP_ALIVE_TIMEOUT = 200;
 
+    // html5 audio 标签不能播放amr格式的音频，需要将amr格式转换为mp3格式
+    // 本服务传入amr音频文件的地址，将音频文件转换为mp3格式，并以application/octet-stream的格式返回
+    static AMR_TO_MP3_SERVER_ADDRESS = 'https://app.wildfirechat.cn/amr2mp3?path=';
+
     // 发送消息超时时间，超时之后，认为当前连接已不可用，将进行重连，单位是秒。没有特殊需求不，不建议修改
     static SEND_MESSAGE_TIMEOUT = 20;
 

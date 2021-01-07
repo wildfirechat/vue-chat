@@ -2,12 +2,14 @@
   <TextMessageContentView :message="message"
                           v-if="message.messageContent.type === 1"
                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-  <FileMessageContentView :message="message"
-                          v-else-if="message.messageContent.type === 5"
-                          v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+  <AudioMessageContentView :message="message"
+                           v-else-if="message.messageContent.type === 2"/>
   <ImageMessageContentView :message="message"
                            v-else-if="message.messageContent.type === 3"/>
   <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
+  <FileMessageContentView :message="message"
+                          v-else-if="message.messageContent.type === 5"
+                          v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
   <VideoMessageContentView :message="message"
                            v-else-if="message.messageContent.type === 6"/>
   <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
@@ -29,6 +31,7 @@ import UnsupportMessageContentView from "@/ui/main/conversation/message/content/
 import FileMessageContentView from "@/ui/main/conversation/message/content/FileMessageContentView";
 import StickerMessageContentView from "@/ui/main/conversation/message/content/StickerMessageContentView";
 import CallStartMessageContentView from "@/ui/main/conversation/message/content/CallStartMessageContentView";
+import AudioMessageContentView from "@/ui/main/conversation/message/content/AudioMessageContentView";
 
 export default {
   name: "MessageContentContainerView",
@@ -39,6 +42,7 @@ export default {
     }
   },
   components: {
+    AudioMessageContentView,
     CallStartMessageContentView,
     UnsupportMessageContentView,
     TextMessageContentView,
