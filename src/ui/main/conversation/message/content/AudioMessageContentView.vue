@@ -3,7 +3,7 @@
     <!--    <i class="icon-ion-android-volume-up"></i>-->
     <!--    <span> {{ duration }} </span>-->
 
-    <audio preload="auto"  controls controlsList="nodownload">
+    <audio preload="auto" controls controlsList="nodownload">
       <source :src="remotePath" type="audio/mp4"/>
     </audio>
   </div>
@@ -67,7 +67,7 @@ export default {
 }
 
 .audio-message-container audio {
-
+  outline: none;
 }
 
 </style>
