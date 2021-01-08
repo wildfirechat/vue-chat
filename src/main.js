@@ -12,6 +12,7 @@ import './global.css'
 import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "@/store";
+import visibility from 'vue-visibility-change';
 
 Vue.config.productionTip = false
 
@@ -30,6 +31,8 @@ Vue.use(VueContext);
 Vue.component("vue-context", VueContext)
 
 Vue.use(VModal);
+
+Vue.use(visibility);
 
 const router = new VueRouter({
     mode: 'hash',

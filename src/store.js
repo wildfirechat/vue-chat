@@ -14,6 +14,9 @@ import Message from "@/wfc/messages/message";
 import ImageMessageContent from "@/wfc/messages/imageMessageContent";
 import VideoMessageContent from "@/wfc/messages/videoMessageContent";
 import FileMessageContent from "@/wfc/messages/fileMessageContent";
+import Push from "push.js";
+import MessageConfig from "@/wfc/client/messageConfig";
+import PersistFlag from "@/wfc/messages/persistFlag";
 
 /**
  * 一些说明
@@ -84,6 +87,7 @@ let store = {
         misc: {
             test: false,
             connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
+            isPageHidden: false,
         },
     },
 
@@ -160,6 +164,9 @@ let store = {
 
             if (!hasMore) {
                 this._loadDefaultConversationList();
+            }
+            if (miscState.isPageHidden) {
+                this.notify(msg);
             }
         });
 
@@ -775,6 +782,29 @@ let store = {
             userInfos = this.getGroupMemberUserInfos(conversation.target, true);
         }
         return userInfos;
+    },
+
+    setPageVisibility(hidden) {
+        miscState.isPageHidden = hidden;
+    },
+
+    notify(msg) {
+        let content = msg.messageContent;
+        if (MessageConfig.getMessageContentPersitFlag(content.type) === PersistFlag.Persist_And_Count) {
+            Push.create("新消息来了", {
+                body: content.digest(),
+                // TODO 下面好像不生效，更新成图片链接
+                icon: '@/assets/images/icon.png',
+                timeout: 4000,
+                onClick: () => {
+                    window.focus();
+                    this.close();
+                    this.setCurrentConversation(msg.conversation)
+                }
+            });
+        }
+
+
     }
 }
 

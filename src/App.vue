@@ -1,6 +1,10 @@
 <template>
-  <div id="app" @contextmenu.prevent="" @dragenter="$event.preventDefault()" @dragover="$event.preventDefault()"
-       @drop="$event.preventDefault()">
+  <div id="app"
+       @contextmenu.prevent=""
+       @dragenter="$event.preventDefault()"
+       @dragover="$event.preventDefault()"
+       @drop="$event.preventDefault()"
+       v-visibility-change="visibilityChange">
     <div class="blur-container">
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50"
            class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
@@ -27,12 +31,18 @@
 </template>
 
 <script>
+import store from "@/store";
 
 export default {
   name: 'App',
   data() {
     return {
       url: '',
+    }
+  },
+  methods: {
+    visibilityChange(event, hidden) {
+      store.setPageVisibility(hidden);
     }
   },
 
@@ -113,7 +123,7 @@ export default {
   align-items: center;
 }
 
-.container-emoji{
+.container-emoji {
   height: 300px;
 }
 
