@@ -39,7 +39,7 @@
                    v-bind:class="{active : this.$router.currentRoute.path === '/home/contact'}"
                    @click="go2Contact"></i></li>
             <li>
-              <i class="icon-ion-ios-settings-strong"
+              <i class="icon-ion-android-settings"
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
                  @click="go2Setting"></i>
               <!--              <div>-->
