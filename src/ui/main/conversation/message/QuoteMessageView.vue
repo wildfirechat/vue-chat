@@ -1,7 +1,7 @@
 <template>
   <div class="quoted-message-container">
     <div class="quoted-message">
-      <p>
+      <p @click="preview">
         {{ this.quotedMessageStr }}
       </p>
 
@@ -36,7 +36,7 @@ export default {
       required: false,
       default: '',
     },
-    enableMediaPreview: {
+    enableMessagePreview: {
       type: Boolean,
       required: false,
       default: false,
@@ -54,8 +54,22 @@ export default {
     },
 
     preview() {
+      if (!this.enableMessagePreview) {
+        return;
+      }
       if (this.message) {
-        store.previewMessage(this.message, false);
+        switch (this.message.messageContent.type) {
+          case MessageContentType.Video:
+          case MessageContentType.Image:
+            store.previewMessage(this.message, false);
+            break;
+          case MessageContentType.Text:
+            // TODO
+            break;
+          default:
+            break
+
+        }
       }
     }
   },
@@ -102,8 +116,9 @@ export default {
   max-width: 100%;
   max-height: 40px;
   flex: 1;
-  word-wrap: break-word;
-  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
