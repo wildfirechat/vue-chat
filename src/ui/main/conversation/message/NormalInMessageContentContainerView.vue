@@ -3,19 +3,19 @@
     <div class="message-time-container">
       <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
       <div class="message-avatar-content-container">
+        <tippy
+            :to="'infoTrigger' + this.message.messageId"
+            interactive
+            :animate-fill="false"
+            placement="left"
+            distant="7"
+            theme="light"
+            animation="fade"
+            trigger="click"
+        >
+          <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+        </tippy>
         <div class="avatar-container">
-          <tippy
-              :to="'infoTrigger' + this.message.messageId"
-              interactive
-              :animate-fill="false"
-              placement="left"
-              distant="7"
-              theme="light"
-              animation="fade"
-              trigger="click"
-          >
-            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
-          </tippy>
           <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                  :value="message"
                  v-model="sharedConversationState.selectedMessages"/>

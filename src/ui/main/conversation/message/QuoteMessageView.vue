@@ -1,14 +1,34 @@
 <template>
   <div class="quoted-message-container">
     <div class="quoted-message">
-      <p @click="preview">
+
+      <div class="media-content" v-if="[3, 6, 7].indexOf(this.message.messageContent.type) >= 0">
+        <p> {{ this.message._from._displayName + ':' }} </p>
+        <img :src="mediaSrc" alt=""
+             @click="onMessageClick">
+      </div>
+      <div v-else-if="this.message.messageContent.type === 1" class="other-content">
+        <tippy
+            :to="'messagePreview' + this.message.messageId"
+            interactive
+            :animate-fill="false"
+            placement="left"
+            distant="7"
+            theme="light"
+            animation="fade"
+            trigger="click"
+        >
+          <PreviewMessageView :message="message"/>
+        </tippy>
+        <p
+            :name="'messagePreview' + this.message.messageId">
+          {{ this.quotedMessageStr }}
+        </p>
+      </div>
+      <p v-else
+         @click="onMessageClick">
         {{ this.quotedMessageStr }}
       </p>
-
-      <img v-if="[3, 6, 7].indexOf(this.message.messageContent.type) >= 0"
-           :src="mediaSrc" alt=""
-           @click="preview"
-      >
     </div>
     <i v-if="showCloseButton" @click="cancelQuoteMessage" class="icon-ion-close"></i>
   </div>
@@ -18,6 +38,7 @@
 import store from "@/store";
 import MessageContentType from "@/wfc/messages/messageContentType";
 import Message from "@/wfc/messages/message";
+import PreviewMessageView from "@/ui/main/conversation/message/PreviewMessageView";
 
 export default {
   name: "QuoteMessageView",
@@ -53,7 +74,7 @@ export default {
       this.$emit('cancelQuoteMessage')
     },
 
-    preview() {
+    onMessageClick() {
       if (!this.enableMessagePreview) {
         return;
       }
@@ -64,9 +85,11 @@ export default {
             store.previewMessage(this.message, false);
             break;
           case MessageContentType.Text:
-            // TODO
+            // do nothing
             break;
+
           default:
+            console.log('TODO: preview quotedMessage')
             break
 
         }
@@ -93,6 +116,9 @@ export default {
       return src;
     }
   },
+  components: {
+    PreviewMessageView,
+  }
 }
 
 </script>
@@ -112,7 +138,7 @@ export default {
   margin-right: 10px;
 }
 
-.quoted-message p {
+.other-content p {
   max-width: 100%;
   max-height: 40px;
   flex: 1;
@@ -121,6 +147,22 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  outline: none;
+}
+
+.media-content {
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.media-content p {
+  width: 100px;
+  max-height: 40px;
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .quoted-message img {

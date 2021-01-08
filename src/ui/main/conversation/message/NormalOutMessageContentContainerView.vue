@@ -22,24 +22,23 @@
                               :show-close-button="false"/>
           </div>
 
-          <div>
-            <tippy
-                :to="'infoTrigger' + this.message.messageId"
-                interactive
-                :animate-fill="false"
-                placement="left"
-                distant="7"
-                theme="light"
-                animation="fade"
-                trigger="click"
-            >
-              <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
-            </tippy>
-            <img ref="userCardTippy"
-                 :name="'infoTrigger' + this.message.messageId"
-                 class="avatar"
-                 src="@/assets/images/user-fallback.png">
-          </div>
+          <tippy
+              :to="'infoTrigger' + this.message.messageId"
+              interactive
+              :animate-fill="false"
+              placement="left"
+              distant="7"
+              theme="light"
+              animation="fade"
+              trigger="click"
+          >
+            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+          </tippy>
+
+          <img ref="userCardTippy"
+               :name="'infoTrigger' + this.message.messageId"
+               class="avatar"
+               src="@/assets/images/user-fallback.png">
         </div>
       </div>
       <p v-if="sharedConversationState.isMessageReceiptEnable" class="receipt" @click="showMessageReceiptDetail">
