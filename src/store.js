@@ -88,6 +88,8 @@ let store = {
             test: false,
             connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
             isPageHidden: false,
+            enableNotification: true,
+            notificationMessageDetail: true,
         },
     },
 
@@ -165,7 +167,7 @@ let store = {
             if (!hasMore) {
                 this._loadDefaultConversationList();
             }
-            if (miscState.isPageHidden) {
+            if (miscState.isPageHidden && miscState.enableNotification) {
                 this.notify(msg);
             }
         });
@@ -792,7 +794,7 @@ let store = {
         let content = msg.messageContent;
         if (MessageConfig.getMessageContentPersitFlag(content.type) === PersistFlag.Persist_And_Count) {
             Push.create("新消息来了", {
-                body: content.digest(),
+                body: miscState.notificationMessageDetail ? content.digest() : '',
                 // TODO 下面好像不生效，更新成图片链接
                 icon: '@/assets/images/icon.png',
                 timeout: 4000,
@@ -803,9 +805,7 @@ let store = {
                 }
             });
         }
-
-
-    }
+    },
 }
 
 let conversationState = store.state.conversation;

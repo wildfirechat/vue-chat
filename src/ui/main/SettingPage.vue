@@ -4,7 +4,12 @@
       <h2>设置</h2>
       <label>
         开启通知
-        <input type="checkbox">
+        <input type="checkbox" v-model="sharedMiscState.enableNotification">
+      </label>
+      <label>
+        通知显示消息内容
+        <input v-bind:disabled="!sharedMiscState.enableNotification" type="checkbox"
+               v-model="sharedMiscState.notificationMessageDetail">
       </label>
     </div>
     <footer>
@@ -34,9 +39,15 @@
 
 <script>
 import wfc from "@/wfc/client/wfc";
+import store from "@/store";
 
 export default {
   name: "SettingPage",
+  data() {
+    return {
+      sharedMiscState: store.state.misc,
+    }
+  },
   methods: {
     logout() {
       localStorage.removeItem("userId");
