@@ -14,9 +14,10 @@
           <div class="flex-column flex-align-end">
             <MessageContentContainerView :message="message"
                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
-            <QuoteMessageView style="padding: 5px 0; max-width: 80%"
-                              v-if="quotedMessage"
-                              :message="quotedMessage"
+            <QuoteMessageView v-if="quotedMessage"
+                              style="padding: 5px 0; max-width: 80%"
+                              :message="message"
+                              :quoted-message="quotedMessage"
                               :enable-message-preview="true"
                               :message-digest="this.message.messageContent.quoteInfo.messageDigest"
                               :show-close-button="false"/>
@@ -201,7 +202,9 @@ export default {
     quotedMessage() {
       if (this.message.messageContent.quoteInfo) {
         let messageUid = this.message.messageContent.quoteInfo.messageUid;
-        return wfc.getMessageByUid(messageUid);
+        let msg = wfc.getMessageByUid(messageUid);
+        console.log('quotedMessage, should not be null', this.message.messageContent.quoteInfo, msg)
+        return msg;
       } else {
         return null;
       }

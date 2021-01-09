@@ -30,6 +30,9 @@ export default {
 <style lang="css" scoped>
 .message-container {
   padding: 5px;
+  max-height: 400px;
+  max-width: 400px;
+  overflow: auto;
   position: relative;
 }
 

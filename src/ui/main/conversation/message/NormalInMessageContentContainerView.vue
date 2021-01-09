@@ -32,7 +32,8 @@
                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
             <QuoteMessageView style="padding: 5px 0; max-width: 80%"
                               v-if="quotedMessage"
-                              :message="quotedMessage"
+                              :message="message"
+                              :quoted-message="quotedMessage"
                               :enable-message-preview="true"
                               :message-digest="this.message.messageContent.quoteInfo.messageDigest"
                               :show-close-button="false"/>

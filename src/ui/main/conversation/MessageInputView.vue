@@ -28,9 +28,12 @@
          autofocus
          placeholder="hello" contenteditable="true">
     </div>
-    <QuoteMessageView style="padding: 10px 20px" v-if="shareConversationState.quotedMessage !== null"
-                      v-on:cancelQuoteMessage="cancelQuoteMessage"
-                      :message="shareConversationState.quotedMessage" :show-close-button="true"/>
+    <QuoteMessageView
+        v-if="shareConversationState.quotedMessage !== null"
+        style="padding: 10px 20px"
+        v-on:cancelQuoteMessage="cancelQuoteMessage"
+        :enable-message-preview="false"
+        :quoted-message="shareConversationState.quotedMessage" :show-close-button="true"/>
   </section>
 </template>
 

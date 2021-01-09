@@ -2,14 +2,14 @@
   <div class="quoted-message-container">
     <div class="quoted-message">
 
-      <div class="media-content" v-if="[3, 6, 7].indexOf(this.message.messageContent.type) >= 0">
-        <p> {{ this.message._from._displayName + ':' }} </p>
+      <div class="media-content" v-if="[3, 6, 7].indexOf(this.quotedMessage.messageContent.type) >= 0">
+        <p> {{ this.quotedMessage._from._displayName + ':' }} </p>
         <img :src="mediaSrc" alt=""
              @click="onMessageClick">
       </div>
-      <div v-else-if="this.message.messageContent.type === 1" class="other-content">
+      <div v-else-if="enableMessagePreview && this.quotedMessage.messageContent.type === 1" class="other-content">
         <tippy
-            :to="'messagePreview' + this.message.messageId"
+            :to="'messagePreview' + this.message.messageId + this.quotedMessage.messageId + enableMessagePreview"
             interactive
             :animate-fill="false"
             placement="left"
@@ -18,10 +18,10 @@
             animation="fade"
             trigger="click"
         >
-          <PreviewMessageView :message="message"/>
+          <PreviewMessageView :message="quotedMessage"/>
         </tippy>
         <p
-            :name="'messagePreview' + this.message.messageId">
+            :name="'messagePreview' + this.message.messageId  + this.quotedMessage.messageId + enableMessagePreview">
           {{ this.quotedMessageStr }}
         </p>
       </div>
@@ -48,11 +48,17 @@ export default {
       required: false,
       default: false,
     },
+    // 原始消息
     message: {
+      type: Message,
+      required: false,
+    },
+    // 被引用的消息
+    quotedMessage: {
       type: Message,
       required: true,
     },
-    messageDigest: {
+    quotedMessageDigest: {
       type: String,
       required: false,
       default: '',
@@ -78,11 +84,11 @@ export default {
       if (!this.enableMessagePreview) {
         return;
       }
-      if (this.message) {
-        switch (this.message.messageContent.type) {
+      if (this.quotedMessage) {
+        switch (this.quotedMessage.messageContent.type) {
           case MessageContentType.Video:
           case MessageContentType.Image:
-            store.previewMessage(this.message, false);
+            store.previewMessage(this.quotedMessage, false);
             break;
           case MessageContentType.Text:
             // do nothing
@@ -99,19 +105,19 @@ export default {
   computed: {
     quotedMessageStr() {
       let str = '';
-      if (this.message) {
-        str = this.message._from._displayName + ':';
-        if ([MessageContentType.Image, MessageContentType.Video, MessageContentType.Sticker].indexOf(this.message.messageContent.type) < 0) {
-          str += this.message.messageContent.digest(this.message);
+      if (this.quotedMessage) {
+        str = this.quotedMessage._from._displayName + ':';
+        if ([MessageContentType.Image, MessageContentType.Video, MessageContentType.Sticker].indexOf(this.quotedMessage.messageContent.type) < 0) {
+          str += this.quotedMessage.messageContent.digest(this.quotedMessage);
         }
       } else {
-        str = this.messageDigest;
+        str = this.quotedMessageDigest;
       }
       return str;
     },
     mediaSrc() {
       let src;
-      let msgCnt = this.message.messageContent;
+      let msgCnt = this.quotedMessage.messageContent;
       src = msgCnt.thumbnail ? 'data:video/jpeg;base64,' + msgCnt.thumbnail : msgCnt.remotePath;
       return src;
     }
@@ -140,7 +146,7 @@ export default {
 
 .other-content p {
   max-width: 100%;
-  max-height: 40px;
+  max-height: 50px;
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -158,7 +164,7 @@ export default {
 
 .media-content p {
   width: 100px;
-  max-height: 40px;
+  max-height: 50px;
   max-width: 100px;
   text-overflow: ellipsis;
   overflow: hidden;
