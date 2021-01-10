@@ -31,7 +31,8 @@
         </div>
       </div>
 
-      <ForwardMessageView ref="forwardMessageView" v-if="sharedPickState.users.length > 0" :message="message"/>
+      <ForwardMessageView ref="forwardMessageView" v-if="sharedPickState.users.length > 0" :forward-type="forwardType"
+                          :messages="messages"/>
       <footer>
         <button @click="cancel" class="cancel">取消</button>
         <button @click="confirm" class="confirm">发送</button>
@@ -42,7 +43,6 @@
 
 <script>
 import store from "@/store";
-import Message from "@/wfc/messages/message";
 import ForwardMessageView from "@/ui/main/conversation/message/forward/ForwardMessageView";
 import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
 
@@ -53,8 +53,13 @@ export default {
       type: Array,
       required: true,
     },
-    message: {
-      type: Message,
+    forwardType: {
+      // 可参考ForwardType
+      type: Number,
+      required: false,
+    },
+    messages: {
+      type: Array,
       required: true,
     }
   },
@@ -73,7 +78,8 @@ export default {
       this.$modal.hide('forward-by-create-conversation-modal',
           {
             backPickConversation: true,
-            message: this.message,
+            forwardType: this.forwardType,
+            messages: this.messages,
           })
     },
 
@@ -89,7 +95,8 @@ export default {
           {
             confirm: true,
             users: pickedUsers,
-            message: this.message,
+            forwardType: this.forwardType,
+            messages: this.messages,
             extraMessageText: this.$refs['forwardMessageView'].extraMessageText,
           })
     },
@@ -214,14 +221,13 @@ export default {
   height: 45px;
   margin: 10px 10px;
   border-radius: 3px;
-  border: 1px solid red;
 }
 
 .checked-user-list-container .content .unpick-button {
   position: absolute;
   width: 20px;
   height: 20px;
-  border: 1px solid red;
+  border: 1px solid white;
   border-radius: 10px;
   top: 0;
   right: 0;

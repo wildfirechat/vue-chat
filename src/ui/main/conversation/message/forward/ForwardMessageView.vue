@@ -1,11 +1,18 @@
 <template>
   <section class="forward-message-container">
     <div class="forward-message">
-      <img v-if="[3, 6].indexOf(message.messageContent.type) >= 0"
-           :src="'data:video/jpeg;base64,' + message.messageContent.thumbnail" alt="">
-      <p v-else>
-        {{ this.forwardMessageStr }}
-      </p>
+      <div v-if="forwardType === 0">
+        <img v-if="[3, 6].indexOf(messages[0].messageContent.type) >= 0"
+             :src="'data:video/jpeg;base64,' + messages[0].messageContent.thumbnail" alt="">
+        <p v-else>
+          {{ this.forwardMessageStr }}
+        </p>
+      </div>
+      <div v-else>
+        <p>
+          {{ this.forwardMessageStr }}
+        </p>
+      </div>
     </div>
     <label>
       <input type="text" placeholder="给朋友留言" v-model="extraMessageText">
@@ -14,14 +21,20 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
 import MessageContentType from "@/wfc/messages/messageContentType";
+import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
+import ConversationType from "@/wfc/model/conversationType";
 
 export default {
   name: "ForwardMessageView",
   props: {
-    message: {
-      type: Message,
+    forwardType: {
+      // 可参考ForwardType
+      type: Number,
+      required: false,
+    },
+    messages: {
+      type: Array,
       required: true,
     },
   },
@@ -33,9 +46,31 @@ export default {
   methods: {},
   computed: {
     forwardMessageStr() {
-      let str = this.message._from._displayName + ':';
-      if ([MessageContentType.Image, MessageContentType.Video].indexOf(this.message.messageContent.type) < 0) {
-        str += this.message.messageContent.digest(this.quotedMessage);
+      let str;
+      let firstMsg = this.messages[0];
+      switch (this.forwardType) {
+        case ForwardType.NORMAL:
+          str = firstMsg._from._displayName + ':';
+          if ([MessageContentType.Image, MessageContentType.Video].indexOf(firstMsg.messageContent.type) < 0) {
+            str += firstMsg.messageContent.digest(this.quotedMessage);
+          }
+          break;
+        case ForwardType.ONE_BY_ONE:
+          str = '[逐条转发]'
+          if (firstMsg.conversation.type === ConversationType.Single) {
+            str += firstMsg._from._displayName + '的聊天记录';
+          } else {
+            str += '群聊的聊天记录';
+          }
+          break;
+        case ForwardType.COMPOSITE:
+          str = '[合并转发]'
+          if (firstMsg.conversation.type === ConversationType.Single) {
+            str += firstMsg._from._displayName + '的聊天记录';
+          } else {
+            str += '群聊的聊天记录';
+          }
+          break;
       }
       return str;
     }

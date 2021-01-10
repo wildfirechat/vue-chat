@@ -124,6 +124,7 @@ import ForwardMessageByPickConversationView
 import ForwardMessageByCreateConversationView
   from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
+import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 
 export default {
   components: {
@@ -302,12 +303,13 @@ export default {
     },
 
     forward(message) {
-      this.pickConversationAndForwardMessage(message);
+      this.pickConversationAndForwardMessage(ForwardType.NORMAL, [message]);
     },
 
     quoteMessage(message) {
       store.quoteMessage(message);
     },
+
     multiSelect() {
       this.toggleMessageMultiSelectionActionView();
     },
@@ -323,22 +325,28 @@ export default {
       });
     },
 
-    pickConversationAndForwardMessage(message) {
+    pickConversationAndForwardMessage(forwardType, messages) {
       let beforeClose = (event) => {
         console.log('Closing...', event, event.params)
         // What a gamble... 50% chance to cancel closing
         if (event.params.toCreateConversation) {
           console.log('to show')
-          this.createConversationAndForwardMessage(event.params.message)
+          this.createConversationAndForwardMessage(forwardType, messages)
         } else if (event.params.confirm) {
           let conversations = event.params.conversations;
-          let message = event.params.message;
           let extraMessageText = event.params.extraMessageText;
+          // TODO 多选转发
           conversations.forEach(conversation => {
             // let msg =new Message(conversation, message.messageContent)
             // wfc.sendMessage(msg)
             // 或者下面这种
-            wfc.sendConversationMessage(conversation, message.messageContent);
+            if (forwardType === ForwardType.NORMAL || forwardType === ForwardType.ONE_BY_ONE) {
+              messages.forEach(message => {
+                wfc.sendConversationMessage(conversation, message.messageContent);
+              });
+            } else {
+              // 合并转发
+            }
 
             if (extraMessageText) {
               let textMessage = new TextMessageContent(extraMessageText)
@@ -355,7 +363,8 @@ export default {
       this.$modal.show(
           ForwardMessageByPickConversationView,
           {
-            message: message
+            forwardType: forwardType,
+            messages: messages
           }, {
             name: 'forward-by-pick-conversation-modal',
             width: 600,
@@ -366,18 +375,25 @@ export default {
           })
     },
 
-    createConversationAndForwardMessage(message) {
+    createConversationAndForwardMessage(forwardType, messages) {
       let beforeClose = (event) => {
         console.log('Closing...', event, event.params)
         if (event.params.backPickConversation) {
-          this.pickConversationAndForwardMessage(event.params.message)
+          this.pickConversationAndForwardMessage(forwardType, messages)
         } else if (event.params.confirm) {
           let users = event.params.users;
           let message = event.params.message;
           let extraMessageText = event.params.extraMessageText;
+          // TODO
           store.createConversation(users,
               (conversation) => {
-                wfc.sendConversationMessage(conversation, message.messageContent);
+                if (forwardType === ForwardType.NORMAL || forwardType === ForwardType.ONE_BY_ONE) {
+                  messages.forEach(message => {
+                    wfc.sendConversationMessage(conversation, message.messageContent);
+                  });
+                } else {
+                  // 合并转发
+                }
                 if (extraMessageText) {
                   let textMessage = new TextMessageContent(extraMessageText)
                   wfc.sendConversationMessage(conversation, textMessage);
@@ -393,8 +409,9 @@ export default {
       this.$modal.show(
           ForwardMessageByCreateConversationView,
           {
+            forwardType: forwardType,
+            messages: messages,
             users: this.sharedContactState.friendList,
-            message: message,
           }, {
             name: 'forward-by-create-conversation-modal',
             width: 600,
