@@ -17,6 +17,8 @@ import FileMessageContent from "@/wfc/messages/fileMessageContent";
 import Push from "push.js";
 import MessageConfig from "@/wfc/client/messageConfig";
 import PersistFlag from "@/wfc/messages/persistFlag";
+import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
+import TextMessageContent from "@/wfc/messages/textMessageContent";
 
 /**
  * 一些说明
@@ -49,7 +51,6 @@ let store = {
             previewMediaIndex: null,
 
             enableMessageMultiSelection: false,
-            selectedMessages: [],
             quotedMessage: null,
         },
 
@@ -82,6 +83,7 @@ let store = {
         pick: {
             users: [],
             conversations: [],
+            messages: [],
         },
 
         misc: {
@@ -297,37 +299,71 @@ let store = {
         conversationInfo.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
 
         conversationState.enableMessageMultiSelection = false;
-        conversationState.selectedMessages.length = 0;
         conversationState.quotedMessage = null;
 
         clearTimeout(conversationState.inputClearHandler);
         conversationState.inputtingUser = null;
+
+        pickState.messages.length = 0;
     },
 
-    toggleMessageMultiSelection() {
+    toggleMessageMultiSelection(message) {
         conversationState.enableMessageMultiSelection = !conversationState.enableMessageMultiSelection;
-        conversationState.selectedMessages.length = 0;
+        pickState.messages.length = 0;
+        if (conversationState.enableMessageMultiSelection && message) {
+            pickState.messages.push(message);
+        }
     },
 
     selectOrDeselectMessage(message) {
-        let index = conversationState.selectedMessages.findIndex(m => m.messageId === message.messageId);
+        let index = pickState.messages.findIndex(m => m.messageId === message.messageId);
         if (index >= 0) {
-            conversationState.selectedMessages.splice(index, 1);
+            pickState.messages.splice(index, 1);
         } else {
-            conversationState.selectedMessages.push(message);
+            pickState.messages.push(message);
         }
     },
 
     deleteSelectedMessages() {
         conversationState.enableMessageMultiSelection = false;
-        if (conversationState.selectedMessages.length < 1) {
+        if (pickState.messages.length < 1) {
             return;
         }
-        conversationState.selectedMessages.sort((m1, m2) => m1.messageId - m2.messageId);
-        conversationState.selectedMessages.forEach(m => {
+        pickState.messages.sort((m1, m2) => m1.messageId - m2.messageId);
+        pickState.messages.forEach(m => {
             wfc.deleteMessage(m.messageId);
         });
-        conversationState.selectedMessages.length = 0;
+        pickState.messages.length = 0;
+    },
+
+    forwardMessage(forwardType, conversations, messages, extraMessageText) {
+        conversations.forEach(conversation => {
+            // let msg =new Message(conversation, message.messageContent)
+            // wfc.sendMessage(msg)
+            // 或者下面这种
+            if (forwardType === ForwardType.NORMAL || forwardType === ForwardType.ONE_BY_ONE) {
+                messages.forEach(message => {
+                    wfc.sendConversationMessage(conversation, message.messageContent);
+                });
+            } else {
+                // 合并转发
+            }
+
+            if (extraMessageText) {
+                let textMessage = new TextMessageContent(extraMessageText)
+                wfc.sendConversationMessage(conversation, textMessage);
+            }
+        });
+    },
+
+    forwardByCreateConversation(forwardType, users, messages, extraMessageText) {
+        this.createConversation(users,
+            (conversation) => {
+                this.forwardMessage(forwardType, [conversation], messages, extraMessageText)
+            },
+            (err) => {
+                console.error('createConversation error', err)
+            })
     },
 
     setShouldAutoScrollToBottom(scroll) {

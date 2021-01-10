@@ -91,7 +91,7 @@
             <a @click.prevent="quoteMessage(message)">引用</a>
           </li>
           <li>
-            <a @click.prevent="multiSelect">多选</a>
+            <a @click.prevent="multiSelect(message)">多选</a>
           </li>
           <li v-if="isRecallable(message)">
             <a @click.prevent="recallMessage(message)">撤回</a>
@@ -147,6 +147,7 @@ export default {
       isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
       sharedContactState: store.state.contact,
+      sharedPickState: store.state.pick,
       isHandlerDragging: false,
 
       savedMessageListViewHeight: -1,
@@ -184,7 +185,7 @@ export default {
       this.showConversationInfo = !this.showConversationInfo;
     },
 
-    toggleMessageMultiSelectionActionView() {
+    toggleMessageMultiSelectionActionView(message) {
       if (!this.sharedConversationState.enableMessageMultiSelection) {
         this.saveMessageListViewFlexGrow = this.$refs['conversationMessageList'].style.flexGrow;
         this.savedMessageListViewHeight = this.$refs['conversationMessageList'].style.height;
@@ -195,8 +196,8 @@ export default {
           this.$refs['conversationMessageList'].style.flexGrow = this.saveMessageListViewFlexGrow;
         }
       }
-      this.sharedConversationState.selectedMessages.forEach(m => console.log(m.messageId));
-      store.toggleMessageMultiSelection();
+      this.sharedPickState.messages.forEach(m => console.log(m.messageId));
+      store.toggleMessageMultiSelection(message);
     },
 
     clickMessageItem(event, message) {
@@ -310,8 +311,8 @@ export default {
       store.quoteMessage(message);
     },
 
-    multiSelect() {
-      this.toggleMessageMultiSelectionActionView();
+    multiSelect(message) {
+      this.toggleMessageMultiSelectionActionView(message);
     },
 
     infiniteHandler($state) {
@@ -336,24 +337,7 @@ export default {
           let conversations = event.params.conversations;
           let extraMessageText = event.params.extraMessageText;
           // TODO 多选转发
-          conversations.forEach(conversation => {
-            // let msg =new Message(conversation, message.messageContent)
-            // wfc.sendMessage(msg)
-            // 或者下面这种
-            if (forwardType === ForwardType.NORMAL || forwardType === ForwardType.ONE_BY_ONE) {
-              messages.forEach(message => {
-                wfc.sendConversationMessage(conversation, message.messageContent);
-              });
-            } else {
-              // 合并转发
-            }
-
-            if (extraMessageText) {
-              let textMessage = new TextMessageContent(extraMessageText)
-              wfc.sendConversationMessage(conversation, textMessage);
-            }
-          });
-
+          store.forwardMessage(forwardType, conversations, messages, extraMessageText)
         } else {
           console.log('cancel')
           // TODO clear pick state
@@ -382,26 +366,8 @@ export default {
           this.pickConversationAndForwardMessage(forwardType, messages)
         } else if (event.params.confirm) {
           let users = event.params.users;
-          let message = event.params.message;
           let extraMessageText = event.params.extraMessageText;
-          // TODO
-          store.createConversation(users,
-              (conversation) => {
-                if (forwardType === ForwardType.NORMAL || forwardType === ForwardType.ONE_BY_ONE) {
-                  messages.forEach(message => {
-                    wfc.sendConversationMessage(conversation, message.messageContent);
-                  });
-                } else {
-                  // 合并转发
-                }
-                if (extraMessageText) {
-                  let textMessage = new TextMessageContent(extraMessageText)
-                  wfc.sendConversationMessage(conversation, textMessage);
-                }
-              },
-              (err) => {
-
-              })
+          store.forwardByCreateConversation(forwardType, users, messages, extraMessageText)
         } else {
           console.log('cancel')
         }

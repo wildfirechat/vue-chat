@@ -18,7 +18,7 @@
         <div class="avatar-container">
           <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                  :value="message"
-                 v-model="sharedConversationState.selectedMessages"/>
+                 v-model="sharedPickState.messages"/>
           <img ref="userCardTippy"
                :name="'infoTrigger' + this.message.messageId"
                class="avatar"
@@ -60,6 +60,7 @@ export default {
   data() {
     return {
       sharedConversationState: store.state.conversation,
+      sharedPickState:store.state.pick,
     }
   },
   methods: {

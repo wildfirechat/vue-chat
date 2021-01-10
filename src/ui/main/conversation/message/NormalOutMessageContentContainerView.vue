@@ -4,7 +4,7 @@
       <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
       <div class="message-content-container">
         <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox" class="checkbox"
-               :value="message" placeholder="" v-model="sharedConversationState.selectedMessages">
+               :value="message" placeholder="" v-model="sharedPickState.messages">
 
         <div class="message-avatar-content-container">
           <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
@@ -72,6 +72,7 @@ export default {
   data() {
     return {
       sharedConversationState: store.state.conversation,
+      sharedPickState: store.state.pick,
     }
   },
   components: {

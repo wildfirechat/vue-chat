@@ -2,7 +2,7 @@
   <section class="multi-selection-action-container">
     <ul>
       <li>
-        <div class="action">
+        <div class="action" @click="forwardOneByOne">
           <div class="icon">
             <i class="icon-ion-forward"></i>
           </div>
@@ -10,7 +10,7 @@
         </div>
       </li>
       <li>
-        <div class="action">
+        <div class="action" @click="forwardComposite">
           <div class="icon">
             <i class="icon-ion-forward"></i>
           </div>
@@ -44,16 +44,35 @@
 
 <script>
 import store from "@/store";
+import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 
 export default {
   name: "MessageMultiSelectionActionView",
+  data() {
+    return {
+      sharedPickState: store.state.pick,
+    }
+  },
   methods: {
     deleteMultiMessage() {
       store.deleteSelectedMessages();
     },
+
     hideMultiSelectionActionView() {
       store.toggleMessageMultiSelection();
     },
+
+    forwardOneByOne() {
+      let messages = [...this.sharedPickState.messages];
+      this.$parent.pickConversationAndForwardMessage(ForwardType.ONE_BY_ONE, messages);
+      store.toggleMessageMultiSelection();
+    },
+
+    forwardComposite() {
+      let messages = [...this.sharedPickState.messages];
+      this.$parent.pickConversationAndForwardMessage(ForwardType.COMPOSITE, messages);
+      store.toggleMessageMultiSelection();
+    }
   },
 
 }
