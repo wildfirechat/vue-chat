@@ -9,7 +9,7 @@
   <div class="flex-column flex-align-center flex-justify-center">
     <h1 style="display: none">Voip-Multi 运行在新的window，和主窗口数据是隔离的！！</h1>
 
-    <div class="container">
+    <div v-if="session" class="container">
       <section>
         <!--audio-->
         <div ref="test" class="content-container">
@@ -30,7 +30,7 @@
           <!--participants-->
           <div v-for="(participant) in participantUserInfos" :key="participant.uid"
                class="participant-container">
-            <video v-if="participant._stream != null" class="remoteVideo"
+            <video v-if="!audioOnly && participant._stream != null" class="remoteVideo"
                    :srcObject.prop="participant._stream"
                    :class="'video' + participant.uid"
                    playsInline
@@ -124,7 +124,8 @@ export default {
         this.audioOnly = session.audioOnly;
         this.selfUserInfo = selfUserInfo;
         this.initiatorUserInfo = initiatorUserInfo;
-        this.participantUserInfos = participantUserInfos;
+        // 为了逻辑更清晰，参数引用传递，参数中传入的participantUserInfos会变化，如果直接使用的话，didParticipantJoined里面，可啥都不做
+        this.participantUserInfos = [...participantUserInfos];
         this.groupMemberUserInfos = groupMemberUserInfos;
 
         // pls refer to: https://vuejs.org/v2/guide/reactivity.html
@@ -187,7 +188,7 @@ export default {
       this.session.downgrade2Voice();
     },
     screenShare() {
-      this.session.startScreenShare();
+      this.session.isScreenSharing() ? this.session.stopScreenShare() : this.session.startScreenShare();
     },
 
     invite() {
@@ -226,7 +227,6 @@ export default {
 
 .container {
   width: 600px;
-  background-color: red;
   height: 720px;
   display: flex;
   flex-direction: column;
@@ -245,8 +245,8 @@ export default {
 .participant-container {
   display: flex;
   width: 200px;
-  height: 200px;
-  background-color: rebeccapurple;
+  height: 220px;
+  /*background-color: rebeccapurple;*/
 
   flex-direction: column;
   justify-content: center;
@@ -259,6 +259,11 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.participant-container p {
+  max-height: 20px;
+  color: white;
 }
 
 .action-container {
@@ -279,9 +284,8 @@ export default {
 }
 
 .avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 3px;
+  width: 200px;
+  height: 200px;
 }
 
 .action-img {

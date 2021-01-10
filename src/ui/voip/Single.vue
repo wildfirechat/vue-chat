@@ -9,7 +9,7 @@
   <div class="flex-column flex-align-center flex-justify-center">
     <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
 
-    <div v-show="session" class="container">
+    <div v-if="session" class="container">
       <section class="full-height full-width">
         <!--audio-->
         <div class="content-container" v-if="audioOnly">
@@ -18,7 +18,7 @@
           </div>
           <div class="remote-media-container">
             <img class="avatar" :src="participantUserInfo.portrait">
-            <p>{{participantUserInfo.displayName}}</p>
+            <p>{{ participantUserInfo.displayName }}</p>
             <p v-if="status === 1">等待对方接听</p>
             <p v-else-if="status === 2">邀请你语音聊天</p>
             <p v-else-if="status === 3">接听中...</p>
@@ -35,7 +35,7 @@
             <video v-if="status ===4" ref="remoteVideo" class="remoteVideo" playsInline autoPlay/>
             <div v-else class="flex-column flex-justify-center flex-align-center">
               <img class="avatar" :src="participantUserInfo.portrait">
-              <p>{{participantUserInfo.displayName}}</p>
+              <p>{{ participantUserInfo.displayName }}</p>
               <p v-if="status === 1">等待对方接听</p>
               <p v-else-if="status === 2">邀请你视频聊天</p>
               <p v-else-if="status === 3">接听中...</p>
@@ -156,7 +156,7 @@ export default {
       this.session.downgrade2Voice();
     },
     screenShare() {
-      this.session.startScreenShare();
+      this.session.isScreenSharing() ? this.session.stopScreenShare() : this.session.startScreenShare();
     }
   },
 
@@ -225,7 +225,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 100%;
-  background-color: rebeccapurple;
+  /*background-color: rebeccapurple;*/
 }
 
 .local-media-container {
@@ -241,7 +241,7 @@ export default {
 
 .localVideo {
   width: 200px;
-  height: 200px;
+  height: auto;
   position: absolute;
   top: 0;
   background-color: #cccccc;
@@ -249,7 +249,6 @@ export default {
 }
 
 .remoteVideo {
-  background-color: rebeccapurple;
   width: 100%;
   height: 100%;
 

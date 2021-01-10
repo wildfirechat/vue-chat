@@ -5,7 +5,7 @@
        @dragover="$event.preventDefault()"
        @drop="$event.preventDefault()"
        v-visibility-change="visibilityChange">
-    <div class="blur-container">
+    <div id="blur-container" class="blur-container">
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50"
            class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
         <filter id="blur_mkvvpnf">
@@ -26,7 +26,7 @@
       </video>
     </div>
 
-    <router-view class="main-content-container"></router-view>
+    <router-view id="main-content-container" class="main-content-container"></router-view>
   </div>
 </template>
 
@@ -53,6 +53,18 @@ export default {
       root.style.setProperty('--main-margin-right', '0');
       root.style.setProperty('--main-margin-top', '0');
       root.style.setProperty('--main-margin-bottom', '0');
+    }
+  },
+
+  mounted() {
+    if (window.location.href.indexOf('voip') >= 0) {
+      let app = document.getElementById("app");
+      let el = document.getElementById("blur-container");
+      app.removeChild(el)
+      el = document.getElementById('styled_video_container');
+      app.removeChild(el)
+      el = document.getElementById('main-content-container');
+      el.style.backgroundColor = '#292929'
     }
   }
 }
