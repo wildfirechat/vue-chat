@@ -11,7 +11,7 @@
 
 <script>
 import store from "@/store";
-import PickContactView from "@/ui/main/pick/PickUserView";
+import PickerUserView from "@/ui/main/pick/PickUserView";
 
 export default {
   name: "SearchView",
@@ -28,7 +28,7 @@ export default {
 
     showCreateConversationModal() {
       this.$modal.show(
-          PickContactView,
+          PickerUserView,
           {
             users: this.sharedContactState.friendList,
             confirmTitle: '创建',

@@ -22,7 +22,10 @@
                        v-model="sharedPickState.users" placeholder="">
                 <img class="avatar" :src="user.portrait" alt="">
                 <span
-                    class="single-line"> {{ user._displayName }}</span>
+                    class="single-line"> {{
+                    user._displayName || (user.groupAlias ? user.groupAlias : (user.friendAlias ? user.friendAlias : (user.displayName ? user.displayName : '用户'))
+                    )
+                  }}</span>
               </div>
             </li>
           </ul>
@@ -108,6 +111,13 @@ export default {
   computed: {
     groupedUsers() {
       let groupedUsers = [];
+      if (!this.showCategoryLabel) {
+        groupedUsers.push({
+          category: '',
+          users: this.users,
+        });
+        return groupedUsers;
+      }
       let current = {};
       this.users.forEach((user) => {
         if (user._category) {

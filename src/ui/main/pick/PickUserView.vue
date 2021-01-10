@@ -9,6 +9,7 @@
                                :users="users"
                                :initial-checked-users="initialCheckedUsers"
                                :uncheckable-users="uncheckableUsers"
+                               :show-category-label=showCategoryLabel
                                :padding-left="'20px'"
                                enable-category-label-sticky/>
       </div>
@@ -67,6 +68,11 @@ export default {
       type: String,
       required: false,
       default: '确定',
+    },
+    showCategoryLabel: {
+      type: Boolean,
+      required: false,
+      default: true,
     }
 
   },

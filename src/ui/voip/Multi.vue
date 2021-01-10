@@ -41,7 +41,8 @@
             </div>
           </div>
           <!--add more-->
-          <div v-if="participantUserInfos.length < 8" class="participant-container">
+          <!--通话建立成功之后，才允许邀请新参与者-->
+          <div v-if="status === 4/*connect*/ && participantUserInfos.length < 8" class="participant-container">
             <img @click="invite" class="avatar" src="@/assets/images/add.png">
           </div>
         </div>
@@ -86,6 +87,7 @@
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
+import PickUserView from "@/ui/main/pick/PickUserView";
 
 export default {
   name: 'Multi',
@@ -192,8 +194,29 @@ export default {
     },
 
     invite() {
-      // todo
-      console.log('to invite');
+      let beforeClose = (event) => {
+        let users = event.params.users;
+        let userIds = users.map(u => u.uid);
+        this.session.inviteNewParticipants(userIds);
+      };
+      this.$modal.show(
+          PickUserView,
+          {
+            users: this.session.groupMemberUserInfos,
+            initialCheckedUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
+            uncheckableUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
+            showCategoryLabel: false,
+            confirmTitle: '确定',
+          }, {
+            name: 'pick-user-modal',
+            width: 600,
+            height: 480,
+            clickToClose: false,
+          }, {
+            // 'before-open': this.beforeOpen,
+            'before-close': beforeClose,
+            'closed': this.closed,
+          })
     },
 
     userName(user) {
