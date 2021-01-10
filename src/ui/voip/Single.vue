@@ -9,16 +9,16 @@
   <div class="flex-column flex-align-center flex-justify-center">
     <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
 
-    <div class="container">
+    <div v-show="session" class="container">
       <section class="full-height full-width">
         <!--audio-->
         <div class="content-container" v-if="audioOnly">
           <div class="local-media-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
+            <img class="avatar" :src="session.selfUserInfo.portrait">
           </div>
           <div class="remote-media-container">
-            <img class="avatar" src="@/assets/images/user-fallback.png">
-            <p>remote user name</p>
+            <img class="avatar" :src="participantUserInfo.portrait">
+            <p>{{participantUserInfo.displayName}}</p>
             <p v-if="status === 1">等待对方接听</p>
             <p v-else-if="status === 2">邀请你语音聊天</p>
             <p v-else-if="status === 3">接听中...</p>
@@ -28,14 +28,14 @@
         <!--video-->
         <div v-else class="content-container">
           <div class="local-media-container">
-            <img v-if="status === 2" class="avatar" src="@/assets/images/user-fallback.png">
+            <img v-if="status === 2" class="avatar" :src="session.selfUserInfo.portrait">
             <video v-else ref="localVideo" class="localVideo" playsInline autoPlay muted/>
           </div>
           <div class="remote-media-container">
             <video v-if="status ===4" ref="remoteVideo" class="remoteVideo" playsInline autoPlay/>
             <div v-else class="flex-column flex-justify-center flex-align-center">
-              <img class="avatar" src="@/assets/images/user-fallback.png">
-              <p>remote user name</p>
+              <img class="avatar" :src="participantUserInfo.portrait">
+              <p>{{participantUserInfo.displayName}}</p>
               <p v-if="status === 1">等待对方接听</p>
               <p v-else-if="status === 2">邀请你视频聊天</p>
               <p v-else-if="status === 3">接听中...</p>
@@ -88,7 +88,6 @@
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
-import store from "@/store";
 
 export default {
   name: 'Single',
@@ -164,7 +163,14 @@ export default {
   mounted() {
     avenginekit.setup();
     this.setupSessionCallback();
-  }
+  },
+
+  computed: {
+    participantUserInfo() {
+      console.log('xxxjjj', this.session.participantUserInfos)
+      return this.session.participantUserInfos[0];
+    }
+  },
 
 }
 </script>
