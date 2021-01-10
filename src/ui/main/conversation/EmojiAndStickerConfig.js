@@ -1,7 +1,7 @@
 import {Category, Emoji, emojisDefault} from "@imndx/v-emoji-picker";
 
 export function config() {
-    // 自定义吧
+    // 动态表情的category约定以Sticker-开头
     let customStickers = [
         new Emoji('https://static.wildfirechat.cn/sticker/b/B%E6%95%B0%EF%BC%8C%E6%B2%A1%E6%9C%89%EF%BC%8C%E6%88%91%E5%BE%88%E8%86%A8%E8%83%80.png', 'Sticker-b', ['sticker']),
         new Emoji('https://static.wildfirechat.cn/sticker/b/%E6%9C%89%E6%B2%A1%E6%9C%89B%E6%95%B0%EF%BC%8C%E4%BD%A0%E5%BF%83%E9%87%8C%E6%B2%A1%E6%9C%89%E7%82%B9B%E6%95%B0%E5%90%97.png', 'Sticker-b', ['sticker']),
