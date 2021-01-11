@@ -25,6 +25,7 @@
     </section>
     <div @keyup.enter="send($event)"
          ref="input" class="input"
+         @paste="handlePaste"
          autofocus
          placeholder="hello" contenteditable="true">
     </div>
@@ -101,6 +102,15 @@ export default {
       store.quoteMessage(null)
     },
 
+    handlePaste(e) {
+      console.log('handle pastexxxx', e)
+      let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+      if (text && text.trim()) {
+        e.preventDefault();
+        document.execCommand('insertText', false, text);
+      }
+    },
+
     send(e) {
       if (this.isMention) {
         this.isMention = false;
@@ -154,7 +164,7 @@ export default {
       //     message = message.replace(/<br>/g, '\n').trim()
       // }
 
-      let imgs = input.getElementsByTagName('img');
+      let imgs = [...input.getElementsByTagName('img')];
       if (imgs) {
         imgs.forEach(img => {
           if (img.className.indexOf('emoji') >= 0) {
@@ -163,11 +173,11 @@ export default {
           let src = img.src;
           let file = fileFromDataUri(src, new Date().getTime() + '.png');
           store.sendFile(this.conversationInfo.conversation, file)
-          input.removeChild(img);
+          // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
+          img.parentNode.removeChild(img);
         });
       }
       message = input.innerHTML.trim();
-
       message = message.replace(/<br>/g, '\n')
           .replace(/<div>/g, '\n')
           .replace(/<\/div>/g, '')
@@ -176,14 +186,18 @@ export default {
       message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
           .replace(/" src="https:\/\/static\.wildfirechat\.cn\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
 
-      let textMessageContent = this.handleMention(message);
-      let quotedMessage = this.shareConversationState.quotedMessage;
-      if (quotedMessage) {
-        let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
-        textMessageContent.setQuoteInfo(quoteInfo);
+      if (message && message.trim()) {
+        let textMessageContent = this.handleMention(message);
+        let quotedMessage = this.shareConversationState.quotedMessage;
+        if (quotedMessage) {
+          let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
+          textMessageContent.setQuoteInfo(quoteInfo);
+        }
+        wfc.sendConversationMessage(conversation, textMessageContent);
+        this.$refs['input'].innerHTML = '';
       }
-      wfc.sendConversationMessage(conversation, textMessageContent);
-      this.$refs['input'].innerHTML = '';
+
+      input.innerHTML = '';
       store.quoteMessage(null);
       Draft.setConversationDraft(conversation, '', null);
     },
