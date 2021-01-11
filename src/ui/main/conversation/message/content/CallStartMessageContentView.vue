@@ -23,7 +23,6 @@ export default {
   computed: {
     textContent() {
       let voip = this.message.messageContent;
-      console.log('voip', voip);
       let desc = '视频通话';
       if (voip.status === 0) {
         desc = '对方未接听';
@@ -57,7 +56,6 @@ export default {
 }
 
 .call-start-message-container p {
-  user-select: text;
   padding-left: 5px;
   white-space: pre-line;
 }

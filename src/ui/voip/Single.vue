@@ -15,24 +15,28 @@
         <div class="content-container" v-if="audioOnly">
           <div class="local-media-container">
             <img class="avatar" :src="session.selfUserInfo.portrait">
+            <video v-if="status === 4" ref="localVideo" style="height: 0" playsInline autoPlay/>
           </div>
           <div class="remote-media-container">
             <img class="avatar" :src="participantUserInfo.portrait">
+            <video v-if="status ===4" ref="remoteVideo" class="video" style="height: 0" playsInline autoPlay/>
             <p>{{ participantUserInfo.displayName }}</p>
             <p v-if="status === 1">等待对方接听</p>
             <p v-else-if="status === 2">邀请你语音聊天</p>
             <p v-else-if="status === 3">接听中...</p>
+
+            <p v-if="status === 4">{{ duration }}</p>
           </div>
         </div>
 
         <!--video-->
         <div v-else class="content-container">
           <div class="local-media-container">
-            <img v-if="status === 2" class="avatar" :src="session.selfUserInfo.portrait">
-            <video v-else ref="localVideo" class="localVideo" playsInline autoPlay muted/>
+            <video v-if="status === 4" ref="localVideo" class="localVideo" playsInline autoPlay/>
+            <img v-else class="avatar" :src="session.selfUserInfo.portrait">
           </div>
           <div class="remote-media-container">
-            <video v-if="status ===4" ref="remoteVideo" class="remoteVideo" playsInline autoPlay/>
+            <video v-if="status ===4" ref="remoteVideo" class="video" playsInline autoPlay/>
             <div v-else class="flex-column flex-justify-center flex-align-center">
               <img class="avatar" :src="participantUserInfo.portrait">
               <p>{{ participantUserInfo.displayName }}</p>
@@ -88,6 +92,7 @@
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
+import CallState from "@/wfc/av/engine/callState";
 
 export default {
   name: 'Single',
@@ -97,21 +102,30 @@ export default {
       audioOnly: false,
       muted: false,
       status: 0,
+      startTimestamp: 0,
+      currentTimestamp: 0,
     }
   },
   methods: {
     setupSessionCallback() {
       let sessionCallback = new CallSessionCallback();
 
+      // 可能回调多次
       sessionCallback.didChangeState = (state) => {
         this.status = state;
-        // if (state === CallState.STATUS_CONNECTED) {
-        //   this.onUpdateTime();
-        // } else if (state === CallState.STATUS_IDLE) {
-        //   if (this.timer) {
-        //     clearInterval(this.timer);
-        //   }
-        // }
+        if (state === CallState.STATUS_CONNECTED) {
+          if (this.startTimestamp === 0) {
+            this.startTimestamp = new Date().getTime();
+            this.timer = setInterval(() => {
+              this.currentTimestamp = new Date().getTime();
+            }, 1000)
+          }
+        } else if (state === CallState.STATUS_IDLE) {
+          if (this.timer) {
+            clearInterval(this.timer);
+          }
+        }
+
         console.log('status change', state)
       };
 
@@ -157,18 +171,37 @@ export default {
     },
     screenShare() {
       this.session.isScreenSharing() ? this.session.stopScreenShare() : this.session.startScreenShare();
+    },
+    timestampFormat(timestamp) {
+      timestamp = ~~(timestamp / 1000);
+      let str = ''
+      let hour = ~~(timestamp / 3600);
+      str = hour > 0 ? ((hour < 10 ? "0" : "") + hour + ':') : '';
+      let min = ~~((timestamp % 3600) / 60);
+      str += (min < 10 ? "0" : "") + min + ':'
+      let sec = ~~((timestamp % 60));
+      str += (sec < 10 ? "0" : "") + sec
+      return str;
     }
   },
 
   mounted() {
+    // 必须
     avenginekit.setup();
     this.setupSessionCallback();
   },
 
   computed: {
     participantUserInfo() {
-      console.log('xxxjjj', this.session.participantUserInfos)
       return this.session.participantUserInfos[0];
+    },
+
+    duration() {
+      if (this.currentTimestamp <= 0) {
+        return '00:00'
+      }
+      let escapeMillis = this.currentTimestamp - this.startTimestamp;
+      return this.timestampFormat(escapeMillis)
     }
   },
 
@@ -178,8 +211,8 @@ export default {
 <style lang="css" scoped>
 
 .container {
-  width: 360px;
-  height: 640px;
+  width: 100vw;
+  height: 100vh;
   position: relative;
 }
 
@@ -225,8 +258,10 @@ export default {
   align-items: center;
   width: 100%;
   height: 100%;
+  color: white;
   /*background-color: rebeccapurple;*/
 }
+
 
 .local-media-container {
   position: absolute;
@@ -248,9 +283,9 @@ export default {
   left: 0;
 }
 
-.remoteVideo {
+.video {
   width: 100%;
   height: 100%;
-
 }
+
 </style>

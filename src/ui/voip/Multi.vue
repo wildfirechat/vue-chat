@@ -12,33 +12,43 @@
     <div v-if="session" class="container">
       <section>
         <!--audio-->
-        <div ref="test" class="content-container">
+        <div class="content-container">
           <!--self-->
           <div class="participant-container">
-            <video v-if="!audioOnly && selfUserInfo._stream != null"
-                   class="remoteVideo"
+            <div v-if="audioOnly || status !== 4 || !selfUserInfo._stream"
+                 class="flex-column flex-justify-center flex-align-center">
+              <img class="avatar" :src="selfUserInfo.portrait">
+              <video v-if="audioOnly && selfUserInfo._stream"
+                     class="hidden-video"
+                     :srcObject.prop="selfUserInfo._stream"
+                     playsInline autoPlay/>
+              <p>self</p>
+            </div>
+            <video v-else
+                   class="video"
                    ref="localVideo"
                    :srcObject.prop="selfUserInfo._stream"
                    playsInline
                    autoPlay/>
-            <div v-else class="flex-column flex-justify-center flex-align-center">
-              <img class="avatar" :src="selfUserInfo.portrait">
-              <p>self</p>
-            </div>
           </div>
 
           <!--participants-->
           <div v-for="(participant) in participantUserInfos" :key="participant.uid"
                class="participant-container">
-            <video v-if="!audioOnly && participant._stream != null" class="remoteVideo"
-                   :srcObject.prop="participant._stream"
-                   :class="'video' + participant.uid"
-                   playsInline
-                   autoPlay/>
-            <div v-else class="flex-column flex-justify-center flex-align-center">
+            <div v-if="audioOnly || status !== 4 || !participant._stream"
+                 class="flex-column flex-justify-center flex-align-center">
               <img class="avatar" :src="participant.portrait" :alt="participant">
+              <video v-if="audioOnly && participant._stream"
+                     class="hidden-video"
+                     :srcObject.prop="participant._stream"
+                     playsInline autoPlay/>
               <p class="single-line">{{ userName(participant) }}</p>
             </div>
+            <video v-else
+                   class="video"
+                   :srcObject.prop="participant._stream"
+                   playsInline
+                   autoPlay/>
           </div>
           <!--add more-->
           <!--通话建立成功之后，才允许邀请新参与者-->
@@ -249,8 +259,8 @@ export default {
 <style lang="css" scoped>
 
 .container {
-  width: 600px;
-  height: 720px;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -282,6 +292,10 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.hidden-video {
+  height: 0;
 }
 
 .participant-container p {
