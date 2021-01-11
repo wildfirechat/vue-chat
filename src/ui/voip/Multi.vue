@@ -81,12 +81,16 @@
         </div>
 
         <!--connected-->
-        <div v-if="status === 4" class="action-container">
-          <div class="action">
-            <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
-          </div>
-          <div v-if="!audioOnly" class="action">
-            <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
+        <div v-if="status === 4" class="duration-action-container">
+          <p>{{ duration }}</p>
+          <div class="action-container">
+
+            <div class="action">
+              <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
+            </div>
+            <div v-if="!audioOnly" class="action">
+              <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
+            </div>
           </div>
         </div>
       </footer>
@@ -98,6 +102,7 @@
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
 import PickUserView from "@/ui/main/pick/PickUserView";
+import CallState from "@/wfc/av/engine/callState";
 
 export default {
   name: 'Multi',
@@ -111,6 +116,9 @@ export default {
       initiatorUserInfo: null,
       participantUserInfos: [],
       groupMemberUserInfos: [],
+
+      startTimestamp: 0,
+      currentTimestamp: 0,
     }
   },
   methods: {
@@ -119,14 +127,18 @@ export default {
 
       sessionCallback.didChangeState = (state) => {
         this.status = state;
-        // if (state === CallState.STATUS_CONNECTED) {
-        //   this.onUpdateTime();
-        // } else if (state === CallState.STATUS_IDLE) {
-        //   if (this.timer) {
-        //     clearInterval(this.timer);
-        //   }
-        // }
-        console.log('status change', state)
+        if (state === CallState.STATUS_CONNECTED) {
+          if (this.startTimestamp === 0) {
+            this.startTimestamp = new Date().getTime();
+            this.timer = setInterval(() => {
+              this.currentTimestamp = new Date().getTime();
+            }, 1000)
+          }
+        } else if (state === CallState.STATUS_IDLE) {
+          if (this.timer) {
+            clearInterval(this.timer);
+          }
+        }
       };
 
       sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos, groupMemberUserInfos) => {
@@ -241,6 +253,28 @@ export default {
       }
       return name;
     },
+
+    timestampFormat(timestamp) {
+      timestamp = ~~(timestamp / 1000);
+      let str = ''
+      let hour = ~~(timestamp / 3600);
+      str = hour > 0 ? ((hour < 10 ? "0" : "") + hour + ':') : '';
+      let min = ~~((timestamp % 3600) / 60);
+      str += (min < 10 ? "0" : "") + min + ':'
+      let sec = ~~((timestamp % 60));
+      str += (sec < 10 ? "0" : "") + sec
+      return str;
+    }
+  },
+
+  computed: {
+    duration() {
+      if (this.currentTimestamp <= 0) {
+        return '00:00'
+      }
+      let escapeMillis = this.currentTimestamp - this.startTimestamp;
+      return this.timestampFormat(escapeMillis)
+    }
   },
 
   mounted() {
@@ -301,6 +335,18 @@ export default {
 .participant-container p {
   max-height: 20px;
   color: white;
+}
+
+.duration-action-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.duration-action-container p{
+  color: white;
+  padding: 10px 0;
 }
 
 .action-container {
