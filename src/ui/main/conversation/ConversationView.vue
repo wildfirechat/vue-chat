@@ -236,7 +236,7 @@ export default {
         }
       }
       // hide message context menu
-      this.$refs.menu.close();
+      this.$refs.menu && this.$refs.menu.close();
 
       // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
       if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
