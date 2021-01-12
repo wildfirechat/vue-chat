@@ -128,6 +128,8 @@ export default {
 .main-content-container {
   z-index: 999;
   position: absolute;
+  width: calc(100vw - var(--main-margin-left) - var(--main-margin-right));
+  height: calc(100vh - var(--main-margin-top) - var(--main-margin-bottom));
   top: 0;
   left: 0;
   margin: var(--main-margin-top) var(--main-margin-right) var(--main-margin-bottom) var(--main-margin-left);
