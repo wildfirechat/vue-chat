@@ -3,16 +3,27 @@
  */
 
 import MessageContent from './messageContent'
+
 export default class MediaMessageContent extends MessageContent {
     file;
     remotePath = '';
     localPath = '';
     mediaType = 0;
 
+    /**
+     *
+     * @param {number} messageType 消息类型
+     * @param {number} mediaType 媒体类型
+     * @param {File | string} fileOrLocalPath File类型，或者dataUri或者本地路径，本地路径是必须是绝对路径
+     * @param {string} remotePath 远端地址
+     */
     constructor(messageType, mediaType = 0, fileOrLocalPath, remotePath) {
         super(messageType);
         this.mediaType = mediaType;
-        if(typeof fileOrLocalPath === "string"){
+        if(!fileOrLocalPath){
+          this.localPath = '';
+          this.remotePath = remotePath;
+        } else if(typeof fileOrLocalPath === "string" && fileOrLocalPath.startsWith("/")){
           this.localPath = fileOrLocalPath;
           this.remotePath = remotePath;
         }else {
@@ -24,6 +35,7 @@ export default class MediaMessageContent extends MessageContent {
               this.localPath += fileOrLocalPath.name;
             }
           }
+
         }
     }
 
