@@ -18,6 +18,8 @@ export default class MessageContentType {
     static ImageText = 8;
     static P_Text = 9;
     static UserCard = 10;
+    static Composite_Message = 11;
+
 
     // 提醒消息
     static RecallMessage_Notification = 80;

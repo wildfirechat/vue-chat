@@ -36,16 +36,16 @@ export default class MessageContent {
     }
 
     /**
-     * 
-     * @param {object} payload object json.parse from message#content 
+     *
+     * @param {object} payload object json.parse from message#content
      */
     decode(payload) {
         this.type = payload.type;
         this.mentionedType = payload.mentionedType;
-       if(payload.hasOwnProperty('mentionedTarget')){
+        if (payload.hasOwnProperty('mentionedTarget')) {
             // web
             this.mentionedTargets = payload.mentionedTarget;
-        }else {
+        } else {
             // pc
             this.mentionedTargets = payload.mentionedTargets;
         }
