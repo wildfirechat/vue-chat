@@ -7,7 +7,8 @@
       </label>
       <label>
         群公告
-        <input type="text" placeholder="点击编辑群公告">
+        <input type="text" disabled
+               :placeholder="groupAnnouncement">
       </label>
     </header>
     <div class="search-container">
@@ -30,9 +31,10 @@ import ConversationInfo from "@/wfc/model/conversationInfo";
 import store from "@/store";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import wfc from "@/wfc/client/wfc";
+import axios from "axios";
 
 export default {
-  name: "SingleConversationInfoView",
+  name: "GroupConversationInfoView",
   props: {
     conversationInfo: {
       type: ConversationInfo,
@@ -43,6 +45,7 @@ export default {
     return {
       users: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
       sharedContactState: store.state.contact,
+      groupAnnouncement: '',
     }
   },
   components: {UserListVue},
@@ -85,6 +88,21 @@ export default {
     showUserInfo(user) {
       console.log('todo show userInfo', user);
     },
+
+    async getGroupAnnouncement() {
+      let response = await axios.post('/get_group_announcement', {
+        groupId: this.conversationInfo.conversation.target,
+      }, {withCredentials: true});
+      if (response.data && response.data.result) {
+        this.groupAnnouncement = response.data.result.text;
+      } else {
+        this.groupAnnouncement = '点击编辑群公告';
+      }
+    },
+  },
+
+  created() {
+    this.getGroupAnnouncement();
   },
 
   computed: {}

@@ -44,7 +44,7 @@ export default {
   name: "UserCardView",
   props: {
     userInfo: {
-      type: UserInfo,
+      type: Object,
       required: true,
     },
   },
