@@ -1323,6 +1323,14 @@ export class WfcManager {
         impl.connect(userId, token);
     }
 
+    /**
+     * 设置第三方推送设备token
+     * @param {number} pushType 推送类型，0-5 移动端已经使用了。
+     * @param {String} token 设备token
+     */
+    setDeviceToken(pushType, token){
+        impl.setDeviceToken(pushType, token);
+    }
     getVersion(){
         return impl.getVersion();
     }
