@@ -1,6 +1,8 @@
 import {isElectron} from './platform'
 
 export default class Config {
+    // 调试用
+    static ENABLE_AUTO_LOGIN = true;
     // 是否支持多人音视频通话
     static ENABLE_MULTI_VOIP_CALL = true;
     // 是否支持1对1音视频通话

@@ -27,6 +27,11 @@
         <p>请在手机上点击确认以登录</p>
         <button @click="cancel" class="button-cancel">取消登录</button>
       </div>
+
+      <!--      开发调试时，自动登录-->
+      <div v-else-if="loginStatus === 4">
+        <p>自动登录中...</p>
+      </div>
     </div>
   </div>
 </template>
@@ -46,7 +51,7 @@ export default {
     return {
       qrCode: '',
       userName: '',
-      loginStatus: 0, //0 等待扫码； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求
+      loginStatus: 0, //0 等待扫码； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求 4 调试时，自动登录
       qrCodeTimer: null,
       appToken: '',
       lastAppToken: '',
@@ -57,10 +62,17 @@ export default {
     axios.defaults.baseURL = Config.APP_SERVER;
 
     let userId = this.storageGetItem('userId');
+    let token = this.storageGetItem('token');
     if (userId) {
       let portrait = this.storageGetItem("userPortrait");
       this.qrCode = portrait;
-      this.loginStatus = 2;
+
+      if (Config.ENABLE_AUTO_LOGIN && token) {
+        wfc.connect(userId, token);
+        this.loginStatus = 4;
+      } else {
+        this.loginStatus = 2;
+      }
     } else {
       this.createPCLoginSession(null);
     }
@@ -119,6 +131,7 @@ export default {
               let imToken = response.data.result.token;
               wfc.connect(userId, imToken);
               this.storageSetItem('userId', userId);
+              this.storageSetItem('token', imToken);
             }
             break;
           case 9:
@@ -155,6 +168,7 @@ export default {
 
       this.loginStatus = 0;
       this.storageRemoveItem("userId");
+      this.storageRemoveItem("token");
       this.storageRemoveItem("userName");
       this.storageRemoveItem("userPortrait")
 
