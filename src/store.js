@@ -293,6 +293,7 @@ let store = {
         }
         conversationState.currentConversationInfo = conversationInfo;
         conversationState.shouldAutoScrollToBottom = true;
+        conversationState.currentConversationMessageList.length = 0;
         this._loadCurrentConversationMessages();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
