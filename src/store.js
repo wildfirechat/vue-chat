@@ -829,11 +829,12 @@ let store = {
 
     notify(msg) {
         let content = msg.messageContent;
+        let icon = require('@/assets/images/icon.png');
         if (MessageConfig.getMessageContentPersitFlag(content.type) === PersistFlag.Persist_And_Count) {
             Push.create("新消息来了", {
                 body: miscState.notificationMessageDetail ? content.digest() : '',
                 // TODO 下面好像不生效，更新成图片链接
-                icon: '@/assets/images/icon.png',
+                icon: icon,
                 timeout: 4000,
                 onClick: () => {
                     window.focus();
