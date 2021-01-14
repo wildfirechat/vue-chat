@@ -104,7 +104,7 @@ export default class CompositeMessageContent extends MessageContent {
             payload.mediaType = o.mt;
             payload.remoteMediaUrl = o.mru;
 
-            msg.messageContent = payload.toMessageContent(msg.from);
+            msg.messageContent = Message.messageContentFromMessagePayload(payload, msg.from);
             this.messages.push(msg);
         });
     }

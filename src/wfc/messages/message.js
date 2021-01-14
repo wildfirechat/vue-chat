@@ -3,33 +3,33 @@
  */
 
 /**
- * 
-    message in json format
-    {
+ *
+ message in json format
+ {
         "conversation":{
-            "conversationType": 0, 
-            "target": "UZUWUWuu", 
-            "line": 0, 
+            "conversationType": 0,
+            "target": "UZUWUWuu",
+            "line": 0,
         }
-        "from": "UZUWUWuu", 
+        "from": "UZUWUWuu",
         "content": {
-            "type": 1, 
-            "searchableContent": "1234", 
-            "pushContent": "", 
-            "content": "", 
-            "binaryContent": "", 
-            "localContent": "", 
-            "mediaType": 0, 
-            "remoteMediaUrl": "", 
-            "localMediaPath": "", 
-            "mentionedType": 0, 
+            "type": 1,
+            "searchableContent": "1234",
+            "pushContent": "",
+            "content": "",
+            "binaryContent": "",
+            "localContent": "",
+            "mediaType": 0,
+            "remoteMediaUrl": "",
+            "localMediaPath": "",
+            "mentionedType": 0,
             "mentionedTargets": [ ]
-        }, 
-        "messageId": 52, 
-        "direction": 1, 
-        "status": 5, 
-        "messageUid": 75735276990792720, 
-        "timestamp": 1550849394256, 
+        },
+        "messageId": 52,
+        "direction": 1,
+        "status": 5,
+        "messageUid": 75735276990792720,
+        "timestamp": 1550849394256,
         "to": ""
     }
  */
@@ -41,10 +41,12 @@ import UnknownMessageContent from './unknownMessageContent';
 import PersistFlag from './persistFlag';
 import MessageStatus from './messageStatus';
 import ConversationType from '../model/conversationType';
-import { encode } from 'base64-arraybuffer';
+import {encode} from 'base64-arraybuffer';
 import Config from '../../config.js';
 
 import Long from 'long'
+import UnsupportMessageContent from "@/wfc/messages/unsupportMessageConten";
+import RecallMessageNotification from "@/wfc/messages/notification/recallMessageNotification";
 
 export default class Message {
     conversation = {};
@@ -167,5 +169,25 @@ export default class Message {
             return msg;
         }
 
+    }
+
+    static messageContentFromMessagePayload(payload, from) {
+        let contentClazz = MessageConfig.getMessageContentClazz(payload.type);
+        contentClazz = contentClazz ? contentClazz : UnsupportMessageContent;
+        let content = new contentClazz();
+        content.decode(payload);
+
+        let selfUid = wfc.getUserId();
+        if (content instanceof NotificationMessageContent) {
+            if (content instanceof RecallMessageNotification) {
+                if (content.operatorId === selfUid) {
+                    content.fromSelf = true;
+                }
+            } else if (from === selfUid) {
+                content.fromSelf = true;
+            }
+        }
+
+        return content;
     }
 }
