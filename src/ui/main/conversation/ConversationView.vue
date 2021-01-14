@@ -467,6 +467,15 @@ export default {
   font-weight: normal;
 }
 
+.title-container a {
+  text-decoration: none;
+  color: #181818;
+}
+
+.title-container a:active{
+  color: #d6d6d6;
+}
+
 .conversation-container {
   height: 100%;
   display: flex;
