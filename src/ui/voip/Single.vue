@@ -15,11 +15,20 @@
         <div class="content-container" v-if="audioOnly">
           <div class="local-media-container">
             <img class="avatar" :src="session.selfUserInfo.portrait">
-            <video v-if="status === 4" ref="localVideo" style="height: 0" playsInline autoPlay/>
+            <video v-if="status === 4"
+                   ref="localVideo"
+                   style="height: 0"
+                   :srcObject.prop="localStream"
+                   playsInline autoPlay/>
           </div>
           <div class="remote-media-container">
             <img class="avatar" :src="participantUserInfo.portrait">
-            <video v-if="status ===4" ref="remoteVideo" class="video" style="height: 0" playsInline autoPlay/>
+            <video v-if="status ===4"
+                   ref="remoteVideo"
+                   class="video"
+                   style="height: 0"
+                   :srcObject.prop="remoteStream"
+                   playsInline autoPlay/>
             <p>{{ participantUserInfo.displayName }}</p>
             <p v-if="status === 1">等待对方接听</p>
             <p v-else-if="status === 2">邀请你语音聊天</p>
@@ -32,11 +41,19 @@
         <!--video-->
         <div v-else class="content-container">
           <div class="local-media-container">
-            <video v-if="status === 4" ref="localVideo" class="localVideo" playsInline autoPlay/>
+            <video v-if="status === 4"
+                   ref="localVideo"
+                   class="localVideo"
+                   :srcObject.prop="localStream"
+                   playsInline autoPlay/>
             <img v-else class="avatar" :src="session.selfUserInfo.portrait">
           </div>
           <div class="remote-media-container">
-            <video v-if="status ===4" ref="remoteVideo" class="video" playsInline autoPlay/>
+            <video v-if="status ===4"
+                   ref="remoteVideo"
+                   class="video"
+                   :srcObject.prop="remoteStream"
+                   playsInline autoPlay/>
             <div v-else class="flex-column flex-justify-center flex-align-center">
               <img class="avatar" :src="participantUserInfo.portrait">
               <p>{{ participantUserInfo.displayName }}</p>
@@ -104,6 +121,8 @@ export default {
       status: 0,
       startTimestamp: 0,
       currentTimestamp: 0,
+      localStream: null,
+      remoteStream: null,
     }
   },
   methods: {
@@ -139,15 +158,11 @@ export default {
       };
 
       sessionCallback.didCreateLocalVideoTrack = (stream) => {
-        this.$nextTick(() => {
-          this.$refs['localVideo'].srcObject = stream;
-        });
+        this.localStream = stream;
       };
 
       sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
-        this.$nextTick(() => {
-          this.$refs['remoteVideo'].srcObject = stream;
-        });
+        this.remoteStream = stream;
       };
 
       sessionCallback.didCallEndWithReason = (reason) => {
