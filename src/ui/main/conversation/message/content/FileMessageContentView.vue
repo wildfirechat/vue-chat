@@ -13,6 +13,7 @@
 <script>
 import Message from "@/wfc/messages/message";
 import helper from "@/ui/util/helper";
+import {downloadFile} from "@/platformHelper";
 
 export default {
   name: "FileMessageContentView",
@@ -24,25 +25,7 @@ export default {
   },
   methods: {
     downloadFile() {
-      let file = this.message.messageContent;
-      let fileHref = file.remotePath;
-      let filename = file.name;
-      if (window.navigator.msSaveBlob) {// ie
-        let xhr = new XMLHttpRequest();
-        xhr.onloadstart = function () {
-          xhr.responseType = 'blob';
-        };
-        xhr.onload = function () {
-          navigator.msSaveOrOpenBlob(xhr.response, filename);
-        };
-        xhr.open("GET", fileHref, true);
-        xhr.send();
-      } else {
-        let anchor = document.createElement('a');
-        anchor.download = filename;
-        anchor.href = fileHref;
-        anchor.click();
-      }
+      downloadFile(this.message)
     }
   },
   mounted() {

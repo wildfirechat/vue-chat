@@ -32,12 +32,14 @@
 
 <script>
 import store from "@/store";
+import {isElectron} from "@/platform";
 
 export default {
   name: 'App',
   data() {
     return {
       url: '',
+      sharedMiscState: store.state.misc,
     }
   },
   methods: {
@@ -47,12 +49,16 @@ export default {
   },
 
   created() {
-    if (window.location.href.indexOf('voip') >= 0) {
-      let root = document.documentElement;
-      root.style.setProperty('--main-margin-left', '0');
-      root.style.setProperty('--main-margin-right', '0');
-      root.style.setProperty('--main-margin-top', '0');
-      root.style.setProperty('--main-margin-bottom', '0');
+    let root = document.documentElement;
+    if (isElectron() || window.location.href.indexOf('voip') >= 0) {
+      root.style.setProperty('--main-margin-left', '0px');
+      root.style.setProperty('--main-margin-right', '0px');
+      root.style.setProperty('--main-margin-top', '0px');
+      root.style.setProperty('--main-margin-bottom', '0px');
+    }
+    if (this.sharedMiscState.isElectronWindows) {
+      root.style.setProperty('--main-border-radius', '0px')
+      root.style.setProperty('--home-menu-padding-top', '60px')
     }
   },
 
@@ -81,6 +87,7 @@ export default {
   --main-margin-top: 50px;
   --main-margin-bottom: 50px;
   --tippy-right: 0px;
+  --home-menu-padding-top: 20px;
 }
 
 .tippy-tooltip {

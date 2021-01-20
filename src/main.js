@@ -13,13 +13,27 @@ import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "@/store";
 import visibility from 'vue-visibility-change';
+import {isElectron, remote} from "@/platform";
 
 Vue.config.productionTip = false
 
 // init
-wfc.init()
-store.init();
-console.log('init wfc', wfc)
+{
+    // sharedObj 在voip窗口也存在，奇怪
+    if (window.location.href.indexOf('voip') < 0) {
+        console.log('init wfc')
+        if (isElectron()) {
+            let sharedObj = remote.getGlobal('sharedObj');
+            wfc.init([sharedObj.proto])
+        } else {
+            wfc.init();
+        }
+        store.init();
+        console.log('init wfc', wfc)
+    } else {
+        console.log('voip window, not init wfc')
+    }
+}
 // init end
 
 Vue.use(VueRouter)

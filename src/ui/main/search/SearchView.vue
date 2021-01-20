@@ -73,6 +73,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: #fafafa;
+  -webkit-app-region: drag;
 }
 
 .search-input-container input {

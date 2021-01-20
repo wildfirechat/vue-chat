@@ -60,6 +60,7 @@ import {fileFromDataUri} from "@/ui/util/imageUtil";
 import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
 import PickUserView from "@/ui/main/pick/PickUserView";
+import {ipcRenderer, isElectron} from "@/platform";
 
 export default {
   name: "MessageInputView",
@@ -103,11 +104,17 @@ export default {
     },
 
     handlePaste(e) {
-      console.log('handle pastexxxx', e)
       let text = (e.originalEvent || e).clipboardData.getData('text/plain');
       if (text && text.trim()) {
         e.preventDefault();
         document.execCommand('insertText', false, text);
+      }
+      if (isElectron()) {
+        let args = ipcRenderer.sendSync('file-paste');
+        if (args.hasImage) {
+          e.preventDefault();
+          document.execCommand('insertImage', false, 'local-resource://' + args.filename);
+        }
       }
     },
 
@@ -171,7 +178,12 @@ export default {
             return;
           }
           let src = img.src;
-          let file = fileFromDataUri(src, new Date().getTime() + '.png');
+          let file;
+          if (isElectron()) {
+            file = src.substring(17, src.length);
+          } else {
+            file = fileFromDataUri(src, new Date().getTime() + '.png');
+          }
           store.sendFile(this.conversationInfo.conversation, file)
           // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
           img.parentNode.removeChild(img);

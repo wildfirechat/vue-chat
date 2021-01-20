@@ -101,9 +101,11 @@ export default {
   },
 
   mounted() {
-    this.scrollActiveElementCenter();
     this.tippyStyleFix()
+  },
 
+  activated() {
+    this.scrollActiveElementCenter();
   },
 
   destroyed() {

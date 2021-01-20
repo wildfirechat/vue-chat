@@ -13,7 +13,10 @@
       <header>
         <div class="title-container">
           <h1 class="single-line">{{ conversationTitle }}</h1>
-          <a href="#"><i class="icon-ion-ios-settings-strong" ref="setting" @click="toggleConversationInfo"/></a>
+          <a href="#"><i class="icon-ion-ios-settings-strong"
+                         style="display: inline-block"
+                         v-bind:style="{marginTop:sharedMiscState.isElectronWindows ?  '30px' : '0'}" ref="setting"
+                         @click="toggleConversationInfo"/></a>
         </div>
       </header>
       <div ref="conversationContentContainer" class="conversation-content-container"
@@ -148,6 +151,7 @@ export default {
       sharedConversationState: store.state.conversation,
       sharedContactState: store.state.contact,
       sharedPickState: store.state.pick,
+      sharedMiscState: store.state.misc,
       isHandlerDragging: false,
 
       savedMessageListViewHeight: -1,
@@ -450,11 +454,15 @@ export default {
   /*border-left: 1px solid #e6e6e6;*/
 }
 
+.conversation-empty-container h1 {
+  font-size: 17px;
+  font-weight: normal;
+}
 .title-container {
   width: 100%;
   height: 60px;
   display: flex;
-  padding: 0 20px;
+  padding: 0 0 0 20px;
   justify-content: space-between;
   align-items: center;
   background-color: #f5f5f5;
@@ -469,6 +477,7 @@ export default {
 
 .title-container a {
   text-decoration: none;
+  padding: 15px;
   color: #181818;
 }
 

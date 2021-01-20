@@ -19,6 +19,7 @@ import MessageConfig from "@/wfc/client/messageConfig";
 import PersistFlag from "@/wfc/messages/persistFlag";
 import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
+import {ipcRenderer, isElectron} from "@/platform";
 
 /**
  * 一些说明
@@ -92,17 +93,22 @@ let store = {
             isPageHidden: false,
             enableNotification: true,
             notificationMessageDetail: true,
+            isElectronWindows: process && process.platform === 'win32'
+            // isElectronWindows: true,
         },
     },
 
     init() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             miscState.connectionStatus = status;
-            this._loadFavGroupList();
-            this._loadFriendList();
-            this._loadFriendRequest();
-            this._loadSelfUserInfo();
-            conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+            if (status === ConnectionStatus.ConnectionStatusConnected) {
+                this._loadFavGroupList();
+                this._loadFriendList();
+            		this._loadFriendRequest();
+            		this._loadSelfUserInfo();
+            		this._loadDefaultConversationList();
+            		conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+            }
         });
 
         wfc.eventEmitter.on(EventType.UserInfosUpdate, (userInfos) => {
@@ -181,7 +187,7 @@ let store = {
                 if (msg && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
                     if (conversationState.currentConversationMessageList) {
                         let lastTimestamp = 0;
-                        conversationState.currentConversationMessageList.map(msg => {
+                        conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.map(msg => {
                             if (eq(msg.messageUid, messageUid)) {
                                 let newMsg = wfc.getMessageByUid(messageUid);
                                 this._patchMessage(newMsg, lastTimestamp);
@@ -219,10 +225,12 @@ let store = {
 
 
         wfc.eventEmitter.on(EventType.SendMessage, (message) => {
+            this._loadDefaultConversationList();
             if (!this._isDisplayMessage(message)) {
                 return;
             }
             if (!conversationState.currentConversationInfo || !message.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                console.log('not current conv')
                 return;
             }
             let length = conversationState.currentConversationMessageList.length;
@@ -281,7 +289,6 @@ let store = {
             wfc.setConversationTimestamp(conversation, new Date().getTime());
             info = wfc.getConversationInfo(conversation);
             this._patchConversationInfo(info);
-            conversationState.currentConversationInfo = info;
             this._loadDefaultConversationList();
         }
         this.setCurrentConversationInfo(info);
@@ -403,7 +410,20 @@ let store = {
         }
     },
 
+    /**
+     *
+     * @param conversation
+     * @param {File | string} file html File 类型或者绝对路径，绝对路径只在electron里面生效
+     * @return {Promise<boolean>}
+     */
     async sendFile(conversation, file) {
+        console.log('send file', file)
+        if (typeof file === 'string') {
+            file = {
+                path: file,
+                name: file.substring((file.lastIndexOf('/') + 1))
+            }
+        }
         let msg = new Message();
         msg.conversation = conversation;
 
@@ -495,6 +515,7 @@ let store = {
                 if (msgs.length === 0) {
                     completeCB();
                 } else {
+                    this._loadDefaultConversationList();
                     loadedCB();
                 }
             },
@@ -531,6 +552,21 @@ let store = {
         this._loadDefaultConversationList();
     },
 
+    getMessageById(messageId) {
+        let msg = wfc.getMessageById(messageId);
+        if (msg) {
+            this._patchMessage(msg, 0);
+        }
+        return msg;
+    },
+
+    getMessageByUid(messageUid) {
+        let msg = wfc.getMessageByUid(messageUid);
+        if (msg) {
+            this._patchMessage(msg, 0);
+        }
+        return msg;
+    },
     _patchMessage(m, lastTimestamp) {
         // TODO
         // _from
@@ -541,7 +577,7 @@ let store = {
         } else {
             m._from._displayName = wfc.getUserDisplayNameEx(m._from);
         }
-        if (numberValue(m.timestamp) - numberValue(lastTimestamp) > 5 * 60 * 1000) {
+        if (numberValue(lastTimestamp) > 0 && numberValue(m.timestamp) - numberValue(lastTimestamp) > 5 * 60 * 1000) {
             m._showTime = true;
             m._timeStr = helper.timeFormat(m.timestamp)
         }
@@ -583,8 +619,14 @@ let store = {
         let requests = wfc.getIncommingFriendRequest()
         requests = requests.concat(wfc.getOutgoingFriendRequest());
         requests.sort((a, b) => numberValue(a.timestamp) - numberValue(b.timestamp))
+        let uids = [];
         requests.forEach(fr => {
-            fr._target = wfc.getUserInfo(fr.target, false);
+            uids.push(fr.target);
+        });
+        let userInfos = wfc.getUserInfos(uids, '' )
+        requests.forEach(fr => {
+            let userInfo = userInfos.find((u => u.uid === fr.target));
+            fr._target = userInfo;
         });
 
         contactState.friendRequestList = requests;
@@ -837,7 +879,11 @@ let store = {
                 icon: icon,
                 timeout: 4000,
                 onClick: () => {
+                    if (isElectron()) {
+                        ipcRenderer.send('click-notification')
+                    } else {
                     window.focus();
+                    }
                     this.close();
                     this.setCurrentConversation(msg.conversation)
                 }

@@ -5,7 +5,7 @@
           @click="showConversation(conversationInfo)"
           v-for="conversationInfo in sharedConversationState.conversationInfoList"
           :key="conversationInfoKey(conversationInfo)"
-          v-bind:class="{active: sharedConversationState.currentConversationInfo && sharedConversationState.currentConversationInfo.conversation === conversationInfo.conversation,
+          v-bind:class="{active: sharedConversationState.currentConversationInfo && sharedConversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation),
                           top:conversationInfo.isTop}"
           @contextmenu.prevent="$refs.menu.open($event,conversationInfo)"
       >
@@ -66,6 +66,13 @@ export default {
       let conv = conversationInfo.conversation;
       return conv.target + '-' + conv.type + '-' + conv.line;
     },
+    scrollActiveElementCenter() {
+      let el = this.$el.getElementsByClassName("active")[0];
+      el && el.scrollIntoView({behavior: "instant", block: "center"});
+  },
+  },
+  activated() {
+    this.scrollActiveElementCenter();
   },
   components: {
     ConversationItemView,

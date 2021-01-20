@@ -76,7 +76,7 @@ export default {
     quotedMessage() {
       if (this.message.messageContent.quoteInfo) {
         let messageUid = this.message.messageContent.quoteInfo.messageUid;
-        return wfc.getMessageByUid(messageUid);
+        return store.getMessageByUid(messageUid);
       } else {
         return null;
       }

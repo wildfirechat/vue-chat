@@ -203,7 +203,7 @@ export default {
     quotedMessage() {
       if (this.message.messageContent.quoteInfo) {
         let messageUid = this.message.messageContent.quoteInfo.messageUid;
-        let msg = wfc.getMessageByUid(messageUid);
+        let msg = store.getMessageByUid(messageUid);
         console.log('quotedMessage, should not be null', this.message.messageContent.quoteInfo, msg)
         return msg;
       } else {

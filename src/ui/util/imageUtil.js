@@ -333,7 +333,7 @@ function imageThumbnail(file) {
             resolve(null);
         }
         if (file.path) {
-            img.src = file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name; // local image url
+            img.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local image url
         } else {
             let reader = new FileReader();
             reader.onload = function (event) {
@@ -382,7 +382,7 @@ function videoThumbnail(file) {
                 resolve(null);
             };
             if (file.path) {
-                video.src = file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name; // local video url
+                video.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local video url
             } else {
                 let reader = new FileReader();
                 reader.onload = function (event) {

@@ -1,10 +1,6 @@
 <template>
   <div class="video-content-container">
-    <video @click="preview(message)" v-if="message.messageContent.localPath" preload="metadata"
-           controls
-           disablePictureInPicture
-           :src="message.messageContent.localPath + '#t=0.1'"/>
-    <video @click.prevent="preview(message)" v-else preload="metadata"
+    <video @click.prevent="preview(message)" preload="metadata"
            controls
            controlsList="nodownload"
            disablePictureInPicture
