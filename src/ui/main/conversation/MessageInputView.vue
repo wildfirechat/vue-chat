@@ -30,11 +30,11 @@
          placeholder="hello" contenteditable="true">
     </div>
     <QuoteMessageView
-        v-if="shareConversationState.quotedMessage !== null"
+        v-if="quotedMessage !== null"
         style="padding: 10px 20px"
         v-on:cancelQuoteMessage="cancelQuoteMessage"
         :enable-message-preview="false"
-        :quoted-message="shareConversationState.quotedMessage" :show-close-button="true"/>
+        :quoted-message="quotedMessage" :show-close-button="true"/>
   </section>
 </template>
 
@@ -61,6 +61,9 @@ import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import {ipcRenderer, isElectron} from "@/platform";
+// vue 不允许在computed里面有副作用
+// 和store.state.conversation.quotedMessage 保持同步
+let lastQuotedMessage = null;
 
 export default {
   name: "MessageInputView",
@@ -81,6 +84,7 @@ export default {
       isMention: false,
       emojiCategories: categoriesDefault,
       emojis: emojisDefault,
+      lastConversationInfo: null,
     }
   },
   methods: {
@@ -441,7 +445,18 @@ export default {
         this.$refs['input'].focus();
         console.log('focus end')
       })
-    }
+    },
+
+    restoreDraft() {
+      let draft = Draft.getConversationDraftEx(this.conversationInfo)
+      store.quoteMessage(draft.quotedMessage);
+      this.$refs['input'].innerHTML = draft.text;
+    },
+
+    storeDraft(conversation, quotedMessage) {
+      let draftText = this.$refs['input'].innerHTML.trim();
+      Draft.setConversationDraft(conversation, draftText, quotedMessage)
+    },
   },
 
   activated() {
@@ -449,7 +464,7 @@ export default {
   },
 
   deactivated() {
-    // TODO  draft
+    this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
     this.$refs['input'].innerHTML = '';
   },
 
@@ -457,15 +472,29 @@ export default {
     if (this.conversationInfo) {
       this.initMention(this.conversationInfo.conversation)
       this.initEmojiPicker()
+      this.restoreDraft();
     }
+    this.lastConversationInfo = this.conversationInfo;
     this.focusInput();
   },
 
   watch: {
     conversationInfo() {
+      if (this.lastConversationInfo && !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation)) {
+        this.storeDraft(this.lastConversationInfo.conversation, lastQuotedMessage);
+      }
+
+      this.lastConversationInfo = this.conversationInfo;
       this.initMention(this.conversationInfo.conversation)
-      this.$refs['input'].innerHTML = '';
+      this.restoreDraft();
       this.focusInput();
+    },
+  },
+
+  computed: {
+    quotedMessage() {
+      lastQuotedMessage = this.shareConversationState.quotedMessage;
+      return this.shareConversationState.quotedMessage;
     }
   },
 

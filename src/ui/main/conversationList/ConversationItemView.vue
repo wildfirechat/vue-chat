@@ -17,9 +17,9 @@
           <p class="time single-line">{{ conversationInfo._timeStr }}</p>
         </div>
         <div class="content">
-          <p class="draft single-line" v-if="conversationInfo.draft">{{ conversationInfo.draft }}</p>
+          <p class="draft single-line" v-if="shouldShowDraft">{{ draft }}</p>
           <p class="message single-line" v-else>
-            {{ conversationDesc }}</p>
+            {{ lastMessageContent }}</p>
           <i v-if="conversationInfo.isSilent" class="icon-ion-android-volume-mute"></i>
         </div>
       </div>
@@ -31,6 +31,7 @@
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
+import Draft from "@/ui/util/draft";
 
 export default {
   name: "ConversationItemView",
@@ -42,7 +43,8 @@ export default {
   },
   data() {
     return {
-      dragAndDropEnterCount: 0
+      dragAndDropEnterCount: 0,
+      shareConversationState: store.state.conversation,
     };
   },
   methods: {
@@ -79,11 +81,31 @@ export default {
         return info.conversation._target.name;
       }
     },
-    conversationDesc: function () {
+    shouldShowDraft() {
+      if (this.shareConversationState.currentConversationInfo && this.shareConversationState.currentConversationInfo.conversation.equal(this.conversationInfo.conversation)) {
+        return false;
+      }
+      let draft = Draft.getConversationDraftEx(this.conversationInfo);
+      return draft.text !== '' || draft.quotedMessage !== null;
+    },
+
+    draft() {
+      let draft = Draft.getConversationDraftEx(this.conversationInfo);
+      let draftText = '[草稿]' + draft.text;
+      draftText = draftText.replace(/<img [:a-zA-Z0-9_+; ,\-=\/."]+>/g, '[图片]')
+      draftText = draftText.replace(/&nbsp;/g, ' ');
+      draftText = draftText.replace(/<br>/g, '')
+      if (draft.quotedMessage) {
+        draftText += '...'
+      }
+      return draftText;
+    },
+
+    lastMessageContent() {
       let conversationInfo = this.conversationInfo;
       return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest(conversationInfo.lastMessage) : '';
     },
-    unread: function () {
+    unread() {
       let conversationInfo = this.conversationInfo;
       if (conversationInfo.isSilent) {
         return 0;
@@ -124,6 +146,9 @@ export default {
   position: relative;
   width: 45px;
   height: 45px;
+  min-width: 45px;
+  min-height: 45px;
+  background: #d6d6d6;
   top: 50%;
   transform: translateY(-50%);
   border-radius: 3px;
@@ -182,6 +207,7 @@ export default {
 
 .content .draft {
   color: red;
+  font-size: 13px;
 }
 
 .content .message {

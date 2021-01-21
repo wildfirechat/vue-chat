@@ -1,5 +1,6 @@
 import wfc from "../../wfc/client/wfc";
 import {stringValue} from "../../wfc/util/longUtil";
+import store from "@/store";
 
 export default class Draft{
 
@@ -15,13 +16,12 @@ export default class Draft{
         wfc.setConversationDraft(conversation, JSON.stringify(obj));
     }
 
-    static getConversationDraft(conversation){
+    static getConversationDraftEx(conversationInfo) {
         let obj = {
             text: '',
             quotedMessage: null
         }
-        let conversationInfo = wfc.getConversationInfo(conversation);
-        if(!conversationInfo.draft){
+        if (!conversationInfo || !conversationInfo.draft) {
             return obj;
         }
         // 兼容处理
@@ -32,9 +32,14 @@ export default class Draft{
         let draft =  JSON.parse(conversationInfo.draft);
         obj.text = draft.text;
         if(draft.quoteMessageUid){
-            let msg = wfc.getMessageByUid(draft.quoteMessageUid);
+            let msg = store.getMessageByUid(draft.quoteMessageUid);
             obj.quotedMessage = msg;
         }
         return obj;
+    }
+
+    static getConversationDraft(conversation) {
+        let conversationInfo = wfc.getConversationInfo(conversation);
+        return this.getConversationDraftEx(conversationInfo);
     }
 }
