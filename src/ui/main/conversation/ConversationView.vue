@@ -32,7 +32,11 @@
         </div>
         <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
           <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
-                            @infinite="infiniteHandler"/>
+                            @infinite="infiniteHandler">
+            <template slot="spinner">加载中...</template>
+            <template slot="no-more">没有更多消息</template>
+            <template slot="no-results">已加载全部消息 :(</template>
+          </infinite-loading>
           <ul>
             <!--todo item.messageId or messageUid as key-->
             <li v-for="(message) in sharedConversationState.currentConversationMessageList"
@@ -99,6 +103,12 @@
           <li v-if="isRecallable(message)">
             <a @click.prevent="recallMessage(message)">撤回</a>
           </li>
+          <li v-if="isLocalFile(message)">
+            <a @click.prevent="openFile(message)">打开</a>
+          </li>
+          <li v-if="isLocalFile(message)">
+            <a @click.prevent="openDir(message)">打开目录</a>
+          </li>
         </vue-context>
       </div>
     </div>
@@ -128,6 +138,8 @@ import ForwardMessageByCreateConversationView
   from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
+import {fs, isElectron, shell} from "@/platform";
+import FileMessageContent from "@/wfc/messages/fileMessageContent";
 
 export default {
   components: {
@@ -299,6 +311,26 @@ export default {
       return message && message.direction === 0 && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000;
     },
 
+    isLocalFile(message) {
+      if (message && isElectron()) {
+        let file = message.messageContent;
+        if (file instanceof FileMessageContent) {
+          return fs.existsSync(file.localPath);
+        }
+      }
+      return false;
+    },
+
+    openFile(message) {
+      let file = message.messageContent;
+      shell.openItem(file.localPath);
+    },
+
+    openDir(message) {
+      let file = message.messageContent;
+      shell.showItemInFolder(file.localPath);
+    },
+
     recallMessage(message) {
       wfc.recallMessage(message.messageUid, null, null);
     },
@@ -420,7 +452,10 @@ export default {
       // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
     }
     if (this.sharedConversationState.currentConversationInfo) {
-      wfc.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+      let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
+      if (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll > 0) {
+        store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+      }
     }
   },
 
@@ -458,6 +493,7 @@ export default {
   font-size: 17px;
   font-weight: normal;
 }
+
 .title-container {
   width: 100%;
   height: 60px;
@@ -481,7 +517,7 @@ export default {
   color: #181818;
 }
 
-.title-container a:active{
+.title-container a:active {
   color: #d6d6d6;
 }
 
@@ -595,6 +631,6 @@ export default {
 }
 
 .conversation-info-container.active {
-  display: block;
+  display: flex;
 }
 </style>

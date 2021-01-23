@@ -28,8 +28,11 @@
         <div class="message-name-content-container">
           <p class="name">{{ message._from.displayName }}</p>
           <div class="flex-column flex-align-start">
-            <MessageContentContainerView :message="message"
-                                         @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+            <div class="flex-row">
+              <MessageContentContainerView :message="message"
+                                           @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+              <LoadingView v-if="isDownloading"/>
+            </div>
             <QuoteMessageView style="padding: 5px 0; max-width: 80%"
                               v-if="quotedMessage"
                               :message="message"
@@ -49,8 +52,8 @@
 import UserCardView from "@/ui/main/user/UserCardView";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
+import LoadingView from "@/ui/common/LoadingView";
 import store from "@/store";
-import wfc from "@/wfc/client/wfc";
 
 export default {
   name: "NormalInMessageContentView",
@@ -60,7 +63,7 @@ export default {
   data() {
     return {
       sharedConversationState: store.state.conversation,
-      sharedPickState:store.state.pick,
+      sharedPickState: store.state.pick,
     }
   },
   methods: {
@@ -80,12 +83,16 @@ export default {
       } else {
         return null;
       }
+    },
+    isDownloading() {
+      return store.isDownloadingMessage(this.message.messageId);
     }
   },
   components: {
     MessageContentContainerView,
     UserCardView,
     QuoteMessageView,
+    LoadingView
   },
 }
 </script>
@@ -130,6 +137,7 @@ export default {
 
 .avatar-container {
   display: flex;
+  padding-left: 2px;
   align-items: center;
 }
 

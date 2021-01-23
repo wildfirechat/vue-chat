@@ -333,7 +333,11 @@ function imageThumbnail(file) {
             resolve(null);
         }
         if (file.path) {
-            img.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local image url
+            if (file.path.startsWith('/')) {
+                img.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local image url
+            } else {
+                img.src = file.path;
+            }
         } else {
             let reader = new FileReader();
             reader.onload = function (event) {
@@ -382,7 +386,11 @@ function videoThumbnail(file) {
                 resolve(null);
             };
             if (file.path) {
-                video.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local video url
+                if (file.path.startsWith('/')) {
+                    video.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local video url
+                } else {
+                    video.src = file.path;
+                }
             } else {
                 let reader = new FileReader();
                 reader.onload = function (event) {

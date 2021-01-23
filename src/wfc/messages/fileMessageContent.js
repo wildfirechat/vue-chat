@@ -11,11 +11,14 @@ export default class FileMessageContent extends MediaMessageContent {
     size = 0;
     static FILE_NAME_PREFIX = '[文件] ';
 
-    constructor(fileOrLocalPath, remotePath) {
+    constructor(fileOrLocalPath, remotePath, name, size) {
         super(MessageContentType.File, MessageContentMediaType.File, fileOrLocalPath, remotePath);
         if (typeof File !== 'undefined' && fileOrLocalPath instanceof File) {
             this.name = fileOrLocalPath.name;
             this.size = fileOrLocalPath.size;
+        }else if (remotePath){
+            this.name = name ? name : remotePath.substring(remotePath.lastIndexOf('/') + 1)
+            this.size = size ? size : 0;
         }
     }
 

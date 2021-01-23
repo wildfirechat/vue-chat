@@ -53,6 +53,7 @@ let store = {
 
             enableMessageMultiSelection: false,
             quotedMessage: null,
+            downloadingMessageIds: [],
         },
 
         contact: {
@@ -93,6 +94,7 @@ let store = {
             isPageHidden: false,
             enableNotification: true,
             notificationMessageDetail: true,
+            isElectron: isElectron(),
             isElectronWindows: process && process.platform === 'win32'
             // isElectronWindows: true,
         },
@@ -104,10 +106,11 @@ let store = {
             if (status === ConnectionStatus.ConnectionStatusConnected) {
                 this._loadFavGroupList();
                 this._loadFriendList();
-            		this._loadFriendRequest();
-            		this._loadSelfUserInfo();
-            		this._loadDefaultConversationList();
-            		conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+                this._loadFriendRequest();
+                this._loadSelfUserInfo();
+                this._loadDefaultConversationList();
+                conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+                this.updateTray();
             }
         });
 
@@ -134,6 +137,10 @@ let store = {
             this._loadFavGroupList();
             // TODO 其他相关逻辑
 
+        });
+
+        wfc.eventEmitter.on(EventType.ConversationInfoUpdate, (conversationInfo) => {
+            this._loadDefaultConversationList();
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
@@ -178,6 +185,7 @@ let store = {
             if (miscState.isPageHidden && miscState.enableNotification) {
                 this.notify(msg);
             }
+            this.updateTray();
         });
 
         wfc.eventEmitter.on(EventType.RecallMessage, (operator, messageUid) => {
@@ -256,6 +264,37 @@ let store = {
                 conversationState.currentConversationRead = wfc.getConversationRead(conversationState.currentConversationInfo.conversation);
             }
         });
+        if (isElectron()) {
+            ipcRenderer.on('file-downloaded', (event, args) => {
+                let messageId = args.messageId;
+                let localPath = args.filePath;
+                console.log('file-downloaded', args)
+
+                conversationState.downloadingMessageIds = conversationState.downloadingMessageIds.filter(v => v !== messageId);
+                let msg = wfc.getMessageById(messageId);
+                if (msg) {
+                    msg.messageContent.localPath = localPath;
+                    wfc.updateMessageContent(messageId, msg.messageContent);
+
+                    conversationState.currentConversationMessageList.forEach(m => {
+                        if (m.messageId === messageId) {
+                            m.messageContent = msg.messageContent;
+                        }
+                    });
+                }
+            });
+
+            ipcRenderer.on('file-download-failed', (event, args) => {
+                let messageId = args.messageId;
+                conversationState.downloadingMessageIds = conversationState.downloadingMessageIds.filter(v => v !== messageId);
+                // TODO 其他下载失败处理
+            });
+
+            ipcRenderer.on('file-download-progress', (event, args) => {
+                let messageId = args.messageId;
+                // do nothing now
+            });
+        }
     },
 
     // conversation actions
@@ -295,6 +334,15 @@ let store = {
     },
 
     setCurrentConversationInfo(conversationInfo) {
+        if (!conversationInfo) {
+            conversationState.currentConversationInfo = null;
+            conversationState.shouldAutoScrollToBottom = false;
+            conversationState.currentConversationMessageList.length = 0;
+            conversationState.currentConversationDeliveries = null;
+            conversationState.currentConversationRead = null;
+            conversationState.enableMessageMultiSelection = false;
+            return;
+        }
         if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
             return;
         }
@@ -304,7 +352,7 @@ let store = {
         this._loadCurrentConversationMessages();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
-        conversationInfo.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
+        conversationState.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
 
         conversationState.enableMessageMultiSelection = false;
         conversationState.quotedMessage = null;
@@ -313,6 +361,14 @@ let store = {
         conversationState.inputtingUser = null;
 
         pickState.messages.length = 0;
+    },
+
+    quitGroup(groupId) {
+        wfc.quitGroup(groupId, [0], null, () => {
+            this.setCurrentConversationInfo(null)
+        }, (err) => {
+            console.log('quit group error', err)
+        })
     },
 
     toggleMessageMultiSelection(message) {
@@ -413,22 +469,32 @@ let store = {
     /**
      *
      * @param conversation
-     * @param {File | string} file html File 类型或者绝对路径，绝对路径只在electron里面生效
+     * @param {File | string} file html File 类型或者url，绝对路径只在electron里面生效
      * @return {Promise<boolean>}
      */
     async sendFile(conversation, file) {
         console.log('send file', file)
+        let fileOrLocalPath = null;
+        let remotePath = null;
         if (typeof file === 'string') {
+            if (file.startsWith('/')) {
+                fileOrLocalPath = file;
+            } else {
+                remotePath = file;
+            }
             file = {
                 path: file,
                 name: file.substring((file.lastIndexOf('/') + 1))
             }
+        } else {
+            fileOrLocalPath = file;
         }
         let msg = new Message();
         msg.conversation = conversation;
 
-        var mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
-        var messageContentmediaType = {
+        let mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
+        // todo other file type
+        let messageContentmediaType = {
             'pic': MessageContentMediaType.Image,
             'video': MessageContentMediaType.Video,
             'doc': MessageContentMediaType.File,
@@ -442,7 +508,7 @@ let store = {
                     return false;
                 }
                 // let img64 = self.imgDataUriToBase64(imageThumbnail);
-                messageContent = new ImageMessageContent(file, null, iThumbnail.split(',')[1]);
+                messageContent = new ImageMessageContent(fileOrLocalPath, remotePath, iThumbnail.split(',')[1]);
                 break;
             case MessageContentMediaType.Video:
                 let vThumbnail = await videoThumbnail(file);
@@ -450,10 +516,10 @@ let store = {
                     return false;
                 }
                 // let video64 = self.imgDataUriToBase64(videoThumbnail);
-                messageContent = new VideoMessageContent(file, null, vThumbnail.split(',')[1]);
+                messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, vThumbnail.split(',')[1]);
                 break;
             case MessageContentMediaType.File:
-                messageContent = new FileMessageContent(file);
+                messageContent = new FileMessageContent(fileOrLocalPath, remotePath);
                 break;
             default:
                 return false;
@@ -547,7 +613,7 @@ let store = {
     removeConversation(conversation) {
         wfc.removeConversation(conversation, false);
         if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversation)) {
-            conversationState.currentConversationInfo = null;
+            this.setCurrentConversationInfo(null);
         }
         this._loadDefaultConversationList();
     },
@@ -601,6 +667,18 @@ let store = {
         return info;
     },
 
+    addDownloadingMessage(messageId) {
+        conversationState.downloadingMessageIds.push(messageId);
+        console.log('add downloading')
+    },
+
+    isDownloadingMessage(messageId) {
+        // web端尚未测试，先屏蔽
+        if (!isElectron()) {
+            return false;
+        }
+        return conversationState.downloadingMessageIds.indexOf(messageId) >= 0
+    },
     // contact actions
 
     _loadSelfUserInfo() {
@@ -623,7 +701,7 @@ let store = {
         requests.forEach(fr => {
             uids.push(fr.target);
         });
-        let userInfos = wfc.getUserInfos(uids, '' )
+        let userInfos = wfc.getUserInfos(uids, '')
         requests.forEach(fr => {
             let userInfo = userInfos.find((u => u.uid === fr.target));
             fr._target = userInfo;
@@ -869,6 +947,11 @@ let store = {
         miscState.isPageHidden = hidden;
     },
 
+    clearConversationUnreadStatus(conversation) {
+        wfc.clearConversationUnreadStatus(conversation);
+        this.updateTray();
+    },
+
     notify(msg) {
         let content = msg.messageContent;
         let icon = require('@/assets/images/icon.png');
@@ -882,7 +965,7 @@ let store = {
                     if (isElectron()) {
                         ipcRenderer.send('click-notification')
                     } else {
-                    window.focus();
+                        window.focus();
                     }
                     this.close();
                     this.setCurrentConversation(msg.conversation)
@@ -890,6 +973,20 @@ let store = {
             });
         }
     },
+    updateTray() {
+        if (!isElectron()) {
+            return;
+        }
+        let count = 0;
+        conversationState.conversationInfoList.forEach(info => {
+            if (info.isSilent) {
+                return;
+            }
+            let unreadCount = info.unreadCount;
+            count += unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll;
+        });
+        ipcRenderer.send('message-unread', {count: count})
+    }
 }
 
 let conversationState = store.state.conversation;

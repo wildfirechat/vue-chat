@@ -1,8 +1,8 @@
 <template>
   <div class="conversation-info">
     <div class="conversation-action-container">
-      <div @click="showCreateConversationModal" class="action">
-        <img src="@/assets/images/add.png">
+      <div @click="showCreateConversationModal" class="action-item">
+        <div class="icon">+</div>
         <p>添加成员</p>
       </div>
     </div>
@@ -79,29 +79,42 @@ export default {
 
 <style lang="css" scoped>
 .conversation-info {
-  height: 100%;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
   position: relative;
+  justify-content: flex-start;
+  height: 100%;
+  overflow: hidden;
 }
 
-.action {
+.action-item {
   height: 50px;
   display: flex;
   padding-left: 20px;
   align-items: center;
 }
 
-.action img {
+.action-item .icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  border: 1px dashed #d6d6d6;
+}
+
+.action-item img {
   width: 40px;
   height: 40px;
 }
 
-.action p {
+.action-item p {
   margin-left: 10px;
   font-size: 13px;
 }
 
-.action:active {
+.action-item:active {
   background-color: #d6d6d6;
 }
 

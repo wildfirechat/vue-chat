@@ -11,17 +11,26 @@
                :placeholder="groupAnnouncement">
       </label>
     </header>
-    <div class="search-container">
-      <input type="text" placeholder="搜索">
+    <div class="member-container">
+      <div class="search-item">
+        <input type="text" placeholder="搜索">
+      </div>
+      <div v-if="enableAddGroupMember" @click="showCreateConversationModal" class="action-item">
+        <div class="icon">+</div>
+        <p>添加成员</p>
+      </div>
+      <div v-if="enableRemoveGroupMember" @click="showRemoveGroupMemberModal" class="action-item">
+        <div class="icon">-</div>
+        <p>移除成员</p>
+      </div>
+      <UserListVue :users="users"
+                   :show-category-label="false"
+                   :padding-left="'20px'"
+      />
     </div>
-    <div @click="showCreateConversationModal" class="action">
-      <img src="@/assets/images/add.png" alt="">
-      <p>添加成员</p>
+    <div @click="quitGroup" class="quit-group-item">
+      退出群聊
     </div>
-    <UserListVue :users="users"
-                 :show-category-label="false"
-                 :padding-left="'20px'"
-    />
   </div>
 </template>
 
@@ -32,6 +41,8 @@ import store from "@/store";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import wfc from "@/wfc/client/wfc";
 import axios from "axios";
+import GroupMemberType from "@/wfc/model/groupMemberType";
+import GroupType from "@/wfc/model/groupType";
 
 export default {
   name: "GroupConversationInfoView",
@@ -85,6 +96,41 @@ export default {
             'closed': closed,
           })
     },
+
+    showRemoveGroupMemberModal() {
+      let beforeOpen = (event) => {
+        console.log('Opening...')
+      };
+      let beforeClose = (event) => {
+        console.log('Closing...', event, event.params)
+        if (event.params.confirm) {
+          let newPickedUsers = event.params.users;
+          let ids = newPickedUsers.map(u => u.uid);
+          wfc.kickoffGroupMembers(this.conversationInfo.conversation.target, ids, [0])
+        }
+      };
+      let closed = (event) => {
+        console.log('Close...', event)
+      };
+      let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
+      this.$modal.show(
+          PickUserView,
+          {
+            users: groupMemberUserInfos,
+            confirmTitle: '移除',
+          }, {
+            name: 'pick-user-modal',
+            width: 600,
+            height: 480,
+            clickToClose: false,
+          }, {
+            'before-open': beforeOpen,
+            'before-close': beforeClose,
+            'closed': closed,
+          })
+
+    },
+
     showUserInfo(user) {
       console.log('todo show userInfo', user);
     },
@@ -99,21 +145,44 @@ export default {
         this.groupAnnouncement = '点击编辑群公告';
       }
     },
+
+    quitGroup() {
+      store.quitGroup(this.conversationInfo.conversation.target)
+    },
   },
 
   created() {
     this.getGroupAnnouncement();
   },
 
-  computed: {}
+  computed: {
+    enableAddGroupMember() {
+      let selfUid = wfc.getUserId();
+      let groupInfo = this.conversationInfo.conversation._target;
+      if (groupInfo.type === GroupType.Restricted) {
+        let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
+        return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
+      }
+      return true;
+    },
+
+    enableRemoveGroupMember() {
+      let selfUid = wfc.getUserId();
+      let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
+      return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
+    }
+  }
 };
 </script>
 
 <style lang="css" scoped>
 .conversation-info {
-  height: 100%;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
   position: relative;
+  justify-content: flex-start;
+  height: 100%;
+  overflow: hidden;
 }
 
 header {
@@ -151,34 +220,62 @@ header label input {
   background-color: transparent;
 }
 
-.search-container {
+.member-container {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.search-item {
   padding: 10px 20px;
 }
 
-.search-container input {
+.search-item input {
   width: 100%;
   padding: 1px 5px;
 }
 
-.action {
+.action-item {
   height: 50px;
   display: flex;
   padding-left: 20px;
   align-items: center;
 }
 
-.action img {
+.action-item .icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  border: 1px dashed #d6d6d6;
+}
+
+.action-item img {
   width: 40px;
   height: 40px;
 }
 
-.action p {
+.action-item p {
   margin-left: 10px;
   font-size: 13px;
 }
 
-.action:active {
+.action-item:active {
   background-color: #d6d6d6;
+}
+
+.quit-group-item {
+  display: flex;
+  color: red;
+  align-items: center;
+  justify-content: center;
+  height: 55px;
+  border-top: 1px solid #ececec;
+}
+
+.quit-group-item:active {
+  background: #d6d6d6;
 }
 
 </style>

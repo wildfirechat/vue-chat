@@ -2,6 +2,8 @@
   <div class="video-content-container">
     <video @click.prevent="preview(message)" preload="metadata"
            controls
+           draggable="true"
+           @dragstart="dragVideo($event)"
            controlsList="nodownload"
            disablePictureInPicture
            :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail"
@@ -25,6 +27,11 @@ export default {
     preview(message) {
       console.log('preview', message);
       store.previewMessage(message, false);
+    },
+
+    dragVideo(event) {
+      let video = this.message.messageContent;
+      event.dataTransfer.setData('URL', video.remotePath)
     }
   }
 }

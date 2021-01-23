@@ -35,8 +35,13 @@
         </div>
         <nav class="menu">
           <ul>
-            <li><i class="icon-ion-ios-chatboxes" v-bind:class="{active : this.$router.currentRoute.path === '/home'}"
-                   @click="go2Conversation"></i></li>
+            <li>
+              <div class="menu-item">
+                <i class="icon-ion-ios-chatboxes" v-bind:class="{active : this.$router.currentRoute.path === '/home'}"
+                   @click="go2Conversation"></i>
+                <em v-show="unread > 0" class="badge">{{ unread > 99 ? '99' : unread }}</em>
+              </div>
+            </li>
             <li><i class="icon-ion-ios-contact"
                    v-bind:class="{active : this.$router.currentRoute.path === '/home/contact'}"
                    @click="go2Contact"></i></li>
@@ -44,24 +49,6 @@
               <i class="icon-ion-android-settings"
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
                  @click="go2Setting"></i>
-              <!--              <div>-->
-              <!--                <tippy to="testTrigger1"-->
-              <!--                       interactive-->
-              <!--                       :animate-fill="false"-->
-              <!--                       placement="right-end"-->
-              <!--                       distant="7"-->
-              <!--                       theme="light"-->
-              <!--                       animation="fade"-->
-              <!--                       trigger="click"-->
-              <!--                       arrow>-->
-              <!--                  <div class="user-info-container">-->
-              <!--                    <h3>Header</h3>-->
-              <!--                    <p style="color: black"> TODO - data binding</p>-->
-              <!--                    <button @click="test">Click</button>-->
-              <!--                  </div>-->
-              <!--                </tippy>-->
-              <!--                <i class="icon-ion-ios-settings-strong" name="testTrigger1"></i>-->
-              <!--              </div>-->
             </li>
           </ul>
         </nav>
@@ -86,6 +73,7 @@ export default {
     return {
       sharedContactState: store.state.contact,
       sharedMiscState: store.state.misc,
+      shareConversationState: store.state.conversation,
     };
   },
 
@@ -127,6 +115,21 @@ export default {
         }
       }
     }
+  },
+
+  computed: {
+    unread() {
+      let count = 0;
+      this.shareConversationState.conversationInfoList.forEach(info => {
+        if (info.isSilent) {
+          return;
+        }
+        let unreadCount = info.unreadCount;
+        count += unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll;
+      });
+      return count;
+    }
+
   },
 
   created() {
@@ -202,6 +205,24 @@ export default {
   margin-bottom: 20px;
 }
 
+.menu .menu-item {
+  position: relative;
+}
+
+.menu .menu-item .badge {
+  position: absolute;
+  color: white;
+  font-size: 10px;
+  background-color: red;
+  border-radius: 8px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-style: normal;
+  text-align: center;
+  right: -12px;
+  top: 4px;
+}
 
 i {
   font-size: 24px;

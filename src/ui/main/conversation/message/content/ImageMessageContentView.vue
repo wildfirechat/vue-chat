@@ -1,8 +1,9 @@
 <template>
-  <div class="sticker-content-container">
+  <div class="image-content-container">
     <img v-show="imageLoaded === false" @click="preview(message)"
          v-bind:src="'data:video/jpeg;base64,' + message.messageContent.thumbnail">
     <img v-show="imageLoaded" @click="preview(message)" @load="onImageLoaded"
+         draggable="true"
          v-bind:src="message.messageContent.remotePath">
   </div>
 </template>
@@ -37,14 +38,14 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.sticker-content-container {
+.image-content-container {
   margin: 0 10px;
   position: relative;
   border: 1px solid #efefef;
   border-radius: 5px;
 }
 
-.sticker-content-container img {
+.image-content-container img {
   max-height: 400px;
   max-width: 400px;
   border-radius: 5px;

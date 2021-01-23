@@ -108,8 +108,9 @@ export default {
       } else {
         pickedUsers = this.sharedPickState.users;
       }
+      let users = [...pickedUsers];
       this.sharedPickState.users.length = 0
-      this.$modal.hide('pick-user-modal', {confirm: true, users: pickedUsers})
+      this.$modal.hide('pick-user-modal', {confirm: true, users: users})
     },
   },
 

@@ -9,7 +9,7 @@
     <div class="conversation-item">
       <div class="header">
         <img class="avatar" :src="conversationInfo.conversation._target.portrait" alt=""/>
-        <em v-if="unread > 0" class="badge">{{ unread }}</em>
+        <em v-if="unread > 0" class="badge" v-bind:class="{silent:conversationInfo.isSilent}">{{ unread }}</em>
       </div>
       <div class="content-container">
         <div class="title-time-container">
@@ -17,7 +17,7 @@
           <p class="time single-line">{{ conversationInfo._timeStr }}</p>
         </div>
         <div class="content">
-          <p class="draft single-line" v-if="shouldShowDraft">{{ draft }}</p>
+          <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
           <p class="message single-line" v-else>
             {{ lastMessageContent }}</p>
           <i v-if="conversationInfo.isSilent" class="icon-ion-android-volume-mute"></i>
@@ -32,6 +32,9 @@ import ConversationInfo from "@/wfc/model/conversationInfo";
 import ConversationType from "@/wfc/model/conversationType";
 import store from "@/store";
 import Draft from "@/ui/util/draft";
+import FileMessageContent from "@/wfc/messages/fileMessageContent";
+import Message from "@/wfc/messages/message";
+import wfc from "@/wfc/client/wfc";
 
 export default {
   name: "ConversationItemView",
@@ -49,7 +52,6 @@ export default {
   },
   methods: {
     dragEvent(e, v) {
-      console.log('ci', this.dragAndDropEnterCount)
       if (v === 'dragenter') {
         this.dragAndDropEnterCount++;
       } else if (v === 'dragleave') {
@@ -63,8 +65,19 @@ export default {
           }
         } else {
           // TODO
-          // toast
-          console.log('一次最多发送5个文件');
+          let url = e.dataTransfer.getData('URL');
+          if (url) {
+            store.sendFile(this.conversationInfo.conversation, url);
+          } else {
+            let text = e.dataTransfer.getData('text');
+            if (text.startsWith('{')) {
+              let obj = JSON.parse(text);
+              let file = new FileMessageContent(null, obj.url, obj.name, obj.size)
+              let message = new Message(this.conversationInfo.conversation, file)
+              wfc.sendMessage(message);
+            }
+          }
+          console.log('一次最多发送5个文件', e.dataTransfer, e.dataTransfer.getData('URL'));
         }
       } else if (v === 'dragover') {
         // If not st as 'copy', electron will open the drop file
@@ -81,6 +94,7 @@ export default {
         return info.conversation._target.name;
       }
     },
+
     shouldShowDraft() {
       if (this.shareConversationState.currentConversationInfo && this.shareConversationState.currentConversationInfo.conversation.equal(this.conversationInfo.conversation)) {
         return false;
@@ -105,11 +119,9 @@ export default {
       let conversationInfo = this.conversationInfo;
       return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest(conversationInfo.lastMessage) : '';
     },
+
     unread() {
       let conversationInfo = this.conversationInfo;
-      if (conversationInfo.isSilent) {
-        return 0;
-      }
       let unreadCount = conversationInfo.unreadCount;
       return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
     }
@@ -167,6 +179,12 @@ export default {
   text-align: center;
   right: 8px;
   top: 8px;
+}
+
+.header .badge.silent {
+  width: 8px;
+  height: 8px;
+  font-size: 0;
 }
 
 .content-container {

@@ -55,10 +55,10 @@ export default {
       root.style.setProperty('--main-margin-right', '0px');
       root.style.setProperty('--main-margin-top', '0px');
       root.style.setProperty('--main-margin-bottom', '0px');
+      root.style.setProperty('--home-menu-padding-top', '60px')
     }
     if (this.sharedMiscState.isElectronWindows) {
       root.style.setProperty('--main-border-radius', '0px')
-      root.style.setProperty('--home-menu-padding-top', '60px')
     }
   },
 

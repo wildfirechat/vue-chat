@@ -17,6 +17,7 @@
           <input ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                  style="display: none">
         </li>
+        <li v-if="sharedMiscState.isElectron"><i id="screenShot" @click="screenShot" class="icon-ion-scissors"></i></li>
       </ul>
       <ul>
         <li><i @click="startAudioCall" class="icon-ion-ios-telephone"></i></li>
@@ -61,6 +62,7 @@ import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import {ipcRenderer, isElectron} from "@/platform";
+
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
 let lastQuotedMessage = null;
@@ -76,8 +78,9 @@ export default {
   },
   data() {
     return {
-      shareConversationState: store.state.conversation,
-      shareContactState: store.state.contact,
+      sharedConversationState: store.state.conversation,
+      sharedContactState: store.state.contact,
+      sharedMiscState: store.state.misc,
       showEmojiDialog: false,
       tribute: null,
       mentions: [],
@@ -204,7 +207,7 @@ export default {
 
       if (message && message.trim()) {
         let textMessageContent = this.handleMention(message);
-        let quotedMessage = this.shareConversationState.quotedMessage;
+        let quotedMessage = this.sharedConversationState.quotedMessage;
         if (quotedMessage) {
           let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
           textMessageContent.setQuoteInfo(quoteInfo);
@@ -221,6 +224,10 @@ export default {
     toggleEmojiView() {
       this.showEmojiDialog = !this.showEmojiDialog;
       this.focusInput();
+    },
+
+    screenShot() {
+      ipcRenderer.send('screenshots-start', {});
     },
 
     hideEmojiView(e) {
@@ -317,8 +324,8 @@ export default {
           PickUserView,
           {
             users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true),
-            initialCheckedUsers: [this.shareContactState.selfUserInfo],
-            uncheckableUsers: [this.shareContactState.selfUserInfo],
+            initialCheckedUsers: [this.sharedContactState.selfUserInfo],
+            uncheckableUsers: [this.sharedContactState.selfUserInfo],
             confirmTitle: '确定',
           }, {
             name: 'pick-user-modal',
@@ -455,8 +462,11 @@ export default {
 
     storeDraft(conversation, quotedMessage) {
       let draftText = this.$refs['input'].innerHTML.trim();
-      Draft.setConversationDraft(conversation, draftText, quotedMessage)
+      if (draftText !== this.conversationInfo.draft) {
+        Draft.setConversationDraft(conversation, draftText, quotedMessage)
+      }
     },
+
   },
 
   activated() {
@@ -493,8 +503,8 @@ export default {
 
   computed: {
     quotedMessage() {
-      lastQuotedMessage = this.shareConversationState.quotedMessage;
-      return this.shareConversationState.quotedMessage;
+      lastQuotedMessage = this.sharedConversationState.quotedMessage;
+      return this.sharedConversationState.quotedMessage;
     }
   },
 

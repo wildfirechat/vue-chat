@@ -1,9 +1,9 @@
 <template>
   <div class="file-message-container"
-       @click="downloadFile"
+       @click="clickFile"
        v-bind:class="{out:message.direction === 0}">
     <img :src="fileIcon" alt="">
-    <div class="flex-column flex-align-start">
+    <div class="flex-column flex-align-start" draggable="true" @dragstart="dragFile($event)">
       <p class="file-name">{{ this.message.messageContent.name }}</p>
       <p class="file-size single-line">{{ size }}</p>
     </div>
@@ -14,6 +14,8 @@
 import Message from "@/wfc/messages/message";
 import helper from "@/ui/util/helper";
 import {downloadFile} from "@/platformHelper";
+import {fs, isElectron, shell} from "@/platform";
+import store from "@/store";
 
 export default {
   name: "FileMessageContentView",
@@ -23,10 +25,40 @@ export default {
       required: true,
     }
   },
-  methods: {
-    downloadFile() {
-      downloadFile(this.message)
+  data() {
+    return {
+      sharedConversationState: store.state.conversation,
     }
+  },
+  methods: {
+    clickFile() {
+      if (isElectron()) {
+        let localPath = this.message.messageContent.localPath;
+        if (localPath && fs.existsSync(localPath)) {
+          shell.openItem(localPath);
+        } else {
+          if (!this.message.isDownloading) {
+            downloadFile(this.message)
+            store.addDownloadingMessage(this.message.messageId)
+          } else {
+            // TODO toast 下载中
+            console.log('file isDownloading')
+          }
+        }
+      } else {
+        downloadFile(this.message)
+      }
+    },
+
+    dragFile(event) {
+      let file = this.message.messageContent;
+      let fileObj = {
+        url: file.remotePath,
+        name: file.name,
+        size: file.size
+      }
+      event.dataTransfer.setData('text', JSON.stringify(fileObj))
+    },
   },
   mounted() {
     console.log('file message', this.message)
@@ -40,7 +72,7 @@ export default {
       let fileName = this.message.messageContent.name;
       let icon = helper.getFiletypeIcon(fileName.substring(fileName.lastIndexOf('.') + 1))
       return require("@/assets/images/filetypes/" + icon);
-    }
+    },
   }
 }
 </script>
@@ -55,7 +87,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  max-width: 80%;
+  max-width: 500px;
   min-width: 150px;
 }
 
@@ -63,6 +95,7 @@ export default {
   width: 32px;
   height: 32px;
   margin-right: 10px;
+  min-width: 32px;
   border-radius: 3px;
 }
 

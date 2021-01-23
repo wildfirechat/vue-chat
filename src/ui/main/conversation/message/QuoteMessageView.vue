@@ -145,6 +145,18 @@ export default {
   margin-right: 10px;
 }
 
+.quoted-message > p{
+  max-width: 100%;
+  max-height: 50px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  outline: none;
+}
+
 .other-content p {
   max-width: 100%;
   max-height: 50px;
