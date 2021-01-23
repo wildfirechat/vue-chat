@@ -20,6 +20,7 @@ import PersistFlag from "@/wfc/messages/persistFlag";
 import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
 import {ipcRenderer, isElectron} from "@/platform";
+import SearchType from "@/wfc/model/searchType";
 
 /**
  * 一些说明
@@ -75,6 +76,7 @@ let store = {
         search: {
             query: null,
             show: false,
+            userSearchResult: [],
             contactSearchResult: [],
             groupSearchResult: [],
             conversationSearchResult: [],
@@ -794,13 +796,27 @@ let store = {
             searchState.groupSearchResult = this.searchFavGroup(query);
             searchState.conversationSearchResult = this.searchConversation(query);
             searchState.messageSearchResult = this.searchMessage(query);
+            this.searchUser(query);
 
         } else {
-            searchState.contactSearchResult.length = 0;
-            searchState.conversationSearchResult.length = 0;
-            searchState.groupSearchResult.length = 0;
-            searchState.messageSearchResult.length = 0;
+            searchState.contactSearchResult = [];
+            searchState.conversationSearchResult = [];
+            searchState.groupSearchResult = [];
+            searchState.messageSearchResult = [];
+            searchState.userSearchResult = [];
         }
+    },
+
+    searchUser(query) {
+        wfc.searchUser(query, SearchType.General, 0, ((keyword, userInfos) => {
+            if (searchState.query === keyword) {
+                searchState.userSearchResult = userInfos;
+            }
+        }), (err) => {
+            if (searchState.query === query) {
+                searchState.userSearchResult = [];
+            }
+        });
     },
 
     // TODO 到底是什么匹配了
