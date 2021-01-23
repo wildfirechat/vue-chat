@@ -122,6 +122,7 @@ let store = {
             this._loadCurrentConversationMessages();
             this._loadFriendList();
             this._loadFriendRequest();
+            this._loadSelfUserInfo();
             // TODO 其他相关逻辑
         });
 

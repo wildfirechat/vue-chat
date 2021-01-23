@@ -70,7 +70,7 @@ import ClickOutside from "vue-click-outside";
 import store from "@/store";
 import Conversation from "@/wfc/model/conversation";
 import ConversationType from "@/wfc/model/conversationType";
-import wfc from "@/wfc/client/wfc";
+import FriendRequestView from "@/ui/main/contact/FriendRequestView";
 
 export default {
   name: "SearchResultView",
@@ -113,8 +113,18 @@ export default {
 
   methods: {
     addFriend(user) {
-      // TODO
-      wfc.sendFriendRequest(user.uid, '你好')
+      this.$modal.show(
+          FriendRequestView,
+          {
+            user: user,
+          },
+          {
+            name: 'friend-request-modal',
+            width: 600,
+            height: 250,
+            clickToClose: false,
+          }, {
+          })
     },
     showAllUser() {
       this.shouldShowAllUser = true;
