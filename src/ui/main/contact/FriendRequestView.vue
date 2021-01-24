@@ -1,10 +1,10 @@
 <template>
   <div class="friend-request-container" @click.stop="">
-    <img class="avatar" :src="user.portrait" alt="">
+    <img class="avatar" :src="userInfo.portrait" alt="">
     <div class="info-action-container">
       <div class="info-container">
         <p class="title">好友请求</p>
-        <p class="desc">向{{ user.displayName }}发送好友请求</p>
+        <p class="desc">向{{ userInfo.displayName }}发送好友请求</p>
       </div>
       <label>
         <input type="text" :placeholder="defaultReason" v-model="reason">
@@ -25,7 +25,7 @@ import store from "@/store";
 export default {
   name: "FriendRequestView",
   props: {
-    user: {
+    userInfo: {
       type: Object,
       required: true,
     }
@@ -41,9 +41,9 @@ export default {
       this.$modal.hide('friend-request-modal')
     },
     invite() {
-      wfc.sendFriendRequest(this.user.uid, this.reason, () => {
+      wfc.sendFriendRequest(this.userInfo.uid, this.reason, () => {
         // TODO
-        console.log('send friendRequest success', this.user.uid)
+        console.log('send friendRequest success', this.userInfo.uid)
       }, (err) => {
         // TODO
       });

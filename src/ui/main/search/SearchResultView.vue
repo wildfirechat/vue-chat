@@ -116,7 +116,7 @@ export default {
       this.$modal.show(
           FriendRequestView,
           {
-            user: user,
+            userInfo: user,
           },
           {
             name: 'friend-request-modal',

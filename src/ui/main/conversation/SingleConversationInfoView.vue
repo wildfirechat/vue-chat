@@ -55,6 +55,7 @@ export default {
           })
     },
     showUserInfo(user) {
+      // TODO
       console.log('todo show userInfo', user);
     },
     beforeOpen(event) {

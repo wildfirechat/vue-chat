@@ -22,9 +22,10 @@
                   trigger="click"
                   :style="tippyStyleFix"
               >
-                <UserCardView :user-info="user"/>
+                <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
               </tippy>
               <div class="content"
+                   :ref="'userCardTippy-'+user.uid"
                    :name="'user-'+user.uid"
                    :style="paddingStyle"
                    v-bind:class="{active: sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
@@ -96,6 +97,9 @@ export default {
     tippyStyleReset() {
       let root = document.documentElement;
       root.style.setProperty('--tippy-right', '0');
+    },
+    closeUserCard(user) {
+      this.$refs["userCardTippy-" + user.uid][0]._tippy.hide();
     }
 
   },

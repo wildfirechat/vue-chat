@@ -85,7 +85,7 @@ export default {
   },
   methods: {
     closeUserCard() {
-      console.log('closeUserCard')
+      console.log('closeUserCard', this.$refs["userCardTippy"]);
       this.$refs["userCardTippy"]._tippy.hide();
     },
     resend() {

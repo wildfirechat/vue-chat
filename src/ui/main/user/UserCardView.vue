@@ -2,7 +2,7 @@
   <section @click.stop="" class="user-info-container">
     <div class="header">
       <div class="desc">
-        <h2>{{ userInfo._displayName}}</h2>
+        <h2>{{ userInfo._displayName }}</h2>
         <label>野火ID: {{ userInfo.name }}</label>
       </div>
       <div>
@@ -29,16 +29,18 @@
     </div>
     <div class="action">
       <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>
-      <a href="#"><i class="icon-ion-ios-chatboxes" @click="chat"></i></a>
+      <a v-if="isFriend" href="#"><i class="icon-ion-ios-chatboxes" @click="chat"></i></a>
+      <a v-if="!isFriend" href="#"><i class="icon-ion-person-add" @click="addFriend"></i></a>
     </div>
   </section>
 </template>
 
 <script>
-import UserInfo from "@/wfc/model/userInfo";
 import store from "@/store";
 import Conversation from "@/wfc/model/conversation";
 import ConversationType from "@/wfc/model/conversationType";
+import FriendRequestView from "@/ui/main/contact/FriendRequestView";
+import wfc from "@/wfc/client/wfc";
 
 export default {
   name: "UserCardView",
@@ -59,8 +61,29 @@ export default {
       this.close();
     },
 
+    addFriend() {
+      this.close();
+      this.$modal.show(
+          FriendRequestView,
+          {
+            userInfo: this.userInfo,
+          },
+          {
+            name: 'friend-request-modal',
+            width: 600,
+            height: 250,
+            clickToClose: false,
+          }, {})
+    },
+
     close() {
       this.$emit('close');
+    }
+  },
+
+  computed: {
+    isFriend() {
+      return wfc.isMyFriend(this.userInfo.uid)
     }
   }
 };
@@ -147,6 +170,7 @@ export default {
 
 .action a {
   display: inline-block;
+  text-decoration: none;
 }
 
 .action a i {
