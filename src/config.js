@@ -10,7 +10,7 @@ export default class Config {
     // 打开voip调试模式时，voip window不会自动关闭，方便分析控制台日志，需要手动关闭。
     static ENABLE_VOIP_DEBUG_MODE = false;
 
-    static DEFAULT_PORTRAIT_URL = 'https://static.wildfirechat.cn/user-fallback.png';
+    static DEFAULT_PORTRAIT_URL = 'https://static.wildfirechat.net/user-fallback.png';
     // 如果需要支持音视频通话功能，必须全站使用https(包括app server和im server) + wss，
     // WebSockets over SSL/TLS，启用https时，一定要配置为true；不启用https，一定要为false
     // 置为true时，请确保 IM SERVER 支持https访问。IM SERVER本身不能处理https请求，一般是通过在IM SERVER前面加上nginx之类的负载均衡器来实现https支持
@@ -24,19 +24,19 @@ export default class Config {
     static ROUTE_PORT = 443;
 
     // IM SERVER的HOST，是域名或者ip，没有http等前缀!
-    static IM_SERVER_HOST = 'wildfirechat.cn';
+    static IM_SERVER_HOST = 'wildfirechat.net';
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://app.wildfirechat.cn';
+    static APP_SERVER = 'https://app.wildfirechat.net';
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
     // turn server 配置，可以添加多个
-    static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.cn:3478', userName: 'wfchat', password: 'wfchat'}];
+    static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.net:3478', userName: 'wfchat', password: 'wfchat'}];
     static LANGUAGE = 'zh_CN';
 
     // appId和appKey和专业版im server是绑定的，一定要做对应修改
     static WEB_APP_ID = 'web_12345678';
-    static WEB_APP_KEY = '44889f61b0c4908761953fd178451b4e80308368';
+    static WEB_APP_KEY = '6f8348670cb11cf434451bc9e7ba72eeaf3452c8';
 
     static MESSAGE_ROAMING = 1;
     // 拉取最近2小时的消息
@@ -68,7 +68,7 @@ export default class Config {
     // html5 audio 标签不能播放amr格式的音频，需要将amr格式转换为mp3格式
     // 本服务传入amr音频文件的地址，将音频文件转换为mp3格式，并以application/octet-stream的格式返回
     // 如果语音消息很多，建议使用cdn
-    static AMR_TO_MP3_SERVER_ADDRESS = 'https://app.wildfirechat.cn/amr2mp3?path=';
+    static AMR_TO_MP3_SERVER_ADDRESS = 'https://app.wildfirechat.net/amr2mp3?path=';
 
     // 发送消息超时时间，超时之后，认为当前连接已不可用，将进行重连，单位是秒。没有特殊需求不，不建议修改
     static SEND_MESSAGE_TIMEOUT = 20;
