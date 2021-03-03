@@ -167,7 +167,12 @@ export default {
         this.selfUserInfo._stream = stream;
       };
 
+      sessionCallback.didParticipantConnected = (userId) =>{
+        console.log('didParticipantConnected', userId)
+      }
+
       sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
+        console.log('didReceiveRemoteVideoTrack', userId)
         let p;
         for (let i = 0; i < this.participantUserInfos.length; i++) {
           p = this.participantUserInfos[i];
