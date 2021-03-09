@@ -1,50 +1,50 @@
 <template>
+  <section>
+    <ul>
+      <li v-for="msg in messages" :key="msg.messageId">
   <div class="message-container">
-    <p class="text" v-html="this.textContent"></p>
+          <img src="@/assets/images/user-fallback.png" alt="" class="avatar">
+          <div>
+            <div class="message-sender-time">
+              <p class="sender">消息发送者</p>
+              <p class="time">2021/2/3 11:44</p>
   </div>
+            <div class="message-content-container">
+              <img v-if="msg.type === 3" class="image" src="@/assets/images/user-fallback.png" alt="">
+              <p v-else-if="msg.type === 1" class="text">消息内容</p>
+              <!--todo more-->
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+  </section>
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
-import {parser as emojiParse} from "@/ui/util/emoji";
 
 export default {
-  name: "previewMessageView",
+  name: "PreviewMessageView",
   props: {
-    message: {
-      type: Message,
-      required: true,
-    }
+    title: {
+      type: String,
+      require: true,
   },
-  mounted() {
+    messages: {
+      type: Array,
+      require: true,
+    },
   },
 
   computed: {
-    textContent() {
-      return emojiParse(this.message.messageContent.digest(this.message))
+    computedMessages() {
+      // TODO show avatar or not
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
-.message-container {
-  padding: 5px;
-  max-height: 400px;
-  max-width: 400px;
-  overflow: auto;
-  position: relative;
-}
-
-.message-container p {
-  user-select: text;
-  white-space: pre-line;
-  text-align: left;
-}
-
-.message-container .text {
-  color: #050505;
-  font-size: 16px;
-}
+<style scoped>
 
 </style>

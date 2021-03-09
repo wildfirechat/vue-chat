@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
-                                      v-if="sharedMiscState.isElectronWindows"/>
+                                      v-if="sharedMiscState.isElectronWindowsOrLinux"/>
     <div class="home">
       <section class="menu-container">
         <div>
@@ -17,18 +17,16 @@
               trigger="click"
               arrow
           >
-            <UserCardView v-on:close="closeUserCard" :user-info="sharedContactState.selfUserInfo"/>
-            <!--            <div class="user-info-container">-->
-            <!--              <h3>Header</h3>-->
-            <!--              <p style="color: black">TODO - data binding</p>-->
-            <!--              <button @click="test">Click</button>-->
-            <!--            </div>-->
+            <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
+                          :user-info="sharedContactState.selfUserInfo"/>
           </tippy>
 
           <a href="#"><img
+              v-if="sharedContactState.selfUserInfo"
               ref="userCardTippy"
               name="infoTrigger"
               class="avatar"
+              draggable="false"
               :src="sharedContactState.selfUserInfo.portrait"
               alt=""
           /></a>
@@ -42,9 +40,19 @@
                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '99' : unread }}</em>
               </div>
             </li>
-            <li><i class="icon-ion-ios-contact"
+            <li><i class="icon-ion-android-contact"
                    v-bind:class="{active : this.$router.currentRoute.path === '/home/contact'}"
                    @click="go2Contact"></i></li>
+            <li v-if="sharedMiscState.isElectron">
+              <i class="icon-ion-android-favorite"
+                 v-bind:class="{active : this.$router.currentRoute.path === '/home/fav'}"
+                 @click="go2Fav"></i>
+            </li>
+            <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
+              <i class="icon-ion-ios-folder"
+                 v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
+                 @click="go2Files"></i>
+            </li>
             <li>
               <i class="icon-ion-android-settings"
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
@@ -56,6 +64,8 @@
       <keep-alive>
         <router-view :key="$route.fullPath"></router-view>
       </keep-alive>
+      <div class="drag-area" :style="dragAreaLeft"></div>
+      <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
     </div>
   </div>
 </template>
@@ -67,6 +77,8 @@ import wfc from "@/wfc/client/wfc";
 import EventType from "@/wfc/client/wfcEvent";
 import ConnectionStatus from "@/wfc/client/connectionStatus";
 import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
+import {removeItem, storage} from "@/ui/util/storageHelper";
+import {BrowserWindow} from "@/platform";
 
 export default {
   data() {
@@ -74,6 +86,8 @@ export default {
       sharedContactState: store.state.contact,
       sharedMiscState: store.state.misc,
       shareConversationState: store.state.conversation,
+      isSetting: false,
+      fileWindow: null,
     };
   },
 
@@ -83,18 +97,68 @@ export default {
         return
       }
       this.$router.replace("/home");
+      this.isSetting = false;
     },
     go2Contact() {
       if (this.$router.currentRoute.path === '/home/contact') {
         return;
       }
       this.$router.replace("/home/contact");
+      this.isSetting = false;
+    },
+    go2Fav() {
+      if (this.$router.currentRoute.path === '/home/fav') {
+        return;
+      }
+      this.$router.replace("/home/fav");
+      this.isSetting = false;
+    },
+    go2Files() {
+      if (this.fileWindow) {
+        this.fileWindow.show();
+        this.fileWindow.focus();
+        return;
+      }
+      let win = new BrowserWindow(
+          {
+            width: 800,
+            height: 730,
+            minWidth: 640,
+            minHeight: 400,
+            resizable: true,
+            maximizable: true,
+            webPreferences: {
+              scrollBounce: false,
+              nativeWindowOpen: true,
+              nodeIntegration: true,
+            },
+          }
+      );
+      this.fileWindow = win;
+
+      // win.webContents.openDevTools();
+      win.on('close', () => {
+        this.fileWindow = null;
+      });
+
+      // win.loadURL(path.join('file://', AppPath, 'src/index.html?' + type));
+      let hash = window.location.hash;
+      let url = window.location.origin;
+      if (hash) {
+        url = window.location.href.replace(hash, '#/files');
+      } else {
+        url += "/files"
+      }
+      win.loadURL(url);
+      console.log('files windows url', url)
+      win.show();
     },
     go2Setting() {
       if (this.$router.currentRoute.path === '/home/setting') {
         return;
       }
       this.$router.push({path: "/home/setting"});
+      this.isSetting = true;
     },
 
     closeUserCard() {
@@ -107,14 +171,22 @@ export default {
           || status === ConnectionStatus.ConnectionStatusLogout
           || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
           || status === ConnectionStatus.ConnectionStatusTokenIncorrect
-          || status === ConnectionStatus.ConnectionStatusUnconnected
+          // TODO 断网时，显示网络断开状态
+          // || status === ConnectionStatus.ConnectionStatusUnconnected
           || wfc.getUserId() === '') {
 
         if (this.$router.currentRoute.path !== '/') {
           this.$router.push({path: "/"});
         }
+        if (status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
+            || status === ConnectionStatus.ConnectionStatusLogout
+            || status === ConnectionStatus.ConnectionStatusTokenIncorrect
+            || status === ConnectionStatus.ConnectionStatusRejected) {
+          removeItem("userId");
+          removeItem('token')
+        }
       }
-    }
+    },
   },
 
   computed: {
@@ -125,9 +197,21 @@ export default {
           return;
         }
         let unreadCount = info.unreadCount;
-        count += unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll;
+        count += unreadCount.unread;
       });
       return count;
+    },
+    dragAreaLeft() {
+      // 68为左边菜单栏的宽度，250为会话列表的宽度
+      if (this.isSetting) {
+        return {
+          left: '68px'
+        }
+      } else {
+        return {
+          left: 'calc(68px + 250px)'
+        }
+      }
     }
 
   },
@@ -161,8 +245,8 @@ export default {
 }
 
 .menu-container {
-  width: 70px;
-  min-width: 70px;
+  width: 68px;
+  min-width: 68px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -225,16 +309,38 @@ export default {
 }
 
 i {
-  font-size: 24px;
-  color: #000;
+  font-size: 26px;
+  color: #868686;
+  outline-color: red;
   cursor: pointer;
 }
 
 i:hover {
-  color: #34b7f1;
+  color: deepskyblue;
 }
 
 i.active {
   color: #34b7f1;
+}
+
+.drag-area {
+  position: absolute;
+  top: 0;
+  height: 60px;
+  right: 140px;
+  z-index: -1;
+  -webkit-app-region: drag;
+}
+
+.unconnected {
+  position: absolute;
+  top: 0;
+  left: 68px;
+  right: 0;
+  color: red;
+  padding: 15px 0;
+  text-align: center;
+  background: #f2f2f280;
+  box-shadow: 0 0 1px #000;
 }
 </style>

@@ -26,7 +26,7 @@
           </div>
         </div>
         <UserListVue :enable-pick="false"
-                     :users="sharedContactState.friendList"
+                     :users="sharedContactState.favContactList.concat(sharedContactState.friendList)"
                      :click-user-item-func="setCurrentUser"
                      :padding-left="'30px'"
                      v-if="sharedContactState.expandFriendList"/>

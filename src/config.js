@@ -75,6 +75,8 @@ export default class Config {
 
     // 会话过期时间，表示一个会话，自己不再参与之后，多久会过期。会话列表不展示已过期的会话；单位是天
     static CONVERSATION_EXPIRE_TIME = 30;
+    // 文件传输助手ID
+    static FILE_HELPER_ID = 'wfc_file_transfer';
 
     static getWFCPlatform() {
         if (isElectron()) {

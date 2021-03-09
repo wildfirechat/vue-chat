@@ -2,14 +2,15 @@
   <div class="pick-contact-container">
     <section class="contact-list-container">
       <div class="input-container">
-        <input type="text" placeholder="搜索">
+        <input type="text" placeholder="搜索" v-model="filterQuery">
+        <i class="icon-ion-ios-search"></i>
       </div>
       <div class="friend-list-container">
         <CheckableUserListView :enable-pick="true"
-                               :users="users"
+                               :users="filterUsers"
                                :initial-checked-users="initialCheckedUsers"
                                :uncheckable-users="uncheckableUsers"
-                               :show-category-label=showCategoryLabel
+                               :show-category-label="showCategoryLabel && !filterQuery"
                                :padding-left="'20px'"
                                enable-category-label-sticky/>
       </div>
@@ -24,7 +25,7 @@
         <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="index">
           <div class="picked-user">
             <img class="avatar" :src="user.portrait" alt="">
-            <button @click="unpick(user)" class="unpick-button">x</button>
+            <button @click="unpick(user)" class="unpick-button">X</button>
           </div>
           <span class="name single-line">{{ user.displayName }}</span>
         </div>
@@ -79,6 +80,7 @@ export default {
   data() {
     return {
       sharedPickState: store.state.pick,
+      filterQuery: '',
     }
   },
   methods: {
@@ -123,6 +125,13 @@ export default {
       return users.filter(u => {
         return this.initialCheckedUsers.findIndex(iu => iu.uid === u.uid) === -1
       })
+    },
+    filterUsers() {
+      if (this.filterQuery) {
+        return store.filterUsers(this.users, this.filterQuery);
+      } else {
+        return this.users;
+      }
     }
   },
 
@@ -146,19 +155,35 @@ export default {
 }
 
 .contact-list-container .input-container {
+  position: relative;
   display: flex;
   width: 100%;
 }
 
-.contact-list-container input {
+.input-container input {
   height: 25px;
   margin: 15px 20px 0 15px;
   flex: 1;
   border-radius: 3px;
   border: 1px solid #ededed;
   background-color: white;
-  padding-left: 10px;
+  padding-left: 20px;
   text-align: left;
+  outline: none;
+}
+
+.input-container input:active {
+  border: 1px solid #4168e0;
+}
+
+.input-container input:focus {
+  border: 1px solid #4168e0;
+}
+
+.input-container i {
+  position: absolute;
+  top: 20px;
+  left: 20px;
 }
 
 .contact-list-container .friend-list-container {
@@ -237,6 +262,7 @@ export default {
   height: 20px;
   border: 1px solid white;
   border-radius: 10px;
+  background-color: #f2f2f2;
   top: 0;
   right: 0;
 }

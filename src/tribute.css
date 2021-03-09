@@ -9,6 +9,7 @@
     overflow: auto;
     display: block;
     z-index: 999999;
+    border-radius: 5px;
     box-shadow: 0 6px 28px 0 rgba(230, 230, 230, 100);
 }
 .tribute-container ul {
@@ -24,12 +25,13 @@
     color:#000;
     display: flex;
     align-items: center;
+    background: #F0E6EA;
 }
 .tribute-container li img {
     margin-right: 5px;
 }
 .tribute-container li.highlight {
-    background: rgb(229, 165, 165);
+    background: #D8CFD2;
 }
 .tribute-container li span {
     font-weight: bold;

@@ -1,15 +1,15 @@
 <template>
   <section>
     <ul>
-      <li v-for="(groupUser) in groupedUsers" :key="groupUser.category">
+      <li v-for="(groupedUser) in groupedUsers" :key="groupedUser.category">
         <div ref="contactItem" class="contact-item">
           <div v-if="showCategoryLabel" class="label"
                :style="paddingStyle"
                v-bind:class="{sticky:enableCategoryLabelSticky}">
-            <p>{{ groupUser.category.toUpperCase() }}</p>
+            <p>{{ groupedUser.category.toUpperCase() }}</p>
           </div>
           <ul>
-            <li v-for="(user) in groupUser.users" :key="user.uid">
+            <li v-for="(user) in groupedUser.users" :key="user.uid">
               <div class="content"
                    :name="'user-'+user.uid"
                    :style="paddingStyle"
@@ -19,12 +19,11 @@
                        v-bind:value="user"
                        :disabled="isUserUncheckable(user)"
                        type="checkbox"
-                       v-model="sharedPickState.users" placeholder="">
+                       :checked="isUserChecked(user)">
                 <img class="avatar" :src="user.portrait" alt="">
                 <span
                     class="single-line"> {{
-                    user._displayName || (user.groupAlias ? user.groupAlias : (user.friendAlias ? user.friendAlias : (user.displayName ? user.displayName : '用户'))
-                    )
+                    user._displayName || (user.groupAlias ? user.groupAlias : (user.friendAlias ? user.friendAlias : (user.displayName ? user.displayName : '用户')))
                   }}</span>
               </div>
             </li>
@@ -96,6 +95,10 @@ export default {
     isUserUncheckable(user) {
       return this.uncheckableUsers && this.uncheckableUsers.findIndex(u => u.uid === user.uid) >= 0;
     },
+
+    isUserChecked(user) {
+      return store.isUserPicked(user);
+    }
   },
 
   mounted() {
@@ -119,8 +122,10 @@ export default {
         return groupedUsers;
       }
       let current = {};
+      let lastCategory = null;
       this.users.forEach((user) => {
-        if (user._category) {
+        if (!lastCategory || lastCategory !== user._category) {
+          lastCategory = user._category;
           current = {
             category: user._category,
             users: [user],

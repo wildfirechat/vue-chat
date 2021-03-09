@@ -125,7 +125,8 @@ export class AvEngineKitProxy {
 
     // 收到消息时，timestamp已经过修正，后面使用时，不用考虑和服务器的时间差
     onReceiveMessage = (msg) => {
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+        //if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+        if (!this.isSupportVoip) {
             console.log('not support voip, just ignore voip message')
             return;
         }
@@ -278,7 +279,7 @@ export class AvEngineKitProxy {
             return;
         }
         if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
-            console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
+            console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
             return;
         }
         let callId = conversation.target + Math.floor(Math.random() * 10000);
@@ -309,7 +310,8 @@ export class AvEngineKitProxy {
             console.log('voip call is ongoing');
             return;
         }
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
+        //if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
+        if (!this.isSupportVoip) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
             return;
         }
@@ -342,7 +344,7 @@ export class AvEngineKitProxy {
                     resizable: true,
                     maximizable: true,
                     webPreferences: {
-                        scrollBounce: true,
+                        scrollBounce: false,
                         nativeWindowOpen: true,
                         nodeIntegration: true,
                     },

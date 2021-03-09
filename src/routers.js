@@ -5,6 +5,8 @@ import ContactPage from './ui/main/ContactPage'
 import SettingPage from './ui/main/SettingPage'
 import Single from "@/ui/voip/Single";
 import Multi from "@/ui/voip/Multi";
+import FileRecordPage from "@/ui/main/FileRecordPage";
+import FavPage from "@/ui/main/fav/FavPage";
 
 const routers = [
     {
@@ -26,10 +28,15 @@ const routers = [
                 component: ContactPage,
             },
             {
+                path: 'fav',
+                name: 'fav',
+                component: FavPage,
+            },
+            {
                 path: 'setting',
                 name: 'setting',
                 component: SettingPage,
-            }
+            },
         ]
     },
     {
@@ -42,6 +49,11 @@ const routers = [
         path: '/voip/multi',
         component: Multi,
     },
+    {
+        name: 'files',
+        path: '/files',
+        component: FileRecordPage,
+    }
     // {
     //     name: 'voip-conference',
     //     path: '/voip/conference',

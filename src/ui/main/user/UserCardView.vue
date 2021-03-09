@@ -6,7 +6,7 @@
         <label>野火ID: {{ userInfo.name }}</label>
       </div>
       <div>
-        <img class="avatar" v-bind:src="userInfo.portrait"/>
+        <img class="avatar" draggable="false" v-bind:src="userInfo.portrait"/>
       </div>
     </div>
     <div class="content">
@@ -75,7 +75,6 @@ export default {
             clickToClose: false,
           }, {})
     },
-
     close() {
       this.$emit('close');
     }
@@ -83,7 +82,7 @@ export default {
 
   computed: {
     isFriend() {
-      return wfc.isMyFriend(this.userInfo.uid)
+      return this.userInfo.uid === wfc.getUserId() || wfc.isMyFriend(this.userInfo.uid)
     }
   }
 };

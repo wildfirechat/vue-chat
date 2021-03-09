@@ -8,18 +8,20 @@
   >
     <div class="conversation-item">
       <div class="header">
-        <img class="avatar" :src="conversationInfo.conversation._target.portrait" alt=""/>
+        <img class="avatar" draggable="false" :src="conversationInfo.conversation._target.portrait" alt=""/>
         <em v-if="unread > 0" class="badge" v-bind:class="{silent:conversationInfo.isSilent}">{{ unread }}</em>
       </div>
       <div class="content-container">
         <div class="title-time-container">
           <h2 class="title single-line">{{ conversationTitle }}</h2>
-          <p class="time single-line">{{ conversationInfo._timeStr }}</p>
+          <p class="time">{{ conversationInfo._timeStr }}</p>
         </div>
         <div class="content">
           <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
-          <p class="message single-line" v-else>
-            {{ lastMessageContent }}</p>
+          <p class="last-message-desc single-line" v-else>
+            <i v-if="conversationInfo.unreadCount && (conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll) > 0">[有人@我]</i>
+            {{ lastMessageContent }}
+          </p>
           <i v-if="conversationInfo.isSilent" class="icon-ion-android-volume-mute"></i>
         </div>
       </div>
@@ -35,6 +37,7 @@ import Draft from "@/ui/util/draft";
 import FileMessageContent from "@/wfc/messages/fileMessageContent";
 import Message from "@/wfc/messages/message";
 import wfc from "@/wfc/client/wfc";
+import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 
 export default {
   name: "ConversationItemView",
@@ -99,13 +102,16 @@ export default {
       if (this.shareConversationState.currentConversationInfo && this.shareConversationState.currentConversationInfo.conversation.equal(this.conversationInfo.conversation)) {
         return false;
       }
+      if (this.conversationInfo.unreadCount.unreadMention + this.conversationInfo.unreadCount.unreadMentionAll > 0) {
+        return false;
+      }
       let draft = Draft.getConversationDraftEx(this.conversationInfo);
-      return draft.text !== '' || draft.quotedMessage !== null;
+      return draft.text.trim() !== '' || draft.quotedMessage !== null;
     },
 
     draft() {
       let draft = Draft.getConversationDraftEx(this.conversationInfo);
-      let draftText = '[草稿]' + draft.text;
+      let draftText = '<em>[草稿]</em>' + draft.text;
       draftText = draftText.replace(/<img [:a-zA-Z0-9_+; ,\-=\/."]+>/g, '[图片]')
       draftText = draftText.replace(/&nbsp;/g, ' ');
       draftText = draftText.replace(/<br>/g, '')
@@ -117,13 +123,22 @@ export default {
 
     lastMessageContent() {
       let conversationInfo = this.conversationInfo;
-      return (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) ? conversationInfo.lastMessage.messageContent.digest(conversationInfo.lastMessage) : '';
+      if (conversationInfo.lastMessage && conversationInfo.lastMessage.messageContent) {
+
+        let senderName = '';
+        if (conversationInfo.conversation.type === 1 && conversationInfo.lastMessage.direction === 1 && !(conversationInfo.lastMessage.messageContent instanceof NotificationMessageContent)) {
+          senderName = conversationInfo.lastMessage._from._displayName + ': ';
+        }
+        return senderName + conversationInfo.lastMessage.messageContent.digest(conversationInfo.lastMessage);
+      } else {
+        return '';
+      }
     },
 
     unread() {
       let conversationInfo = this.conversationInfo;
       let unreadCount = conversationInfo.unreadCount;
-      return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
+      return unreadCount ? (unreadCount.unread) : 0;
     }
   },
 };
@@ -210,6 +225,7 @@ export default {
   font-style: normal;
   font-weight: normal;
   padding-right: 10px;
+  flex: 1;
 }
 
 .content-container .title-time-container .time {
@@ -224,13 +240,25 @@ export default {
 }
 
 .content .draft {
+  font-size: 13px;
+  height: 20px;
+}
+
+/*refer to: https://blog.csdn.net/weixin_42412046/article/details/80804285*/
+>>> .content .draft em {
   color: red;
+  font-style: normal;
+  padding-right: 5px;
+}
+
+.content .last-message-desc {
+  color: #b8b8b8;
   font-size: 13px;
 }
 
-.content .message {
-  color: #b8b8b8;
-  font-size: 13px;
+.content .last-message-desc i {
+  font-style: normal;
+  color: red;
 }
 
 .content i {

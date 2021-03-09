@@ -4,12 +4,13 @@ import EventType from "@/wfc/client/wfcEvent";
 import ConversationType from "@/wfc/model/conversationType";
 import {eq, gt, numberValue} from "@/wfc/util/longUtil";
 import helper from "@/ui/util/helper";
-import convert from 'pinyin'
+import convert from '@/vendor/pinyin'
 import GroupType from "@/wfc/model/groupType";
 import {imageThumbnail, mergeImages, videoThumbnail} from "@/ui/util/imageUtil";
 import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
 import Conversation from "@/wfc/model/conversation";
 import MessageContentType from "@/wfc/messages/messageContentType";
+import MessageStatus from '@/wfc/messages/messageStatus';
 import Message from "@/wfc/messages/message";
 import ImageMessageContent from "@/wfc/messages/imageMessageContent";
 import VideoMessageContent from "@/wfc/messages/videoMessageContent";
@@ -21,6 +22,9 @@ import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
 import {ipcRenderer, isElectron} from "@/platform";
 import SearchType from "@/wfc/model/searchType";
+import Config from "@/config";
+import {getItem, setItem} from "@/ui/util/storageHelper";
+import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
 
 /**
  * 一些说明
@@ -54,6 +58,7 @@ let store = {
 
             enableMessageMultiSelection: false,
             quotedMessage: null,
+
             downloadingMessageIds: [],
         },
 
@@ -63,12 +68,13 @@ let store = {
             currentFriend: null,
 
             expandFriendRequestList: false,
-            expandFriendList: false,
+            expandFriendList: true,
             expandGroup: false,
 
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
+            favContactList: [],
 
             selfUserInfo: null,
         },
@@ -95,23 +101,25 @@ let store = {
             connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
             isPageHidden: false,
             enableNotification: true,
-            notificationMessageDetail: true,
+            enableNotificationMessageDetail: true,
+            enableCloseWindowToExit: false,
+            enableAutoLogin: false,
             isElectron: isElectron(),
-            isElectronWindows: process && process.platform === 'win32'
-            // isElectronWindows: true,
+            isElectronWindowsOrLinux: process && (process.platform === 'win32' || process.platform === 'linux'),
+            // isElectronWindowsOrLinux: true,
+            isMainWindow: false,
+            isCommercialServer: wfc.isCommercialServer(),
         },
     },
 
-    init() {
+    init(isMainWindow) {
+        console.log('init store')
+        // 目前，通知只可能在主窗口触发
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             miscState.connectionStatus = status;
             if (status === ConnectionStatus.ConnectionStatusConnected) {
-                this._loadFavGroupList();
-                this._loadFriendList();
-                this._loadFriendRequest();
-                this._loadSelfUserInfo();
-                this._loadDefaultConversationList();
-                conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+                this._loadDefaultData();
+
                 this.updateTray();
             }
         });
@@ -126,12 +134,20 @@ let store = {
             // TODO 其他相关逻辑
         });
 
+        wfc.eventEmitter.on(EventType.SettingUpdate, () => {
+            this._loadDefaultConversationList();
+            this._loadFavContactList();
+            this._loadFavGroupList();
+            this.updateTray();
+        });
+
         wfc.eventEmitter.on(EventType.FriendRequestUpdate, (newFrs) => {
             this._loadFriendRequest();
         });
 
         wfc.eventEmitter.on(EventType.FriendListUpdate, (updatedFriendIds) => {
             this._loadFriendList();
+            this._loadFavContactList();
         });
 
         wfc.eventEmitter.on(EventType.GroupInfosUpdate, (groupInfos) => {
@@ -147,6 +163,9 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
+            if (!hasMore) {
+                this._loadDefaultConversationList();
+            }
             if (conversationState.currentConversationInfo && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
                 // 移动端，目前只有单聊会发送typing消息
                 if (msg.messageContent.type === MessageContentType.Typing) {
@@ -171,6 +190,13 @@ let store = {
                 if (!this._isDisplayMessage(msg)) {
                     return;
                 }
+                let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
+                    return m.messageId === msg.messageId;
+                });
+                if (msgIndex > -1) {
+                    console.log('msg duplicate')
+                    return;
+                }
 
                 // 会把下来加载更多加载的历史消息给清理了
                 let lastTimestamp = 0;
@@ -182,10 +208,7 @@ let store = {
                 conversationState.currentConversationMessageList.push(msg);
             }
 
-            if (!hasMore) {
-                this._loadDefaultConversationList();
-            }
-            if (miscState.isPageHidden && miscState.enableNotification) {
+            if (msg.conversation.type !== 2 && miscState.isPageHidden && (miscState.enableNotification || msg.status === MessageStatus.AllMentioned || msg.status === MessageStatus.Mentioned)) {
                 this.notify(msg);
             }
             this.updateTray();
@@ -210,6 +233,7 @@ let store = {
                     }
                 }
             }
+            this.updateTray();
         });
 
         // 服务端删除
@@ -223,6 +247,7 @@ let store = {
                     }
                 }
             }
+            this.updateTray();
         });
         // 本地删除
         wfc.eventEmitter.on(EventType.DeleteMessage, (messageId) => {
@@ -267,6 +292,7 @@ let store = {
                 conversationState.currentConversationRead = wfc.getConversationRead(conversationState.currentConversationInfo.conversation);
             }
         });
+
         if (isElectron()) {
             ipcRenderer.on('file-downloaded', (event, args) => {
                 let messageId = args.messageId;
@@ -298,6 +324,26 @@ let store = {
                 // do nothing now
             });
         }
+
+        if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
+            this._loadDefaultData();
+        }
+
+        miscState.isMainWindow = isMainWindow;
+    },
+
+    _loadDefaultData() {
+        this._loadFavGroupList();
+        this._loadFriendList();
+        this._loadFavContactList();
+        this._loadFriendRequest();
+        this._loadSelfUserInfo();
+        this._loadDefaultConversationList();
+        this._loadUserLocalSettings();
+        conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+        if (conversationState.currentConversationInfo) {
+            this._loadCurrentConversationMessages();
+        }
     },
 
     // conversation actions
@@ -308,13 +354,18 @@ let store = {
     },
 
     _loadDefaultConversationList() {
-        this.loadConversationList([0, 1], [0])
+        this._loadConversationList([0, 1], [0])
     },
 
-    loadConversationList(conversationType = [0, 1], lines = [0]) {
+    _loadConversationList(conversationType = [0, 1], lines = [0]) {
         let conversationList = wfc.getConversationList(conversationType, lines);
         conversationList.forEach(info => {
             this._patchConversationInfo(info);
+            // side affect
+            if (conversationState.currentConversationInfo
+                && conversationState.currentConversationInfo.conversation.equal(info.conversation)) {
+                conversationState.currentConversationInfo = info;
+            }
         });
         conversationState.conversationInfoList = conversationList;
     },
@@ -346,6 +397,7 @@ let store = {
             conversationState.enableMessageMultiSelection = false;
             return;
         }
+
         if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
             return;
         }
@@ -403,8 +455,8 @@ let store = {
         pickState.messages.length = 0;
     },
 
-    forwardMessage(forwardType, conversations, messages, extraMessageText) {
-        conversations.forEach(conversation => {
+    forwardMessage(forwardType, targetConversations, messages, extraMessageText) {
+        targetConversations.forEach(conversation => {
             // let msg =new Message(conversation, message.messageContent)
             // wfc.sendMessage(msg)
             // 或者下面这种
@@ -414,6 +466,19 @@ let store = {
                 });
             } else {
                 // 合并转发
+                let compositeMessageContent = new CompositeMessageContent();
+                let title = '';
+                let conversation = messages[0].conversation;
+                if (conversation.type === ConversationType.Single) {
+                    let users = store.getUserInfos([wfc.getUserId(), conversation.target], '');
+                    title = users[0]._displayName + '和' + users[1]._displayName;
+                } else {
+                    title = '群的聊天记录';
+                }
+                compositeMessageContent.title = title;
+                compositeMessageContent.messages = messages;
+
+                wfc.sendConversationMessage(conversation, compositeMessageContent);
             }
 
             if (extraMessageText) {
@@ -435,6 +500,29 @@ let store = {
 
     setShouldAutoScrollToBottom(scroll) {
         conversationState.shouldAutoScrollToBottom = scroll;
+    },
+
+    /**
+     *
+     * @param src {String} 媒体url
+     * @param thumb {String} base64格式的缩略图，但不包含'data:image/png;base64,'
+     * @param autoplay
+     */
+    previewMedia(src, thumb, autoplay = true) {
+        conversationState.previewMediaItems.length = 0;
+        conversationState.previewMediaItems.push({
+            src: src,
+            thumb: 'data:image/png;base64,' + thumb,
+            autoplay: autoplay,
+        });
+        conversationState.previewMediaIndex = 0;
+        console.log('preview media', conversationState.previewMediaItems, conversationState.previewMediaIndex)
+    },
+    previewMedias(mediaItems, index) {
+        conversationState.previewMediaItems.length = 0;
+        conversationState.previewMediaItems.push(...mediaItems);
+        conversationState.previewMediaIndex = index;
+        console.log('preview medias', conversationState.previewMediaItems, conversationState.previewMediaIndex)
     },
 
     /**
@@ -485,6 +573,7 @@ let store = {
             } else {
                 remotePath = file;
             }
+
             file = {
                 path: file,
                 name: file.substring((file.lastIndexOf('/') + 1))
@@ -619,6 +708,7 @@ let store = {
             this.setCurrentConversationInfo(null);
         }
         this._loadDefaultConversationList();
+        this.updateTray();
     },
 
     getMessageById(messageId) {
@@ -636,6 +726,7 @@ let store = {
         }
         return msg;
     },
+
     _patchMessage(m, lastTimestamp) {
         // TODO
         // _from
@@ -654,7 +745,7 @@ let store = {
         return m;
     },
 
-    _patchConversationInfo(info) {
+    _patchConversationInfo(info, patchLastMessage = true) {
         if (info.conversation.type === ConversationType.Single) {
             info.conversation._target = wfc.getUserInfo(info.conversation.target, false);
             info.conversation._target._displayName = wfc.getUserDisplayNameEx(info.conversation._target);
@@ -667,6 +758,11 @@ let store = {
         } else {
             info._timeStr = '';
         }
+
+        if (info.lastMessage && info.lastMessage.conversation !== undefined && patchLastMessage) {
+            this._patchMessage(info.lastMessage, 0)
+        }
+
         return info;
     },
 
@@ -682,6 +778,7 @@ let store = {
         }
         return conversationState.downloadingMessageIds.indexOf(messageId) >= 0
     },
+
     // contact actions
 
     _loadSelfUserInfo() {
@@ -690,6 +787,10 @@ let store = {
 
     _loadFriendList() {
         let friends = wfc.getMyFriendList(false);
+        let fileHelperIndex = friends.indexOf(Config.FILE_HELPER_ID);
+        if (fileHelperIndex < 0) {
+            friends.push(Config.FILE_HELPER_ID);
+        }
         if (friends && friends.length > 0) {
             let friendList = wfc.getUserInfos(friends, '');
             contactState.friendList = this._patchAndSortUserInfos(friendList, '');
@@ -699,7 +800,8 @@ let store = {
     _loadFriendRequest() {
         let requests = wfc.getIncommingFriendRequest()
         requests = requests.concat(wfc.getOutgoingFriendRequest());
-        requests.sort((a, b) => numberValue(a.timestamp) - numberValue(b.timestamp))
+        requests.sort((a, b) => numberValue(b.timestamp) - numberValue(a.timestamp))
+        requests = requests.length >= 20 ? requests.slice(0, 20) : requests;
         let uids = [];
         requests.forEach(fr => {
             uids.push(fr.target);
@@ -731,19 +833,12 @@ let store = {
             return u;
         }).sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
 
-        let lastFirstLetter = null;
         userInfos.forEach(u => {
             let uFirstLetter = u.__sortPinyin[1];
             if (uFirstLetter >= 'a' && uFirstLetter <= 'z') {
-                if (!lastFirstLetter || lastFirstLetter !== uFirstLetter) {
-                    u._category = uFirstLetter;
-                    lastFirstLetter = u._category;
-                }
+                u._category = uFirstLetter;
             } else {
-                if (lastFirstLetter !== '#') {
-                    u._category = '#';
-                    lastFirstLetter = u._category;
-                }
+                u._category = '#';
             }
         });
         return userInfos;
@@ -751,6 +846,16 @@ let store = {
 
     _loadFavGroupList() {
         contactState.favGroupList = wfc.getFavGroupList();
+    },
+
+    _loadFavContactList() {
+        let favUserIds = wfc.getFavUsers();
+        if (favUserIds.length > 0) {
+            contactState.favContactList = this.getUserInfos(favUserIds, '')
+            contactState.favContactList.forEach(u => {
+                u._category = '☆ 星标朋友';
+            })
+        }
     },
 
     setCurrentFriendRequest(friendRequest) {
@@ -797,7 +902,8 @@ let store = {
             searchState.groupSearchResult = this.searchFavGroup(query);
             searchState.conversationSearchResult = this.searchConversation(query);
             searchState.messageSearchResult = this.searchMessage(query);
-            this.searchUser(query);
+            // 默认不搜索新用户
+            // this.searchUser(query);
 
         } else {
             searchState.contactSearchResult = [];
@@ -809,11 +915,14 @@ let store = {
     },
 
     searchUser(query) {
+        console.log('search user', query)
         wfc.searchUser(query, SearchType.General, 0, ((keyword, userInfos) => {
+            console.log('search user result', query, userInfos)
             if (searchState.query === keyword) {
                 searchState.userSearchResult = userInfos;
             }
         }), (err) => {
+            console.log('search user error', query, err)
             if (searchState.query === query) {
                 searchState.userSearchResult = [];
             }
@@ -831,7 +940,19 @@ let store = {
 
         console.log('friend searchResult', result)
         return result;
+    },
 
+    filterUsers(users, filter) {
+        if (!users || !filter || !filter.trim()) {
+            return users;
+        }
+        let queryPinyin = convert(filter, {style: 0}).join('').trim().toLowerCase();
+        let result = users.filter(u => {
+            return u._displayName.indexOf(filter) > -1 || u._displayName.indexOf(queryPinyin) > -1
+                || u._pinyin.indexOf(filter) > -1 || u._pinyin.indexOf(queryPinyin) > -1
+                || u._firstLetters.indexOf(filter) > -1 || u._firstLetters.indexOf(queryPinyin) > -1
+        });
+        return result;
     },
 
     // TODO 匹配类型，是群名称匹配上了，还是群成员的名称匹配上了？
@@ -869,6 +990,11 @@ let store = {
         } else {
             pickState.users.push(user);
         }
+    },
+
+    isUserPicked(user) {
+        let index = pickState.users.findIndex(u => u.uid === user.uid);
+        return index >= 0;
     },
 
     pickOrUnpickConversation(conversation) {
@@ -925,6 +1051,38 @@ let store = {
             });
     },
 
+    _loadUserLocalSettings() {
+        let userId = wfc.getUserId();
+        // 默认允许通知
+        let setting = getItem(userId + '-' + 'notification');
+        miscState.enableNotification = setting === null || setting === '1'
+        setting = getItem(userId + '-' + 'notificationDetail');
+        miscState.enableNotificationMessageDetail = setting === null || setting === '1'
+        miscState.enableCloseWindowToExit = getItem(userId + '-' + 'closeWindowToExit') === '1'
+        miscState.enableAutoLogin = getItem(userId + '-' + 'autoLogin') === '1'
+    },
+
+    setEnableNotification(enable) {
+        miscState.enableNotification = enable;
+        setItem(contactState.selfUserInfo.uid + '-' + 'notification', enable ? '1' : '0')
+    },
+
+    setEnableNotificationDetail(enable) {
+        miscState.enableNotificationMessageDetail = enable;
+        setItem(contactState.selfUserInfo.uid + '-' + 'notificationDetail', enable ? '1' : '0')
+    },
+
+    setEnableCloseWindowToExit(enable) {
+        miscState.enableCloseWindowToExit = enable;
+        setItem(contactState.selfUserInfo.uid + '-' + 'closeWindowToExit', enable ? '1' : '0')
+        ipcRenderer.send('enable-close-window-to-exit', enable)
+    },
+
+    setEnableAutoLogin(enable) {
+        miscState.enableAutoLogin = enable;
+        setItem(contactState.selfUserInfo.uid + '-' + 'autoLogin', enable ? '1' : '0')
+    },
+
     // clone一下，别影响到好友列表
     getUserInfos(userIds, groupId) {
         let userInfos = wfc.getUserInfos(userIds, groupId);
@@ -960,6 +1118,45 @@ let store = {
         return userInfos;
     },
 
+    getMyFileRecords(beforeUid, count, successCB, failCB) {
+        if (!successCB) {
+            return;
+        }
+        wfc.getMyFileRecords(beforeUid, count, fileRecords => {
+            this._patchFileRecords(fileRecords)
+            successCB(fileRecords);
+        }, failCB)
+    },
+
+    getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, successCB, failCB) {
+        wfc.getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, fileRecords => {
+            this._patchFileRecords(fileRecords)
+            successCB(fileRecords);
+        }, failCB);
+    },
+
+    _patchFileRecords(fileRecords) {
+        fileRecords.forEach(fileRecord => {
+            let groupId = fileRecord.conversation.type === 1 ? fileRecord.conversation.target : '';
+            if (groupId) {
+                fileRecord._userDisplayName = wfc.getGroupMemberDisplayName(groupId, fileRecord.userId);
+            } else {
+                fileRecord._userDisplayName = wfc.getUserDisplayName(fileRecord.userId);
+            }
+            let conversationInfo = wfc.getConversationInfo(fileRecord.conversation);
+            this._patchConversationInfo(conversationInfo, false);
+
+            if (fileRecord.conversation.type === 0) {
+                fileRecord._conversationDisplayName = '与' + conversationInfo.conversation._target._displayName + '的聊天';
+            } else {
+                fileRecord._conversationDisplayName = conversationInfo.conversation._target._displayName;
+            }
+            fileRecord._timeStr = helper.dateFormat(fileRecord.timestamp);
+            fileRecord._sizeStr = helper.humanSize(fileRecord.size)
+            fileRecord._fileIconName = helper.getFiletypeIcon(fileRecord.name.substring(fileRecord.name.lastIndexOf('.')))
+        });
+    },
+
     setPageVisibility(hidden) {
         miscState.isPageHidden = hidden;
     },
@@ -972,9 +1169,30 @@ let store = {
     notify(msg) {
         let content = msg.messageContent;
         let icon = require('@/assets/images/icon.png');
+        let tip
+        //Todo
+        if (msg.direction === 0 /* && !(type===0 && target===file_transfer_id)*/) {
+            return;
+        }
         if (MessageConfig.getMessageContentPersitFlag(content.type) === PersistFlag.Persist_And_Count) {
-            Push.create("新消息来了", {
-                body: miscState.notificationMessageDetail ? content.digest() : '',
+            if (msg.status !== MessageStatus.AllMentioned && msg.status !== MessageStatus.Mentioned) {
+                let silent = false;
+                for (const info of conversationState.conversationInfoList) {
+                    if (info.conversation.equal(msg.conversation)) {
+                        silent = info.isSilent;
+                        break;
+                    }
+                }
+                if (silent) {
+                    return;
+                }
+                tip = "新消息来了";
+            } else {
+                tip = "有人@你";
+            }
+
+            Push.create(tip, {
+                body: miscState.enableNotificationMessageDetail ? content.digest() : '',
                 // TODO 下面好像不生效，更新成图片链接
                 icon: icon,
                 timeout: 4000,
@@ -983,15 +1201,16 @@ let store = {
                         ipcRenderer.send('click-notification')
                     } else {
                         window.focus();
+                        this.close();
                     }
-                    this.close();
                     this.setCurrentConversation(msg.conversation)
                 }
             });
         }
     },
+
     updateTray() {
-        if (!isElectron()) {
+        if (!isElectron() || !miscState.isMainWindow) {
             return;
         }
         let count = 0;
@@ -1000,9 +1219,9 @@ let store = {
                 return;
             }
             let unreadCount = info.unreadCount;
-            count += unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll;
+            count += unreadCount.unread;
         });
-        ipcRenderer.send('message-unread', {count: count})
+        ipcRenderer.send('update-badge', count)
     }
 }
 
@@ -1013,4 +1232,3 @@ let pickState = store.state.pick;
 let miscState = store.state.misc;
 
 export default store
-

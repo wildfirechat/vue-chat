@@ -88,6 +88,11 @@
             <div class="action">
               <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
             </div>
+            <div class="action">
+              <img v-if="!session.muted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
+              <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
+              <p>静音</p>
+            </div>
             <div v-if="!audioOnly" class="action">
               <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
             </div>
@@ -167,12 +172,7 @@ export default {
         this.selfUserInfo._stream = stream;
       };
 
-      sessionCallback.didParticipantConnected = (userId) =>{
-        console.log('didParticipantConnected', userId)
-      }
-
       sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
-        console.log('didReceiveRemoteVideoTrack', userId)
         let p;
         for (let i = 0; i < this.participantUserInfos.length; i++) {
           p = this.participantUserInfos[i];
@@ -213,9 +213,15 @@ export default {
     hangup() {
       this.session.hangup();
     },
+
+    mute() {
+      this.session.triggerMicrophone();
+    },
+
     down2voice() {
       this.session.downgrade2Voice();
     },
+
     screenShare() {
       this.session.isScreenSharing() ? this.session.stopScreenShare() : this.session.startScreenShare();
     },
@@ -369,6 +375,7 @@ export default {
   flex-direction: column;
   align-items: center;
   font-size: 12px;
+  color: white;
 }
 
 .avatar {

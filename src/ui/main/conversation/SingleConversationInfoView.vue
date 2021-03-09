@@ -39,7 +39,7 @@ export default {
       this.$modal.show(
           PickUserView,
           {
-            users: this.sharedContactState.friendList,
+            users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
             initialCheckedUsers: [this.conversationInfo.conversation._target],
             uncheckableUsers: [this.conversationInfo.conversation._target],
             confirmTitle: '添加',

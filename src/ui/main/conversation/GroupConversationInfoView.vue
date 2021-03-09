@@ -12,14 +12,15 @@
       </label>
     </header>
     <div class="search-item">
-      <input type="text" placeholder="搜索">
+      <input type="text" v-model="filterQuery" placeholder="搜索">
+      <i class="icon-ion-ios-search"></i>
     </div>
     <div class="member-container">
-      <div v-if="enableAddGroupMember" @click="showCreateConversationModal" class="action-item">
+      <div v-if="enableAddGroupMember && !filterQuery" @click="showCreateConversationModal" class="action-item">
         <div class="icon">+</div>
         <p>添加成员</p>
       </div>
-      <div v-if="enableRemoveGroupMember" @click="showRemoveGroupMemberModal" class="action-item">
+      <div v-if="enableRemoveGroupMember && !filterQuery" @click="showRemoveGroupMemberModal" class="action-item">
         <div class="icon">-</div>
         <p>移除成员</p>
       </div>
@@ -54,7 +55,8 @@ export default {
   },
   data() {
     return {
-      users: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
+      groupMemberUserInfos: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
+      filterQuery: '',
       sharedContactState: store.state.contact,
       groupAnnouncement: '',
     }
@@ -81,7 +83,7 @@ export default {
       this.$modal.show(
           PickUserView,
           {
-            users: this.sharedContactState.friendList,
+            users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
             initialCheckedUsers: groupMemberUserInfos,
             uncheckableUsers: groupMemberUserInfos,
             confirmTitle: '添加',
@@ -159,9 +161,14 @@ export default {
     enableAddGroupMember() {
       let selfUid = wfc.getUserId();
       let groupInfo = this.conversationInfo.conversation._target;
+      //在group type为Restricted时，0 开放加入权限（群成员可以拉人，用户也可以主动加入）；1 只能群成员拉人入群；2 只能群管理拉人入群
       if (groupInfo.type === GroupType.Restricted) {
-        let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
-        return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
+        if (groupInfo.joinType === 0 || groupInfo.joinType === 1) {
+          return true;
+        } else if (groupInfo.joinType === 2) {
+          let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
+          return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
+        }
       }
       return true;
     },
@@ -170,8 +177,17 @@ export default {
       let selfUid = wfc.getUserId();
       let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
       return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
+
+    },
+
+    users() {
+      if (this.filterQuery) {
+        return store.filterUsers(this.groupMemberUserInfos, this.filterQuery)
+      } else {
+        return this.groupMemberUserInfos;
+      }
     }
-  }
+  },
 };
 </script>
 
@@ -221,17 +237,38 @@ header label input {
 }
 
 .member-container {
-  flex: 1 1 auto;
+  flex: 1;
   overflow: auto;
 }
 
 .search-item {
+  position: relative;
   padding: 10px 20px;
 }
 
 .search-item input {
   width: 100%;
-  padding: 1px 5px;
+  padding: 0 10px 0 20px;
+  height: 25px;
+  border-radius: 3px;
+  border: 1px solid #ededed;
+  background-color: white;
+  text-align: left;
+  outline: none;
+}
+
+.search-item input:active {
+  border: 1px solid #4168e0;
+}
+
+.search-item input:focus {
+  border: 1px solid #4168e0;
+}
+
+.search-item i {
+  position: absolute;
+  left: 25px;
+  top: 15px;
 }
 
 .action-item {
@@ -270,7 +307,8 @@ header label input {
   color: red;
   align-items: center;
   justify-content: center;
-  height: 55px;
+  height: 50px;
+  max-height: 50px;
   border-top: 1px solid #ececec;
 }
 

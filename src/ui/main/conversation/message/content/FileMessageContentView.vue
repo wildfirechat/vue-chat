@@ -60,9 +60,7 @@ export default {
       event.dataTransfer.setData('text', JSON.stringify(fileObj))
     },
   },
-  mounted() {
-    console.log('file message', this.message)
-  },
+
   computed: {
     size() {
       let fileMsgContent = this.message.messageContent;
@@ -115,6 +113,10 @@ export default {
 .file-message-container .text {
   color: #050505;
   font-size: 16px;
+}
+
+.rightarrow:before {
+  border-left-color: white;
 }
 
 </style>

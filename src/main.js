@@ -19,8 +19,8 @@ Vue.config.productionTip = false
 
 // init
 {
-    // sharedObj 在voip窗口也存在，奇怪
-    if (window.location.href.indexOf('voip') < 0) {
+    let href = window.location.href;
+    if (href.indexOf('voip') < 0 && href.indexOf('files') < 0) {
         console.log('init wfc')
         if (isElectron()) {
             let sharedObj = remote.getGlobal('sharedObj');
@@ -28,10 +28,14 @@ Vue.config.productionTip = false
         } else {
             wfc.init();
         }
-        store.init();
-        console.log('init wfc', wfc)
+        store.init(true);
     } else {
-        console.log('voip window, not init wfc')
+        console.log('voip/files window, not init wfc')
+        if (isElectron()) {
+            let sharedObj = remote.getGlobal('sharedObj');
+            wfc.attach(sharedObj.proto)
+        }
+        store.init(false);
     }
 }
 // init end

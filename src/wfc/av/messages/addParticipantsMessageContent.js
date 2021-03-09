@@ -52,7 +52,7 @@ export default class AddParticipantsMessageContent extends NotificationMessageCo
         let json = wfc.b64_to_utf8(payload.binaryContent);
         let obj = JSON.parse(json);
         this.initiator = obj.initiator;
-        this.audioOnly = obj.audioOnly;
+        this.audioOnly = obj.audioOnly === 1;
         this.pin = obj.pin;
         this.participants = obj.participants;
         this.existParticipants = obj.existParticipants;

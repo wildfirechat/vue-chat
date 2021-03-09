@@ -5,6 +5,9 @@
 export class WfcAVEngineKit {
     sessionCallback;
 
+    /**
+     * 音视频window显示的时候调用
+     */
     setup() {
     }
 }

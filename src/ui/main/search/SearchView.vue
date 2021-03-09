@@ -1,11 +1,14 @@
 <template>
   <div class="search-input-container">
     <input id="searchInput"
+           ref="input"
            autocomplete="off"
            v-on:focus="onFocus(true)"
            v-model="sharedSearchState.query"
-           type="text" placeholder="search"/>
-    <button @click="showCreateConversationModal">+</button>
+           @keydown.esc="cancel"
+           type="text" placeholder="搜索"/>
+    <i class="icon-ion-ios-search"></i>
+    <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
   </div>
 </template>
 
@@ -15,6 +18,16 @@ import PickerUserView from "@/ui/main/pick/PickUserView";
 
 export default {
   name: "SearchView",
+  props: {
+    showAddButton: {
+      type: Boolean,
+      default: true,
+    },
+    searchType: {
+      type: String,
+      default: '',
+    }
+  },
   data() {
     return {
       sharedSearchState: store.state.search,
@@ -27,10 +40,29 @@ export default {
     },
 
     showCreateConversationModal() {
+      let beforeOpen = () => {
+        console.log('Opening...')
+      };
+      let beforeClose = (event) => {
+        console.log('Closing...', event, event.params)
+        // What a gamble... 50% chance to cancel closing
+        if (event.params.confirm) {
+          let users = event.params.users;
+          store.createConversation(users);
+
+          console.log('confirm')
+        } else {
+          console.log('cancel')
+          // TODO clear pick state
+        }
+      };
+      let closed = (event) => {
+        console.log('Close...', event)
+      };
       this.$modal.show(
           PickerUserView,
           {
-            users: this.sharedContactState.friendList,
+            users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
             confirmTitle: '创建',
           }, {
             name: 'pick-user-modal',
@@ -38,29 +70,14 @@ export default {
             height: 480,
             clickToClose: false,
           }, {
-            'before-open': this.beforeOpen,
-            'before-close': this.beforeClose,
-            'closed': this.closed,
+            'before-open': beforeOpen,
+            'before-close': beforeClose,
+            'closed': closed,
           })
     },
-    beforeOpen(event) {
-      console.log('Opening...')
-    },
-    beforeClose(event) {
-      console.log('Closing...', event, event.params)
-      // What a gamble... 50% chance to cancel closing
-      if (event.params.confirm) {
-        let users = event.params.users;
-        store.createConversation(users);
-
-        console.log('confirm')
-      } else {
-        console.log('cancel')
-        // TODO clear pick state
-      }
-    },
-    closed(event) {
-      console.log('Close...', event)
+    cancel() {
+      store.toggleSearchView(false);
+      this.$refs['input'].blur();
     }
   }
 }
@@ -74,17 +91,33 @@ export default {
   align-items: center;
   background-color: #fafafa;
   -webkit-app-region: drag;
+  position: relative;
 }
 
 .search-input-container input {
   height: 25px;
   margin-left: 10px;
   margin-right: 10px;
-  text-align: center;
+  padding: 0 10px 0 20px;
+  text-align: left;
   flex: 1;
   border: 1px solid #e5e5e5;
   border-radius: 3px;
+  outline: none;
   background-color: #eeeeee;
+}
+
+.search-input-container input:active {
+  border: 1px solid #4168e0;
+}
+
+.search-input-container input:focus {
+  border: 1px solid #4168e0;
+}
+
+.search-input-container i {
+  position: absolute;
+  left: 15px;
 }
 
 .search-input-container button {

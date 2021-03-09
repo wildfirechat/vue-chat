@@ -92,6 +92,11 @@
           <div class="action">
             <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
           </div>
+          <div class="action">
+            <img v-if="!session.muted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
+            <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
+            <p>静音</p>
+          </div>
           <div v-if="!audioOnly" class="action">
             <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
           </div>
@@ -118,7 +123,7 @@ export default {
       session: null,
       audioOnly: false,
       muted: false,
-      status: 0,
+      status: 4,
       startTimestamp: 0,
       currentTimestamp: 0,
       localStream: null,
@@ -181,6 +186,11 @@ export default {
     hangup() {
       this.session.hangup();
     },
+
+    mute() {
+      this.session.triggerMicrophone();
+    },
+
     down2voice() {
       this.session.downgrade2Voice();
     },
@@ -253,6 +263,7 @@ export default {
   flex-direction: column;
   align-items: center;
   font-size: 12px;
+  color: white;
 }
 
 .avatar {

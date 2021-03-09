@@ -4,12 +4,26 @@
       <h2>设置</h2>
       <label>
         开启通知
-        <input type="checkbox" v-model="sharedMiscState.enableNotification">
+        <input type="checkbox"
+               :checked="sharedMiscState.enableNotification"
+               @change="enableNotification($event.target.checked)">
       </label>
       <label>
         通知显示消息内容
-        <input v-bind:disabled="!sharedMiscState.enableNotification" type="checkbox"
-               v-model="sharedMiscState.notificationMessageDetail">
+        <input v-bind:disabled="!sharedMiscState.enableNotification"
+               type="checkbox"
+               :checked="sharedMiscState.enableNotificationMessageDetail"
+               @change="enableNotificationDetail($event.target.checked)">
+      </label>
+      <label v-if="sharedMiscState.isElectron">
+        关闭窗口时，直接退出
+        <input type="checkbox" :checked="sharedMiscState.enableCloseWindowToExit"
+               @change="enableCloseWindowToExit($event.target.checked)">
+      </label>
+      <label v-if="sharedMiscState.isElectron">
+        自动登录
+        <input type="checkbox" :checked="sharedMiscState.enableAutoLogin"
+               @change="enableAutoLogin($event.target.checked)">
       </label>
     </div>
     <footer>
@@ -27,7 +41,7 @@
 
       <a
           class="button"
-          href="https://github.com/wildfirechat/vue-chat"
+          href="https://github.com/wildfirechat/vue-pc-chat"
           target="_blank">
         Star on Github
         <i class="icon-ion-social-github"/>
@@ -40,6 +54,8 @@
 <script>
 import wfc from "@/wfc/client/wfc";
 import store from "@/store";
+import {clear} from "@/ui/util/storageHelper";
+import {ipcRenderer, isElectron} from "@/platform";
 
 export default {
   name: "SettingPage",
@@ -50,9 +66,25 @@ export default {
   },
   methods: {
     logout() {
-      localStorage.removeItem("userId");
-      sessionStorage.removeItem("userId");
+      clear();
       wfc.disconnect();
+      if (isElectron()) {
+        ipcRenderer.send('logouted');
+      }
+    },
+
+    enableNotification(enable) {
+      store.setEnableNotification(enable)
+    },
+    enableNotificationDetail(enable) {
+      store.setEnableNotificationDetail(enable)
+    },
+    enableCloseWindowToExit(enable) {
+      store.setEnableCloseWindowToExit(enable)
+    },
+
+    enableAutoLogin(enable) {
+      store.setEnableAutoLogin(enable);
     }
   },
 }
@@ -70,13 +102,13 @@ export default {
 .setting-container .content {
   flex: 1;
   margin-left: 20px;
-  margin-top: 25px;
+  margin-top: 10px;
 }
 
 .setting-container .content h2 {
   font-weight: normal;
   font-style: normal;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 }
 
 .setting-container .content label {

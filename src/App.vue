@@ -5,7 +5,7 @@
        @dragover="$event.preventDefault()"
        @drop="$event.preventDefault()"
        v-visibility-change="visibilityChange">
-    <div id="blur-container" class="blur-container">
+    <div v-if="!sharedMiscState.isElectron" id="blur-container" class="blur-container">
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50"
            class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
         <filter id="blur_mkvvpnf">
@@ -26,6 +26,13 @@
       </video>
     </div>
 
+    <CoolLightBox
+        :items="sharedConversationState.previewMediaItems"
+        :index="sharedConversationState.previewMediaIndex"
+        :slideshow="false"
+        @close="sharedConversationState.previewMediaIndex = null">
+    </CoolLightBox>
+
     <router-view id="main-content-container" class="main-content-container"></router-view>
   </div>
 </template>
@@ -33,6 +40,8 @@
 <script>
 import store from "@/store";
 import {isElectron} from "@/platform";
+import CoolLightBox from 'vue-cool-lightbox'
+import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 
 export default {
   name: 'App',
@@ -40,6 +49,7 @@ export default {
     return {
       url: '',
       sharedMiscState: store.state.misc,
+      sharedConversationState: store.state.conversation,
     }
   },
   methods: {
@@ -55,23 +65,28 @@ export default {
       root.style.setProperty('--main-margin-right', '0px');
       root.style.setProperty('--main-margin-top', '0px');
       root.style.setProperty('--main-margin-bottom', '0px');
-      root.style.setProperty('--home-menu-padding-top', '60px')
     }
-    if (this.sharedMiscState.isElectronWindows) {
+
+    if (this.sharedMiscState.isElectronWindowsOrLinux) {
       root.style.setProperty('--main-border-radius', '0px')
+      root.style.setProperty('--home-menu-padding-top', '0px')
     }
   },
 
   mounted() {
-    if (window.location.href.indexOf('voip') >= 0) {
+    let href = window.location.href;
+    if (href.indexOf('voip') >= 0 || href.indexOf('files') >= 0) {
       let app = document.getElementById("app");
       let el = document.getElementById("blur-container");
-      app.removeChild(el)
+      el && app.removeChild(el)
       el = document.getElementById('styled_video_container');
-      app.removeChild(el)
+      el && app.removeChild(el)
       el = document.getElementById('main-content-container');
       el.style.backgroundColor = '#292929'
     }
+  },
+  components: {
+    CoolLightBox,
   }
 }
 
@@ -87,7 +102,7 @@ export default {
   --main-margin-top: 50px;
   --main-margin-bottom: 50px;
   --tippy-right: 0px;
-  --home-menu-padding-top: 20px;
+  --home-menu-padding-top: 60px;
 }
 
 .tippy-tooltip {

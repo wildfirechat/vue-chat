@@ -8,13 +8,14 @@
            draggable="false" alt=""/>
     </div>
 
-    <div class="button" id="max-button" @click="maximize">
+    <div class="button" v-bind:class="{disabled: !maximizable}" id="max-button" @click="maximize">
       <img class="icon"
            srcset="@/assets/windows_control_icons/max-k-10.png 1x, @/assets/windows_control_icons/max-k-12.png 1.25x, @/assets/windows_control_icons/max-k-15.png 1.5x, @/assets/windows_control_icons/max-k-15.png 1.75x, @/assets/windows_control_icons/max-k-20.png 2x, @/assets/windows_control_icons/max-k-20.png 2.25x, @/assets/windows_control_icons/max-k-24.png 2.5x, @/assets/windows_control_icons/max-k-30.png 3x, @/assets/windows_control_icons/max-k-30.png 3.5x"
            draggable="false" alt=""/>
     </div>
 
-    <div class="button" id="restore-button" @click="maximize">
+    <div class="button" v-bind:class="{disabled: !maximizable}" v-if="maximizable" id="restore-button"
+         @click="maximize">
       <img class="icon"
            srcset="@/assets/windows_control_icons/restore-k-10.png 1x, @/assets/windows_control_icons/restore-k-12.png 1.25x, @/assets/windows_control_icons/restore-k-15.png 1.5x, @/assets/windows_control_icons/restore-k-15.png 1.75x, @/assets/windows_control_icons/restore-k-20.png 2x, @/assets/windows_control_icons/restore-k-20.png 2.25x, @/assets/windows_control_icons/restore-k-24.png 2.5x, @/assets/windows_control_icons/restore-k-30.png 3x, @/assets/windows_control_icons/restore-k-30.png 3.5x"
            draggable="false" alt=""/>
@@ -34,6 +35,13 @@ import {remote} from "@/platform";
 
 export default {
   name: "ElectronWindowsControlButtonView",
+  props: {
+    maximizable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    }
+  },
   methods: {
     minimize() {
       const win = remote.getCurrentWindow();
@@ -75,6 +83,7 @@ export default {
   /*top: 0;*/
   /*right: 0;*/
   height: 30px;
+  z-index: 9999;
 }
 
 #window-controls {
@@ -101,6 +110,11 @@ export default {
 
 #window-controls .button {
   user-select: none;
+}
+
+#window-controls .button.disabled {
+  pointer-events: none;
+  /*background-color: #d9d9d9;*/
 }
 
 #window-controls .button:hover {

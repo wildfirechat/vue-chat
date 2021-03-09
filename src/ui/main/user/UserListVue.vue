@@ -28,7 +28,9 @@
                    :ref="'userCardTippy-'+user.uid"
                    :name="'user-'+user.uid"
                    :style="paddingStyle"
-                   v-bind:class="{active: sharedContactState.currentFriend && user.uid === sharedContactState.currentFriend.uid}"
+                   v-bind:class="{active: (sharedContactState.currentFriend
+                        && user._category === sharedContactState.currentFriend._category
+                        && user.uid === sharedContactState.currentFriend.uid) || (currentUser && currentUser.uid === user.uid)}"
                    @click.stop="clickUserItem(user)">
                 <img class="avatar" :src="user.portrait" alt="">
                 <span
@@ -53,6 +55,10 @@ export default {
     users: {
       type: Array,
       required: true,
+    },
+    currentUser: {
+      type: Object,
+      default: null,
     },
     showCategoryLabel: {
       type: Boolean,
@@ -105,7 +111,9 @@ export default {
   },
 
   mounted() {
-    this.tippyStyleFix()
+    if (!this.clickUserItemFunc) {
+      this.tippyStyleFix()
+    }
   },
 
   activated() {
@@ -113,15 +121,19 @@ export default {
   },
 
   destroyed() {
-    this.tippyStyleReset()
+    if (!this.clickUserItemFunc) {
+      this.tippyStyleReset()
+    }
   },
 
   computed: {
     groupedUsers() {
       let groupedUsers = [];
       let current = {};
+      let lastCategory = null;
       this.users.forEach((user) => {
-        if (user._category) {
+        if (!lastCategory || lastCategory !== user._category) {
+          lastCategory = user._category;
           current = {
             category: user._category,
             users: [user],

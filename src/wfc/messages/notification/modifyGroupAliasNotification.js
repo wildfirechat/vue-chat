@@ -24,9 +24,7 @@ export default class ModifyGroupAliasNotification extends GroupNotificationConte
             notificationStr += '你';
         } else {
             let userInfo = wfc.getUserInfo(this.operator, false, this.groupId)
-            if(userInfo.groupAlias){
-                notificationStr += userInfo.groupAlias;
-            }else if (userInfo.friendAlias){
+            if (userInfo.friendAlias){
                 notificationStr += userInfo.friendAlias;
             }else if(userInfo.displayName){
                 notificationStr += userInfo.displayName;

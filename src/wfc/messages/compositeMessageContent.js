@@ -77,7 +77,7 @@ export default class CompositeMessageContent extends MessageContent {
 
         this.title = payload.content;
         let str = wfc.b64_to_utf8(payload.binaryContent);
-        str = str.replace(/"uid":([0-9]+)/, "\"uid\":\"$1\"");
+        str = str.replace(/"uid":([0-9]+)/g, "\"uid\":\"$1\"");
         let obj = JSON.parse(str);
         obj.ms.forEach(o => {
             let conv = new Conversation(o.type, o.target, o.line);

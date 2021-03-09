@@ -15,6 +15,8 @@
   <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
   <StickerMessageContentView :message="message"
                              v-else-if="message.messageContent.type === 7"/>
+  <CompositeMessageContentView :message="message"
+                               v-else-if="message.messageContent.type === 11"/>
   <CallStartMessageContentView :message="message"
                                v-else-if="message.messageContent.type === 400"/>
   <UnsupportMessageContentView :message="message"
@@ -32,6 +34,7 @@ import FileMessageContentView from "@/ui/main/conversation/message/content/FileM
 import StickerMessageContentView from "@/ui/main/conversation/message/content/StickerMessageContentView";
 import CallStartMessageContentView from "@/ui/main/conversation/message/content/CallStartMessageContentView";
 import AudioMessageContentView from "@/ui/main/conversation/message/content/AudioMessageContentView";
+import CompositeMessageContentView from "@/ui/main/conversation/message/content/CompositeMessageContentView";
 
 export default {
   name: "MessageContentContainerView",
@@ -42,6 +45,7 @@ export default {
     }
   },
   components: {
+    CompositeMessageContentView,
     AudioMessageContentView,
     CallStartMessageContentView,
     UnsupportMessageContentView,
@@ -54,7 +58,7 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 
 
 .leftarrow:before {

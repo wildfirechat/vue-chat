@@ -1,11 +1,5 @@
 <template>
   <section>
-    <CoolLightBox
-        :items="sharedConversationState.previewMediaItems"
-        :index="sharedConversationState.previewMediaIndex"
-        :slideshow="false"
-        @close="sharedConversationState.previewMediaIndex = null">
-    </CoolLightBox>
     <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
       <h1>^~^</h1>
     </div>
@@ -15,7 +9,8 @@
           <h1 class="single-line">{{ conversationTitle }}</h1>
           <a href="#"><i class="icon-ion-ios-settings-strong"
                          style="display: inline-block"
-                         v-bind:style="{marginTop:sharedMiscState.isElectronWindows ?  '30px' : '0'}" ref="setting"
+                         v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
+                         ref="setting"
                          @click="toggleConversationInfo"/></a>
         </div>
       </header>
@@ -33,7 +28,7 @@
         <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
           <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
                             @infinite="infiniteHandler">
-            <template slot="spinner">加载中...</template>
+            <!--            <template slot="spinner">加载中...</template>-->
             <template slot="no-more">没有更多消息</template>
             <template slot="no-results">已加载全部消息 :(</template>
           </infinite-loading>
@@ -80,10 +75,10 @@
             class="conversation-info-container"
         />
 
-        <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true">
+        <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true" v-on:close="onMenuClose">
           <!--          更多menu item-->
           <li v-if="isCopyable(message)">
-            <a @click.prevent="">复制</a>
+            <a @click.prevent="copy(message)">复制</a>
           </li>
           <li>
             <a @click.prevent="delMessage(message)">删除</a>
@@ -128,8 +123,6 @@ import TextMessageContent from "@/wfc/messages/textMessageContent";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
 import {numberValue} from "@/wfc/util/longUtil";
-import CoolLightBox from 'vue-cool-lightbox'
-import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
 import ForwardMessageByPickConversationView
@@ -140,6 +133,8 @@ import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 import {fs, isElectron, shell} from "@/platform";
 import FileMessageContent from "@/wfc/messages/fileMessageContent";
+import ImageMessageContent from "@/wfc/messages/imageMessageContent";
+import {copyImg, copyText} from "@/ui/util/clipboard";
 
 export default {
   components: {
@@ -150,16 +145,14 @@ export default {
     MessageInputView,
     GroupConversationInfoView,
     SingleConversationInfoView,
-    CoolLightBox,
     InfiniteLoading,
     ScaleLoader,
   },
   // props: ["conversation"],
   data() {
     return {
+      conversationInfo: null,
       showConversationInfo: false,
-      isInviteConversationMember: false,
-      isShowConversationMember: false,
       sharedConversationState: store.state.conversation,
       sharedContactState: store.state.contact,
       sharedPickState: store.state.pick,
@@ -170,7 +163,6 @@ export default {
       saveMessageListViewFlexGrow: -1,
 
       dragAndDropEnterCount: 0,
-
     };
   },
 
@@ -294,9 +286,13 @@ export default {
       this.isHandlerDragging = false;
     },
 
+    onMenuClose() {
+      console.log('xxoxooojjo')
+    },
+
     // message context menu
     isCopyable(message) {
-      return message && message.messageContent instanceof TextMessageContent;
+      return message && (message.messageContent instanceof TextMessageContent || message.messageContent instanceof ImageMessageContent);
     },
 
     isForwardable(message) {
@@ -319,6 +315,15 @@ export default {
         }
       }
       return false;
+    },
+
+    copy(message) {
+      let content = message.messageContent;
+      if (content instanceof TextMessageContent) {
+        copyText(content.content)
+      } else {
+        copyImg(content.remotePath)
+      }
     },
 
     openFile(message) {
@@ -453,10 +458,15 @@ export default {
     }
     if (this.sharedConversationState.currentConversationInfo) {
       let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
-      if (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll > 0) {
+      if (unreadCount.unread > 0) {
         store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
       }
     }
+
+    if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
+      this.showConversationInfo = false;
+    }
+    this.conversationInfo = this.sharedConversationState.currentConversationInfo;
   },
 
   computed: {
@@ -504,7 +514,9 @@ export default {
   background-color: #f5f5f5;
   border-bottom: 1px solid #e6e6e6;
   border-top-right-radius: var(--main-border-radius);
+  position: relative;
 }
+
 
 .title-container h1 {
   font-size: 16px;

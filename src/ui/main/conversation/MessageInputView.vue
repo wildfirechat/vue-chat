@@ -24,9 +24,10 @@
         <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
       </ul>
     </section>
-    <div @keyup.enter="send($event)"
+    <div @keydown.enter="send($event)"
          ref="input" class="input"
          @paste="handlePaste"
+         draggable="false"
          autofocus
          placeholder="hello" contenteditable="true">
     </div>
@@ -84,7 +85,6 @@ export default {
       showEmojiDialog: false,
       tribute: null,
       mentions: [],
-      isMention: false,
       emojiCategories: categoriesDefault,
       emojis: emojisDefault,
       lastConversationInfo: null,
@@ -126,8 +126,7 @@ export default {
     },
 
     send(e) {
-      if (this.isMention) {
-        this.isMention = false;
+      if (this.tribute && this.tribute.isActive) {
         return;
       }
 
@@ -219,6 +218,7 @@ export default {
       input.innerHTML = '';
       store.quoteMessage(null);
       Draft.setConversationDraft(conversation, '', null);
+      e.preventDefault();
     },
 
     toggleEmojiView() {
@@ -409,7 +409,6 @@ export default {
           //     return '<span contenteditable="false"><a href="http://zurb.com" target="_blank" title="' + item.original.email + '">' + item.original.value + '</a></span>';
           // }
           this.mentions.push({key: item.original.key, value: item.original.value});
-          this.isMention = true;
 
           return '@' + item.original.key;
         },
@@ -454,16 +453,39 @@ export default {
       })
     },
 
+    moveCursorToEnd(contentEditableDiv) {
+
+      let range = document.createRange();
+      range.selectNodeContents(contentEditableDiv);
+      range.collapse(false);
+      let sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    },
+
     restoreDraft() {
       let draft = Draft.getConversationDraftEx(this.conversationInfo)
       store.quoteMessage(draft.quotedMessage);
-      this.$refs['input'].innerHTML = draft.text;
+      let input = this.$refs['input'];
+      input.innerHTML = draft.text;
+      this.moveCursorToEnd(input);
     },
 
-    storeDraft(conversation, quotedMessage) {
+    storeDraft(conversationInfo, quotedMessage) {
       let draftText = this.$refs['input'].innerHTML.trim();
-      if (draftText !== this.conversationInfo.draft) {
-        Draft.setConversationDraft(conversation, draftText, quotedMessage)
+      let tmp = draftText.replace(/<br>/g, '')
+          .replace(/<div><\/div>/g, '')
+          .replace(/&nbsp;/g, '')
+          .trim();
+
+      if (tmp.length === 0) {
+        if (conversationInfo.draft !== '') {
+          Draft.setConversationDraft(conversationInfo.conversation, tmp, quotedMessage)
+        }
+      } else {
+        if (draftText !== conversationInfo.draft) {
+          Draft.setConversationDraft(conversationInfo.conversation, draftText, quotedMessage)
+        }
       }
     },
 
@@ -486,12 +508,26 @@ export default {
     }
     this.lastConversationInfo = this.conversationInfo;
     this.focusInput();
+
+    if (isElectron()) {
+      ipcRenderer.on('screenshots-ok', (event, args) => {
+        if (args.filePath) {
+          document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
+        }
+      });
+    }
+  },
+
+  destroyed() {
+    if (isElectron()) {
+      ipcRenderer.removeAllListeners('screenshots-ok');
+    }
   },
 
   watch: {
     conversationInfo() {
       if (this.lastConversationInfo && !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation)) {
-        this.storeDraft(this.lastConversationInfo.conversation, lastQuotedMessage);
+        this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
       }
 
       this.lastConversationInfo = this.conversationInfo;

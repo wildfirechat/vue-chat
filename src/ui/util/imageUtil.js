@@ -54,6 +54,8 @@ function mergeImages(sources = [], options = {}) {
             case 9:
                 size = (targetSize - 4 * divider) / 3;
                 break;
+            default:
+                break;
         }
 
         sources = sources.slice(0, sources.length >= 9 ? 9 : sources.length);

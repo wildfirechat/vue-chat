@@ -68,6 +68,7 @@ export default {
 
 .audio-message-container audio {
   outline: none;
+  filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%);
 }
 
 </style>
