@@ -19,6 +19,7 @@
                    ref="localVideo"
                    style="height: 0"
                    :srcObject.prop="localStream"
+                   muted
                    playsInline autoPlay/>
           </div>
           <div class="remote-media-container">
@@ -45,6 +46,7 @@
                    ref="localVideo"
                    class="localVideo"
                    :srcObject.prop="localStream"
+                   muted
                    playsInline autoPlay/>
             <img v-else class="avatar" :src="session.selfUserInfo.portrait">
           </div>

@@ -21,6 +21,7 @@
               <video v-if="audioOnly && selfUserInfo._stream"
                      class="hidden-video"
                      :srcObject.prop="selfUserInfo._stream"
+                     muted
                      playsInline autoPlay/>
               <p>self</p>
             </div>
@@ -29,6 +30,7 @@
                    ref="localVideo"
                    :srcObject.prop="selfUserInfo._stream"
                    playsInline
+                   muted
                    autoPlay/>
           </div>
 
