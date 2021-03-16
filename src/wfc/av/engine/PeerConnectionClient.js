@@ -3,7 +3,7 @@
  */
 
 export default class PeerConnectionClient {
-    isInitiator;
+    isInitiator = false;
     userId;
     status;
     joinTime = 0;

@@ -174,6 +174,8 @@ export class AvEngineKitProxy {
                     this.callId = content.callId;
                     this.participants.push(...content.targetIds);
                     this.participants.push(msg.from);
+                    // 参与者不包含自己
+                    this.participants = this.participants.filter(uid => uid !== selfUserInfo.uid)
 
                     if (msg.conversation.type === ConversationType.Single) {
                         participantUserInfos = [wfc.getUserInfo(msg.from)];
@@ -282,12 +284,13 @@ export class AvEngineKitProxy {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
             return;
         }
+        let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
+        participants = participants.filter(uid => uid !== selfUserInfo.uid);
         let callId = conversation.target + Math.floor(Math.random() * 10000);
         this.conversation = conversation;
         this.participants.push(...participants)
         this.callId = callId;
 
-        let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         let participantUserInfos = wfc.getUserInfos(participants);
         let groupMemberUserInfos;
         if (conversation.type === ConversationType.Group) {

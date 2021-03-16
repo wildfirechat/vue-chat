@@ -100,6 +100,14 @@ export default class CallSession {
     }
 
     stopScreenShare () {
+    }
+
+    /**
+     * 请在callState变为connecting 或 connected之后，调用
+     * @param {string} userId
+     * @return {PeerConnectionClient}
+     */
+    getPeerConnectionClient(userId){
 
     }
 }

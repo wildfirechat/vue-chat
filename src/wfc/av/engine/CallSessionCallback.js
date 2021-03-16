@@ -20,6 +20,13 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 可用来实现响铃相关
+     * 1. outgoing -> connecting: 开始 -> 结束播放呼出铃声
+     * 2. incoming -> connecting: 开始 -> 结束播放呼入铃声
+     * 通话状态变化时调用
+     * @param {CallState} state
+     */
     didChangeState(state) {
 
     }
@@ -65,6 +72,9 @@ export default class CallSessionCallback {
     }
 
     didVideoMuted(userId, muted) {
+    }
+
+    didChangeInitiator(initiator){
 
     }
 }
