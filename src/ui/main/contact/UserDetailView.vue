@@ -12,23 +12,23 @@
     <div class="content">
       <ul>
         <li>
-          <label>备注</label>
+          <label>{{$t('common.alis')}}</label>
           <div class="alias">
             <input type="text" :value="sharedStateContact.currentFriend.alias" placeholder="备注名"/>
           </div>
         </li>
         <li>
-          <label>地区</label>
-          <p>北京</p>
+          <label>{{$t('common.area')}}</label>
+          <p>{{$t('common.unknown')}}</p>
         </li>
         <li>
-          <label>标签</label>
-          <p>测试用户</p>
+          <label>{{$t('common.label')}}</label>
+          <p>{{$t('misc.test_user')}}</p>
         </li>
       </ul>
     </div>
     <div class="footer">
-      <a @click="this.chat">发消息</a>
+      <a @click="this.chat">{{$t('message.send_message')}}</a>
     </div>
   </section>
 </template>

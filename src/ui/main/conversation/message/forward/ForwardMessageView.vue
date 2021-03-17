@@ -15,7 +15,7 @@
       </div>
     </div>
     <label>
-      <input type="text" placeholder="给朋友留言" v-model="extraMessageText">
+      <input type="text" :placeholder="$t('conversation.forward_extra')" v-model="extraMessageText">
     </label>
   </section>
 </template>
@@ -50,27 +50,29 @@ export default {
       let firstMsg = this.messages[0];
       switch (this.forwardType) {
         case ForwardType.NORMAL:
-          str = firstMsg._from._displayName + ':';
+          str = !firstMsg._from ? '' : firstMsg._from._displayName + ':';
           if ([MessageContentType.Image, MessageContentType.Video].indexOf(firstMsg.messageContent.type) < 0) {
             str += firstMsg.messageContent.digest(this.quotedMessage);
           }
           break;
         case ForwardType.ONE_BY_ONE:
-          str = '[逐条转发]'
+          str = '[' + this.$t('conversation.forward_one_by_one') + ']'
           if (firstMsg.conversation.type === ConversationType.Single) {
-            str += firstMsg._from._displayName + '的聊天记录';
+            str += this.$t('conversation.user_message_records', [firstMsg._from._displayName]);
           } else {
-            str += '群聊的聊天记录';
+            str += this.$t('conversation.group_message_records');
           }
           break;
         case ForwardType.COMPOSITE:
-          str = '[合并转发]'
+          str = '[' + this.$t('conversation.forward_composite') + ']'
           if (firstMsg.conversation.type === ConversationType.Single) {
-            str += firstMsg._from._displayName + '的聊天记录';
+            str += this.$t('conversation.user_message_records', [firstMsg._from._displayName]);
           } else {
-            str += '群聊的聊天记录';
+            str += this.$t('conversation.group_message_records');
           }
           break;
+        default:
+              break;
       }
       return str;
     }

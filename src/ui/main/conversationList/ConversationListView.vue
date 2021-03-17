@@ -17,16 +17,16 @@
     <vue-context ref="menu" v-slot="{data:conversationInfo}">
       <li>
         <a @click.prevent="setConversationTop(conversationInfo)">{{
-            conversationInfo && conversationInfo.isTop ? '取消置顶' : '置顶'
+            conversationInfo && conversationInfo.isTop ? $t('conversation.cancel_sticky_top') : $t('conversation.sticky_top')
           }}</a>
       </li>
       <li>
         <a @click.prevent="setConversationSilent(conversationInfo)">{{
-            conversationInfo && conversationInfo.isSilent ? '允许消息通知' : '消息免打扰'
+            conversationInfo && conversationInfo.isSilent ? $t('conversation.enable_notification') : $t('conversation.disable_notification')
           }}</a>
       </li>
       <li>
-        <a @click.prevent="removeConversation(conversationInfo)">删除</a>
+        <a @click.prevent="removeConversation(conversationInfo)">{{$t('common.delete')}}</a>
       </li>
     </vue-context>
   </section>
@@ -69,11 +69,12 @@ export default {
     scrollActiveElementCenter() {
       let el = this.$el.getElementsByClassName("active")[0];
       el && el.scrollIntoView({behavior: "instant", block: "center"});
-  },
+    },
   },
   activated() {
     this.scrollActiveElementCenter();
   },
+
   components: {
     ConversationItemView,
   },

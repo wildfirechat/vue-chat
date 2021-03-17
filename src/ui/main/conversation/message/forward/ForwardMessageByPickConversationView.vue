@@ -2,13 +2,13 @@
   <div class="pick-conversation-container">
     <section class="conversation-list-panel">
       <div class="input-container">
-        <input type="text" placeholder="搜索">
+        <input type="text" :placeholder="$t('common.search')">
       </div>
       <section class="conversation-list-container">
         <div class="create-group" @click="showForwardByCreateConversationModal">
-          <p>创建群聊</p>
+          <p>{{$t('conversation.create_group')}}</p>
         </div>
-        <p>最近聊天</p>
+        <p>{{$t('conversation.recent_conversation')}}</p>
         <ul class="conversation-list">
           <li v-for="(conversationInfo, index) in sharedConversation.conversationInfoList"
               :key="index">
@@ -26,9 +26,9 @@
     </section>
     <section class="checked-conversation-list-container">
       <header>
-        <h2>分别发送给</h2>
-        <span v-if="sharedPickState.conversations.length === 0">未选择聊天</span>
-        <span v-else>已选择{{ this.sharedPickState.conversations.length }}个聊天</span>
+        <h2>{{$t('conversation.forward_title')}}</h2>
+        <span v-if="sharedPickState.conversations.length === 0">{{$t('conversation.not_select_conversation')}}</span>
+        <span v-else>{{$t('conversation.select_conversation_desc', [this.sharedPickState.conversations.length]) }}</span>
       </header>
       <div class="content">
         <div class="picked-user-container" v-for="(conversation, index) in sharedPickState.conversations" :key="index">
@@ -42,8 +42,8 @@
       <ForwardMessageView ref="forwardMessageView" v-if="sharedPickState.conversations.length > 0"
                           :forward-type="forwardType" :messages="messages"/>
       <footer>
-        <button @click="cancel" class="cancel">取消</button>
-        <button @click="confirm" class="confirm">发送</button>
+        <button @click="cancel" class="cancel">{{$t('common.cancel')}}</button>
+        <button @click="confirm" class="confirm">{{$t('common.send')}}</button>
       </footer>
     </section>
   </div>

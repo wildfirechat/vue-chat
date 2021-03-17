@@ -2,7 +2,7 @@
   <div class="pick-contact-container">
     <section class="contact-list-container">
       <div class="input-container">
-        <input type="text" placeholder="搜索" v-model="filterQuery">
+        <input type="text" :placeholder="$t('common.search')" v-model="filterQuery">
         <i class="icon-ion-ios-search"></i>
       </div>
       <div class="friend-list-container">
@@ -17,9 +17,9 @@
     </section>
     <section class="checked-contact-list-container">
       <header>
-        <h2>选择联系人</h2>
-        <span v-if="checkedUsers.length === 0">已选择联系人</span>
-        <span v-else>已选择联系人 {{ this.checkedUsers.length }}</span>
+        <h2>{{$t('pick.pick_contact')}}</h2>
+        <span v-if="checkedUsers.length === 0">{{$t('pick.picked_contact')}}</span>
+        <span v-else>{{ $t('pick.picked_contact') + this.checkedUsers.length }}</span>
       </header>
       <div class="content">
         <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="index">
@@ -31,7 +31,7 @@
         </div>
       </div>
       <footer>
-        <button @click="cancel" class="cancel">取消</button>
+        <button @click="cancel" class="cancel">{{$t('common.cancel')}}</button>
         <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0}">{{ confirmTitle }}
         </button>
       </footer>
@@ -68,7 +68,7 @@ export default {
     confirmTitle: {
       type: String,
       required: false,
-      default: '确定',
+      default: 'confirm',
     },
     showCategoryLabel: {
       type: Boolean,

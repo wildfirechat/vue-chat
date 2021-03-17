@@ -3,15 +3,15 @@
     <img class="avatar" :src="userInfo.portrait" alt="">
     <div class="info-action-container">
       <div class="info-container">
-        <p class="title">好友请求</p>
-        <p class="desc">向{{ userInfo.displayName }}发送好友请求</p>
+        <p class="title">{{$t('friend_request.request')}}</p>
+        <p class="desc">{{ $t('friend_request.send_request_tip', [userInfo.displayName]) }}</p>
       </div>
       <label>
         <input type="text" :placeholder="defaultReason" v-model="reason">
       </label>
       <div class="action-container">
-        <button class="cancel" @click="cancel">取消</button>
-        <button class="confirm" @click="invite">发送</button>
+        <button class="cancel" @click="cancel">{{$t('common.cancel')}}</button>
+        <button class="confirm" @click="invite">{{$t('common.send')}}</button>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@ export default {
   computed: {
     defaultReason() {
       let userInfo = this.sharedContactState.selfUserInfo;
-      return '我是' + userInfo.displayName;
+      return this.$t('friend_request.im') + userInfo.displayName;
     }
   }
 }

@@ -2,9 +2,9 @@
   <section class="group-info-container">
     <div class="group-info">
       <img :src="sharedContactState.currentGroup.portrait">
-      <p>群名称 {{ sharedContactState.currentGroup.name }}</p>
+      <p>{{ $t('group.name', [sharedContactState.currentGroup.name]) }}</p>
     </div>
-    <a @click="chat">进入群聊</a>
+    <a @click="chat">{{$t('group.chat')}}</a>
   </section>
 </template>
 

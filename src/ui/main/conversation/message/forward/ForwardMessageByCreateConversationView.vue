@@ -2,11 +2,11 @@
   <div class="pick-user-container">
     <section class="user-list-panel">
       <div class="input-container">
-        <input type="text" placeholder="搜索">
+        <input type="text" :placeholder="$t('common.search')">
       </div>
       <div class="user-list-container">
         <div class="back" @click="backPickConversation">
-          <p>返回</p>
+          <p>{{$t('common.back')}}</p>
         </div>
         <CheckableUserListView class="user-list"
                                :enable-pick="true"
@@ -17,9 +17,9 @@
     </section>
     <section class="checked-user-list-container">
       <header>
-        <h2>分别发送给</h2>
-        <span v-if="sharedPickState.users.length === 0">已选择联系人</span>
-        <span v-else>已选择联系人 {{ this.sharedPickState.users.length }}</span>
+        <h2>{{$t('conversation.forward_title')}}</h2>
+        <span v-if="sharedPickState.users.length === 0">{{$t('conversation.picked_contact')}}</span>
+        <span v-else>{{ $t('conversation.picked_contact') + this.sharedPickState.users.length }}</span>
       </header>
       <div class="content">
         <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
@@ -34,8 +34,8 @@
       <ForwardMessageView ref="forwardMessageView" v-if="sharedPickState.users.length > 0" :forward-type="forwardType"
                           :messages="messages"/>
       <footer>
-        <button @click="cancel" class="cancel">取消</button>
-        <button @click="confirm" class="confirm">发送</button>
+        <button @click="cancel" class="cancel">{{$t('common.cancel')}}</button>
+        <button @click="confirm" class="confirm">{{$t('common.send')}}</button>
       </footer>
     </section>
   </div>

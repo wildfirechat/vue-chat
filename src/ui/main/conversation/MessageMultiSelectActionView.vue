@@ -6,7 +6,7 @@
           <div class="icon">
             <i class="icon-ion-forward"></i>
           </div>
-          <p>逐条转发</p>
+          <p>{{$t('conversation.forward_one_by_one')}}</p>
         </div>
       </li>
       <li>
@@ -14,7 +14,7 @@
           <div class="icon">
             <i class="icon-ion-forward"></i>
           </div>
-          <p>合并转发</p>
+          <p>{{$t('conversation.forward_composite')}}</p>
         </div>
       </li>
       <li>
@@ -22,7 +22,7 @@
           <div class="icon">
             <i class="icon-ion-android-favorite"></i>
           </div>
-          <p>收藏</p>
+          <p>{{$t('common.fav')}}</p>
         </div>
       </li>
       <li>
@@ -30,7 +30,7 @@
           <div @click="deleteMultiMessage" class="icon">
             <i class="icon-ion-android-remove"></i>
           </div>
-          <p>删除</p>
+          <p>{{$t('common.delete')}}</p>
         </div>
       </li>
       <li>

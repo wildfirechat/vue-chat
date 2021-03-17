@@ -6,7 +6,7 @@
            v-on:focus="onFocus(true)"
            v-model="sharedSearchState.query"
            @keydown.esc="cancel"
-           type="text" placeholder="搜索"/>
+           type="text" :placeholder="$t('common.search')"/>
     <i class="icon-ion-ios-search"></i>
     <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
   </div>
@@ -63,7 +63,7 @@ export default {
           PickerUserView,
           {
             users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
-            confirmTitle: '创建',
+            confirmTitle: this.$t('common.create'),
           }, {
             name: 'pick-user-modal',
             width: 600,

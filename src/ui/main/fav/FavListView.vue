@@ -53,7 +53,7 @@
             </div>
             <div class="fav-item-sender-time">
               <p class="time">2021/01/30</p>
-              <p class="sender">{{ '来自: ' + favItem._senderName }}</p>
+              <p class="sender">{{ $t('fav.from') + ': ' + favItem._senderName }}</p>
             </div>
           </div>
         </li>
@@ -61,8 +61,8 @@
       <infinite-loading :identifier="'fav'" force-use-infinite-wrapper direction="bottom"
                         @infinite="infiniteHandler">
         <!--            <template slot="spinner">加载中...</template>-->
-        <template slot="no-more">没有更多收藏</template>
-        <template slot="no-results">已加载全部收藏 :(</template>
+        <template slot="no-more">{{$t('fav.no_more')}}</template>
+        <template slot="no-results">{{$t('fav.all_fav_load')}}</template>
       </infinite-loading>
     </div>
   </section>
@@ -151,6 +151,7 @@ export default {
         }
         fi._timeStr = helper.dateFormat(fi.timestamp);
         if (fi.type === MessageContentType.File) {
+          fi.title = fi.title ? fi.title : 'unname'
           fi._fileIconName = helper.getFiletypeIcon(fi.title.substring(fi.title.lastIndexOf('.')))
           fi._sizeStr = helper.humanSize(fi.data.size)
         }
@@ -204,19 +205,19 @@ export default {
 
   computed: {
     title() {
-      let str = '收藏';
+      let str = this.$t('fav.fav');
       switch (this.category) {
         case 'all':
-          str = '全部收藏';
+          str = this.$t('fav.all');
           break;
         case 'file':
-          str = '文件';
+          str = this.$t('fav.file');
           break;
         case 'media':
-          str = '相册';
+          str = this.$t('fav.media');
           break;
         case 'composite':
-          str = '聊天记录'
+          str = this.$t('fav.composite');
           break;
         default:
           break;
@@ -248,7 +249,7 @@ export default {
       let items = this.favItems.filter(fi => fi.type === MessageContentType.Image || fi.type === MessageContentType.Video)
       let groupedItems = [];
 
-      let months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+      let months = [this.$t('common.month_1'), this.$t('common.month_1'), this.$t('common.month_2'), this.$t('common.month_3'), this.$t('common.month_4'), this.$t('common.month_5'), this.$t('common.month_6'), this.$t('common.month_7'), this.$t('common.month_8'), this.$t('common.month_9'), this.$t('common.month_10'), this.$t('common.month_11'), this.$t('common.month_12'), ];
 
       let map = new Map();
       items.forEach(item => {

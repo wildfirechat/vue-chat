@@ -1,7 +1,7 @@
 <template>
   <div class="text-message-container"
        v-bind:class="{out:message.direction === 0}">
-    <p class="text">不支持该消息类型，请在手机上查看</p>
+    <p class="text">{{$t('voip.unsupport_message_desc')}}</p>
   </div>
 </template>
 

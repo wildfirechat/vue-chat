@@ -22,15 +22,15 @@
       >
         <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
           <div class="drag-drop">
-            <p>拖拽到此发送给{{ conversationTitle }}</p>
+            <p>{{ $t('conversation.drag_to_send_to', [conversationTitle]) }}</p>
           </div>
         </div>
         <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
           <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
                             @infinite="infiniteHandler">
             <!--            <template slot="spinner">加载中...</template>-->
-            <template slot="no-more">没有更多消息</template>
-            <template slot="no-results">已加载全部消息 :(</template>
+            <template slot="no-more">{{$t('conversation.no_more_message')}}</template>
+            <template slot="no-results">{{$t('conversation.all_message_load')}}</template>
           </infinite-loading>
           <ul>
             <!--todo item.messageId or messageUid as key-->
@@ -78,31 +78,31 @@
         <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true" v-on:close="onMenuClose">
           <!--          更多menu item-->
           <li v-if="isCopyable(message)">
-            <a @click.prevent="copy(message)">复制</a>
+            <a @click.prevent="copy(message)">{{$t('common.copy')}}</a>
           </li>
           <li>
-            <a @click.prevent="delMessage(message)">删除</a>
+            <a @click.prevent="delMessage(message)">{{$t('common.delete')}}</a>
           </li>
           <li v-if="isForwardable(message)">
-            <a @click.prevent="forward(message)">转发</a>
+            <a @click.prevent="forward(message)">{{$t('common.forward')}}</a>
           </li>
           <li v-if="isFavable">
-            <a @click.prevent="">收藏</a>
+            <a @click.prevent="">{{$t('common.fav')}}</a>
           </li>
           <li>
-            <a @click.prevent="quoteMessage(message)">引用</a>
+            <a @click.prevent="quoteMessage(message)">{{$t('common.quote')}}</a>
           </li>
           <li>
-            <a @click.prevent="multiSelect(message)">多选</a>
+            <a @click.prevent="multiSelect(message)">{{$t('common.multi_select')}}</a>
           </li>
           <li v-if="isRecallable(message)">
-            <a @click.prevent="recallMessage(message)">撤回</a>
+            <a @click.prevent="recallMessage(message)">{{$t('common.recall')}}</a>
           </li>
           <li v-if="isLocalFile(message)">
-            <a @click.prevent="openFile(message)">打开</a>
+            <a @click.prevent="openFile(message)">{{$t('common.open')}}</a>
           </li>
           <li v-if="isLocalFile(message)">
-            <a @click.prevent="openDir(message)">打开目录</a>
+            <a @click.prevent="openDir(message)">{{$t('common.open_dir')}}</a>
           </li>
         </vue-context>
       </div>
@@ -135,6 +135,7 @@ import {fs, isElectron, shell} from "@/platform";
 import FileMessageContent from "@/wfc/messages/fileMessageContent";
 import ImageMessageContent from "@/wfc/messages/imageMessageContent";
 import {copyImg, copyText} from "@/ui/util/clipboard";
+import Message from "../../../wfc/messages/message";
 
 export default {
   components: {
@@ -177,12 +178,13 @@ export default {
         let length = e.dataTransfer.files.length;
         if (length > 0 && length < 5) {
           for (let i = 0; i < length; i++) {
+              this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i])
             store.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
           }
         } else {
           // TODO
           // toast
-          console.log('一次最多发送5个文件');
+          console.log(this.$t('conversation.drag_to_send_limit_tip'));
         }
       } else if (v === 'dragover') {
         // If not st as 'copy', electron will open the drop file
@@ -438,12 +440,18 @@ export default {
     this.$on('openMessageContextMenu', function (event, message) {
       this.$refs.menu.open(event, message);
     });
+
+    this.$eventBus.$on('send-file', args => {
+        let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
+       let message = new Message(null, fileMessageContent);
+       this.forward(message)
+    })
   },
 
-  unmounted() {
+  beforeDestroy() {
     document.removeEventListener('mouseup', this.dragEnd);
     document.removeEventListener('mousemove', this.drag);
-
+    this.$eventBus.$off('send-file')
   },
 
   updated() {

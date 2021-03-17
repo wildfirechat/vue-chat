@@ -10,12 +10,12 @@
             <div class="info">
               <div class="name-action">
                 <span class="name single-line">{{ friendRequest._target.displayName }}</span>
-                <span class="status" v-if="friendRequest.status === 1">已添加</span>
-                <span class="status" v-else-if="friendRequest.status === 0">已发送</span>
-                <span class="status" v-else-if="friendRequest.status === 3">已拒绝</span>
-                <button class="accept" v-else>添加</button>
+                <span class="status" v-if="friendRequest.status === 1">{{$t('friend_request.accepted')}}</span>
+                <span class="status" v-else-if="friendRequest.status === 0">{{$t('friend_request.sent')}}</span>
+                <span class="status" v-else-if="friendRequest.status === 3">{{$t('friend_request.denied')}}</span>
+                <button class="accept" v-else>{{$t('common.add')}}</button>
               </div>
-              <p class="reason single-line">我是{{ friendRequest._target.displayName }}</p>
+              <p class="reason single-line">{{ $t('friend_request.im') + friendRequest._target.displayName }}</p>
             </div>
           </div>
         </div>

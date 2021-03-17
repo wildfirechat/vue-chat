@@ -3,7 +3,7 @@
     <div class="conversation-action-container">
       <div @click="showCreateConversationModal" class="action-item">
         <div class="icon">+</div>
-        <p>添加成员</p>
+        <p>{{$t('conversation.add_member')}}</p>
       </div>
     </div>
     <UserListVue :users="users"
@@ -42,7 +42,7 @@ export default {
             users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
             initialCheckedUsers: [this.conversationInfo.conversation._target],
             uncheckableUsers: [this.conversationInfo.conversation._target],
-            confirmTitle: '添加',
+            confirmTitle: this.$t('common.add'),
           }, {
             name: 'pick-user-modal',
             width: 600,

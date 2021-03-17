@@ -8,24 +8,24 @@
     <div class="search-result">
       <ul>
         <li class="category-item" v-if="sharedSearchState.userSearchResult.length > 0">
-          <label>新用户</label>
+          <label>{{$t('search.new_user')}}</label>
           <ul>
             <li v-for="(user, index) in toShowUserList" :key="index">
               <div class="search-result-item contact">
                 <img :src="user.portrait">
                 <span>{{ user.displayName }}</span>
-                <button @click.stop="addFriend(user)">添加</button>
+                <button @click.stop="addFriend(user)">{{$t('common.add')}}</button>
               </div>
             </li>
           </ul>
           <div v-if="!shouldShowAllUser&& this.sharedSearchState.userSearchResult.length > 5"
                class="show-all"
                @click.stop="showAllUser">
-            查看全部({{ this.sharedSearchState.contactSearchResult.length }})
+            {{ $t('search.view_all') + this.sharedSearchState.contactSearchResult.length }}
           </div>
         </li>
         <li class="category-item" v-if="sharedSearchState.contactSearchResult.length > 0">
-          <label>联系人</label>
+          <label>{{$t('common.contact')}}</label>
           <ul>
             <li v-for="(contact, index) in toShowContactList" :key="index">
               <div class="search-result-item contact" @click.stop="chatToContact(contact)">
@@ -37,11 +37,11 @@
           <div v-if="!shouldShowAllContact && this.sharedSearchState.contactSearchResult.length > 5"
                class="show-all"
                @click.stop="showAllContact">
-            查看全部({{ this.sharedSearchState.contactSearchResult.length }})
+            {{ $t('search.view_all') + this.sharedSearchState.contactSearchResult.length }}
           </div>
         </li>
         <li class="category-item" v-if="sharedSearchState.groupSearchResult.length > 0">
-          <label>群聊</label>
+          <label>{{$t('common.group')}}</label>
           <ul>
             <li v-for="(group, index) in toShowGroupList" :key="index">
               <div class="search-result-item group" @click="chatToGroup(group)">
@@ -53,13 +53,13 @@
           <div v-if="!shouldShowAllGroup && this.sharedSearchState.groupSearchResult.length > 5"
                class="show-all"
                @click.stop="showAllGroup">
-            查看全部({{ this.sharedSearchState.groupSearchResult.length }})
+            {{ $t('search.view_all') + this.sharedSearchState.groupSearchResult.length }}
           </div>
         </li>
         <li class="category-item" v-if="sharedSearchState.messageSearchResult.length > 0">
-          <label>聊天记录</label>
+          <label>{{$t('search.message_history')}}</label>
           <div class="search-result-item message">
-            搜索聊天记录...
+              {{$t('search.search_message_history')}}
           </div>
         </li>
       </ul>

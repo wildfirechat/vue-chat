@@ -1,0 +1,160 @@
+{
+    "login": {
+        "desc": "Scan the QR code to login Wildfire IM",
+        "tip": "Wildfire IM Web client needs to be used with your mobile",
+        "warning": "Don't use WeChat to scan the QR code!!!",
+        "scan_qr_success": "Scan code successfully",
+        "confirm_login_tip": "Please confirm the login on your mobile",
+        "remember_me": "Remember me",
+        "cancel_login": "Cancel Login",
+        "login": "Login",
+        "switch_user": "Switch User",
+        "auto_login_tip": "Automatically logging in..."
+    },
+    "contact": {
+        "new_friend": "New friend",
+        "group": "Group Chat",
+        "contact": "Contact"
+    },
+    "friend_request": {
+        "request": "Friend Request",
+        "send_request_tip": "Send friend request to {0}",
+        "accepted": "Accepted",
+        "sent": "Sent",
+        "denied": "Rejected",
+        "im": "I am",
+        "intro": "Hello"
+    },
+    "group": {
+        "name": "Group name {0}",
+        "chat": "Start group chat"
+    },
+    "message":{
+        "send_message": "Send Message",
+        "records": "Chat Records",
+        "unsupport_message_desc": "This message type is not supported, please check it on your phone",
+        "receipt": "Message Receipt",
+        "receipt_detail": "Message Receipt Detail",
+        "receipt_read_users": "Read",
+        "receipt_received_users": "Delivered",
+        "receipt_unreceived_users": "Undelivered",
+        "sender": "Message Sender",
+        "content": "Message content"
+    },
+    "conversation": {
+        "forward_title": "Send separately",
+        "picked_contact": "Selected contact",
+        "create_group": "Create a group chat",
+        "recent_conversation": "Recent Chat",
+        "not_select_conversation": "Not select any chat",
+        "select_conversation_desc": "{0} chats selected",
+        "forward_extra": "Leave a message to friend",
+        "forward_one_by_one": "Forward one by one",
+        "forward_composite": "Merge Forward",
+        "user_message_records": "{0}’s chat records",
+        "group_message_records": "Group Chat Records",
+        "drag_to_send_to": "Drag here to send to {0}",
+        "no_more_message": "No more messages",
+        "all_message_load": "All messages have been loaded :(",
+        "drag_to_send_limit_tip": "Send up to 5 files at a time",
+        "group_name": "Group Name",
+        "group_announcement": "Group Announcement",
+        "add_member": "Add Member",
+        "remove_member": "Remove member",
+        "quit_group": "Quit group chat",
+        "click_to_edit_group_announcement": "click to edit group announcement",
+        "all_people": "Everyone",
+        "sticky_top": "sticky_top",
+        "cancel_sticky_top": "Cancel sticky top",
+        "enable_notification": "Allow notification",
+        "disable_notification": "Not Disturb"
+    },
+    "fav": {
+        "fav": "Collection",
+        "all": "All Collection",
+        "file": "File",
+        "media": "Album",
+        "composite": "Chat Record",
+        "from": "From",
+        "no_more": "No more favorites",
+        "all_fav_load": "All favorites have been loaded :("
+    },
+    "voip": {
+        "desc": "Audio and Video Call",
+        "not_answer": "The other party did not answer",
+        "ongoing": "Calling",
+        "duration": "Call duration"
+    },
+    "pick": {
+        "pick_contact": "Select Contact",
+        "picked_contact": "Selected contact"
+    },
+    "search": {
+        "new_user": "New User",
+        "view_all": "View All",
+        "message_history": "Chat History",
+        "search_message_history": "Search chat history..."
+    },
+    "file_record": {
+        "no_more": "No more files",
+        "all_file_load": "All files have been loaded :("
+    },
+    "setting": {
+        "setting": "Settings",
+        "enable_notification": "Enable notification",
+        "enable_notification_detail": "Notification display message content",
+        "close_window_to_exit": "When closing the window, exit directly",
+        "auto_login": "Auto Login",
+        "exit_switch_user": "Exit/Switch Account",
+        "feedback": "Send feedback to us",
+        "lang": "Language (valid after restart)",
+        "zh_cn": "简体中文",
+        "zh_tw": "繁體中文",
+        "en": "English"
+    },
+    "common": {
+        "add": "Add",
+        "remove": "Remove",
+        "send": "Send",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "alias": "Remarks",
+        "area": "Area",
+        "label": "Label",
+        "conversation": "Chat",
+        "sender": "Sender",
+        "all": "All",
+        "mine": "Mine",
+        "unknown": "Unknown",
+        "search": "Search",
+        "back": "Back",
+        "create": "Create",
+        "none": "None",
+        "copy": "Copy",
+        "delete": "Delete",
+        "forward": "forward",
+        "fav": "Collection",
+        "quote": "quote",
+        "multi_select": "Multiselect",
+        "recall": "Recall",
+        "open": "Open",
+        "open_dir": "Open Directory",
+        "draft": "Draft",
+        "month_1": "January",
+        "month_2": "February",
+        "month_3": "March Month",
+        "month_4": "April",
+        "month_5": "May",
+        "month_6": "June",
+        "month_7": "July",
+        "month_8": "August",
+        "month_9": "September",
+        "month_10": "October",
+        "month_11": "November",
+        "month_12": "December"
+    },
+    "misc":{
+        "beijing": "Beijing",
+        "test_user": "Test User"
+    }
+}

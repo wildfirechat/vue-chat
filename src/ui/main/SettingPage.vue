@@ -1,41 +1,51 @@
 <template>
   <div class="setting-container">
     <div class="content">
-      <h2>设置</h2>
+      <h2>{{$t('setting.setting')}}</h2>
       <label>
-        开启通知
+          {{$t('setting.enable_notification')}}
         <input type="checkbox"
                :checked="sharedMiscState.enableNotification"
                @change="enableNotification($event.target.checked)">
       </label>
       <label>
-        通知显示消息内容
+          {{$t('setting.enable_notification_detail')}}
         <input v-bind:disabled="!sharedMiscState.enableNotification"
                type="checkbox"
                :checked="sharedMiscState.enableNotificationMessageDetail"
                @change="enableNotificationDetail($event.target.checked)">
       </label>
       <label v-if="sharedMiscState.isElectron">
-        关闭窗口时，直接退出
+          {{$t('setting.close_window_to_exit')}}
         <input type="checkbox" :checked="sharedMiscState.enableCloseWindowToExit"
                @change="enableCloseWindowToExit($event.target.checked)">
       </label>
       <label v-if="sharedMiscState.isElectron">
-        自动登录
+          {{$t('setting.auto_login')}}
         <input type="checkbox" :checked="sharedMiscState.enableAutoLogin"
                @change="enableAutoLogin($event.target.checked)">
       </label>
+        <div>
+            {{$t('setting.lang')}}
+        <dropdown class="my-dropdown-toggle"
+                  :options="langs"
+                  :selected="currentLang"
+                  v-on:updateOption="setLang"
+                  :placeholder="'Select an Item'"
+                  :closeOnOutsideClick="true">
+        </dropdown>
+        </div>
     </div>
     <footer>
       <a class="button" target="_blank" @click="logout">
-        退出/切换账号
+          {{$t('setting.exit_switch_user')}}
         <!--        <i class="icon-ion-ios-email-outline"/>-->
       </a>
       <a
           class="button"
           href="mailto:imndxx@gmail.com?Subject=WildfireChat%20Feedback"
           target="_blank">
-        发送反馈给我们
+          {{$t('setting.feedback')}}
         <i class="icon-ion-ios-email-outline"/>
       </a>
 
@@ -54,14 +64,17 @@
 <script>
 import wfc from "@/wfc/client/wfc";
 import store from "@/store";
+import dropdown from 'vue-dropdowns';
 import {clear} from "@/ui/util/storageHelper";
 import {ipcRenderer, isElectron} from "@/platform";
+import {getItem, setItem} from "../util/storageHelper";
 
 export default {
   name: "SettingPage",
   data() {
     return {
       sharedMiscState: store.state.misc,
+      langs:[{lang:'zh-CN', name:'简体中文'}, {lang:'zh-TW', name:'繁體中文'}, {lang:'en', name:'English'}],
     }
   },
   methods: {
@@ -85,7 +98,24 @@ export default {
 
     enableAutoLogin(enable) {
       store.setEnableAutoLogin(enable);
+    },
+
+    setLang(lang){
+        setItem('lang', lang.lang)
+        // this.$router.go();
     }
+  },
+    computed:{
+      currentLang(){
+          let lang = getItem('lang')
+          lang = lang ? lang : 'zh-CN';
+          let index = this.langs.findIndex(l => l.lang === lang);
+          index = index >= 0 ? index : 0;
+          return this.langs[index];
+      }
+    },
+  components: {
+      'dropdown': dropdown,
   },
 }
 </script>

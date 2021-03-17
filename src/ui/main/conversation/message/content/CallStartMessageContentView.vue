@@ -23,19 +23,19 @@ export default {
   computed: {
     textContent() {
       let voip = this.message.messageContent;
-      let desc = '视频通话';
+      let desc = this.$t('voip.desc');
       if (voip.status === 0) {
-        desc = '对方未接听';
+        desc = this.$t('voip.not_answer');
 
       } else if (voip.status === 1) {
-        desc = '通话中';
+        desc = this.$t('voip.ongoing');
       } else {
         if (voip.connectTime && voip.connectedTime > 0) {
           let duration = (voip.endTime - voip.connectTime()) / 1000;
-          desc = `通话时长: ${duration}`
+          desc = this.$t('voip.duration') + ` : ${duration}`
 
         } else {
-          desc = '音视频通话';
+          desc = this.$t('voip.desc');
         }
       }
       return desc;

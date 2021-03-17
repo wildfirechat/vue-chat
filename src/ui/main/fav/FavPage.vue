@@ -13,21 +13,21 @@
               <div class="category-item" v-bind:class="{active: category === CATEGORY_ALL}"
                    @click="showAllFav">
                 <i class="icon-ion-android-cloud"></i>
-                <p>全部收藏</p>
+                <p>{{$t('fav.all')}}</p>
               </div>
             </li>
             <li>
               <div class="category-item" v-bind:class="{active:category === CATEGORY_FILE}"
                    @click="showFileFav">
                 <i class="icon-ion-android-document"></i>
-                <p>文件</p>
+                <p>{{$t('fav.file')}}</p>
               </div>
             </li>
             <li>
               <div class="category-item" v-bind:class="{active:category === CATEGORY_MEDIA}"
                    @click="showMediaFav">
                 <i class="icon-ion-image"></i>
-                <p>相册</p>
+                <p>{{$t('fav.media')}}</p>
               </div>
             </li>
             <li>
@@ -35,7 +35,7 @@
                    @click="showCompositeFav">
                 <i class="icon-ion-ios-chatboxes"></i>
                 <!--              组合消息-->
-                <p>聊天记录</p>
+                <p>{{$t('fav.composite')}}</p>
               </div>
             </li>
           </ul>

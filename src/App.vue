@@ -33,6 +33,7 @@
         @close="sharedConversationState.previewMediaIndex = null">
     </CoolLightBox>
 
+      <notifications/>
     <router-view id="main-content-container" class="main-content-container"></router-view>
   </div>
 </template>
@@ -42,6 +43,7 @@ import store from "@/store";
 import {isElectron} from "@/platform";
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
+import Vue from "vue";
 
 export default {
   name: 'App',
@@ -84,7 +86,22 @@ export default {
       el = document.getElementById('main-content-container');
       el.style.backgroundColor = '#292929'
     }
+      this.$eventBus.$on('uploadFile', file => {
+          if(!file){
+              return;
+          }
+          if(file.size > 100 * 1024 * 1024){
+              this.$notify({
+                  title: '大文件提示',
+                  text: file.name + '上传中，请到上传页面查看或发送!',
+                  type:'warn'
+              });
+          }
+      })
   },
+    beforeDestroy(){
+      this.$eventBus.$off('uploadFile');
+    },
   components: {
     CoolLightBox,
   }

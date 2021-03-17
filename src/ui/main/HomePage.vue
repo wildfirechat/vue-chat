@@ -53,6 +53,10 @@
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
                  @click="go2Files"></i>
             </li>
+              <li>
+                  <i class="icon-ion-android-upload"
+                     @click="showUploadDialog"></i>
+              </li>
             <li>
               <i class="icon-ion-android-settings"
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
@@ -79,6 +83,7 @@ import ConnectionStatus from "@/wfc/client/connectionStatus";
 import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
 import {removeItem, storage} from "@/ui/util/storageHelper";
 import {BrowserWindow} from "@/platform";
+import UploadRecordView from "./bigFile/UploadRecordView";
 
 export default {
   data() {
@@ -160,6 +165,38 @@ export default {
       this.$router.push({path: "/home/setting"});
       this.isSetting = true;
     },
+      showUploadDialog(){
+              let beforeOpen = () => {
+                  console.log('Opening...')
+              };
+              let beforeClose = (event) => {
+                  console.log('Closing...', event, event.params)
+                  // What a gamble... 50% chance to cancel closing
+                  // if (event.params.confirm) {
+                  //     // TODO
+                  //     console.log('confirm')
+                  // } else {
+                  //     console.log('cancel')
+                  //     // TODO clear pick state
+                  // }
+              };
+              let closed = (event) => {
+                  console.log('Close...', event)
+              };
+              this.$modal.show(
+                  UploadRecordView,
+                  {
+                  }, {
+                      name: 'upload-modal',
+                      width: 600,
+                      height: 480,
+                      clickToClose: true,
+                  }, {
+                      'before-open': beforeOpen,
+                      'before-close': beforeClose,
+                      'closed': closed,
+                  })
+          },
 
     closeUserCard() {
       console.log('closeUserCard')

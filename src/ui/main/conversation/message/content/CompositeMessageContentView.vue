@@ -3,7 +3,7 @@
        v-bind:class="{out:message.direction === 0}">
     <p class="title">{{ title }}</p>
     <p class="content" v-html="this.content"></p>
-    <p class="desc">聊天记录</p>
+    <p class="desc">{{$t('message.records')}}</p>
   </div>
 </template>
 

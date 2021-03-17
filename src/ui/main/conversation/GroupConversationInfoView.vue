@@ -2,27 +2,27 @@
   <div class="conversation-info">
     <header>
       <label>
-        群名
+        {{$t('conversation.group_name')}}
         <input type="text" :placeholder="conversationInfo.conversation._target._displayName">
       </label>
       <label>
-        群公告
+        {{$t('conversation.group_announcement')}}
         <input type="text" disabled
                :placeholder="groupAnnouncement">
       </label>
     </header>
     <div class="search-item">
-      <input type="text" v-model="filterQuery" placeholder="搜索">
+      <input type="text" v-model="filterQuery" :placeholder="$t('common.search')">
       <i class="icon-ion-ios-search"></i>
     </div>
     <div class="member-container">
       <div v-if="enableAddGroupMember && !filterQuery" @click="showCreateConversationModal" class="action-item">
         <div class="icon">+</div>
-        <p>添加成员</p>
+        <p>{{$t('conversation.add_member')}}</p>
       </div>
       <div v-if="enableRemoveGroupMember && !filterQuery" @click="showRemoveGroupMemberModal" class="action-item">
         <div class="icon">-</div>
-        <p>移除成员</p>
+        <p>{{$t('conversation.remove_member')}}</p>
       </div>
       <UserListVue :users="users"
                    :show-category-label="false"
@@ -30,7 +30,7 @@
       />
     </div>
     <div @click="quitGroup" class="quit-group-item">
-      退出群聊
+      {{$t('conversation.quit_group')}}
     </div>
   </div>
 </template>
@@ -86,7 +86,7 @@ export default {
             users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
             initialCheckedUsers: groupMemberUserInfos,
             uncheckableUsers: groupMemberUserInfos,
-            confirmTitle: '添加',
+            confirmTitle: this.$t('common.add'),
           }, {
             name: 'pick-user-modal',
             width: 600,
@@ -119,7 +119,7 @@ export default {
           PickUserView,
           {
             users: groupMemberUserInfos,
-            confirmTitle: '移除',
+            confirmTitle: this.$t('common.remove'),
           }, {
             name: 'pick-user-modal',
             width: 600,
@@ -144,7 +144,7 @@ export default {
       if (response.data && response.data.result) {
         this.groupAnnouncement = response.data.result.text;
       } else {
-        this.groupAnnouncement = '点击编辑群公告';
+        this.groupAnnouncement = this.$t('conversation.click_to_edit_group_announcement');
       }
     },
 

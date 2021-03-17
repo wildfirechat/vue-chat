@@ -1335,9 +1335,27 @@ export class WfcManager {
         return impl.getVersion();
     }
 
+    /**
+     * 获取经过认证的下载地址。
+     */
     getAuthorizedMediaUrl(messageUid, mediaType, mediaPath, successCB, failCB){
         impl.getAuthorizedMediaUrl(messageUid, mediaType, mediaPath, successCB, failCB)
     }
+
+    /**
+     * 是否支持上传大文件上传。只有专业版才支持此功能。当支持大文件上传时，调用getUploadMediaUrl获取上传url，然后在应用层上传
+     */
+    isSupportBigFilesUpload() {
+        return impl.isSupportBigFilesUpload();
+    }
+
+    /**
+     * 获取上传链接。一般用户大文件上传。
+     */
+    getUploadMediaUrl(fileName, mediaType, successCB, failCB) {
+        impl.getUploadMediaUrl(fileName, mediaType, successCB, failCB);
+    }
+
     /**
      * 微信小程序切到前台时调用应用切到了前台
      *

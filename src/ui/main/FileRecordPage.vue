@@ -10,28 +10,28 @@
               <div class="category-item" v-bind:class="{active:category === CATEGORY_ALL}"
                    @click="showAllFiles">
                 <i class="icon-ion-folder"></i>
-                <p>全部</p>
+                <p>{{$t('common.all')}}</p>
               </div>
             </li>
             <li>
               <div class="category-item" v-bind:class="{active:category === CATEGORY_ME}"
                    @click="showMyFiles">
                 <i class="icon-ion-android-send"></i>
-                <p>我的</p>
+                <p>{{$t('common.mine')}}</p>
               </div>
             </li>
             <li>
               <div class="category-item" v-bind:class="{active: category === CATEGORY_CONVERSATION}"
                    @click="showConversations">
                 <i class="icon-ion-ios-chatboxes"></i>
-                <p>聊天</p>
+                <p>{{$t('common.conversation')}}</p>
               </div>
             </li>
             <li>
               <div class="category-item" v-bind:class="{active: category === CATEGORY_SENDER}"
                    @click="showSenders">
                 <i class="icon-ion-person"></i>
-                <p>发送者</p>
+                <p>{{$t('common.sender')}}</p>
               </div>
             </li>
           </ul>
@@ -83,8 +83,8 @@
             <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="bottom"
                               @infinite="infiniteHandler">
               <!--            <template slot="spinner">加载中...</template>-->
-              <template slot="no-more">没有更多文件</template>
-              <template slot="no-results">已加载全部文件 :(</template>
+              <template slot="no-more">{{$t('file_record.no_more')}}</template>
+              <template slot="no-results">{{$t('file_record.all_file_load')}}</template>
             </infinite-loading>
           </div>
           <div v-else class="file-record-empty-container">{{ emptyDesc }}</div>

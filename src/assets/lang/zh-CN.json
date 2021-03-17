@@ -1,0 +1,160 @@
+{
+    "login": {
+        "desc": "扫码登录野火IM",
+        "tip": "野火IM Web端需要配合您的手机客户端登录使用",
+        "warning": "不是使用微信扫码登录!!!",
+        "scan_qr_success": "扫码成功",
+        "confirm_login_tip": "请在手机上点击确认以登录",
+        "remember_me": "记住登录",
+        "cancel_login": "取消登录",
+        "login": "登录",
+        "switch_user": "切换用户",
+        "auto_login_tip": "自动登录中..."
+    },
+    "contact": {
+        "new_friend": "新的朋友",
+        "group": "群聊",
+        "contact": "联系人"
+    },
+    "friend_request": {
+        "request": "好友请求",
+        "send_request_tip": "向{0}发送好球请求",
+        "accepted": "已添加",
+        "sent": "已发送",
+        "denied": "已拒绝",
+        "im": "我是",
+        "intro": "你好"
+    },
+    "group": {
+        "name": "群名称{0}",
+        "chat": "进入群聊"
+    },
+    "message":{
+        "send_message": "发消息",
+        "records": "聊天记录",
+        "unsupport_message_desc": "不支持该消息类型，请在手机上查看",
+        "receipt": "消息回执",
+        "receipt_detail": "消息回执信息",
+        "receipt_read_users": "已读人员",
+        "receipt_received_users": "已送达",
+        "receipt_unreceived_users": "未送达",
+        "sender": "消息发送者",
+        "content": "消息内容"
+    },
+    "conversation": {
+        "forward_title": "分别发送给",
+        "picked_contact": "已选择联系人",
+        "create_group": "创建群聊",
+        "recent_conversation": "最近聊天",
+        "not_select_conversation": "未选择聊天",
+        "select_conversation_desc": "已选择{0}个聊天",
+        "forward_extra": "给朋友留言",
+        "forward_one_by_one": "逐条转发",
+        "forward_composite": "合并转发",
+        "user_message_records": "{0}的聊天记录",
+        "group_message_records": "群聊的聊天记录",
+        "drag_to_send_to": "拖拽到此发送给{0}",
+        "no_more_message": "没有更多消息",
+        "all_message_load": "已加载全部消息 :(",
+        "drag_to_send_limit_tip": "一次最多发送5个文件",
+        "group_name": "群名",
+        "group_announcement": "群公告",
+        "add_member": "添加成员",
+        "remove_member": "移除成员",
+        "quit_group": "退出群聊",
+        "click_to_edit_group_announcement": "点击编辑群公告",
+        "all_people": "所有人",
+        "sticky_top": "置顶",
+        "cancel_sticky_top": "取消置顶",
+        "enable_notification": "允许通知",
+        "disable_notification": "消息免打扰"
+    },
+    "fav": {
+        "fav": "收藏",
+        "all": "全部收藏",
+        "file": "文件",
+        "media": "相册",
+        "composite": "聊天记录",
+        "from": "来自",
+        "no_more": "没有更多收藏",
+        "all_fav_load": "已加载全部收藏 :("
+    },
+    "voip": {
+        "desc": "音视频通话",
+        "not_answer": "对方未接听",
+        "ongoing": "通话中",
+        "duration": "通话时长"
+    },
+    "pick": {
+        "pick_contact": "选择联系人",
+        "picked_contact": "已选择联系人"
+    },
+    "search": {
+        "new_user": "新用户",
+        "view_all": "查看全部",
+        "message_history": "聊天记录",
+        "search_message_history": "搜索聊天记录..."
+    },
+    "file_record": {
+        "no_more": "没有更多文件",
+        "all_file_load": "已加载全部文件 :("
+    },
+    "setting": {
+        "setting": "设置",
+        "enable_notification": "开启通知",
+        "enable_notification_detail": "通知显示消息内容",
+        "close_window_to_exit": "关闭窗口时，直接退出",
+        "auto_login": "自动登录",
+        "exit_switch_user": "退出/切换账号",
+        "feedback": "发送反馈给我们",
+        "lang": "语言(重启生效)",
+        "zh_cn": "简体中文",
+        "zh_tw": "繁體中文",
+        "en": "English"
+    },
+    "common": {
+        "add": "添加",
+        "remove": "移除",
+        "send": "发送",
+        "confirm": "确认",
+        "cancel": "取消",
+        "alias": "备注",
+        "area": "地区",
+        "label": "标签",
+        "conversation": "聊天",
+        "sender": "发送者",
+        "all": "全部",
+        "mine": "我的",
+        "unknown": "未知",
+        "search": "搜索",
+        "back": "返回",
+        "create": "创建",
+        "none": "无",
+        "copy": "复制",
+        "delete": "删除",
+        "forward": "转发",
+        "fav": "收藏",
+        "quote": "引用",
+        "multi_select": "多选",
+        "recall": "撤回",
+        "open": "打开",
+        "open_dir": "打开目录",
+        "draft": "草稿",
+        "month_1": "一月",
+        "month_2": "二月",
+        "month_3": "三月",
+        "month_4": "四月",
+        "month_5": "五月",
+        "month_6": "六月",
+        "month_7": "七月",
+        "month_8": "八月",
+        "month_9": "九月",
+        "month_10": "十月",
+        "month_11": "十一月",
+        "month_12": "十二月"
+    },
+    "misc":{
+        "beijing": "北京",
+        "test_user": "测试用户"
+    }
+}

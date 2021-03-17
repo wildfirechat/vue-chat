@@ -190,7 +190,8 @@ export default {
           } else {
             file = fileFromDataUri(src, new Date().getTime() + '.png');
           }
-          store.sendFile(this.conversationInfo.conversation, file)
+            this.$eventBus.$emit('uploadFile', file)
+            store.sendFile(this.conversationInfo.conversation, file)
           // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
           img.parentNode.removeChild(img);
         });
@@ -326,7 +327,7 @@ export default {
             users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true),
             initialCheckedUsers: [this.sharedContactState.selfUserInfo],
             uncheckableUsers: [this.sharedContactState.selfUserInfo],
-            confirmTitle: '确定',
+            confirmTitle: this.$t('common.confirm'),
           }, {
             name: 'pick-user-modal',
             width: 600,
@@ -358,8 +359,8 @@ export default {
       //   showMessage('Send file not allowed to exceed 100M.');
       //   return false;
       // }
-
-      store.sendFile(this.conversationInfo.conversation, file);
+        this.$eventBus.$emit('uploadFile', file)
+        store.sendFile(this.conversationInfo.conversation, file);
     },
 
     initEmojiPicker() {
@@ -384,11 +385,11 @@ export default {
       let mentionMenuItems = [];
       let groupInfo = wfc.getGroupInfo(conversation.target);
       mentionMenuItems.push({
-        key: "所有人",
+        key: this.$t('conversation.all_people'),
         value: '@' + conversation.target,
         avatar: groupInfo.portrait,
         //searchKey: '所有人' + pinyin.letter('所有人', '', null)
-        searchKey: '所有人' + 'suoyouren' + 'syr'
+        searchKey: this.$t('conversation.all_people') + 'suoyouren' + 'syr'
       });
 
       let groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false);

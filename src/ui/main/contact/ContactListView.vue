@@ -4,7 +4,7 @@
       <li>
         <div @click="showNewFriends" class="category-item-container">
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
-          <span class="title">新的朋友</span>
+          <span class="title">{{$t('contact.new_friend')}}</span>
         </div>
         <NewFriendListView v-if="sharedContactState.expandFriendRequestList" />
       </li>
@@ -12,7 +12,7 @@
         <div @click="showGroups" class="category-item-container">
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandGroup}"></i>
           <div class="category-item">
-            <span class="title">群聊</span>
+            <span class="title">{{$t('contact.group')}}</span>
             <span class="desc">{{ sharedContactState.favGroupList.length }}</span>
           </div>
         </div>
@@ -21,7 +21,7 @@
         <div @click="showContacts" class="category-item-container">
           <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
           <div class="category-item">
-            <span class="title">联系人</span>
+            <span class="title">{{$t('contact.contact')}}</span>
             <span class="desc">{{ sharedContactState.friendList.length }}</span>
           </div>
         </div>

@@ -3,7 +3,7 @@
     <div class="header">
       <div class="desc">
         <h2>{{ userInfo._displayName }}</h2>
-        <label>野火ID: {{ userInfo.name }}</label>
+        <label>ID: {{ userInfo.name }}</label>
       </div>
       <div>
         <img class="avatar" draggable="false" v-bind:src="userInfo.portrait"/>
@@ -12,18 +12,18 @@
     <div class="content">
       <ul>
         <li>
-          <label>备注</label>
+          <label>{{$t('common.alias')}}</label>
           <div class="alias">
             <input @click.stop="" type="text" placeholder="备注名"/>
           </div>
         </li>
         <li>
-          <label>地区</label>
-          <div>北京</div>
+          <label>{{$t('common.area')}}</label>
+          <div>{{$t('misc.beijing')}}</div>
         </li>
         <li>
-          <label>标签</label>
-          <div>测试用户</div>
+          <label>{{$t('common.label')}}</label>
+          <div>{{$t('misc.test_user')}}</div>
         </li>
       </ul>
     </div>

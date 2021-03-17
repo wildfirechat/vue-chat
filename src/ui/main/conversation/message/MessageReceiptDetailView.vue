@@ -1,11 +1,11 @@
 <template>
   <section class="receipt-detail-container">
-    <h1>消息回执信息</h1>
-    <h2>已读人员</h2>
+    <h1>{{$t('message.receipt_detail')}}</h1>
+    <h2>{{$t('message.receipt_read_users')}}</h2>
     <p>{{ readUsersDesc() }}</p>
-    <h2>已送达</h2>
+    <h2>{{$t('message.receipt_received_users')}}</h2>
     <p>{{ receivedUsersDesc() }}</p>
-    <h2>未送达</h2>
+    <h2>{{$t('message.receipt_unreceived_users')}}</h2>
     <p>{{ unreceiveUsersDesc() }}</p>
   </section>
 </template>
@@ -39,7 +39,7 @@ export default {
         });
         desc = desc.substring(0, desc.length - 1)
       }
-      return desc ? desc : '无';
+      return desc ? desc : this.$t('common.none');
     },
     receivedUsersDesc() {
       let desc = '';
@@ -49,7 +49,7 @@ export default {
         });
         desc = desc.substring(0, desc.length - 1)
       }
-      return desc ? desc : '无';
+      return desc ? desc : this.$t('common.none');
     },
     unreceiveUsersDesc() {
       let desc = '';
@@ -59,7 +59,7 @@ export default {
         });
         desc = desc.substring(0, desc.length - 1)
       }
-      return desc ? desc : '无';
+      return desc ? desc : this.$t('common.none');
     },
   }
 }

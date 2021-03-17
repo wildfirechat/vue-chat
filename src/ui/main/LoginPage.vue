@@ -9,36 +9,36 @@
     <div class="login-action-container">
       <!--    等待扫码-->
       <div v-if="loginStatus === 0" class="pending-scan">
-        <p>扫码登录野火IM</p>
-        <p>野火IM Web端需要配合您的手机客户端登录使用</p>
-        <p>不是使用微信扫码登录!!!</p>
+        <p>{{$t('login.desc')}}</p>
+        <p>{{$t('login.tip')}}</p>
+        <p>{{$t('login.warning')}}</p>
       </div>
       <!--    已经扫码-->
       <div v-else-if="loginStatus === 1" class="scanned">
-        <p>{{ userName }}扫码成功</p>
-        <p>请在手机上点击确认以登录</p>
+        <p>{{ userName + $t('login.scan_qr_success')}}</p>
+        <p>{{$t('login.confirm_login_tip')}}</p>
         <label>
-          记住登录
+            {{$t('login.remember_me')}}
           <input type="checkbox" v-model="enableAutoLogin">
         </label>
-        <button @click="cancel" class="button-cancel">取消登录</button>
+        <button @click="cancel" class="button-cancel">{{$t('login.cancel_login')}}</button>
       </div>
 
       <!--    存在session，等待发送给客户端验证-->
       <div v-if="loginStatus === 2" class="pending-quick-login">
-        <button @click="sendQuickLoginRequest" class="button-confirm">登录</button>
-        <button @click="cancel" class="button-cancel">切换用户</button>
+        <button @click="sendQuickLoginRequest" class="button-confirm">{{$t('login.login')}}</button>
+        <button @click="cancel" class="button-cancel">{{$t('login.switch_user')}}</button>
       </div>
 
       <!--    已经发送登录请求-->
       <div v-else-if="loginStatus === 3" class="quick-logining">
-        <p>请在手机上点击确认以登录</p>
-        <button @click="cancel" class="button-cancel">取消登录</button>
+        <p>{{$t('login.confirm_login_tip')}}</p>
+        <button @click="cancel" class="button-cancel">{{$t('login.cancel_login')}}</button>
       </div>
 
       <!--      开发调试时，自动登录-->
       <div v-else-if="loginStatus === 4">
-        <p>自动登录中...</p>
+        <p>{{$t('login.auto_login_tip')}}</p>
       </div>
     </div>
   </div>
