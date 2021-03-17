@@ -16,6 +16,9 @@
 .tippy-arrow {
     border-right: 8px solid white !important;
 }
+.vue-notification-group {
+    margin: var(--main-margin-top) var(--main-margin-right) 0 0;
+}
 
 
 img.emoji {
