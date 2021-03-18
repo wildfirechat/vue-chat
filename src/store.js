@@ -25,7 +25,6 @@ import SearchType from "@/wfc/model/searchType";
 import Config from "@/config";
 import {getItem, setItem} from "@/ui/util/storageHelper";
 import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
-import Worker from "worker-loader!./bigFileUpload.js";
 
 /**
  * 一些说明
@@ -562,66 +561,88 @@ let store = {
     cancelUploadBigFile(remoteUrl) {
         miscState.uploadBigFiles.forEach(upload => {
             if (upload.remoteUrl === remoteUrl) {
-                let worker = upload.worker;
+                let xhr = upload.xhr;
                 upload.status = 3;
-                upload.worker = null;
-                worker && worker.terminate();
+                upload.xhr = null;
+                xhr && xhr.terminate();
             }
         })
     },
-    uploadBigFile(file, mediaType, progressCB, successCB, failCB) {
-        let worker = new Worker();
-        wfc.getUploadMediaUrl(file.name, mediaType, (uploadUrl, remoteUrl, backUploadUrl, serverType) => {
-            worker.onmessage = (msg) => {
-                let data = msg.data;
-                let fileName = data.name;
-                switch (data.type) {
-                    case 'progress':
-                        let progress = data.progress;
-                        let total = data.total;
-                        console.log('upload big file progress', fileName, Math.ceil(progress / total * 100))
+    _uploadXMLHttpRequest(fileName, remoteUrl, progressCB, successCB, failCB) {
+        let xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (e) => {
+            console.log('upload.onprogress', Math.ceil(e.loaded / e.total * 100))
+            let progress = e.loaded;
+            let total = e.total;
                         miscState.uploadBigFiles.forEach(upload => {
                             if (upload.remoteUrl === remoteUrl) {
                                 upload.progress = Math.ceil(progress / total * 100)
                             }
                         })
                         progressCB && progressCB(progress, total);
-                        break;
-                    case 'done':
-                        console.log('upload big file success', fileName, remoteUrl)
-                        successCB && successCB(fileName, remoteUrl);
+        }
+        xhr.onreadystatechange = (e) => {
+            console.log('onr', xhr.readyState, xhr.status, e)
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
                         miscState.uploadBigFiles.forEach(upload => {
                             if (upload.remoteUrl === remoteUrl) {
                                 upload.progress = 100;
                                 upload.status = 2;
-                                upload.worker = null;
+                            upload.xhr = null;
                             }
                         })
-                        worker.terminate();
-                        break;
-                    default:
-                        break;
+                    console.log('upload file success', fileName, remoteUrl);
+                    successCB && successCB(fileName, remoteUrl);
+                    return;
                 }
-            }
-            worker.onerror = (e) => {
+                console.log('upload file error', xhr.status);
                 miscState.uploadBigFiles.forEach(upload => {
                     if (upload.remoteUrl === remoteUrl) {
                         // status:1 上传中，2 上传成功 3 上传失败
                         upload.status = 3;
-                        upload.worker = null;
+                        upload.xhr = null;
+            }
+                })
+                failCB && failCB(-1);
+            }
+        }
+        xhr.onerror = e => {
+                miscState.uploadBigFiles.forEach(upload => {
+                    if (upload.remoteUrl === remoteUrl) {
+                        // status:1 上传中，2 上传成功 3 上传失败
+                        upload.status = 3;
+                    upload.xhr = null;
                     }
                 })
                 failCB && failCB(e);
-                worker.terminate();
             }
-            worker.postMessage({
-                type: 'upload',
-                file: file,
-                uploadUrl: uploadUrl,
-                remoteUrl: remoteUrl,
-                backUploadUrl: backUploadUrl,
-                serverType: serverType
-            })
+        return xhr;
+    },
+
+    uploadBigFile(file, mediaType, progressCB, successCB, failCB) {
+        wfc.getUploadMediaUrl(file.name, mediaType, (uploadUrl, remoteUrl, backUploadUrl, serverType) => {
+            let xhr;
+            if (serverType === 1) {
+                // qiniu
+                let ss = uploadUrl.split('?');
+                let url = ss[0];
+                let token = ss[1];
+                let key = ss[2];
+                xhr = this._uploadXMLHttpRequest(file.name, remoteUrl, progressCB, successCB, failCB);
+
+                let formData = new FormData();
+                formData.append('key', key)
+                formData.append('token', token)
+                formData.append(file, file)
+                xhr.open('POST', url);
+                xhr.send(formData);
+            } else {
+                // 野火专业存储
+                xhr = this._uploadXMLHttpRequest(file.name, remoteUrl, progressCB, successCB, failCB);
+                xhr.open('PUT', uploadUrl);
+                xhr.send(file);
+            }
             miscState.uploadBigFiles.push({
                 remoteUrl: remoteUrl,
                 name: file.name,
@@ -630,13 +651,11 @@ let store = {
                 _fileIconName : helper.getFiletypeIcon(file.name.substring(file.name.lastIndexOf('.'))),
                 status: 1,
                 progress: 0,
-                worker: worker,
+                xhr: xhr,
             });
         }, (e) => {
             console.log('getUploadMediaUrl e', e)
         })
-
-        return worker;
     },
 
     sendBigFile(conversation, file) {
@@ -717,7 +736,7 @@ let store = {
 
             },
             (progress, total) => {
-                console.log('sf pp', progress, total)
+                // console.log('sf pp', progress, total)
             },
             (messageUid) => {
                 console.log('sf s', messageUid)
