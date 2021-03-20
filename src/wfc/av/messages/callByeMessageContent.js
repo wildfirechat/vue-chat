@@ -1,34 +1,46 @@
 /*
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
-
 import MessageContent from '../../messages/messageContent';
 import MessageContentType from '../../messages/messageContentType';
-import CallEndReason from '../engine/callEndReason'
+import MessagePayload from '../../messages/messagePayload'
 import wfc from "../../client/wfc"
+import {longValue, stringValue} from "../../util/longUtil"
 
 export default class CallByeMessageContent extends MessageContent {
-  callId;
-  reason;
+    callId;
+    reason;
+    inviteMsgUid;
 
-  constructor(mentionedType = 0, mentionedTargets = []) {
-      super(MessageContentType.VOIP_CONTENT_TYPE_END, mentionedType, mentionedTargets);
-  }
+    constructor(mentionedType = 0, mentionedTargets = []) {
+        super(MessageContentType.VOIP_CONTENT_TYPE_END, mentionedType, mentionedTargets);
+    }
 
-  digest() {
-      return '';
-  }
+    digest() {
+        return '';
+    }
 
-  encode() {
-      let payload = super.encode();
-      payload.content = this.callId;
-      payload.binaryContent = wfc.utf8_to_b64(JSON.stringify({r : this.reason}));
-      return payload;
-  };
+    encode() {
+        let payload = super.encode();
+        payload.content = this.callId;
+        let obj = {
+            r: this.reason,
+            u: this.inviteMsgUid ? stringValue(this.inviteMsgUid) : undefined,
+        };
+        let str = JSON.stringify(obj)
+        str = MessagePayload._patchToJavaLong(str, 'u');
+        payload.binaryContent = wfc.utf8_to_b64(str);
+        payload.pushData = str;
+        return payload;
+    };
 
-  decode(payload) {
-      super.decode(payload);
-      this.callId = payload.content;
-      this.reason = payload.binaryContent ? JSON.parse(wfc.b64_to_utf8(payload.binaryContent)).r : CallEndReason.REASON_Unknown;
-  }
+    decode(payload) {
+        super.decode(payload);
+        this.callId = payload.content;
+        let str = wfc.b64_to_utf8(payload.binaryContent);
+        str = MessagePayload._reverseToJsLongString(str, 'u');
+        let obj = JSON.parse(str);
+        this.reason = obj.r;
+        this.inviteMsgUid = obj.u ? longValue(obj.u) : undefined;
+    }
 }

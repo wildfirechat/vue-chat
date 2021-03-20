@@ -4,11 +4,14 @@
 
 import MessageContent from '../../messages/messageContent';
 import wfc from "../../client/wfc"
+import {longValue, stringValue} from '../../util/longUtil'
 import MessageContentType from '../../messages/messageContentType';
+import MessagePayload from '../../messages/messagePayload'
 
 export default class CallAnswerMessageContent extends MessageContent {
   callId;
   audioOnly;
+  inviteMessageUid;
 
   constructor(mentionedType = 0, mentionedTargets = []) {
       super(MessageContentType.VOIP_CONTENT_TYPE_ACCEPT, mentionedType, mentionedTargets);
@@ -29,6 +32,12 @@ export default class CallAnswerMessageContent extends MessageContent {
           obj = '0';
       }
       payload.binaryContent = wfc.utf8_to_b64(obj);
+      let obj2 = {
+          u: stringValue(this.inviteMessageUid),
+      }
+      let str = JSON.stringify(obj2);
+      str = MessagePayload._patchToJavaLong(str, 'u');
+      payload.extra = str;
       return payload;
   };
 
@@ -38,5 +47,10 @@ export default class CallAnswerMessageContent extends MessageContent {
       let str = wfc.b64_to_utf8(payload.binaryContent);
 
       this.audioOnly = (str === '1');
+      str = payload.extra;
+      if(str){
+          str = MessagePayload._reverseToJsLongString(str, 'u');
+          this.inviteMessageUid = longValue(JSON.parse(str).u);
+      }
   }
 }

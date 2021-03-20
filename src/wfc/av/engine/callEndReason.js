@@ -16,5 +16,8 @@ export default class CallEndReason {
     static RemoteBusy = 10;
     static RemoteTimeout = 11;
     static RemoteNetworkError = 12;
+    static RoomDestroyed = 13;
+    static RoomNotExist = 14;
+    static RoomParticipantsFull = 15;
 
 }
