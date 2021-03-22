@@ -291,7 +291,7 @@ export default class MessageConfig {
         },
         {
             name: 'callStartMessageContent',
-            flag: PersistFlag.Persist,
+            flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.VOIP_CONTENT_TYPE_START,
             contentClazz: CallStartMessageContent,
         },

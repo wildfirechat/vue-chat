@@ -81,6 +81,11 @@ export class AvEngineKitProxy {
 
     // 发送消息时，返回的timestamp，已经过修正，后面使用时,不用考虑和服务器的时间差
     sendVoipListener = (event, msg) => {
+        // 电话结束后，关闭window时，不应当再出发callByeMessageContent
+        if(msg.callEnded){
+            this.conversation = null;
+            return;
+        }
 
         let contentClazz = MessageConfig.getMessageContentClazz(msg.content.type);
 
