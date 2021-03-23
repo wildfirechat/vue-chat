@@ -23,6 +23,9 @@ export default class Config {
     // ROUTE请求端口，默认是80；配置https时，请修改为其他端口，如443等
     static ROUTE_PORT = 443;
 
+    // 是否关闭日志，web和小程序有效
+    static DISABLE_LOG = false;
+
     // IM SERVER的HOST，是域名或者ip，没有http等前缀!
     static IM_SERVER_HOST = 'wildfirechat.net';
 
