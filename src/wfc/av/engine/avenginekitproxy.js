@@ -20,11 +20,12 @@ const path = require('path');
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
 export class AvEngineKitProxy {
-    queueEvents;
+    queueEvents = [];
     callWin;
 
     conversation;
     callId;
+    inviteMessageUid;
     participants = [];
     isSupportVoip = false;
     hasMicrophone = false;
@@ -84,6 +85,7 @@ export class AvEngineKitProxy {
         // 电话结束后，关闭window时，不应当再出发callByeMessageContent
         if(msg.callEnded){
             this.conversation = null;
+            this.queueEvents = [];
             return;
         }
 
@@ -98,7 +100,9 @@ export class AvEngineKitProxy {
             this.participants.push(content.participants);
         } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
             this.conversation = null;
+            this.queueEvents = [];
             this.callId = null;
+            this.inviteMessageUid = null;
             this.participants = [];
             // 仅仅为了通知proxy，其他端已经接听电话了，关闭窗口时，不应当发送挂断信令
             if (!content.callId) {
@@ -119,6 +123,9 @@ export class AvEngineKitProxy {
                 messageUid: messageUid,
                 timestamp: longValue(numberValue(timestamp) - delta)
             })
+            if(content.type === MessageContentType.VOIP_CONTENT_TYPE_START){
+                this.inviteMessageUid = messageUid;
+            }
         }, (errorCode) => {
             this.emitToVoip('sendMessageResult', {error: errorCode, sendMessageId: msg.sendMessageId})
         });
@@ -177,6 +184,7 @@ export class AvEngineKitProxy {
                 if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
                     this.conversation = msg.conversation;
                     this.callId = content.callId;
+                    this.inviteMessageUid = msg.messageUid;
                     this.participants.push(...content.targetIds);
                     this.participants.push(msg.from);
                     // 参与者不包含自己
@@ -190,7 +198,13 @@ export class AvEngineKitProxy {
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
                     if (!this.callWin) {
-                        this.showCallUI(msg.conversation);
+                        setTimeout(()=>{
+                            if(this.conversation){
+                                this.showCallUI(msg.conversation);
+                            } else {
+                              console.log('call ended')
+                            }
+                        }, 200)
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
                     let participantIds = [...content.participants];
@@ -202,17 +216,26 @@ export class AvEngineKitProxy {
 
                     this.conversation = msg.conversation;
                     this.callId = content.callId;
+                    this.inviteMessageUid = msg.messageUid;
                     this.participants.push(...participantIds);
 
                     participantIds = participantIds.filter(u => u.uid !== selfUserInfo.uid);
                     participantUserInfos = wfc.getUserInfos(participantIds, msg.conversation.target);
 
                     if (!this.callWin && content.participants.indexOf(selfUserInfo.uid) > -1) {
-                        this.showCallUI(msg.conversation);
+                        setTimeout(()=>{
+                            if(this.conversation){
+                                this.showCallUI(msg.conversation);
+                            } else {
+                                console.log('call ended')
+                            }
+                        }, 200)
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
                     this.conversation = null;
+                    this.queueEvents = [];
                     this.callId = null;
+                    this.inviteMessageUid = null;
                     this.participants = [];
                 }
 
@@ -285,10 +308,11 @@ export class AvEngineKitProxy {
             console.log('voip call is ongoing');
             return;
         }
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
+        if(!this.isSupportVoip) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
             return;
         }
+        console.log(`speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         participants = participants.filter(uid => uid !== selfUserInfo.uid);
         let callId = conversation.target + Math.floor(Math.random() * 10000);
@@ -342,7 +366,6 @@ export class AvEngineKitProxy {
     }
 
     showCallUI(conversation, isConference) {
-        this.queueEvents = [];
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         if (isElectron()) {
             let win = new BrowserWindow(
@@ -428,9 +451,11 @@ export class AvEngineKitProxy {
         if (this.conversation) {
             let byeMessage = new CallByeMessageContent();
             byeMessage.callId = this.callId;
+            byeMessage.inviteMsgUid = this.inviteMessageUid;
             byeMessage.reason = CallEndReason.RemoteNetworkError;
             wfc.sendConversationMessage(this.conversation, byeMessage, this.participants);
             this.conversation = null;
+            this.queueEvents = [];
             this.callId = null;
             this.participants = [];
         }
