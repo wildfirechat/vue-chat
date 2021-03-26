@@ -19,7 +19,7 @@
         <div class="content">
           <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
           <p class="last-message-desc single-line" v-else>
-            <i v-if="conversationInfo.unreadCount && (conversationInfo.unreadCount.unreadMention + conversationInfo.unreadCount.unreadMentionAll) > 0">[有人@我]</i>
+            <i v-if="unreadMention > 0">[有人@我]</i>
             {{ lastMessageContent }}
           </p>
           <i v-if="conversationInfo.isSilent" class="icon-ion-android-volume-mute"></i>
@@ -139,8 +139,13 @@ export default {
     unread() {
       let conversationInfo = this.conversationInfo;
       let unreadCount = conversationInfo.unreadCount;
-      return unreadCount ? (unreadCount.unread) : 0;
-    }
+      return unreadCount ? (unreadCount.unread + unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
+    },
+      unreadMention(){
+          let conversationInfo = this.conversationInfo;
+          let unreadCount = conversationInfo.unreadCount;
+          return unreadCount ? (unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
+      }
   },
 };
 </script>
