@@ -3,7 +3,7 @@
     <div class="header">
       <div class="desc">
         <h2>{{ userInfo._displayName }}</h2>
-        <label>ID: {{ userInfo.name }}</label>
+        <label>{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
       </div>
       <div>
         <img class="avatar" draggable="false" v-bind:src="userInfo.portrait"/>

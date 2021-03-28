@@ -116,6 +116,7 @@
         "add": "添加",
         "remove": "移除",
         "send": "发送",
+        "common.contact": "联系人",
         "confirm": "确认",
         "cancel": "取消",
         "alias": "备注",
@@ -151,7 +152,8 @@
         "month_9": "九月",
         "month_10": "十月",
         "month_11": "十一月",
-        "month_12": "十二月"
+        "month_12": "十二月",
+        "wfc_id": "野火号"
     },
     "misc":{
         "beijing": "北京",

@@ -22,7 +22,7 @@
             <i v-if="unreadMention > 0">[有人@我]</i>
             {{ lastMessageContent }}
           </p>
-          <i v-if="conversationInfo.isSilent" class="icon-ion-android-volume-mute"></i>
+          <i v-if="conversationInfo.isSilent" class="icon-ion-android-notifications-off"></i>
         </div>
       </div>
     </div>

@@ -82,7 +82,7 @@ import EventType from "@/wfc/client/wfcEvent";
 import ConnectionStatus from "@/wfc/client/connectionStatus";
 import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
 import {removeItem, storage} from "@/ui/util/storageHelper";
-import {BrowserWindow} from "@/platform";
+import {ipcRenderer} from "@/platform";
 import UploadRecordView from "./bigFile/UploadRecordView";
 
 export default {
@@ -119,34 +119,6 @@ export default {
       this.isSetting = false;
     },
     go2Files() {
-      if (this.fileWindow) {
-        this.fileWindow.show();
-        this.fileWindow.focus();
-        return;
-      }
-      let win = new BrowserWindow(
-          {
-            width: 800,
-            height: 730,
-            minWidth: 640,
-            minHeight: 400,
-            resizable: true,
-            maximizable: true,
-            webPreferences: {
-              scrollBounce: false,
-              nativeWindowOpen: true,
-              nodeIntegration: true,
-            },
-          }
-      );
-      this.fileWindow = win;
-
-      // win.webContents.openDevTools();
-      win.on('close', () => {
-        this.fileWindow = null;
-      });
-
-      // win.loadURL(path.join('file://', AppPath, 'src/index.html?' + type));
       let hash = window.location.hash;
       let url = window.location.origin;
       if (hash) {
@@ -154,9 +126,11 @@ export default {
       } else {
         url += "/files"
       }
-      win.loadURL(url);
-      console.log('files windows url', url)
-      win.show();
+        ipcRenderer.send('show-file-window', {
+            url: url,
+            source:'file',
+        });
+      console.log('show-file-window', url)
     },
     go2Setting() {
       if (this.$router.currentRoute.path === '/home/setting') {

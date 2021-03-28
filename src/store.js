@@ -928,7 +928,7 @@ let store = {
         contactState.friendRequestList = requests;
     },
 
-    _patchAndSortUserInfos(userInfos, groupId = '') {
+    _patchAndSortUserInfos(userInfos, groupId = '', compareFn) {
         userInfos = userInfos.map(u => {
             if (groupId) {
                 u._displayName = wfc.getGroupMemberDisplayNameEx(u);
@@ -944,7 +944,12 @@ let store = {
             }
             u._firstLetters = convert(u._displayName, {style: 4}).join('').trim().toLowerCase();
             return u;
-        }).sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
+        });
+        if (compareFn) {
+            userInfos = userInfos.sort(compareFn);
+        } else {
+            userInfos = userInfos.sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
+        }
 
         userInfos.forEach(u => {
             let uFirstLetter = u.__sortPinyin[1];
@@ -1212,7 +1217,12 @@ let store = {
             userInfos = userInfos.filter(u => u.uid !== wfc.getUserId())
         }
         let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
-        return this._patchAndSortUserInfos(userInfosCloneCopy, groupId);
+        let compareFn = (u1, u2) => {
+            let index1 = memberIds.findIndex(id => id === u1.uid)
+            let index2 = memberIds.findIndex(id => id === u2.uid)
+            return index1 - index2;
+        }
+        return this._patchAndSortUserInfos(userInfosCloneCopy, groupId, compareFn);
     },
 
     // clone一下，别影响到好友列表

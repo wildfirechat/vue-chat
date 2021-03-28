@@ -246,6 +246,7 @@ export default {
           messageId: -1,
           remotePath: fileRecord.url,
           fileName: fileRecord.name,
+          source:'file',
         });
       }
     }
