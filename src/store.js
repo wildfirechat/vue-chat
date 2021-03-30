@@ -506,14 +506,15 @@ let store = {
     /**
      *
      * @param src {String} 媒体url
+     * @param thumbUrl {String} 缩略图url
      * @param thumb {String} base64格式的缩略图，但不包含'data:image/png;base64,'
      * @param autoplay
      */
-    previewMedia(src, thumb, autoplay = true) {
+    previewMedia(src, thumbUrl, thumb, autoplay = true) {
         conversationState.previewMediaItems.length = 0;
         conversationState.previewMediaItems.push({
             src: src,
-            thumb: 'data:image/png;base64,' + thumb,
+            thumb: thumbUrl ? thumbUrl : 'data:image/png;base64,' + thumb,
             autoplay: autoplay,
         });
         conversationState.previewMediaIndex = 0;
@@ -1209,7 +1210,7 @@ let store = {
     },
 
     // clone一下，别影响到好友列表
-    getGroupMemberUserInfos(groupId, includeSelf = true) {
+    getGroupMemberUserInfos(groupId, includeSelf = true, sortByPinyin = false) {
 
         let memberIds = wfc.getGroupMemberIds(groupId);
         let userInfos = wfc.getUserInfos(memberIds, groupId);
@@ -1217,12 +1218,16 @@ let store = {
             userInfos = userInfos.filter(u => u.uid !== wfc.getUserId())
         }
         let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+        if(sortByPinyin){
+            return this._patchAndSortUserInfos(userInfosCloneCopy, groupId);
+        } else {
         let compareFn = (u1, u2) => {
             let index1 = memberIds.findIndex(id => id === u1.uid)
             let index2 = memberIds.findIndex(id => id === u2.uid)
             return index1 - index2;
         }
         return this._patchAndSortUserInfos(userInfosCloneCopy, groupId, compareFn);
+        }
     },
 
     // clone一下，别影响到好友列表

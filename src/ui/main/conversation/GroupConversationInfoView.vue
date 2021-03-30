@@ -114,7 +114,7 @@ export default {
       let closed = (event) => {
         console.log('Close...', event)
       };
-      let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
+      let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false, false);
       this.$modal.show(
           PickUserView,
           {

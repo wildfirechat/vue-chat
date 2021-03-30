@@ -90,6 +90,7 @@ export default {
   data() {
     return {
       favItems: [],
+      imagePlaceHolder:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==',
     }
   },
   methods: {

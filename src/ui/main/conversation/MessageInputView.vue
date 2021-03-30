@@ -324,7 +324,7 @@ export default {
       this.$modal.show(
           PickUserView,
           {
-            users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true),
+            users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true, true),
             initialCheckedUsers: [this.sharedContactState.selfUserInfo],
             uncheckableUsers: [this.sharedContactState.selfUserInfo],
             confirmTitle: this.$t('common.confirm'),

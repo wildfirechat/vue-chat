@@ -40,7 +40,7 @@
                :name="'infoTrigger' + this.message.messageId"
                class="avatar"
                draggable="false"
-               src="@/assets/images/user-fallback.png">
+               :src="message._from.portrait">
         </div>
       </div>
       <p v-if="shouldShowMessageReceipt" class="receipt" @click="showMessageReceiptDetail">
@@ -116,7 +116,6 @@ export default {
           let receivedUserIds = [];
           let readUserIds = [];
           let unReceiveUserIds = [];
-          let groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false)
           groupMembers.forEach(memberId => {
             let recvDt = deliveries ? deliveries.get(memberId) : 0;
             let readDt = readEntries ? readEntries.get(memberId) : 0;
