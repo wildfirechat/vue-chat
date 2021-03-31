@@ -16,7 +16,7 @@ export default class WfcCli {
         var username = 'GNMtGtZZ';
         var clientId = '78E616BC-1F7C-405F-AB16-41539EA89150';
         var token = 'dGx2nKj1jrLdHUt8B7Uwm19v/C0BJbR1tXySfG0Nf7mjpQVZX5Dk2d07UObJxNAzmTs6vVTsVsWMI3TIiCUd6SUKXNjdZHTT6N5NpIrSSKhVc9c60bJxAbmLCIRPVppKIkW0/0Lpx83B8Z0zlGMUrdadO3TUKaoh484yLKwoGac=';
-        var host = 'wildfirechat.cn';
+        var host = 'wildfirechat.net';
         var shortPort = 80;
 
         // connect(appId, appKey, host, port, userId, clientId, token) {
@@ -67,7 +67,7 @@ vorpal
         callback();
     });
 
-// 会话置顶 
+// 会话置顶
 vorpal
     .command('setConversationTop <type> <target> <line> <isTop>', 'set conversation top')
     .action(function (args, callback) {

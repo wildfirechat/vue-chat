@@ -13,7 +13,7 @@
         </filter>
         <image x="0" y="0" width="100%" height="100%" externalResourcesRequired="true"
                xmlns:xlink="http://www.w3.org/1999/xlink"
-               xlink:href="https://static.wildfirechat.cn/web_wfc_bg2.jpeg"
+               xlink:href="https://static.wildfirechat.net/web_wfc_bg2.jpeg"
                style="filter:url(#blur_mkvvpnf)" preserveAspectRatio="none"></image>
       </svg>
       <div class="blur-mask"></div>
