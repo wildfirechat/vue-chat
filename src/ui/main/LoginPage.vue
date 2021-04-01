@@ -3,7 +3,10 @@
     <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                       :maximizable="false"
                                       v-if="sharedMiscState.isElectronWindowsOrLinux"/>
-    <img v-bind:src="qrCode" alt="">
+      <div class="qr-container">
+          <img v-if="qrCode" v-bind:src="qrCode" alt="二维码生成中">
+          <p v-else>二维码生成中</p>
+      </div>
     <div class="drag-area"/>
 
     <div class="login-action-container">
@@ -243,11 +246,22 @@ export default {
   align-items: center;
 }
 
-.login-container img {
+.qr-container{
   border-radius: 3px;
   width: 250px;
   height: 250px;
   background-color: #e7e7e7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+.qr-container img{
+    width: 250px;
+    height: 250px;
+    border-radius: 3px;
+    object-fit: contain;
 }
 
 .pending-scan,
@@ -262,6 +276,7 @@ export default {
 
 .login-action-container {
   margin-top: 20px;
+    height: 120px;
 }
 
 .login-action-container label {
