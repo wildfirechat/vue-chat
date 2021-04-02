@@ -1,12 +1,12 @@
-import MessageContent from "@/wfc/messages/messageContent";
-import MessageContentType from "@/wfc/messages/messageContentType";
-import wfc from "@/wfc/client/wfc";
-import MediaMessageContent from "@/wfc/messages/mediaMessageContent";
-import {stringValue} from "@/wfc/util/longUtil";
-import Message from "@/wfc/messages/message";
-import Conversation from "@/wfc/model/conversation";
+import MessageContent from "../../wfc/messages/messageContent";
+import MessageContentType from "../../wfc/messages/messageContentType";
+import wfc from "../../wfc/client/wfc";
+import MediaMessageContent from "../../wfc/messages/mediaMessageContent";
+import {stringValue} from "../../wfc/util/longUtil";
+import Message from "../../wfc/messages/message";
+import Conversation from "../../wfc/model/conversation";
 import Long from "long";
-import MessagePayload from "@/wfc/messages/messagePayload";
+import MessagePayload from "../../wfc/messages/messagePayload";
 
 export default class CompositeMessageContent extends MessageContent {
     title = '';

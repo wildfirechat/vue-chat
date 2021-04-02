@@ -13,7 +13,7 @@ import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import CallEndReason from './callEndReason'
-import Conversation from "@/wfc/model/conversation";
+import Conversation from "../../../wfc/model/conversation";
 
 const path = require('path');
 

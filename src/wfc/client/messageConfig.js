@@ -45,7 +45,7 @@ import LocationMessageContent from "../messages/locationMessageContent";
 import MuteGroupMemberNotification from '../messages/notification/muteGroupMemberNotification'
 import AllowGroupMemberNotification from '../messages/notification/allowGroupMemberNotification'
 import CardMessageContent from '../messages/cardMessageContent'
-import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
+import CompositeMessageContent from "../../wfc/messages/compositeMessageContent";
 export default class MessageConfig {
     static getMessageContentClazz(type) {
         for (const content of MessageConfig.MessageContents) {
