@@ -104,7 +104,7 @@
         "enable_notification": "开启通知",
         "enable_notification_detail": "通知显示消息内容",
         "close_window_to_exit": "关闭窗口时，直接退出",
-        "auto_login": "自动登录",
+        "auto_login": "记住登录",
         "exit_switch_user": "退出/切换账号",
         "feedback": "发送反馈给我们",
         "lang": "语言(重启生效)",
@@ -157,6 +157,7 @@
     },
     "misc":{
         "beijing": "北京",
-        "test_user": "测试用户"
+        "test_user": "测试用户",
+        "gen_qr_code": "二维码生成中"
     }
 }

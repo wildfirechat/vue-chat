@@ -104,7 +104,7 @@
         "enable_notification": "Enable notification",
         "enable_notification_detail": "Notification display message content",
         "close_window_to_exit": "When closing the window, exit directly",
-        "auto_login": "Auto Login",
+        "auto_login": "Remember me",
         "exit_switch_user": "Exit/Switch Account",
         "feedback": "Send feedback to us",
         "lang": "Language (valid after restart)",
@@ -157,6 +157,7 @@
     },
     "misc":{
         "beijing": "Beijing",
-        "test_user": "Test User"
+        "test_user": "Test User",
+        "gen_qr_code": "Generating QR code"
     }
 }

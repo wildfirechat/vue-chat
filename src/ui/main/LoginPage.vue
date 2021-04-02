@@ -4,8 +4,8 @@
                                       :maximizable="false"
                                       v-if="sharedMiscState.isElectronWindowsOrLinux"/>
       <div class="qr-container">
-          <img v-if="qrCode" v-bind:src="qrCode" alt="二维码生成中">
-          <p v-else>二维码生成中</p>
+          <img v-if="qrCode" v-bind:src="qrCode" alt="">
+          <p v-else>{{$t('misc.gen_qr_code')}}</p>
       </div>
     <div class="drag-area"/>
 
@@ -185,6 +185,7 @@ export default {
     cancel() {
 
       this.loginStatus = 0;
+      this.qrCode = null;
       clear();
 
       this.createPCLoginSession(null);

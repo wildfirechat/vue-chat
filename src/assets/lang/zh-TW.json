@@ -104,7 +104,7 @@
         "enable_notification": "開啟通知",
         "enable_notification_detail": "通知顯示消息內容",
         "close_window_to_exit": "關閉窗口時，直接退出",
-        "auto_login": "自動登錄",
+        "auto_login": "記住登錄",
         "exit_switch_user": "退出/切換賬號",
         "feedback": "發送反饋給我們",
         "lang": "語言(重啟生效)",
@@ -157,6 +157,7 @@
     },
     "misc":{
         "beijing": "北京",
-        "test_user": "測試用戶"
+        "test_user": "測試用戶",
+        "gen_qr_code": "二維碼生成中"
     }
 }
