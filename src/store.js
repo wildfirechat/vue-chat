@@ -718,6 +718,8 @@ let store = {
                 break;
             case MessageContentMediaType.Video:
                 let vThumbnail = await videoThumbnail(file);
+                let duration = await videoDuration(file)
+                duration = Math.ceil(duration * 1000);
                 if (vThumbnail === null) {
                     return false;
                 }

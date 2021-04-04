@@ -45,7 +45,11 @@ export default class RecallMessageNotification extends NotificationMessageConten
         this.operatorId = payload.content;
         this.messageUid = Long.fromString(wfc.b64_to_utf8(payload.binaryContent));
 
+        try {
         this.setExtra(payload.extra);
+        }catch (e) {
+            console.error('decode recallMessage extra error', e)
+        }
     }
 
     setExtra(extra){
