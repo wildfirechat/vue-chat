@@ -45,8 +45,8 @@ import {encode} from 'base64-arraybuffer';
 import Config from '../../config.js';
 
 import Long from 'long'
-import UnsupportMessageContent from "@/wfc/messages/unsupportMessageConten";
-import RecallMessageNotification from "@/wfc/messages/notification/recallMessageNotification";
+import UnsupportMessageContent from "../../wfc/messages/unsupportMessageConten";
+import RecallMessageNotification from "../../wfc/messages/notification/recallMessageNotification";
 
 export default class Message {
     conversation = {};
