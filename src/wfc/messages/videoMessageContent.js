@@ -35,10 +35,12 @@ export default class VideoMessageContent extends MediaMessageContent {
     decode(payload) {
         super.decode(payload);
         this.thumbnail = payload.binaryContent;
+        if(payload.content){
         let obj = JSON.parse(payload.content)
         this.duration = obj.d;
         if(this.duration === undefined){
             this.duration = obj.duration;
+            }
         }
     }
 }

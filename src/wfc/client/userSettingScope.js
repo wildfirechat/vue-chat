@@ -22,6 +22,12 @@ export default class UserSettingScope {
     static WebOnline = 12;
     static DisableReceipt = 13;
     static FavoriteUser = 14;
+    static MuteWhenPCOnline = 15;
+    static LinesReaded = 16;
+    static NoDisturbing = 17;
+    static ConversationClearMessage = 18;
+    static ConversationDraft = 19;
+    static EnableSyncDraft = 20;
 
     // 用户自定义的scope需从1000开始，以防冲突
     static kUserSettingCustomBegin = 1000;

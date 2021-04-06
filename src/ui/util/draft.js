@@ -10,7 +10,7 @@ export default class Draft{
             return;
         }
         let obj = {
-            text: draftText,
+            content: draftText,
             quoteMessageUid: quoteMessage ? stringValue(quoteMessage.messageUid) : ''
         }
         wfc.setConversationDraft(conversation, JSON.stringify(obj));
@@ -30,7 +30,8 @@ export default class Draft{
             return obj;
         }
         let draft =  JSON.parse(conversationInfo.draft);
-        obj.text = draft.text;
+        obj.text = draft.content;
+        obj.text = obj.text ? obj.text : '';
         if(draft.quoteMessageUid){
             let msg = store.getMessageByUid(draft.quoteMessageUid);
             obj.quotedMessage = msg;

@@ -903,7 +903,7 @@ export class WfcManager {
      * @param {[number]} lines 从哪些会话线路进行搜索，默认传[0]即可
      * @returns {[ConversationInfo]}
      */
-    searchConversation(keyword, types = [0, 1, 2], lines = [0, 1]) {
+    searchConversation(keyword, types = [0, 1, 2], lines = [0, 1, 2]) {
         return impl.searchConversation(keyword, types, lines);
     }
 
@@ -982,6 +982,14 @@ export class WfcManager {
      */
     clearConversationUnreadStatus(conversation) {
         impl.clearConversationUnreadStatus(conversation);
+    }
+
+    /**
+     * 清除单条消息的未读状态
+     * @param messageId
+     */
+    clearMessageUnreadStatus(messageId){
+        impl.clearMessageUnreadStatus(messageId);
     }
 
     /**
@@ -1276,6 +1284,17 @@ export class WfcManager {
      */
     async clearMessages(conversation) {
         impl.clearMessages(conversation);
+    }
+
+    /**
+     * 清除远程会话消息
+     * @param {Conversation} conversation
+     * @param {function ()} successCB
+     * @param {function (error)} failCB
+     * @return {Promise<void>}
+     */
+    async clearRemoteConversationMessages(conversation, successCB, failCB){
+        impl.clearRemoteConversationMessages(conversation, successCB, failCB);
     }
 
     /**

@@ -11,6 +11,7 @@ export default class EventType {
     static MessageReceived = 'msgReceived';
     // function ([readEntry]) {}
     static MessageRead = 'msgRead';
+    // 主动调用recallMessage时，也会触发
     // function (operator, messageUid) {}
     static RecallMessage = 'recallMsg';
     // 远程删除消息时触发
