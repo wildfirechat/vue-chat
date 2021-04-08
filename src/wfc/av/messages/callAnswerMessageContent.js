@@ -4,7 +4,7 @@
 
 import MessageContent from '../../messages/messageContent';
 import wfc from "../../client/wfc"
-import {longValue, stringValue} from '../../util/longUtil'
+import {longValue, stringValue, _patchToJavaLong, _reverseToJsLongString} from '../../util/longUtil'
 import MessageContentType from '../../messages/messageContentType';
 import MessagePayload from '../../messages/messagePayload'
 
@@ -36,10 +36,10 @@ export default class CallAnswerMessageContent extends MessageContent {
           u: stringValue(this.inviteMessageUid),
       }
       let str = JSON.stringify(obj2);
-      str = MessagePayload._patchToJavaLong(str, 'u');
+      str = _patchToJavaLong(str, 'u');
       payload.extra = str;
       return payload;
-  };
+  }
 
   decode(payload) {
       super.decode(payload);
@@ -49,7 +49,7 @@ export default class CallAnswerMessageContent extends MessageContent {
       this.audioOnly = (str === '1');
       str = payload.extra;
       if(str){
-          str = MessagePayload._reverseToJsLongString(str, 'u');
+          str = _reverseToJsLongString(str, 'u');
           this.inviteMessageUid = longValue(JSON.parse(str).u);
       }
   }

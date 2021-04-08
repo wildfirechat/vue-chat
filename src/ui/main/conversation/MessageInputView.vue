@@ -55,6 +55,7 @@ import GroupType from "@/wfc/model/groupType";
 import GroupMemberType from "@/wfc/model/groupMemberType";
 import QuoteInfo from "@/wfc/model/quoteInfo";
 import Draft from "@/ui/util/draft";
+import Mention from "../../../wfc/model/mention";
 import {parser as emojiParse} from '@/ui/util/emoji';
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
@@ -203,7 +204,7 @@ export default {
           .replace(/&nbsp;/g, ' ');
 
       message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
-          .replace(/" src="https:\/\/static\.wildfirechat\.cn\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
+          .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
 
       if (message && message.trim()) {
         let textMessageContent = this.handleMention(message);
@@ -218,7 +219,7 @@ export default {
 
       input.innerHTML = '';
       store.quoteMessage(null);
-      Draft.setConversationDraft(conversation, '', null);
+      Draft.setConversationDraft(conversation, '', null, null);
       e.preventDefault();
     },
 
@@ -474,18 +475,40 @@ export default {
 
     storeDraft(conversationInfo, quotedMessage) {
       let draftText = this.$refs['input'].innerHTML.trim();
-      let tmp = draftText.replace(/<br>/g, '')
+      draftText = draftText
+          .replace(/<br>/g, '')
+          .replace(/<div>/g, '\n')
+          .replace(/<\/div>/g, '')
           .replace(/<div><\/div>/g, '')
           .replace(/&nbsp;/g, '')
+          .replace(/<img class="emoji" draggable="false" alt="/g, '')
+          .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
           .trim();
 
-      if (tmp.length === 0) {
+      let mentions = [];
+        this.mentions.forEach(e => {
+            let mention;
+            let start = draftText.indexOf(e.key);
+            let end = start + e.key.length;
+            if (start > -1) {
+                if (e.value === '@' + this.conversationInfo.conversation.target) {
+                    mention = new Mention(start, end, this.conversationInfo.conversation.target, true)
+                } else {
+                    mention = new Mention(start, end, e.value.substring(1), false)
+                }
+                mentions.push(mention);
+            }
+        });
+
+        let quoteInfo = quotedMessage ? QuoteInfo.initWithMessage(quotedMessage) : null;
+
+    if (draftText.length === 0) {
         if (conversationInfo.draft !== '') {
-          Draft.setConversationDraft(conversationInfo.conversation, tmp, quotedMessage)
+          Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions)
         }
       } else {
         if (draftText !== conversationInfo.draft) {
-          Draft.setConversationDraft(conversationInfo.conversation, draftText, quotedMessage)
+          Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions)
         }
       }
     },

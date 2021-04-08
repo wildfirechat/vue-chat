@@ -48,7 +48,7 @@
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/fav'}"
                  @click="go2Fav"></i>
             </li>
-            <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
+            <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer()">
               <i class="icon-ion-ios-folder"
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
                  @click="go2Files"></i>

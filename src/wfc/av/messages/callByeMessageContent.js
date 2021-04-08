@@ -5,7 +5,7 @@ import MessageContent from '../../messages/messageContent';
 import MessageContentType from '../../messages/messageContentType';
 import MessagePayload from '../../messages/messagePayload'
 import wfc from "../../client/wfc"
-import {longValue, stringValue} from "../../util/longUtil"
+import {longValue, stringValue, _reverseToJsLongString, _patchToJavaLong} from "../../util/longUtil"
 
 export default class CallByeMessageContent extends MessageContent {
     callId;
@@ -28,17 +28,17 @@ export default class CallByeMessageContent extends MessageContent {
             u: this.inviteMsgUid ? stringValue(this.inviteMsgUid) : undefined,
         };
         let str = JSON.stringify(obj)
-        str = MessagePayload._patchToJavaLong(str, 'u');
+        str = _patchToJavaLong(str, 'u');
         payload.binaryContent = wfc.utf8_to_b64(str);
         payload.pushData = str;
         return payload;
-    };
+  }
 
     decode(payload) {
         super.decode(payload);
         this.callId = payload.content;
         let str = wfc.b64_to_utf8(payload.binaryContent);
-        str = MessagePayload._reverseToJsLongString(str, 'u');
+        str = _reverseToJsLongString(str, 'u');
         let obj = JSON.parse(str);
         this.reason = obj.r;
         this.inviteMsgUid = obj.u ? longValue(obj.u) : undefined;

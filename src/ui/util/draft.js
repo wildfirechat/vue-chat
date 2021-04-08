@@ -1,19 +1,27 @@
 import wfc from "../../wfc/client/wfc";
-import {stringValue} from "../../wfc/util/longUtil";
+import {stringValue, _patchToJavaLong, _reverseToJsLongString} from "../../wfc/util/longUtil";
 import store from "@/store";
 
 export default class Draft{
 
-    static setConversationDraft(conversation, draftText, quoteMessage){
-        if(!draftText && !quoteMessage){
+    static setConversationDraft(conversation, draftText, quoteInfo, mentions) {
+        if (!draftText && !quoteInfo) {
             wfc.setConversationDraft(conversation, '');
             return;
         }
         let obj = {
             content: draftText,
-            quoteMessageUid: quoteMessage ? stringValue(quoteMessage.messageUid) : ''
+            mentions: mentions,
+            quoteInfo: quoteInfo,
         }
-        wfc.setConversationDraft(conversation, JSON.stringify(obj));
+        let jsonStr = JSON.stringify(obj, (key, value) => {
+            if(key === 'messageUid'){
+                return stringValue(value);
+            }
+            return value;
+        });
+        jsonStr = _patchToJavaLong(jsonStr, "messageUid")
+        wfc.setConversationDraft(conversation, jsonStr);
     }
 
     static getConversationDraftEx(conversationInfo) {
@@ -29,11 +37,13 @@ export default class Draft{
             obj.text = conversationInfo.draft;
             return obj;
         }
-        let draft =  JSON.parse(conversationInfo.draft);
+        let draftStr = conversationInfo.draft;
+        draftStr = _reverseToJsLongString(draftStr, 'messageUid');
+        let draft = JSON.parse(draftStr);
         obj.text = draft.content;
         obj.text = obj.text ? obj.text : '';
-        if(draft.quoteMessageUid){
-            let msg = store.getMessageByUid(draft.quoteMessageUid);
+        if (draft.quoteInfo) {
+            let msg = store.getMessageByUid(draft.quoteInfo.messageUid);
             obj.quotedMessage = msg;
         }
         return obj;

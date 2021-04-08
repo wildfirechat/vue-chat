@@ -1409,8 +1409,20 @@ export class WfcManager {
         return impl.isUserReceiptEnabled();
     }
 
+    /**
+    * 判断是否是专业版IM服务
+    * @return {boolean}
+    */
     isCommercialServer() {
         return true;
+    }
+
+    /**
+    * 判断是否应用禁止草稿同步
+    * @return {boolean}
+    */
+    isGlobalDisableSyncDraft() {
+        return impl.isGlobalDisableSyncDraft();
     }
 
     /**
