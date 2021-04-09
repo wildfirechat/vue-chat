@@ -466,10 +466,10 @@ export default {
     },
 
     restoreDraft() {
-      let draft = Draft.getConversationDraftEx(this.conversationInfo)
+      let draft = Draft.getConversationDraftEx(this.conversationInfo);
       store.quoteMessage(draft.quotedMessage);
       let input = this.$refs['input'];
-      input.innerHTML = draft.text;
+      input.innerHTML = draft.text.replace(/ /g, '&nbsp');
       this.moveCursorToEnd(input);
     },
 
@@ -483,13 +483,19 @@ export default {
           .replace(/&nbsp;/g, '')
           .replace(/<img class="emoji" draggable="false" alt="/g, '')
           .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
-          .trim();
+          .trimStart()
+          .replace(/\s+$/g, ' ')
+      ;
 
       let mentions = [];
         this.mentions.forEach(e => {
             let mention;
-            let start = draftText.indexOf(e.key);
-            let end = start + e.key.length;
+            /**
+             *  e.key: "13866666666"
+             *  e.value: "@q0H7q7MM"
+             */
+            let start = draftText.indexOf('@' + e.key);
+            let end = start + 1 + e.key.length;
             if (start > -1) {
                 if (e.value === '@' + this.conversationInfo.conversation.target) {
                     mention = new Mention(start, end, this.conversationInfo.conversation.target, true)
@@ -499,6 +505,14 @@ export default {
                 mentions.push(mention);
             }
         });
+        let mentionCount = this.mentions ? this.mentions.length : 0;
+        if(mentionCount > 0
+            && draftText.endsWith('@' + this.mentions[mentionCount -1].key + ' ')){
+            // @的最后一个空格不能删除
+            // do nothing
+        }else {
+            draftText = draftText.trimEnd();
+        }
 
         let quoteInfo = quotedMessage ? QuoteInfo.initWithMessage(quotedMessage) : null;
 
