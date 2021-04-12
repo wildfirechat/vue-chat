@@ -252,6 +252,8 @@ export class AvEngineKitProxy {
                 msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
                 this.emitToVoip("message", msg);
             }
+        }else if (numberValue(delta) >= 90){
+            console.error("本地和服务端时间差别太大，不能发起音视频通话，请先进行时间同步.")
         }
     };
 

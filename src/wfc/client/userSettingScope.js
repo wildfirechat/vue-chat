@@ -27,7 +27,7 @@ export default class UserSettingScope {
     static NoDisturbing = 17;
     static ConversationClearMessage = 18;
     static ConversationDraft = 19;
-    static EnableSyncDraft = 20;
+    static DisableSyncDraft = 20;
 
     // 用户自定义的scope需从1000开始，以防冲突
     static kUserSettingCustomBegin = 1000;

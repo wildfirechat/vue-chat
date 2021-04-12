@@ -13,6 +13,7 @@ import impl from '../proto/proto.min';
 import Config from "../../config";
 import avenginekit from "../av/engine/avenginekitproxy";
 import ConversationType from "../model/conversationType";
+import UserSettingScope from "./userSettingScope";
 
 
 export class WfcManager {
@@ -1425,6 +1426,19 @@ export class WfcManager {
         return impl.isGlobalDisableSyncDraft();
     }
 
+    /**
+     *
+     * @param disable
+     * @param successCB
+     * @param failCB
+     */
+    setDisableSyncDraft(disable, successCB, failCB){
+        impl.setDisableSyncDraft(disable, successCB, failCB)
+    }
+
+    isDisableSyncDraft(){
+        return impl.isDisableSyncDraft();
+    }
     /**
      * 设置当前用户是否开启消息回执
      * @param enable
