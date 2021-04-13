@@ -110,7 +110,8 @@
         "lang": "語言(重啟生效)",
         "zh_cn": "简体中文",
         "zh_tw": "繁體中文",
-        "en": "English"
+        "en": "English",
+        "sync_draft": "同步草稿"
     },
     "common": {
         "add": "添加",
