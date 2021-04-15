@@ -1,6 +1,7 @@
+import {isElectron} from "../../platform";
 import Config from "@/config";
 
-let storage = Config.CLIENT_ID_STRATEGY === 1 ? sessionStorage : Config.CLIENT_ID_STRATEGY === 2 ? localStorage : null;
+let storage = !isElectron() ? (Config.CLIENT_ID_STRATEGY === 1 ? sessionStorage : Config.CLIENT_ID_STRATEGY === 2 ? localStorage : null) : localStorage;
 
 export function removeItem(key) {
     if (storage) {
