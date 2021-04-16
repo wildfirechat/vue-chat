@@ -20,7 +20,7 @@
         <input type="checkbox" :checked="sharedMiscState.enableCloseWindowToExit"
                @change="enableCloseWindowToExit($event.target.checked)">
       </label>
-      <label v-if="sharedMiscState.isElectron">
+      <label v-if="sharedMiscState.isElectron || (sharedMiscState.config.CLIENT_ID_STRATEGY === 1 || sharedMiscState.config.CLIENT_ID_STRATEGY === 2)">
           {{$t('setting.auto_login')}}
         <input type="checkbox" :checked="sharedMiscState.enableAutoLogin"
                @change="enableAutoLogin($event.target.checked)">
