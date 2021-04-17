@@ -19,6 +19,7 @@
                                v-else-if="message.messageContent.type === 11"/>
   <CallStartMessageContentView :message="message"
                                v-else-if="message.messageContent.type === 400"/>
+  <UserCardMessageContentView :message="message" v-else-if="message.messageContent.type === 10"/>
   <UnsupportMessageContentView :message="message"
                                v-else
                                v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
@@ -35,6 +36,7 @@ import StickerMessageContentView from "@/ui/main/conversation/message/content/St
 import CallStartMessageContentView from "@/ui/main/conversation/message/content/CallStartMessageContentView";
 import AudioMessageContentView from "@/ui/main/conversation/message/content/AudioMessageContentView";
 import CompositeMessageContentView from "@/ui/main/conversation/message/content/CompositeMessageContentView";
+import UserCardMessageContentView from "./content/UserCardMessageContentView";
 
 export default {
   name: "MessageContentContainerView",
@@ -54,6 +56,7 @@ export default {
     VideoMessageContentView,
     FileMessageContentView,
     StickerMessageContentView,
+      UserCardMessageContentView
   }
 }
 </script>
