@@ -71,7 +71,7 @@ export default class Config {
     // html5 audio 标签不能播放amr格式的音频，需要将amr格式转换为mp3格式
     // 本服务传入amr音频文件的地址，将音频文件转换为mp3格式，并以application/octet-stream的格式返回
     // 如果语音消息很多，建议使用cdn
-    static AMR_TO_MP3_SERVER_ADDRESS = 'https://app.wildfirechat.net/amr2mp3?path=';
+    static AMR_TO_MP3_SERVER_ADDRESS = Config.APP_SERVER + '/amr2mp3?path=';
 
     // 发送消息超时时间，超时之后，认为当前连接已不可用，将进行重连，单位是秒。没有特殊需求不，不建议修改
     static SEND_MESSAGE_TIMEOUT = 20;
@@ -97,9 +97,23 @@ export default class Config {
         }
     }
 
-    static config(options){
-        Object.keys(options).forEach(key =>{
+    static config(options) {
+        Object.keys(options).forEach(key => {
             Config[key] = options[key];
         });
     }
+
+    static validate() {
+        let configError = true;
+        if (Config.APP_SERVER === 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST === 'wildfirechat.net' && Config.WEB_APP_KEY === '6f8348670cb11cf434451bc9e7ba72eeaf3452c8') {
+            configError = false;
+        } else if (Config.APP_SERVER !== 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST !== 'wildfirechat.net' && Config.WEB_APP_KEY !== '6f8348670cb11cf434451bc9e7ba72eeaf3452c8') {
+            configError = false;
+        }
+        if (configError) {
+            throw new Error('配置错误, Config.APP_SERVER,Config.IM_SERVER_HOST,Config.WEB_APP_KEY 是配对的，必须一起修改')
+        }
+    }
 }
+
+Config.validate();
