@@ -1,14 +1,12 @@
 <template>
-    <div>
-        <div ref="userCardTippy"
-             :name="'userCardInfoTrigger' + message.messageId"
-             class="user-card-content-container">
-            <div class="portrait-name-container">
-                <img :src="message.messageContent.portrait">
-                <p>{{ message.messageContent.displayName }}</p>
-            </div>
-            <p class="desc single-line">个人名片</p>
+    <div ref="userCardTippy"
+         :name="'userCardInfoTrigger' + message.messageId"
+         class="user-card-content-container">
+        <div class="portrait-name-container">
+            <img :src="message.messageContent.portrait">
+            <p>{{ message.messageContent.displayName }}</p>
         </div>
+        <p class="desc single-line">个人名片</p>
         <tippy
             :to="'userCardInfoTrigger' + message.messageId"
             interactive
