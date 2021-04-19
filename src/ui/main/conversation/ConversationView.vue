@@ -80,6 +80,9 @@
           <li v-if="isCopyable(message)">
             <a @click.prevent="copy(message)">{{$t('common.copy')}}</a>
           </li>
+          <li v-if="isDownloadAble(message)">
+              <a @click.prevent="download(message)">{{$t('common.save')}}</a>
+          </li>
           <li>
             <a @click.prevent="delMessage(message)">{{$t('common.delete')}}</a>
           </li>
@@ -136,6 +139,8 @@ import FileMessageContent from "@/wfc/messages/fileMessageContent";
 import ImageMessageContent from "@/wfc/messages/imageMessageContent";
 import {copyImg, copyText} from "@/ui/util/clipboard";
 import Message from "../../../wfc/messages/message";
+import {downloadFile} from "../../../platformHelper";
+import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 
 export default {
   components: {
@@ -289,12 +294,16 @@ export default {
     },
 
     onMenuClose() {
-      console.log('xxoxooojjo')
     },
 
     // message context menu
     isCopyable(message) {
       return message && (message.messageContent instanceof TextMessageContent || message.messageContent instanceof ImageMessageContent);
+    },
+    isDownloadAble(message){
+        return message && (message.messageContent instanceof ImageMessageContent
+            || message.messageContent instanceof FileMessageContent
+            ||message.messageContent instanceof VideoMessageContent);
     },
 
     isForwardable(message) {
@@ -311,9 +320,10 @@ export default {
 
     isLocalFile(message) {
       if (message && isElectron()) {
-        let file = message.messageContent;
-        if (file instanceof FileMessageContent) {
-          return fs.existsSync(file.localPath);
+        let media = message.messageContent;
+        let localPath = media.localPath;
+        if (localPath) {
+          return fs.existsSync(localPath);
         }
       }
       return false;
@@ -325,6 +335,19 @@ export default {
         copyText(content.content)
       } else {
         copyImg(content.remotePath)
+      }
+    },
+      download(message){
+        if(isElectron()){
+            downloadFile(message);
+        }else {
+            if (!store.isDownloadingMessage(message.messageId)) {
+                downloadFile(this.message)
+                store.addDownloadingMessage(message.messageId)
+            } else {
+                // TODO toast 下载中
+                console.log('file isDownloading')
+            }
       }
     },
 

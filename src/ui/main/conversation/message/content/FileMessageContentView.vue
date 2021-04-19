@@ -37,7 +37,7 @@ export default {
         if (localPath && fs.existsSync(localPath)) {
           shell.openItem(localPath);
         } else {
-          if (!this.message.isDownloading) {
+          if (!this.message.isDownloading()) {
             downloadFile(this.message)
             store.addDownloadingMessage(this.message.messageId)
           } else {

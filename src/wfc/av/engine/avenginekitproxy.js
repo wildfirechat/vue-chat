@@ -404,6 +404,7 @@ export class AvEngineKitProxy {
             win.loadURL(url);
             console.log('voip windows url', url)
             win.show();
+            win.removeMenu();
         } else {
             console.log('location', window.location);
             let hash = window.location.hash;
