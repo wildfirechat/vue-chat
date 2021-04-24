@@ -6,7 +6,7 @@
     <div v-else class="conversation-container">
       <header>
         <div class="title-container">
-          <h1 class="single-line">{{ conversationTitle }}</h1>
+          <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
           <a href="#"><i class="icon-ion-ios-settings-strong"
                          style="display: inline-block"
                          v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"

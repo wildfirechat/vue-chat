@@ -431,7 +431,7 @@ export class AvEngineKitProxy {
                 default:
                     break;
             }
-            let win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no, maximizable`);
+            let win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no,maximizable`);
             if (!win) {
                 console.log('can not open voip window');
                 return;

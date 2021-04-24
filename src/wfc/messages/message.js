@@ -190,4 +190,9 @@ export default class Message {
 
         return content;
     }
+    static toMessagePayload(message){
+
+        // TODO
+        return null;
+    }
 }

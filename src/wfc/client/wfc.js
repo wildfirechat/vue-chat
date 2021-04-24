@@ -1519,6 +1519,40 @@ export class WfcManager {
     deleteFileRecord(messageUid, successCB, failCB){
         impl.deleteFileRecord(messageUid, successCB, failCB);
     }
+    /**
+     * 搜索远程文件记录
+     * @param {string} keyword
+     * @param {Conversation} conversation 会话，如果为空则获取当前用户所有收到和发出的文件记录
+     * @param {string} fromUser 文件发送用户，如果为空则获取该用户发出的文件记录
+     * @param {Long | string} beforeMessageId 起始消息的消息id
+     * @param {number} count
+     * @param {function ([fileRecord])} successCB
+     * @param {function (number)} failCB
+     */
+    searchFiles(keyword, conversation, fromUser, beforeMessageId, count, successCB, failCB){
+        impl.searchFiles(keyword, conversation, fromUser, beforeMessageId, count, successCB, failCB)
+    }
+
+    /**
+     * 搜索我自己的远程文件记录
+     * @param keyword
+     * @param beforeMessageUid
+     * @param count
+     * @param successCB
+     * @param failCB
+     */
+    searchMyFiles(keyword, beforeMessageUid, count, successCB, failCB) {
+        impl.searchMyFiles(keyword, beforeMessageUid, count, successCB, failCB);
+    }
+
+        /**
+     * 发送会议相关请求
+     * @param sessionId
+     * @param roomId
+     * @param request
+     * @param data
+     * @param callback
+     */
     sendConferenceRequest(sessionId, roomId, request, data, callback){
         impl.sendConferenceRequest(sessionId, roomId, request, data, callback)
     }

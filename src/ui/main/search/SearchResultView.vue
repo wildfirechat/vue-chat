@@ -41,7 +41,7 @@
           </div>
         </li>
         <li class="category-item" v-if="sharedSearchState.groupSearchResult.length > 0">
-          <label>{{$t('common.group')}}</label>
+          <label>{{$t('contact.group')}}</label>
           <ul>
             <li v-for="(group, index) in toShowGroupList" :key="index">
               <div class="search-result-item group" @click="chatToGroup(group)">

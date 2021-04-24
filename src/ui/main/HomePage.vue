@@ -53,6 +53,11 @@
                  v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
                  @click="go2Files"></i>
             </li>
+              <li v-if="sharedMiscState.isElectron">
+                  <i class="icon-ion-code-working"
+                     v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
+                     @click="go2Workspace"></i>
+              </li>
               <li>
                   <i class="icon-ion-android-upload"
                      @click="showUploadDialog"></i>
@@ -131,6 +136,19 @@ export default {
             source:'file',
         });
       console.log('show-file-window', url)
+    },
+    go2Workspace(){
+        let hash = window.location.hash;
+        let url = window.location.origin;
+        if (hash) {
+            url = window.location.href.replace(hash, '#/workspace');
+        } else {
+            url += "/workspace"
+        }
+        ipcRenderer.send('show-workspace-window', {
+            url: url,
+        });
+        console.log('show-workspace-window', url)
     },
     go2Setting() {
       if (this.$router.currentRoute.path === '/home/setting') {

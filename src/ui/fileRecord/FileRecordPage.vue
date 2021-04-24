@@ -5,6 +5,15 @@
       <div class="file-record-container">
 
         <div class="category-container">
+          <div class="search-input-container">
+              <input id="searchInput"
+                     ref="input"
+                     autocomplete="off"
+                     v-model="fileQuery"
+                     @keydown.esc="cancelSearch"
+                     type="text" :placeholder="$t('common.search')"/>
+              <i class="icon-ion-ios-search"></i>
+          </div>
           <ul>
             <li>
               <div class="category-item" v-bind:class="{active:category === CATEGORY_ALL}"
@@ -37,7 +46,7 @@
           </ul>
 
         </div>
-        <div v-if="category === CATEGORY_CONVERSATION"
+        <div v-if="category === CATEGORY_CONVERSATION && !fileQuery"
              class="conversation-list-container">
           <!--      聊天列表-->
           <ul>
@@ -52,7 +61,7 @@
             </li>
           </ul>
         </div>
-        <div v-if="category === CATEGORY_SENDER"
+        <div v-if="category === CATEGORY_SENDER && !fileQuery"
              class="conversation-list-container">
           <!--      发送者列表-->
           <UserListVue :users="sharedContactState.friendList"
@@ -63,9 +72,9 @@
         </div>
         <div class="file-record-list-container" infinite-wrapper>
           <!--      文件记录-->
-          <div v-if="fileRecords.length > 0">
+          <div v-if="computedFileRecords.length > 0">
             <ul>
-              <li v-for="fr in fileRecords"
+              <li v-for="fr in computedFileRecords"
                   :key="fr.messageUid.toString()">
                 <div class="file-record-item" @click="clickFile(fr)">
                   <img :src="require(`@/assets/images/filetypes/${fr._fileIconName}`)" alt="">
@@ -80,7 +89,7 @@
                 </div>
               </li>
             </ul>
-            <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="bottom"
+            <infinite-loading v-if="!fileQuery" :identifier="loadingIdentifier" force-use-infinite-wrapper direction="bottom"
                               @infinite="infiniteHandler">
               <!--            <template slot="spinner">加载中...</template>-->
               <template slot="no-more">{{$t('file_record.no_more')}}</template>
@@ -100,7 +109,6 @@ import InfiniteLoading from "vue-infinite-loading";
 import {ipcRenderer, isElectron} from "@/platform";
 import UserListVue from "@/ui/main/user/UserListVue";
 
-
 export default {
   name: "FileRecordPage",
   data() {
@@ -110,7 +118,10 @@ export default {
       currentUser: null,
       sharedConversationState: store.state.conversation,
       sharedContactState: store.state.contact,
+      sharedSearchState: store.state.search,
       fileRecords: [],
+      fileQuery: '',
+      searchFileRecordResult: [],
 
       CATEGORY_ME: 'me',
       CATEGORY_ALL: 'all',
@@ -125,6 +136,7 @@ export default {
     },
 
     showAllFiles() {
+      this.cancelSearch();
       if (this.category === this.CATEGORY_ALL) {
         return;
       }
@@ -134,6 +146,7 @@ export default {
     },
 
     showMyFiles() {
+      this.cancelSearch();
       if (this.category === this.CATEGORY_ME) {
         return;
       }
@@ -143,6 +156,7 @@ export default {
     },
 
     showConversations() {
+      this.cancelSearch();
       if (this.category === this.CATEGORY_CONVERSATION) {
         return;
       }
@@ -154,6 +168,7 @@ export default {
     },
 
     showSenders() {
+      this.cancelSearch();
       if (this.category === this.CATEGORY_SENDER) {
         return;
       }
@@ -249,8 +264,29 @@ export default {
           source:'file',
         });
       }
-    }
+    },
+      cancelSearch(){
+        this.$refs['input'].innerHTML = '';
+        this.fileQuery = '';
+        this.searchFileRecordResult = [];
+      }
   },
+
+    watch: {
+      fileQuery(query){
+          this.fileQuery = query
+          store.searchFiles(query, 0,
+              (frs) => {
+                if(query === this.fileQuery){
+                    this.searchFileRecordResult = frs;
+                }
+              },
+              (errorCode)  => {
+                console.log('search file error', errorCode)
+              }
+          )
+      }
+    },
 
   computed: {
     loadingIdentifier() {
@@ -275,6 +311,9 @@ export default {
     },
     emptyDesc() {
       let desc = '没有文件记录';
+      if(this.fileQuery){
+          return desc;
+      }
       if (this.category === this.CATEGORY_CONVERSATION && this.currentConversation === null) {
         desc = '没有选择会话'
       } else if (this.category === this.CATEGORY_SENDER && this.currentUser === null) {
@@ -282,6 +321,9 @@ export default {
       }
 
       return desc;
+    },
+    computedFileRecords(){
+        return this.fileQuery ? this.searchFileRecordResult : this.fileRecords;
     }
   },
 
@@ -330,6 +372,41 @@ export default {
 .file-record-container .category-container {
   width: 120px;
   height: 100%;
+}
+
+.search-input-container {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa;
+    position: relative;
+}
+
+.search-input-container input {
+    height: 25px;
+    width: 110px;
+    margin: 0 10px;
+    padding: 0 10px 0 20px;
+    text-align: left;
+    flex: 1;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    outline: none;
+    background-color: #eeeeee;
+}
+
+.search-input-container input:active {
+    border: 1px solid #4168e0;
+}
+
+.search-input-container input:focus {
+    border: 1px solid #4168e0;
+}
+
+.search-input-container i {
+    position: absolute;
+    left: 10px;
 }
 
 .category-item {
