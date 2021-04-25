@@ -3,7 +3,7 @@
  */
 
 import EventType from "../../client/wfcEvent";
-import {AppPath, BrowserWindow, ipcRenderer, isElectron, PostMessageEventEmitter} from "../../../platform";
+import {BrowserWindow, ipcRenderer, isElectron, PostMessageEventEmitter} from "../../../platform";
 import ConversationType from "../../model/conversationType";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc";
@@ -83,7 +83,7 @@ export class AvEngineKitProxy {
     // 发送消息时，返回的timestamp，已经过修正，后面使用时,不用考虑和服务器的时间差
     sendVoipListener = (event, msg) => {
         // 电话结束后，关闭window时，不应当再出发callByeMessageContent
-        if(msg.callEnded){
+        if (msg.callEnded) {
             this.conversation = null;
             this.queueEvents = [];
             return;
@@ -123,7 +123,7 @@ export class AvEngineKitProxy {
                 messageUid: messageUid,
                 timestamp: longValue(numberValue(timestamp) - delta)
             })
-            if(content.type === MessageContentType.VOIP_CONTENT_TYPE_START){
+            if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
                 this.inviteMessageUid = messageUid;
             }
         }, (errorCode) => {
@@ -198,11 +198,11 @@ export class AvEngineKitProxy {
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
                     if (!this.callWin) {
-                        setTimeout(()=>{
-                            if(this.conversation){
+                        setTimeout(() => {
+                            if (this.conversation) {
                                 this.showCallUI(msg.conversation);
                             } else {
-                              console.log('call ended')
+                                console.log('call ended')
                             }
                         }, 200)
                     }
@@ -223,8 +223,8 @@ export class AvEngineKitProxy {
                     participantUserInfos = wfc.getUserInfos(participantIds, msg.conversation.target);
 
                     if (!this.callWin && content.participants.indexOf(selfUserInfo.uid) > -1) {
-                        setTimeout(()=>{
-                            if(this.conversation){
+                        setTimeout(() => {
+                            if (this.conversation) {
                                 this.showCallUI(msg.conversation);
                             } else {
                                 console.log('call ended')
@@ -252,7 +252,7 @@ export class AvEngineKitProxy {
                 msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
                 this.emitToVoip("message", msg);
             }
-        }else if (numberValue(delta) >= 90){
+        } else if (numberValue(delta) >= 90) {
             console.error("本地和服务端时间差别太大，不能发起音视频通话，请先进行时间同步.")
         }
     };
@@ -310,7 +310,7 @@ export class AvEngineKitProxy {
             console.log('voip call is ongoing');
             return;
         }
-        if(!this.isSupportVoip) {
+        if (!this.isSupportVoip) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
             return;
         }

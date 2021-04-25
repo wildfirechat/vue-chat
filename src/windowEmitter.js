@@ -52,7 +52,7 @@ class PostMessageEventEmitter {
     emit(name, data) {
         if (typeof name !== 'string') throw new TypeError('Expected name to be a string')
 
-        this[kOther].postMessage({ name, data }, this[kOrigin])
+        this[kOther].postMessage({name, data}, this[kOrigin])
     }
 
     stop() {

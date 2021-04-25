@@ -1,8 +1,8 @@
 import wfc from "../../wfc/client/wfc";
-import {stringValue, _patchToJavaLong, _reverseToJsLongString} from "../../wfc/util/longUtil";
+import {_patchToJavaLong, _reverseToJsLongString, stringValue} from "../../wfc/util/longUtil";
 import store from "@/store";
 
-export default class Draft{
+export default class Draft {
 
     static setConversationDraft(conversation, draftText, quoteInfo, mentions) {
         if (!draftText && !quoteInfo) {
@@ -15,7 +15,7 @@ export default class Draft{
             quoteInfo: quoteInfo,
         }
         let jsonStr = JSON.stringify(obj, (key, value) => {
-            if(key === 'messageUid'){
+            if (key === 'messageUid') {
                 return stringValue(value);
             }
             return value;
@@ -33,7 +33,7 @@ export default class Draft{
             return obj;
         }
         // 兼容处理
-        if(!conversationInfo.draft.startsWith("{")){
+        if (!conversationInfo.draft.startsWith("{")) {
             obj.text = conversationInfo.draft;
             return obj;
         }

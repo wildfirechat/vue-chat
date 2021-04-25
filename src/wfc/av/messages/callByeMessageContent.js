@@ -3,9 +3,8 @@
  */
 import MessageContent from '../../messages/messageContent';
 import MessageContentType from '../../messages/messageContentType';
-import MessagePayload from '../../messages/messagePayload'
 import wfc from "../../client/wfc"
-import {longValue, stringValue, _reverseToJsLongString, _patchToJavaLong} from "../../util/longUtil"
+import {_patchToJavaLong, _reverseToJsLongString, longValue, stringValue} from "../../util/longUtil"
 
 export default class CallByeMessageContent extends MessageContent {
     callId;
@@ -32,7 +31,7 @@ export default class CallByeMessageContent extends MessageContent {
         payload.binaryContent = wfc.utf8_to_b64(str);
         payload.pushData = str;
         return payload;
-  }
+    }
 
     decode(payload) {
         super.decode(payload);

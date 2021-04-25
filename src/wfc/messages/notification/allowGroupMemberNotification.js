@@ -13,14 +13,14 @@ export default class AllowGroupMemberNotification extends GroupNotificationConte
     type
     memberIds
 
-    constructor (operator, type, memberIds) {
+    constructor(operator, type, memberIds) {
         super(MessageContentType.MuteGroupMember_Notification)
         this.operator = operator
         this.type = type
         this.memberIds = memberIds
     }
 
-    formatNotification (message) {
+    formatNotification(message) {
         let notifyStr = ''
         if (this.fromSelf) {
             notifyStr += '您'
@@ -44,7 +44,7 @@ export default class AllowGroupMemberNotification extends GroupNotificationConte
         return notifyStr
     }
 
-    encode () {
+    encode() {
         let payload = super.encode()
         let obj = {
             g: this.groupId,
@@ -56,7 +56,7 @@ export default class AllowGroupMemberNotification extends GroupNotificationConte
         return payload
     }
 
-    decode (payload) {
+    decode(payload) {
         super.decode(payload)
 
         let json = wfc.b64_to_utf8(payload.binaryContent)

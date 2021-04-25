@@ -12,6 +12,7 @@
     border-radius: 5px;
     box-shadow: 0 6px 28px 0 rgba(230, 230, 230, 100);
 }
+
 .tribute-container ul {
     margin: 0;
     margin-top: 2px;
@@ -19,32 +20,38 @@
     list-style: none;
     background: #efefef;
 }
+
 .tribute-container li {
     padding: 5px 5px;
     cursor: pointer;
-    color:#000;
+    color: #000;
     display: flex;
     align-items: center;
     background: #F0E6EA;
 }
+
 .tribute-container li img {
     margin-right: 5px;
 }
+
 .tribute-container li.highlight {
     background: #D8CFD2;
 }
+
 .tribute-container li span {
     font-weight: bold;
 }
+
 .tribute-container li.no-match {
     cursor: default;
 }
+
 .tribute-container .menu-highlighted {
     font-weight: bold;
 }
 
 
-.tribute-container.avatar{
+.tribute-container.avatar {
     width: 24px;
     height: 24px;
     border-radius: 100%;

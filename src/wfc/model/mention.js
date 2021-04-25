@@ -1,4 +1,4 @@
-export default class Mention{
+export default class Mention {
     start;
     end;
     isMentionAll;

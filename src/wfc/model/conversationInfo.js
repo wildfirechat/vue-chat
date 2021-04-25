@@ -87,11 +87,11 @@ export default class ConversationInfo {
             return false;
         }
 
-        if((info1.lastMessage && !info2.lastMessage) || (!info1.lastMessage && info2.lastMessage)){
+        if ((info1.lastMessage && !info2.lastMessage) || (!info1.lastMessage && info2.lastMessage)) {
             return false;
         }
 
-        if(info1.lastMessage && info2.lastMessage && info1.lastMessage.messageId !== info2.lastMessage.messageId){
+        if (info1.lastMessage && info2.lastMessage && info1.lastMessage.messageId !== info2.lastMessage.messageId) {
             return false;
         }
         // 其他的应当都会反应在timestamp上

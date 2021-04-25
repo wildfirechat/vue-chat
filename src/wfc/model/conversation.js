@@ -6,10 +6,10 @@ import ConversationType from "./conversationType";
 
 /**
  *
-        "conversation":{
-            "conversationType": 0, 
-            "target": "UZUWUWuu", 
-            "line": 0, 
+ "conversation":{
+            "conversationType": 0,
+            "target": "UZUWUWuu",
+            "line": 0,
         }
  */
 export default class Conversation {
@@ -26,7 +26,7 @@ export default class Conversation {
     }
 
     equal(conversation) {
-        if(!conversation){
+        if (!conversation) {
             return false;
         }
         return this.type === conversation.type

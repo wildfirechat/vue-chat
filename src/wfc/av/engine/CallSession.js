@@ -2,8 +2,6 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
-import Config from '../../../config.js'
-
 // 运行在新的voip window
 export default class CallSession {
     videoMuted = false
@@ -20,10 +18,11 @@ export default class CallSession {
     host;
     title;
     desc;
+
     /**
      * 播放来电响铃
      */
-    playIncomingRing () {
+    playIncomingRing() {
         // TODO
         //在界面初始化时播放来电铃声
     }
@@ -31,7 +30,7 @@ export default class CallSession {
     /**
      * 停止响铃
      */
-    stopIncomingRing () {
+    stopIncomingRing() {
         // TODO
         //再接听/语音接听/结束媒体时停止播放来电铃声，可能有多次，需要避免出问题
     }
@@ -40,36 +39,36 @@ export default class CallSession {
      * 多人音视频通话中，邀请新成员
      * @param newParticipantIds
      */
-    inviteNewParticipants (newParticipantIds) {
+    inviteNewParticipants(newParticipantIds) {
     }
 
     /**
      * 接听来电
      */
-    call () {
+    call() {
     }
 
     /**
      * 挂断
      */
-    hangup () {
+    hangup() {
     }
 
     /**
      * 打开或者关闭麦克风
      */
-    triggerMicrophone () {
+    triggerMicrophone() {
     }
 
     // 回落到语音
-    downgrade2Voice () {
+    downgrade2Voice() {
     }
 
     /**
      * 打开或关闭摄像头
      * @param enable
      */
-    setVideoEnabled (enable) {
+    setVideoEnabled(enable) {
 
     }
 
@@ -79,7 +78,7 @@ export default class CallSession {
      * @param {[string]} types 媒体源类型，可选screen、window
      * @return {Promise<DesktopCapturerSource[]>}
      */
-    getDesktopSources (types) {
+    getDesktopSources(types) {
 
     }
 
@@ -91,15 +90,15 @@ export default class CallSession {
                 maxHeight: 720}} desktopShareOptions 仅当桌面时有效
      * 开始屏幕共享
      */
-    async startScreenShare (desktopShareOptions) {
+    async startScreenShare(desktopShareOptions) {
 
     }
 
-    isScreenSharing () {
+    isScreenSharing() {
 
     }
 
-    stopScreenShare () {
+    stopScreenShare() {
     }
 
     /**
@@ -107,7 +106,7 @@ export default class CallSession {
      * @param {string} userId
      * @return {PeerConnectionClient}
      */
-    getPeerConnectionClient(userId){
+    getPeerConnectionClient(userId) {
 
     }
 }

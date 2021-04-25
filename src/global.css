@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-app-region:no-drag;
+    -webkit-app-region: no-drag;
 }
 
 .tippy-tooltip.light-theme {
@@ -16,6 +16,7 @@
 .tippy-arrow {
     border-right: 8px solid white !important;
 }
+
 .vue-notification-group {
     margin: var(--main-margin-top) var(--main-margin-right) 0 0;
 }
@@ -40,6 +41,7 @@ ul,
 ol {
     list-style: none;
 }
+
 div,
 button,
 img,

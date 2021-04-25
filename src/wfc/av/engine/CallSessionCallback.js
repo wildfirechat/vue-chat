@@ -74,7 +74,7 @@ export default class CallSessionCallback {
     didVideoMuted(userId, muted) {
     }
 
-    didChangeInitiator(initiator){
+    didChangeInitiator(initiator) {
 
     }
 }

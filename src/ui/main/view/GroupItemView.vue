@@ -4,7 +4,7 @@
 
 <script>
 export default {
-name: "GroupItemView"
+    name: "GroupItemView"
 }
 </script>
 

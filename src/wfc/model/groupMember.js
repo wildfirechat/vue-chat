@@ -3,6 +3,7 @@
  */
 
 import wfc from '../client/wfc'
+
 export default class GroupMember {
     groupId = '';
     memberId = '';

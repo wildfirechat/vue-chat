@@ -6,6 +6,7 @@ import MessageContent from './messageContent'
 import MessageContentType from './messageContentType';
 import wfc from '../client/wfc'
 import QuoteInfo from "../model/quoteInfo";
+
 export default class TextMessageContent extends MessageContent {
     content;
     quoteInfo;
@@ -22,13 +23,13 @@ export default class TextMessageContent extends MessageContent {
     encode() {
         let payload = super.encode();
         payload.searchableContent = this.content;
-        if(this.quoteInfo){
+        if (this.quoteInfo) {
             let obj = {
                 "quote": this.quoteInfo.encode()
             }
             // JSON.parse 和 JSON.stringify 不能处理java long
             let orgStr = JSON.stringify(obj);
-            let str= orgStr.replace(/"u":"([0-9]+)"/, "\"u\":$1");
+            let str = orgStr.replace(/"u":"([0-9]+)"/, "\"u\":$1");
 
             payload.binaryContent = wfc.utf8_to_b64(str);
         }
@@ -38,7 +39,7 @@ export default class TextMessageContent extends MessageContent {
     decode(payload) {
         super.decode(payload);
         this.content = payload.searchableContent;
-        if(payload.binaryContent && payload.binaryContent.length > 0){
+        if (payload.binaryContent && payload.binaryContent.length > 0) {
             // JSON.parse 和 JSON.stringify 不能处理java long
             let quoteInfoStr = wfc.b64_to_utf8(payload.binaryContent)
             // FIXME node 环境，decodeURIComponent 方法，有时候会在最后添加上@字符，目前尚未找到原因，先规避
@@ -51,7 +52,7 @@ export default class TextMessageContent extends MessageContent {
         }
     }
 
-    setQuoteInfo(quoteInfo){
+    setQuoteInfo(quoteInfo) {
         this.quoteInfo = quoteInfo;
     }
 

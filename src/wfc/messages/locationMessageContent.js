@@ -3,8 +3,7 @@
  */
 
 import MessageContent from './messageContent'
-import MessagePayload from './messagePayload';
-import MessageContentType from './messageContentType';
+
 export default class LocationMessageContent extends MessageContent {
     title;
     // base64 encoded, 不包含头部:data:image/png;base64,
@@ -22,8 +21,8 @@ export default class LocationMessageContent extends MessageContent {
         payload.searchableContent = this.title;
         payload.binaryContent = this.thumbnail;
         let location = {
-            lat:this.lat,
-            long:this.long
+            lat: this.lat,
+            long: this.long
         };
         payload.content = JSON.stringify(location);
         return payload;

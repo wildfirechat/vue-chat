@@ -31,9 +31,6 @@ import '../../../node_modules/electron-tabs/electron-tabs.css'
 import {ipcRenderer} from "../../platform";
 import IPCEventType from "../../ipcEventType";
 import Conversation from "../../wfc/model/conversation";
-import Message from "../../wfc/messages/message";
-import TextMessageContent from "../../wfc/messages/textMessageContent";
-import wfc from "../../wfc/client/wfc";
 
 let tabGroup = null;
 

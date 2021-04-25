@@ -16,6 +16,7 @@ import visibility from 'vue-visibility-change';
 import {isElectron, remote} from "@/platform";
 import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
+import Notifications from 'vue-notification'
 
 Vue.config.productionTip = false
 
@@ -73,7 +74,6 @@ const i18n = new VueI18n({
     }
 })
 
-import Notifications from 'vue-notification'
 Vue.use(Notifications)
 const router = new VueRouter({
     mode: 'hash',

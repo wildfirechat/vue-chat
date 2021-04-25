@@ -5,6 +5,7 @@
 import MediaMessageContent from './mediaMessageContent'
 import MessageContentMediaType from './messageContentMediaType';
 import MessageContentType from './messageContentType';
+
 export default class SoundMessageContent extends MediaMessageContent {
     duration;
 

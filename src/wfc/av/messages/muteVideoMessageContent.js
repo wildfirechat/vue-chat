@@ -33,7 +33,7 @@ export default class MuteVideoMessageContent extends NotificationMessageContent 
 
         let obj = {
             existParticipants: this.existParticipants,
-            videoMuted:this.videoMuted,
+            videoMuted: this.videoMuted,
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
 

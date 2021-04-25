@@ -4,7 +4,7 @@
 
 <script>
 export default {
-name: "NewFriendItemView"
+    name: "NewFriendItemView"
 }
 </script>
 

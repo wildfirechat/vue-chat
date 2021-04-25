@@ -26,9 +26,9 @@ export default class RecallMessageNotification extends NotificationMessageConten
     }
 
     formatNotification(message) {
-        if(message.conversation.type === ConversationType.Group){
+        if (message.conversation.type === ConversationType.Group) {
             return wfc.getGroupMemberDisplayName(message.conversation.target, this.operatorId) + "撤回了一条消息";
-        }else {
+        } else {
             return wfc.getUserDisplayName(this.operatorId) + "撤回了一条消息";
         }
     }
@@ -46,13 +46,13 @@ export default class RecallMessageNotification extends NotificationMessageConten
         this.messageUid = Long.fromString(wfc.b64_to_utf8(payload.binaryContent));
 
         try {
-        this.setExtra(payload.extra);
-        }catch (e) {
+            this.setExtra(payload.extra);
+        } catch (e) {
             console.error('decode recallMessage extra error', e)
         }
     }
 
-    setExtra(extra){
+    setExtra(extra) {
         if (extra) {
             let obj = JSON.parse(extra);
             this.originalSender = obj["s"];

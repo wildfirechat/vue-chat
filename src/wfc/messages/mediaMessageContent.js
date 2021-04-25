@@ -20,21 +20,21 @@ export default class MediaMessageContent extends MessageContent {
     constructor(messageType, mediaType = 0, fileOrLocalPath, remotePath) {
         super(messageType);
         this.mediaType = mediaType;
-        if(!fileOrLocalPath){
-          this.localPath = '';
-          this.remotePath = remotePath;
-        } else if(typeof fileOrLocalPath === "string" && fileOrLocalPath.startsWith("/")){
-          this.localPath = fileOrLocalPath;
-          this.remotePath = remotePath;
-        }else {
-          this.file = fileOrLocalPath;
-          if (fileOrLocalPath && fileOrLocalPath.path !== undefined) {
-            this.localPath = fileOrLocalPath.path;
-            // attention: 粘贴的时候，path是空字符串，故采用了这个trick
-            if (this.localPath.indexOf(fileOrLocalPath.name) < 0) {
-              this.localPath += fileOrLocalPath.name;
+        if (!fileOrLocalPath) {
+            this.localPath = '';
+            this.remotePath = remotePath;
+        } else if (typeof fileOrLocalPath === "string" && fileOrLocalPath.startsWith("/")) {
+            this.localPath = fileOrLocalPath;
+            this.remotePath = remotePath;
+        } else {
+            this.file = fileOrLocalPath;
+            if (fileOrLocalPath && fileOrLocalPath.path !== undefined) {
+                this.localPath = fileOrLocalPath.path;
+                // attention: 粘贴的时候，path是空字符串，故采用了这个trick
+                if (this.localPath.indexOf(fileOrLocalPath.name) < 0) {
+                    this.localPath += fileOrLocalPath.name;
+                }
             }
-          }
 
         }
     }

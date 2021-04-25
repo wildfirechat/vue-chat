@@ -24,22 +24,22 @@ export default class ModifyGroupAliasNotification extends GroupNotificationConte
             notificationStr += '你';
         } else {
             let userInfo = wfc.getUserInfo(this.operator, false, this.groupId)
-            if (userInfo.friendAlias){
+            if (userInfo.friendAlias) {
                 notificationStr += userInfo.friendAlias;
-            }else if(userInfo.displayName){
+            } else if (userInfo.displayName) {
                 notificationStr += userInfo.displayName;
-            }else {
+            } else {
                 notificationStr += this.operator;
-        }
+            }
         }
         notificationStr += '修改';
-        if(this.memberId){
+        if (this.memberId) {
             let userInfo = wfc.getUserInfo(this.memberId, false);
-            if(userInfo.friendAlias){
+            if (userInfo.friendAlias) {
                 notificationStr += userInfo.friendAlias;
-            }else if (userInfo.displayName) {
+            } else if (userInfo.displayName) {
                 notificationStr += userInfo.displayName;
-            }else {
+            } else {
                 notificationStr += this.memberId;
             }
             notificationStr += '的';

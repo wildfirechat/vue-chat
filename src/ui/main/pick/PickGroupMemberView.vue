@@ -4,7 +4,7 @@
 
 <script>
 export default {
-name: "PickGroupMemberView"
+    name: "PickGroupMemberView"
 }
 </script>
 

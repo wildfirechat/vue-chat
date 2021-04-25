@@ -15,7 +15,7 @@ import Long from 'long'
  * @param {long | number | string} b
  * @return {number} 相等返回0，a 大于 b 返回1，a 小于 b 返回-1
  */
-export function compare (a, b) {
+export function compare(a, b) {
     const longA = Long.fromValue(a)
     const longB = Long.fromValue(b)
     return longA.compare(longB)
@@ -27,7 +27,7 @@ export function compare (a, b) {
  * @param {long | number | string} b
  * @return {boolean} 相等返回true；否则返回false
  */
-export function eq (a, b) {
+export function eq(a, b) {
     return compare(a, b) === 0
 }
 
@@ -37,7 +37,7 @@ export function eq (a, b) {
  * @param {long | number | string} b
  * @return {boolean} a大于b返回true；否则返回false
  */
-export function gt (a, b) {
+export function gt(a, b) {
     return compare(a, b) === 1
 }
 
@@ -47,7 +47,7 @@ export function gt (a, b) {
  * @param {long | number | string} b
  * @return {boolean} a大于或等于b返回true；否则返回false
  */
-export function gte (a, b) {
+export function gte(a, b) {
     return compare(a, b) >= 0
 }
 
@@ -57,7 +57,7 @@ export function gte (a, b) {
  * @param {long | number | string} b
  * @return {boolean} a小于b返回true；否则返回false
  */
-export function lt (a, b) {
+export function lt(a, b) {
     return compare(a, b) === -1
 }
 
@@ -67,7 +67,7 @@ export function lt (a, b) {
  * @param {long | number | string} b
  * @return {boolean} a小于或者等于b返回true；否则返回false
  */
-export function lte (a, b) {
+export function lte(a, b) {
     return compare(a, b) <= 0
 }
 
@@ -76,7 +76,7 @@ export function lte (a, b) {
  * @param {long |  number | string} l
  * @return {string} 数值表示
  */
-export function stringValue(l){
+export function stringValue(l) {
     const longl = Long.fromValue(l);
     return longl.toString();
 }
@@ -86,7 +86,7 @@ export function stringValue(l){
  * @param {long |  number | string} l
  * @return {long} 数值表示
  */
-export function longValue(value){
+export function longValue(value) {
     return Long.fromValue(value);
 }
 
@@ -95,11 +95,11 @@ export function longValue(value){
  * @param {long | number | string} l
  * @return {number|l} 如果数值l小于等于{@code Number.MAX_SAFE_INTEGER}则返回对应的number，否则原样返回
  */
-export function numberValue(l){
-    if(lte(l, Number.MAX_SAFE_INTEGER)){
+export function numberValue(l) {
+    if (lte(l, Number.MAX_SAFE_INTEGER)) {
         const longl = Long.fromValue(l);
         return longl.toNumber();
-    }else {
+    } else {
         console.log(l, 'is large than Number.MAX_SAFE_INTEGER, do nothing')
         return l;
     }
@@ -114,20 +114,20 @@ export function numberValue(l){
  *
  * 当Java long类型的值，需要序列化为json字符串进行传输时，js long对象序列化出来的
  */
-export function _patchToJavaLong(jsonStr, key){
-    if(!jsonStr){
+export function _patchToJavaLong(jsonStr, key) {
+    if (!jsonStr) {
         return jsonStr;
     }
 
     let reg = new RegExp(`"${key}":"([0-9]+)"`, 'g')
-    return  jsonStr.replace(reg, `\"${key}\":$1`);
+    return jsonStr.replace(reg, `\"${key}\":$1`);
 }
 
-export function _reverseToJsLongString(jsonStr, key){
-    if(!jsonStr){
+export function _reverseToJsLongString(jsonStr, key) {
+    if (!jsonStr) {
         return jsonStr;
     }
     let reg = new RegExp(`"${key}":([0-9]+)`, 'g')
-    return  jsonStr.replace(reg, `\"${key}\":\"$1\"`);
+    return jsonStr.replace(reg, `\"${key}\":\"$1\"`);
 }
 

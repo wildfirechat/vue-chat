@@ -3,6 +3,7 @@
  */
 
 import NotificationMessageContent from './notificationMessageContent'
+
 export default class TemplateNotification extends NotificationMessageContent {
     tip = '';
 

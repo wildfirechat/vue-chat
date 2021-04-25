@@ -10,6 +10,7 @@ export default class VideoMessageContent extends MediaMessageContent {
     // base64 encoded
     thumbnail;
     duration;
+
     constructor(fileOrLocalPath, remotePath, thumbnail, duration = 0) {
         super(MessageContentType.Video, MessageContentMediaType.Video, fileOrLocalPath, remotePath);
         this.thumbnail = thumbnail;
@@ -35,11 +36,11 @@ export default class VideoMessageContent extends MediaMessageContent {
     decode(payload) {
         super.decode(payload);
         this.thumbnail = payload.binaryContent;
-        if(payload.content){
-        let obj = JSON.parse(payload.content)
-        this.duration = obj.d;
-        if(this.duration === undefined){
-            this.duration = obj.duration;
+        if (payload.content) {
+            let obj = JSON.parse(payload.content)
+            this.duration = obj.d;
+            if (this.duration === undefined) {
+                this.duration = obj.duration;
             }
         }
     }
