@@ -50,7 +50,7 @@ export default class AddGroupMemberNotification extends GroupNotificationContent
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

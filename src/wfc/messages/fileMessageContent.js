@@ -31,7 +31,7 @@ export default class FileMessageContent extends MediaMessageContent {
         payload.searchableContent = FileMessageContent.FILE_NAME_PREFIX + this.name;
         payload.content = this.size + '';
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

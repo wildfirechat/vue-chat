@@ -28,7 +28,7 @@ export default class TypingMessageContent extends MessageContent {
         let payload = super.encode();
         payload.content = this.typingType + '';
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

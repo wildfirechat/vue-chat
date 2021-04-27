@@ -20,7 +20,7 @@ export default class NotificationMessageContent extends MessageContent {
             console.log('disgest', error);
         }
         return desc;
-    };
+    }
 
     formatNotification(message) {
         return '..nofication..';

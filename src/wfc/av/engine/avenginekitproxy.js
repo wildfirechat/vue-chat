@@ -369,13 +369,30 @@ export class AvEngineKitProxy {
 
     showCallUI(conversation, isConference) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
+        let width = 360;
+        let height = 640;
+        switch (type) {
+            case 'single':
+                width = 360;
+                height = 640;
+                break;
+            case 'multi':
+            case 'conference':
+                width = 600
+                height = 820;
+                break;
+            default:
+                break;
+        }
         if (isElectron()) {
             let win = new BrowserWindow(
                 {
-                    width: 360,
-                    height: 640 + 15,
-                    resizable: true,
-                    maximizable: true,
+                    width: width,
+                    height: height,
+                    minWidth: width,
+                    minHeight: height,
+                    resizable: false,
+                    maximizable: false,
                     webPreferences: {
                         scrollBounce: false,
                         nativeWindowOpen: true,
@@ -416,22 +433,7 @@ export class AvEngineKitProxy {
             }
             url += '/' + type
 
-            let width = 360;
-            let height = 640;
-            switch (type) {
-                case 'single':
-                    width = 360;
-                    height = 640;
-                    break;
-                case 'multi':
-                case 'conference':
-                    width = 600
-                    height = 800;
-                    break;
-                default:
-                    break;
-            }
-            let win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no,maximizable`);
+            let win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no,maximizable=no,resizable=no,dialog=yes`);
             if (!win) {
                 console.log('can not open voip window');
                 return;

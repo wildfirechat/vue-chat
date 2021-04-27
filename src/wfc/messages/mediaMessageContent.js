@@ -45,7 +45,7 @@ export default class MediaMessageContent extends MessageContent {
         payload.remoteMediaUrl = this.remotePath;
         payload.mediaType = this.mediaType;
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

@@ -24,7 +24,7 @@ export default class ImageMessageContent extends MediaMessageContent {
         payload.mediaType = MessageContentMediaType.Image;
         payload.binaryContent = this.thumbnail;
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

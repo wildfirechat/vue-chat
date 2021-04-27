@@ -26,7 +26,7 @@ export default class SoundMessageContent extends MediaMessageContent {
         };
         payload.content = JSON.stringify(obj);
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

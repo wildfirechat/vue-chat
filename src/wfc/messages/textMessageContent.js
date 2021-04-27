@@ -34,7 +34,7 @@ export default class TextMessageContent extends MessageContent {
             payload.binaryContent = wfc.utf8_to_b64(str);
         }
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

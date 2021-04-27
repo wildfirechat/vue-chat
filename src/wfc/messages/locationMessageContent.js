@@ -26,7 +26,7 @@ export default class LocationMessageContent extends MessageContent {
         };
         payload.content = JSON.stringify(location);
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

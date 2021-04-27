@@ -27,7 +27,7 @@ export default class DeleteMessageContent extends MessageContent {
         payload.content = this.operatorId;
         payload.binaryContent = wfc.utf8_to_b64(this.messageUid.toString());
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

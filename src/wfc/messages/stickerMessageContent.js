@@ -32,7 +32,7 @@ export default class StickerMessageContent extends MediaMessageContent {
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

@@ -23,7 +23,7 @@
                                    :srcObject.prop="selfUserInfo._stream"
                                    muted
                                    playsInline autoPlay/>
-                            <p>self</p>
+                            <p>我</p>
                         </div>
                         <video v-else
                                class="video"
@@ -321,7 +321,7 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-content: flex-start;
+    align-items: center;
 }
 
 .participant-container {
@@ -350,6 +350,10 @@ export default {
 .participant-container p {
     max-height: 20px;
     color: white;
+}
+
+footer {
+    height: 160px;
 }
 
 .duration-action-container {
