@@ -17,6 +17,7 @@ import {isElectron, remote} from "@/platform";
 import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'
+import Config from "./config";
 
 Vue.config.productionTip = false
 
@@ -33,9 +34,13 @@ Vue.config.productionTip = false
             // 可以根据访问网页的地址，配置是否切换备选网络策略
             // 比如公网，通过域名访问，采用默认的主网络；内网，通过ip访问，使用备选网络
             // 需要在wfc.connect之前调用
-            // if(new URL(window.origin).host.startsWith('localhost')){
+            // if (new URL(window.origin).host.startsWith('localhost')) {
+            //     // 设置备选网络不走WSS
+            //     Config.USE_WSS = false;
+            //     // 设置网络策略
             //     wfc.setBackupAddressStrategy(2)
-            //     wfc.setBackupAddress('192.168.10.11', 443)
+            //     // 设置备选网络
+            //     wfc.setBackupAddress('192.168.10.11', 80)
             // }
         }
         store.init(true);
