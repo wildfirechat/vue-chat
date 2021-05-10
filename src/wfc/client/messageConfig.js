@@ -46,6 +46,7 @@ import MuteGroupMemberNotification from '../messages/notification/muteGroupMembe
 import AllowGroupMemberNotification from '../messages/notification/allowGroupMemberNotification'
 import CardMessageContent from '../messages/cardMessageContent'
 import CompositeMessageContent from "../messages/compositeMessageContent";
+import ConferenceInviteMessageContent from "../av/messages/conferenceInviteMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -339,5 +340,11 @@ export default class MessageConfig {
             type: MessageContentType.VOIP_CONTENT_TYPE_MUTE_VIDEO,
             contentClazz: MuteVideoMessageContent,
         },
+        {
+            name: 'conferenceInvite',
+            flag: PersistFlag.Persist,
+            type: MessageContentType.CONTENT_TYPE_CONFERENCE_INVITE,
+            contentClazz: ConferenceInviteMessageContent,
+        }
     ];
 }

@@ -62,6 +62,7 @@ export default class MessageContentType {
     static VOIP_CONTENT_TYPE_ACCEPT_T = 405;
     static VOIP_CONTENT_TYPE_ADD_PARTICIPANT = 406;
     static VOIP_CONTENT_TYPE_MUTE_VIDEO = 407;
+    static CONTENT_TYPE_CONFERENCE_INVITE = 408;
 
     static MESSAGE_CONTENT_TYPE_FEED = 501;
     static MESSAGE_CONTENT_TYPE_COMMENT = 502;

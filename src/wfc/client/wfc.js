@@ -1553,12 +1553,12 @@ export class WfcManager {
      * @param data
      * @param callback
      */
-    sendConferenceRequest(sessionId, roomId, request, data, callback){
-        impl.sendConferenceRequest(sessionId, roomId, request, false, data, callback)
+    sendConferenceRequest(sessionId, roomId, request, data, callback) {
+        this.sendConferenceRequestEx(sessionId, roomId, request, data, false, callback)
     }
 
-    sendConferenceRequestEx(sessionId, roomId, request, advance, data, callback){
-        impl.sendConferenceRequest(sessionId, roomId, request, advance, data, callback)
+    sendConferenceRequestEx(sessionId, roomId, request, data, advance, callback) {
+        impl.sendConferenceRequest(sessionId, roomId, request, data, advance, callback);
     }
 
     _getStore() {
