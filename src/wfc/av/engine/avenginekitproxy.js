@@ -467,14 +467,21 @@ export class AvEngineKitProxy {
                 this.onVoipWindowReady(win);
             }, true);
 
-            win.addEventListener('beforeunload', (event) => {
-                this.onVoipWindowClose(event);
-            });
+            // pls refer to https://stackoverflow.com/questions/52448909/onbeforeunload-not-working-inside-react-component
+            // In react, if you need to handle DOM events not already provided by React you have to add DOM listeners after the component is mounted
+            // 所以这儿延时一下
+            setTimeout(() => {
+                win.addEventListener('beforeunload', this.onVoipWindowClose);
+            }, 600)
         }
     }
 
-    onVoipWindowClose(event) {
+    onVoipWindowClose = (event) => {
         // 让voip内部先处理关闭事件，内部处理时，可能还需要发消息
+        if (!this.callWin) {
+            return;
+        }
+        this.callWin.removeEventListener('beforeunload', this.onVoipWindowClose)
         setTimeout(() => {
             if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
                 // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
