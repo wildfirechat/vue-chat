@@ -133,6 +133,8 @@
         "create": "Create",
         "none": "None",
         "copy": "Copy",
+        "paste": "Paste",
+        "cut": "Cut",
         "delete": "Delete",
         "forward": "forward",
         "fav": "Collection",

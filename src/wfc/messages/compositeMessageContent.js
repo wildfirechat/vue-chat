@@ -49,6 +49,9 @@ export default class CompositeMessageContent extends MessageContent {
                 cmts: msgPayload.mentionedTargets,
                 ce: msgPayload.extra,
             };
+            if (msgPayload.searchableContent) {
+                payload.searchableContent = payload.searchableContent + msgPayload.searchableContent + ' ';
+            }
 
             if (msgPayload.binaryContent) {
                 o.cbc = msgPayload.binaryContent;

@@ -133,6 +133,8 @@
         "create": "創建",
         "none": "無",
         "copy": "復制",
+        "paste": "粘貼",
+        "cut": "剪切",
         "delete": "刪除",
         "forward": "轉發",
         "fav": "收藏",

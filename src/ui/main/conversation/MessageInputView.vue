@@ -30,8 +30,24 @@
              @paste="handlePaste"
              draggable="false"
              autofocus
+             @contextmenu.prevent="$refs.menu.open($event)"
              placeholder="hello" contenteditable="true">
         </div>
+        <vue-context ref="menu" :lazy="true">
+            <li>
+                <a @click.prevent="handlePaste($event)">
+                    {{ $t('common.paste') }}
+                </a>
+            </li>
+            <li v-show="hasInputTextOrImage">
+                <a @click.prevent="copy">
+                    {{ $t('common.copy') }}
+                </a>
+            </li>
+            <li>
+                <a @click.prevent="cut">{{ $t('common.cut') }}</a>
+            </li>
+        </vue-context>
         <QuoteMessageView
             v-if="quotedMessage !== null"
             style="padding: 10px 20px"
@@ -65,6 +81,7 @@ import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import {ipcRenderer, isElectron} from "@/platform";
+import {copyText} from "../../util/clipboard";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -112,11 +129,17 @@ export default {
             store.quoteMessage(null)
         },
 
-        handlePaste(e) {
-            let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        async handlePaste(e) {
+            let text;
+            if ((e.originalEvent || e).clipboardData) {
+                text = (e.originalEvent || e).clipboardData.getData('text/plain');
+            } else {
+                text = await navigator.clipboard.readText();
+            }
             if (text && text.trim()) {
                 e.preventDefault();
                 document.execCommand('insertText', false, text);
+                return;
             }
             if (isElectron()) {
                 let args = ipcRenderer.sendSync('file-paste');
@@ -125,6 +148,17 @@ export default {
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
                 }
             }
+        },
+        copy() {
+            let text = this.$refs['input'].innerText;
+            if(text){
+                copyText(text)
+            }
+        },
+
+        cut() {
+            this.copy();
+            this.$refs['input'].innerHTML = '';
         },
 
         send(e) {
@@ -550,8 +584,11 @@ export default {
 
         if (isElectron()) {
             ipcRenderer.on('screenshots-ok', (event, args) => {
+                console.log('screenshots-ok jxojoj', args)
                 if (args.filePath) {
+                    setTimeout(()=> {
                     document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
+                    }, 100)
                 }
             });
         }
@@ -580,6 +617,11 @@ export default {
         quotedMessage() {
             lastQuotedMessage = this.sharedConversationState.quotedMessage;
             return this.sharedConversationState.quotedMessage;
+        },
+
+        hasInputTextOrImage() {
+            // TODO 监听input的输入情况
+            return true;
         }
     },
 
@@ -630,12 +672,12 @@ export default {
     -webkit-user-select: text;
 }
 
-ul li {
+.input-action-container ul li {
     display: inline;
     margin-left: 20px;
 }
 
-ul li:last-of-type {
+.input-action-container ul li:last-of-type {
     margin-right: 20px;
 }
 

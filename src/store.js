@@ -26,6 +26,7 @@ import Config from "@/config";
 import {getItem, setItem} from "@/ui/util/storageHelper";
 import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
 import IPCEventType from "./ipcEventType";
+import localStorageEmitter from "./ipc/localStorageEmitter";
 
 /**
  * 一些说明
@@ -111,6 +112,7 @@ let store = {
             isMainWindow: false,
             uploadBigFiles: [],
             wfc: wfc,
+            config: Config,
         },
     },
 
@@ -325,7 +327,7 @@ let store = {
                 let messageId = args.messageId;
                 // do nothing now
             });
-            ipcRenderer.on('wf-ipc-to-main', (events, args) => {
+            localStorageEmitter.on('wf-ipc-to-main', (events, args) => {
                 let type = args.type;
                 switch (type) {
                     case IPCEventType.openConversation:
@@ -1186,7 +1188,7 @@ let store = {
                 wfc.uploadMedia('', groupPortrait, MessageContentMediaType.Portrait,
                     (remoteUrl) => {
                         console.log('upload media success', remoteUrl);
-                        wfc.createGroup(null, GroupType.Restricted, groupName, remoteUrl, groupMemberIds, [0], null,
+                        wfc.createGroup(null, GroupType.Restricted, groupName, remoteUrl, null, groupMemberIds, null, [0], null,
                             (groupId) => {
                                 this._loadDefaultConversationList();
                                 let conversation = new Conversation(ConversationType.Group, groupId, 0)
@@ -1321,8 +1323,13 @@ let store = {
         });
     },
 
-    setPageVisibility(hidden) {
-        miscState.isPageHidden = hidden;
+    setPageVisibility(visible) {
+        miscState.isPageHidden = !visible;
+        if (visible) {
+            if (conversationState.currentConversationInfo) {
+                this.clearConversationUnreadStatus(conversationState.currentConversationInfo.conversation)
+            }
+        }
     },
 
     clearConversationUnreadStatus(conversation) {

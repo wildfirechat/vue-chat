@@ -88,7 +88,7 @@ export default {
     overflow: auto;
 }
 
-.conversation-list ul li {
+.conversation-list ul:first-of-type li {
     background-color: #f8f8f8;
 }
 
@@ -96,15 +96,15 @@ export default {
 /*  background-color: #d6d6d6;*/
 /*}*/
 
-.conversation-list ul li.active {
+.conversation-list ul:first-of-type li.active {
     background-color: #d6d6d6;
 }
 
-.conversation-list ul li.top {
+.conversation-list ul:first-of-type li.top {
     background-color: #f1f1f1;
 }
 
-.conversation-list ul li.active.top {
+.conversation-list ul:first-of-type li.active.top {
     background-color: #d6d6d6;
 }
 

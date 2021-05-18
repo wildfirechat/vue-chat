@@ -73,7 +73,7 @@ export default {
                 if (event.params.confirm) {
                     let newPickedUsers = event.params.users;
                     let ids = newPickedUsers.map(u => u.uid);
-                    wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, [0])
+                    wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, null, [0])
                 }
             };
             let closed = (event) => {

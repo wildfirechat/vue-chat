@@ -34,6 +34,7 @@
         </CoolLightBox>
 
         <notifications/>
+        <IpcMain/>
         <router-view id="main-content-container" class="main-content-container"></router-view>
     </div>
 </template>
@@ -44,6 +45,7 @@ import {isElectron} from "@/platform";
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import './twemoji'
+import IpcMain from "./ipc/ipcMain";
 
 export default {
     name: 'App',
@@ -56,7 +58,13 @@ export default {
     },
     methods: {
         visibilityChange(event, hidden) {
-            store.setPageVisibility(hidden);
+            store.setPageVisibility(!hidden);
+        },
+        onblur() {
+            store.setPageVisibility(false);
+        },
+        onfocus() {
+            store.setPageVisibility(true);
         }
     },
 
@@ -73,6 +81,8 @@ export default {
             root.style.setProperty('--main-border-radius', '0px')
             root.style.setProperty('--home-menu-padding-top', '0px')
         }
+        window.addEventListener('blur', this.onblur);
+        window.addEventListener('focus', this.onfocus)
     },
 
     mounted() {
@@ -101,8 +111,11 @@ export default {
     },
     beforeDestroy() {
         this.$eventBus.$off('uploadFile');
+        window.removeEventListener('blur', this.onblur)
+        window.removeEventListener('focus', this.onfocus)
     },
     components: {
+        IpcMain,
         CoolLightBox,
     }
 }
