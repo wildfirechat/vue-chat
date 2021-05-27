@@ -18,6 +18,7 @@ import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'
 import Config from "./config";
+import Alert from "./ui/common/Alert.js";
 
 Vue.config.productionTip = false
 
@@ -68,6 +69,7 @@ Vue.use(VModal);
 Vue.use(visibility);
 
 Vue.use(VueI18n)
+Vue.use(Alert)
 
 const i18n = new VueI18n({
     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态

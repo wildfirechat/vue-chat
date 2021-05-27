@@ -49,10 +49,10 @@ class LocalStorageEmitter {
             });
 
             this.handles.forEach((handle, k) => {
-                let index = key.indexOf('$$');
-                if (index === -1) {
+                if (key.indexOf('$$') === -1 || key.indexOf('$r$') > -1) {
                     return;
                 }
+                let index = key.indexOf('$$');
                 let invokeKey = key.substr(0, index + 1)
                 if (k === invokeKey) {
                     let invokeId = value.invokeId;

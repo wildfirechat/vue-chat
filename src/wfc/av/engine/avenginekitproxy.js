@@ -80,7 +80,6 @@ export class AvEngineKitProxy {
 
     // 发送消息时，返回的timestamp，已经过修正，后面使用时,不用考虑和服务器的时间差
     sendVoipListener = (event, msg) => {
-
         let contentClazz = MessageConfig.getMessageContentClazz(msg.content.type);
 
         let content = new contentClazz();
@@ -162,6 +161,8 @@ export class AvEngineKitProxy {
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_ACCEPT_T
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_MUTE_VIDEO
+                || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER
+                || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_CHANGE_MODE
             ) {
                 console.log("receive voip message", msg.messageContent.type, msg.messageUid.toString(), msg);
                 if (msg.direction === 0
@@ -394,6 +395,7 @@ export class AvEngineKitProxy {
 
     showCallUI(conversation, isConference) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
+
         let width = 360;
         let height = 640;
         switch (type) {
@@ -403,8 +405,8 @@ export class AvEngineKitProxy {
                 break;
             case 'multi':
             case 'conference':
-                width = 600
-                height = 820;
+                width = 1024;
+                height = 800;
                 break;
             default:
                 break;
@@ -416,7 +418,7 @@ export class AvEngineKitProxy {
                     height: height,
                     minWidth: width,
                     minHeight: height,
-                    resizable: false,
+                    resizable: true,
                     maximizable: false,
                     webPreferences: {
                         scrollBounce: false,
@@ -481,7 +483,9 @@ export class AvEngineKitProxy {
         if (!this.callWin) {
             return;
         }
-        this.callWin.removeEventListener('beforeunload', this.onVoipWindowClose)
+        if (!isElectron()) {
+            this.callWin.removeEventListener('beforeunload', this.onVoipWindowClose)
+        }
         setTimeout(() => {
             if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
                 // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方

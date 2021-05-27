@@ -15,7 +15,7 @@ export default class ConferenceInviteMessageContent extends MessageContent {
     advanced;
 
     constructor(callId, host, title, desc, startTime, audioOnly, audience, advance, pin) {
-        super(MessageContentType.CONTENT_TYPE_CONFERENCE_INVITE);
+        super(MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE);
         this.callId = callId;
         this.host = host;
         this.title = title;
@@ -25,6 +25,11 @@ export default class ConferenceInviteMessageContent extends MessageContent {
         this.audience = audience;
         this.advanced = advance;
         this.pin = pin;
+    }
+
+    digest(message) {
+        let str = '[会议邀请]'
+        return str;
     }
 
     encode() {

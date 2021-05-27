@@ -20,6 +20,8 @@
                                  v-else-if="message.messageContent.type === 11"/>
     <CallStartMessageContentView :message="message"
                                  v-else-if="message.messageContent.type === 400"/>
+    <ConferenceInviteMessageContentView :message="message"
+                                        v-else-if="message.messageContent.type === 408"/>
     <UserCardMessageContentView :message="message"
                                 v-else-if="message.messageContent.type === 10"
                                 :style="{'--out-arrow-color':'white', '--in-arrow-color':'white'}"
@@ -41,6 +43,7 @@ import CallStartMessageContentView from "@/ui/main/conversation/message/content/
 import AudioMessageContentView from "@/ui/main/conversation/message/content/AudioMessageContentView";
 import CompositeMessageContentView from "@/ui/main/conversation/message/content/CompositeMessageContentView";
 import UserCardMessageContentView from "./content/UserCardMessageContentView";
+import ConferenceInviteMessageContentView from "./content/ConferenceInviteMessageContentView";
 
 export default {
     name: "MessageContentContainerView",
@@ -51,6 +54,7 @@ export default {
         }
     },
     components: {
+        ConferenceInviteMessageContentView,
         CompositeMessageContentView,
         AudioMessageContentView,
         CallStartMessageContentView,

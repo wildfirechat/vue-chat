@@ -142,6 +142,8 @@ import {copyImg, copyText} from "@/ui/util/clipboard";
 import Message from "../../../wfc/messages/message";
 import {downloadFile} from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
+import localStorageEmitter from "../../../ipc/localStorageEmitter";
+import {remote} from "../../../platform";
 
 export default {
     components: {
@@ -371,7 +373,7 @@ export default {
         },
 
         forward(message) {
-            this.pickConversationAndForwardMessage(ForwardType.NORMAL, [message]);
+            return this.pickConversationAndForwardMessage(ForwardType.NORMAL, [message]);
         },
 
         quoteMessage(message) {
@@ -394,65 +396,77 @@ export default {
         },
 
         pickConversationAndForwardMessage(forwardType, messages) {
-            let beforeClose = (event) => {
-                console.log('Closing...', event, event.params)
-                // What a gamble... 50% chance to cancel closing
-                if (event.params.toCreateConversation) {
-                    console.log('to show')
-                    this.createConversationAndForwardMessage(forwardType, messages)
-                } else if (event.params.confirm) {
-                    let conversations = event.params.conversations;
-                    let extraMessageText = event.params.extraMessageText;
-                    // TODO 多选转发
-                    store.forwardMessage(forwardType, conversations, messages, extraMessageText)
-                } else {
-                    console.log('cancel')
-                    // TODO clear pick state
-                }
-            };
+            return new Promise(((resolve, reject) => {
+                let beforeClose = (event) => {
+                    console.log('Closing...', event, event.params)
+                    // What a gamble... 50% chance to cancel closing
+                    if (event.params.toCreateConversation) {
+                        console.log('to show')
+                        Promise.race([this.createConversationAndForwardMessage(forwardType, messages)])
+                            .then(resolve)
+                            .catch(reject);
+                    } else if (event.params.confirm) {
+                        let conversations = event.params.conversations;
+                        let extraMessageText = event.params.extraMessageText;
+                        // TODO 多选转发
+                        store.forwardMessage(forwardType, conversations, messages, extraMessageText)
+                        resolve();
+                    } else {
+                        console.log('cancel')
+                        reject();
+                    }
+                };
 
-            this.$modal.show(
-                ForwardMessageByPickConversationView,
-                {
-                    forwardType: forwardType,
-                    messages: messages
-                }, {
-                    name: 'forward-by-pick-conversation-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: false,
-                }, {
-                    'before-close': beforeClose,
-                })
+                this.$modal.show(
+                    ForwardMessageByPickConversationView,
+                    {
+                        forwardType: forwardType,
+                        messages: messages
+                    }, {
+                        name: 'forward-by-pick-conversation-modal',
+                        width: 600,
+                        height: 480,
+                        clickToClose: false,
+                    }, {
+                        'before-close': beforeClose,
+                    })
+            }));
         },
 
         createConversationAndForwardMessage(forwardType, messages) {
-            let beforeClose = (event) => {
-                console.log('Closing...', event, event.params)
-                if (event.params.backPickConversation) {
-                    this.pickConversationAndForwardMessage(forwardType, messages)
-                } else if (event.params.confirm) {
-                    let users = event.params.users;
-                    let extraMessageText = event.params.extraMessageText;
-                    store.forwardByCreateConversation(forwardType, users, messages, extraMessageText)
-                } else {
-                    console.log('cancel')
-                }
-            };
-            this.$modal.show(
-                ForwardMessageByCreateConversationView,
-                {
-                    forwardType: forwardType,
-                    messages: messages,
-                    users: this.sharedContactState.friendList,
-                }, {
-                    name: 'forward-by-create-conversation-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: false,
-                }, {
-                    'before-close': beforeClose,
-                })
+            return new Promise(((resolve, reject) => {
+
+                let beforeClose = (event) => {
+                    console.log('Closing...', event, event.params)
+                    if (event.params.backPickConversation) {
+                        Promise.race([this.pickConversationAndForwardMessage(forwardType, messages)])
+                            .then(resolve)
+                            .catch(reject);
+                    } else if (event.params.confirm) {
+                        let users = event.params.users;
+                        let extraMessageText = event.params.extraMessageText;
+                        store.forwardByCreateConversation(forwardType, users, messages, extraMessageText)
+                        resolve();
+                    } else {
+                        console.log('cancel')
+                        reject();
+                    }
+                };
+                this.$modal.show(
+                    ForwardMessageByCreateConversationView,
+                    {
+                        forwardType: forwardType,
+                        messages: messages,
+                        users: this.sharedContactState.friendList,
+                    }, {
+                        name: 'forward-by-create-conversation-modal',
+                        width: 600,
+                        height: 480,
+                        clickToClose: false,
+                    }, {
+                        'before-close': beforeClose,
+                    });
+            }));
         },
     },
 
@@ -469,7 +483,23 @@ export default {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
             let message = new Message(null, fileMessageContent);
             this.forward(message)
-        })
+        });
+
+        localStorageEmitter.on('inviteConferenceParticipant', (ev, args) => {
+            if (isElectron()) {
+                remote.getCurrentWindow().focus();
+            }
+            let payload = args.messagePayload;
+            let messageContent = Message.messageContentFromMessagePayload(payload, wfc.getUserId());
+            let message = new Message(null, messageContent);
+            this.forward(message)
+                .then(() => {
+                    ev.reply('inviteConferenceParticipantDone')
+                })
+                .catch(() => {
+                    ev.reply('inviteConferenceParticipantCancel')
+                });
+        });
     },
 
     beforeDestroy() {
@@ -490,9 +520,9 @@ export default {
         }
         if (this.sharedConversationState.currentConversationInfo) {
             if (!this.sharedMiscState.isPageHidden) {
-            let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
-            if (unreadCount.unread > 0) {
-                store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+                let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
+                if (unreadCount.unread > 0) {
+                    store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
                 }
             }
         }
