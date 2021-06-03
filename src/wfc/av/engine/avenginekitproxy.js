@@ -19,6 +19,8 @@ import Conversation from "../../../wfc/model/conversation";
 export class AvEngineKitProxy {
     queueEvents = [];
     callWin;
+    // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
+    useIframe = false;
 
     conference = false;
     conversation;
@@ -292,13 +294,13 @@ export class AvEngineKitProxy {
             ipcRenderer.on(event, listener);
         } else {
             if (!this.events) {
-                this.events = new PostMessageEventEmitter(window.opener, window.location.origin);
+                this.events = new PostMessageEventEmitter(this.useIframe ? window.parent : window.opener, window.location.origin);
             }
             this.events.on(event, listener);
         }
     };
 
-    startCall(conversation, audioOnly, participants) {
+    startCall(conversation, audioOnly, participants, iframe) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             return;
@@ -321,7 +323,7 @@ export class AvEngineKitProxy {
             let memberIds = wfc.getGroupMemberIds(conversation.target);
             groupMemberUserInfos = wfc.getUserInfos(memberIds, conversation.target);
         }
-        this.showCallUI(conversation);
+        this.showCallUI(conversation, false, this.useIframe ? iframe : null);
         this.emitToVoip('startCall', {
             conversation: conversation,
             audioOnly: audioOnly,
@@ -394,7 +396,7 @@ export class AvEngineKitProxy {
         });
     }
 
-    showCallUI(conversation, isConference) {
+    showCallUI(conversation, isConference, iframe) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
 
         let width = 360;
@@ -461,14 +463,27 @@ export class AvEngineKitProxy {
             }
             url += '/' + type
 
-            let win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no,maximizable=no,resizable=no,dialog=yes`);
+            let win;
+            if (iframe) {
+                iframe.src = url;
+                win = iframe.contentWindow;
+            } else {
+                win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no,maximizable=no,resizable=no,dialog=yes`);
+            }
             if (!win) {
                 console.log('can not open voip window');
                 return;
             }
-            win.addEventListener('load', () => {
-                this.onVoipWindowReady(win);
-            }, true);
+            if (iframe) {
+                iframe.onload = () => {
+                    console.log('iframe loaded');
+                    this.onVoipWindowReady(win);
+                }
+            } else {
+                win.addEventListener('load', () => {
+                    this.onVoipWindowReady(win);
+                }, true);
+            }
 
             // pls refer to https://stackoverflow.com/questions/52448909/onbeforeunload-not-working-inside-react-component
             // In react, if you need to handle DOM events not already provided by React you have to add DOM listeners after the component is mounted
