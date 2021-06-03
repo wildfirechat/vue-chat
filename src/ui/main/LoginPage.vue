@@ -186,6 +186,8 @@ export default {
 
             this.loginStatus = 0;
             this.qrCode = null;
+            // 切换用户时，先进行disconnect
+            wfc.disconnect();
             clear();
 
             this.createPCLoginSession(null);

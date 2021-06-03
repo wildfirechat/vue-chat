@@ -16,6 +16,7 @@ export default class CallSession {
     audience = false;
     conference = false;
     advance = false;
+    record = false;
     host;
     title;
     desc;

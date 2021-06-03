@@ -87,6 +87,7 @@ export default {
 
 .create-conference-container button {
     height: 30px;
+    border: 1px solid #e5e5e5;
     border-radius: 3px;
 }
 

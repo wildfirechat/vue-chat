@@ -332,7 +332,7 @@ export class AvEngineKitProxy {
         });
     }
 
-    startConference(callId, audioOnly, pin, host, title, desc, audience, advance) {
+    startConference(callId, audioOnly, pin, host, title, desc, audience, advance, record = false) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             return;
@@ -359,6 +359,7 @@ export class AvEngineKitProxy {
             desc: desc,
             audience: audience,
             advance: advance,
+            record: record,
             selfUserInfo: selfUserInfo,
         });
     }
