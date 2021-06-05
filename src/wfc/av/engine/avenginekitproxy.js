@@ -21,6 +21,7 @@ export class AvEngineKitProxy {
     callWin;
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
     useIframe = false;
+    iframe;
 
     conference = false;
     conversation;
@@ -55,6 +56,16 @@ export class AvEngineKitProxy {
             ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
             ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
         }
+    }
+
+    /**
+     * 设置渲染音视频通话界面的iframe
+     *
+     * 仅当 {@link useIframe}配置为 true时生效
+     * @param iframe
+     */
+    setVoipIframe(iframe) {
+        this.iframe = iframe;
     }
 
     updateCallStartMessageContentListener = (event, message) => {
@@ -300,7 +311,7 @@ export class AvEngineKitProxy {
         }
     };
 
-    startCall(conversation, audioOnly, participants, iframe) {
+    startCall(conversation, audioOnly, participants) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             return;
@@ -323,7 +334,7 @@ export class AvEngineKitProxy {
             let memberIds = wfc.getGroupMemberIds(conversation.target);
             groupMemberUserInfos = wfc.getUserInfos(memberIds, conversation.target);
         }
-        this.showCallUI(conversation, false, this.useIframe ? iframe : null);
+        this.showCallUI(conversation, false);
         this.emitToVoip('startCall', {
             conversation: conversation,
             audioOnly: audioOnly,
@@ -396,7 +407,7 @@ export class AvEngineKitProxy {
         });
     }
 
-    showCallUI(conversation, isConference, iframe) {
+    showCallUI(conversation, isConference) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
 
         let width = 360;
@@ -464,6 +475,7 @@ export class AvEngineKitProxy {
             url += '/' + type
 
             let win;
+            let iframe = this.iframe;
             if (iframe) {
                 if (iframe.src) {
                     iframe.contentWindow.location.reload();

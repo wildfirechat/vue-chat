@@ -80,6 +80,11 @@
             </keep-alive>
             <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
+            <div v-show="voipProxy.useIframe && voipProxy.callId" class="voip-iframe-container">
+                <iframe style="width:100%; height: 100%" ref="voip-iframe">
+                    <!--voip iframe-->
+                </iframe>
+            </div>
         </div>
     </div>
 </template>
@@ -109,6 +114,7 @@ export default {
             supportConference: avenginekit.startConference !== undefined,
             isSetting: false,
             fileWindow: null,
+            voipProxy: avenginekitproxy,
         };
     },
 
@@ -309,7 +315,14 @@ export default {
                     type: 'warn'
                 });
             }
-        })
+        });
+    },
+
+    mounted() {
+        if (avenginekitproxy.useIframe) {
+            let voipIframe = this.$refs["voip-iframe"];
+            avenginekitproxy.setVoipIframe(voipIframe)
+        }
     },
     destroyed() {
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange);
@@ -433,5 +446,17 @@ i.active {
     text-align: center;
     background: #f2f2f280;
     box-shadow: 0 0 1px #000;
+}
+
+.voip-iframe-container {
+    background: #b6b6b6;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 360px;
+    height: 640px;
+    /*
+    动态大小，请参考avenginekitproxy里面，showCallUI部分的大小逻辑
+    */
 }
 </style>
