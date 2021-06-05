@@ -201,6 +201,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                this.session = null;
             }
 
             sessionCallback.didVideoMuted = (userId, muted) => {

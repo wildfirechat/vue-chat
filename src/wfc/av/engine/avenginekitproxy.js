@@ -465,6 +465,9 @@ export class AvEngineKitProxy {
 
             let win;
             if (iframe) {
+                if (iframe.src) {
+                    iframe.contentWindow.location.reload();
+                }
                 iframe.src = url;
                 win = iframe.contentWindow;
             } else {
@@ -496,6 +499,7 @@ export class AvEngineKitProxy {
 
     onVoipWindowClose = (event) => {
         // 让voip内部先处理关闭事件，内部处理时，可能还需要发消息
+        console.log('onVoipWindowClose')
         if (!this.callWin) {
             return;
         }
@@ -523,6 +527,9 @@ export class AvEngineKitProxy {
             this.events.on('voip-message', this.sendVoipListener)
             this.events.on('conference-request', this.sendConferenceRequestListener);
             this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
+            if (this.useIframe) {
+                this.events.on('close-iframe-window', this.onVoipWindowClose)
+            }
         }
         if (this.queueEvents.length > 0) {
             this.queueEvents.forEach((eventArgs) => {
