@@ -1,5 +1,5 @@
 <template>
-    <div class="home-container">
+    <div class="home-container" ref="home-container">
         <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                           v-if="sharedMiscState.isElectronWindowsOrLinux"/>
         <div class="home">
@@ -80,8 +80,14 @@
             </keep-alive>
             <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
-            <div v-show="voipProxy.useIframe && voipProxy.callId" class="voip-iframe-container">
-                <iframe style="width:100%; height: 100%" ref="voip-iframe">
+            <div v-show="voipProxy.useIframe && voipProxy.callId" class="voip-iframe-container"
+                 v-draggable="draggableValue"
+                 v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
+            >
+                <div ref="voip-dragger" class="title">
+                    音视频通话
+                </div>
+                <iframe ref="voip-iframe" class="content">
                     <!--voip iframe-->
                 </iframe>
             </div>
@@ -104,6 +110,7 @@ import avenginekit from "../../wfc/av/internal/engine.min";
 import localStorageEmitter from "../../ipc/localStorageEmitter";
 import CallEndReason from "../../wfc/av/engine/callEndReason";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
+import {Draggable} from 'draggable-vue-directive'
 
 export default {
     data() {
@@ -115,6 +122,10 @@ export default {
             isSetting: false,
             fileWindow: null,
             voipProxy: avenginekitproxy,
+            draggableValue: {
+                handle: undefined,
+                boundingElement: undefined,
+            },
         };
     },
 
@@ -322,6 +333,8 @@ export default {
         if (avenginekitproxy.useIframe) {
             let voipIframe = this.$refs["voip-iframe"];
             avenginekitproxy.setVoipIframe(voipIframe)
+            this.draggableValue.handle = this.$refs['voip-dragger'];
+            this.draggableValue.boundingElement = this.$refs['home-container']
         }
     },
     destroyed() {
@@ -333,6 +346,9 @@ export default {
         UserCardView,
         ElectronWindowsControlButtonView
     },
+    directives: {
+        Draggable,
+    }
 };
 </script>
 
@@ -453,10 +469,36 @@ i.active {
     position: absolute;
     top: 0;
     right: 0;
-    width: 360px;
-    height: 640px;
+    display: flex;
+    flex-direction: column;
     /*
     动态大小，请参考avenginekitproxy里面，showCallUI部分的大小逻辑
     */
 }
+
+.voip-iframe-container.single {
+    width: 360px;
+    height: 640px;
+}
+
+.voip-iframe-container.multi {
+    width: 1024px;
+    height: 800px;
+}
+
+.voip-iframe-container.conference {
+    width: 1024px;
+    height: 800px;
+}
+
+.voip-iframe-container .title {
+    text-align: center;
+    padding: 5px 0;
+}
+
+.voip-iframe-container .content {
+    flex: 1;
+    border: none;
+}
+
 </style>

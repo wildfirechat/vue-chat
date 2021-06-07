@@ -16,6 +16,7 @@
     "btoa": "^1.2.1",
     "core-js": "^3.6.5",
     "detectrtc": "^1.4.1",
+    "draggable-vue-directive": "^2.1.0",
     "events": "^3.2.0",
     "i18n": "^0.13.2",
     "jr-qrcode": "^1.1.4",

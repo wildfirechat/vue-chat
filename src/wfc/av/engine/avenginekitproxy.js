@@ -22,6 +22,7 @@ export class AvEngineKitProxy {
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
     useIframe = false;
     iframe;
+    type;
 
     conference = false;
     conversation;
@@ -238,6 +239,9 @@ export class AvEngineKitProxy {
                         }, 200)
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
+                    if(content.callId !== this.callId){
+                        return;
+                    }
                     this.conversation = null;
                     this.queueEvents = [];
                     this.callId = null;
@@ -409,6 +413,7 @@ export class AvEngineKitProxy {
 
     showCallUI(conversation, isConference) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
+        this.type = type;
 
         let width = 360;
         let height = 640;
