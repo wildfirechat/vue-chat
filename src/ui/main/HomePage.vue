@@ -85,7 +85,8 @@
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
                 <div ref="voip-dragger" class="title">
-                    音视频通话
+                    <i class="icon-ion-arrow-move"></i>
+                    <p> 音视频通话</p>
                 </div>
                 <iframe ref="voip-iframe" class="content">
                     <!--voip iframe-->
@@ -125,6 +126,7 @@ export default {
             draggableValue: {
                 handle: undefined,
                 boundingElement: undefined,
+                resetInitialPos: true,
             },
         };
     },
@@ -465,15 +467,12 @@ i.active {
 }
 
 .voip-iframe-container {
-    background: #b6b6b6;
+    background: #292929;
     position: absolute;
     top: 0;
     right: 0;
     display: flex;
     flex-direction: column;
-    /*
-    动态大小，请参考avenginekitproxy里面，showCallUI部分的大小逻辑
-    */
 }
 
 .voip-iframe-container.single {
@@ -494,6 +493,22 @@ i.active {
 .voip-iframe-container .title {
     text-align: center;
     padding: 5px 0;
+    background: #b6b6b6;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.voip-iframe-container .title i{
+    pointer-events: none;
+}
+
+.voip-iframe-container .title i:hover {
+    color: #868686;
+}
+
+.voip-iframe-container .title i:active {
+    color: #868686;
 }
 
 .voip-iframe-container .content {
