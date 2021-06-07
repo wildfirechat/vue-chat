@@ -20,7 +20,7 @@ export class AvEngineKitProxy {
     queueEvents = [];
     callWin;
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
-    useIframe = false;
+    useIframe = true;
     iframe;
 
     conference = false;
@@ -458,7 +458,7 @@ export class AvEngineKitProxy {
             } else {
                 url += "/voip"
             }
-            url += '/' + type
+            url += '/' + type + '?t=' + new Date().getTime()
             win.loadURL(url);
             console.log('voip windows url', url)
             win.show();
@@ -472,12 +472,13 @@ export class AvEngineKitProxy {
             } else {
                 url += "/voip"
             }
-            url += '/' + type
+            url += '/' + type + '?t=' + new Date().getTime()
 
             let win;
             let iframe = this.iframe;
             if (iframe) {
                 if (iframe.src) {
+                    iframe.src = url;
                     iframe.contentWindow.location.reload();
                 }
                 iframe.src = url;
