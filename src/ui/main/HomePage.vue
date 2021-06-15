@@ -80,7 +80,9 @@
             </keep-alive>
             <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
-            <div v-show="voipProxy.useIframe && voipProxy.callId" class="voip-iframe-container"
+            <div v-if="!sharedMiscState.isElectron"
+                 v-show="voipProxy.useIframe && voipProxy.callId"
+                 class="voip-iframe-container"
                  v-draggable="draggableValue"
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
@@ -88,7 +90,8 @@
                     <i class="icon-ion-arrow-move"></i>
                     <p> 音视频通话</p>
                 </div>
-                <iframe ref="voip-iframe" class="content">
+                <iframe ref="voip-iframe" class="content"
+                        allow="geolocation; microphone; camera; midi; encrypted-media;">
                     <!--voip iframe-->
                 </iframe>
             </div>
@@ -499,7 +502,7 @@ i.active {
     align-content: center;
 }
 
-.voip-iframe-container .title i{
+.voip-iframe-container .title i {
     pointer-events: none;
 }
 
