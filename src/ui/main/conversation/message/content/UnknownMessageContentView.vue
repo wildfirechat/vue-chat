@@ -1,16 +1,16 @@
 <template>
     <div class="text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <p class="text">{{ message.messageContent.digest(message) }}</p>
+        <p class="text">{{ $t('message.unsupport_message_desc') }}</p>
     </div>
 </template>
 
 <script>
 import Message from "@/wfc/messages/message";
 
-// pc/web端不支持的消息，比如红包等
+// 未知消息
 export default {
-    name: "UnsupportMessageContentView",
+    name: "UnknowntMessageContentView",
     props: {
         message: {
             type: Message,

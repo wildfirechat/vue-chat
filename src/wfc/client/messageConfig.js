@@ -344,7 +344,7 @@ export default class MessageConfig {
         },
         {
             name: 'conferenceInvite',
-            flag: PersistFlag.Persist,
+            flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE,
             contentClazz: ConferenceInviteMessageContent,
         },

@@ -39,7 +39,7 @@ export default class CompositeMessageContent extends MessageContent {
                 tos: msg.to,
                 direction: msg.direction,
                 status: msg.status,
-                serverTime: msg.serverTime,
+                serverTime: msg.timestamp,
                 ctype: msgPayload.type,
                 csc: msgPayload.searchableContent,
                 cpc: msgPayload.pushContent,
@@ -91,7 +91,7 @@ export default class CompositeMessageContent extends MessageContent {
             msg.to = o.tos;
             msg.direction = o.direction;
             msg.status = o.status;
-            msg.serverTime = o.serverTime;
+            msg.timestamp = o.serverTime;
 
             let payload = new MessagePayload();
             payload.type = o.ctype;
@@ -109,6 +109,10 @@ export default class CompositeMessageContent extends MessageContent {
 
             msg.messageContent = Message.messageContentFromMessagePayload(payload, msg.from);
             this.messages.push(msg);
+            let savedMsg = wfc.getMessageByUid(msg.messageUid);
+            if (!savedMsg) {
+                wfc.insertMessage(msg.conversation, msg.messageContent, 6, false, msg.timestamp);
+            }
         });
     }
 }

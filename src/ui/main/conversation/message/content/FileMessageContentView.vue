@@ -37,7 +37,7 @@ export default {
                 if (localPath && fs.existsSync(localPath)) {
                     shell.openItem(localPath);
                 } else {
-                    if (!this.message.isDownloading()) {
+                    if (!this.isDownloading()) {
                         downloadFile(this.message)
                         store.addDownloadingMessage(this.message.messageId)
                     } else {
@@ -58,6 +58,9 @@ export default {
                 size: file.size
             }
             event.dataTransfer.setData('text', JSON.stringify(fileObj))
+        },
+        isDownloading() {
+            return store.isDownloadingMessage(this.message.messageId);
         },
     },
 

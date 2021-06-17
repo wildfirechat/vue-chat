@@ -9,6 +9,7 @@ import FileRecordPage from "@/ui/fileRecord/FileRecordPage";
 import FavPage from "@/ui/main/fav/FavPage";
 import WorkspacePage from "./ui/workspace/WorkspacePage";
 import Conference from "./ui/voip/Conference";
+import CompositeMessagePage from "./ui/main/CompositeMessagePage";
 
 const routers = [
     {
@@ -65,6 +66,11 @@ const routers = [
         name: 'workspace',
         path: '/workspace',
         component: WorkspacePage,
+    },
+    {
+        name: 'composite-message',
+        path: '/composite',
+        component: CompositeMessagePage,
     }
 
 ]

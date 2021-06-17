@@ -75,6 +75,8 @@ export default {
             root.style.setProperty('--main-margin-right', '0px');
             root.style.setProperty('--main-margin-top', '0px');
             root.style.setProperty('--main-margin-bottom', '0px');
+            root.style.setProperty('--composite-message-page-width', '100vw');
+            root.style.setProperty('--composite-message-page-height', '100vh');
         }
 
         if (this.sharedMiscState.isElectronWindowsOrLinux) {
@@ -133,6 +135,8 @@ export default {
     --main-margin-bottom: 50px;
     --tippy-right: 0px;
     --home-menu-padding-top: 60px;
+    --composite-message-page-width: 100%;
+    --composite-message-page-height: 100%;
 }
 
 .tippy-tooltip {

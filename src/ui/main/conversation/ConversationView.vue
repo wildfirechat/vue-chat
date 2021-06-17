@@ -144,6 +144,7 @@ import {downloadFile} from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import {remote} from "../../../platform";
+import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 
 export default {
     components: {
@@ -310,6 +311,9 @@ export default {
         },
 
         isForwardable(message) {
+            if (message && message.messageContent instanceof SoundMessageContent) {
+                return false;
+            }
             return true;
         },
 
