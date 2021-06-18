@@ -131,7 +131,7 @@ export default {
     max-width: calc(100% - 60px);
     align-items: flex-start;
     overflow: hidden;
-    max-height: 800px;
+    /*max-height: 800px;*/
     text-overflow: ellipsis;
 }
 

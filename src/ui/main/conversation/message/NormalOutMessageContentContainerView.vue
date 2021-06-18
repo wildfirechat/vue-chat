@@ -267,7 +267,7 @@ export default {
     display: flex;
     max-width: calc(100% - 60px);
     overflow: hidden;
-    max-height: 800px;
+    /*max-height: 800px;*/
     margin-left: auto;
     text-overflow: ellipsis;
     align-items: flex-start;

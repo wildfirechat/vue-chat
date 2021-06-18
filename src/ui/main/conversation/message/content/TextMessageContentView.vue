@@ -22,7 +22,7 @@ export default {
 
     computed: {
         textContent() {
-            return emojiParse(this.message.messageContent.digest(this.message))
+            return emojiParse(this.message.messageContent.digest(this.message)).replaceAll(' ', '&nbsp')
         }
     }
 }
