@@ -621,6 +621,36 @@ export class WfcManager {
     }
 
     /**
+     * 修改群成员在群组的别名
+     * @param {string} groupId 群id
+     * @param {string} memberId 群成员id
+     * @param {string} alias 别名
+     * @param lines
+     * @param notifyMessageContent
+     * @param successCB
+     * @param failCB
+     * @returns {Promise<void>}
+     */
+    async modifyGroupMemberAlias(groupId, memberId, alias, lines, notifyMessageContent, successCB, failCB) {
+        impl.modifyGroupMemberAlias(groupId, memberId, alias, lines, notifyMessageContent, successCB, failCB);
+    }
+
+    /**
+     * 修改群成员在群组的附加信息
+     * @param {string} groupId 群id
+     * @param {string} memberId 群成员id
+     * @param {string} extra 群成员附加信息
+     * @param lines
+     * @param notifyMessageContent
+     * @param successCB
+     * @param failCB
+     * @returns {Promise<void>}
+     */
+    async modifyGroupMemberExtra(groupId, memberId, extra, lines, notifyMessageContent, successCB, failCB) {
+        impl.modifyGroupMemberExtra(groupId, memberId, extra, lines, notifyMessageContent, successCB, failCB);
+    }
+
+    /**
      * 转移群主
      * @param {string} groupId 群id
      * @param {string} newOwner 新群主的id
