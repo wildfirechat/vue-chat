@@ -802,14 +802,18 @@ let store = {
             (msgs) => {
                 if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
                     let lastTimestamp = 0;
+                    let newMsgs = [];
                     msgs.forEach(m => {
                         let index = conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid))
                         if(index === -1){
                             this._patchMessage(m, lastTimestamp);
                             lastTimestamp = m.timestamp;
-                            conversationState.currentConversationMessageList.push(m);
+                            newMsgs.push(m);
                         }
                     });
+                    if (newMsgs.length > 0) {
+                        conversationState.currentConversationMessageList = newMsgs.concat(conversationState.currentConversationMessageList);
+                    }
                 }
                 if (msgs.length === 0) {
                     completeCB();
