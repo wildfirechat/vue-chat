@@ -164,6 +164,9 @@ let store = {
 
         wfc.eventEmitter.on(EventType.ConversationInfoUpdate, (conversationInfo) => {
             this._loadDefaultConversationList();
+            if(conversationState.currentConversationInfo &&  conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)){
+                this._loadCurrentConversationMessages();
+            }
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
@@ -800,10 +803,13 @@ let store = {
                 if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
                     let lastTimestamp = 0;
                     msgs.forEach(m => {
-                        this._patchMessage(m, lastTimestamp);
-                        lastTimestamp = m.timestamp;
+                        let index = conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid))
+                        if(index === -1){
+                            this._patchMessage(m, lastTimestamp);
+                            lastTimestamp = m.timestamp;
+                            conversationState.currentConversationMessageList.push(m);
+                        }
                     });
-                    conversationState.currentConversationMessageList = msgs.concat(conversationState.currentConversationMessageList);
                 }
                 if (msgs.length === 0) {
                     completeCB();
