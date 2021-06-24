@@ -207,7 +207,9 @@ export default {
             if (this.message.messageContent.quoteInfo) {
                 let messageUid = this.message.messageContent.quoteInfo.messageUid;
                 let msg = store.getMessageByUid(messageUid);
-                console.log('quotedMessage, should not be null', this.message.messageContent.quoteInfo, msg)
+                if(!msg){
+                    console.log('quotedMessage, is null', this.message.messageContent.quoteInfo)
+                }
                 return msg;
             } else {
                 return null;
