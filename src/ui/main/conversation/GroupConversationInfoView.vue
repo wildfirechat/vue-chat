@@ -3,11 +3,18 @@
         <header>
             <label>
                 {{ $t('conversation.group_name') }}
-                <input type="text" :placeholder="conversationInfo.conversation._target._displayName">
+                <input type="text"
+                       :disabled="!enableEditGroupNameOrAnnouncement"
+                       v-model="newGroupName"
+                       @keyup.enter="updateGroupName"
+                       :placeholder="conversationInfo.conversation._target._displayName">
             </label>
             <label>
                 {{ $t('conversation.group_announcement') }}
-                <input type="text" disabled
+                <input type="text"
+                       :disabled="!enableEditGroupNameOrAnnouncement"
+                       @keyup.enter='updateGroupAnnouncement'
+                       v-model="newGroupAnnouncement"
                        :placeholder="groupAnnouncement">
             </label>
         </header>
@@ -44,6 +51,7 @@ import wfc from "@/wfc/client/wfc";
 import axios from "axios";
 import GroupMemberType from "@/wfc/model/groupMemberType";
 import GroupType from "@/wfc/model/groupType";
+import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
 
 export default {
     name: "GroupConversationInfoView",
@@ -59,6 +67,8 @@ export default {
             filterQuery: '',
             sharedContactState: store.state.contact,
             groupAnnouncement: '',
+            newGroupName: '',
+            newGroupAnnouncement: '',
         }
     },
     components: {UserListVue},
@@ -144,7 +154,36 @@ export default {
             if (response.data && response.data.result) {
                 this.groupAnnouncement = response.data.result.text;
             } else {
+                if(this.enableEditGroupNameOrAnnouncement){
                 this.groupAnnouncement = this.$t('conversation.click_to_edit_group_announcement');
+            }
+            }
+        },
+
+        updateGroupName() {
+            let groupId = this.conversationInfo.conversation.target;
+            if (!this.newGroupName || this.newGroupName === this.conversationInfo.conversation._target._displayName) {
+                return;
+            }
+
+            wfc.modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Name, this.newGroupName, [0], null, () => {
+                this.conversationInfo.conversation._target._displayName = this.newGroupName;
+            }, (err) => {
+                // do nothing
+            })
+        },
+
+        async updateGroupAnnouncement() {
+            if (!this.newGroupAnnouncement || this.newGroupAnnouncement === this.groupAnnouncement) {
+                return;
+            }
+            let response = await axios.post('/put_group_announcement', {
+                author: wfc.getUserId(),
+                groupId: this.conversationInfo.conversation.target,
+                text: this.newGroupAnnouncement,
+            }, {withCredentials: true});
+            if (response.data && response.data.code === 0) {
+                this.groupAnnouncement = this.newGroupAnnouncement;
             }
         },
 
@@ -178,6 +217,12 @@ export default {
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
             return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
 
+        },
+
+        enableEditGroupNameOrAnnouncement() {
+            let selfUid = wfc.getUserId();
+            let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
+            return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
         },
 
         users() {

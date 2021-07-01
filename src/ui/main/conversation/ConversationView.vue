@@ -19,6 +19,7 @@
                  @dragleave="dragEvent($event, 'dragleave')"
                  @dragenter="dragEvent($event,'dragenter')"
                  @drop="dragEvent($event, 'drop')"
+                 :dummy_just_for_reactive="currentVoiceMessage"
             >
                 <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
                     <div class="drag-drop">
@@ -90,10 +91,10 @@
                     <li v-if="isForwardable(message)">
                         <a @click.prevent="forward(message)">{{ $t('common.forward') }}</a>
                     </li>
-                    <li v-if="isFavable">
+                    <li v-if="isFavable(message)">
                         <a @click.prevent="">{{ $t('common.fav') }}</a>
                     </li>
-                    <li>
+                    <li v-if="isQuotable(message)">
                         <a @click.prevent="quoteMessage(message)">{{ $t('common.quote') }}</a>
                     </li>
                     <li>
@@ -145,7 +146,10 @@ import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import {remote} from "../../../platform";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
+import MessageContentType from "../../../wfc/messages/messageContentType";
+import BenzAMRRecorder from "benz-amr-recorder";
 
+var amr;
 export default {
     components: {
         MultiSelectActionView,
@@ -336,6 +340,15 @@ export default {
             return false;
         },
 
+        isQuotable(message) {
+            if (!message) {
+                return false;
+            }
+            return [MessageContentType.VOIP_CONTENT_TYPE_START,
+                MessageContentType.Voice,
+                MessageContentType.Video,
+                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
+        },
         copy(message) {
             let content = message.messageContent;
             if (content instanceof TextMessageContent) {
@@ -472,6 +485,21 @@ export default {
                     });
             }));
         },
+        playVoice(message) {
+            if (amr) {
+                amr.stop();
+            }
+            amr = new BenzAMRRecorder();
+            let voice = message.messageContent;
+            amr.initWithUrl(voice.remotePath).then(() => {
+                message._isPlaying = true;
+                amr.play();
+            });
+            amr.onEnded(() => {
+                message._isPlaying = false;
+                store.playVoice(null)
+            })
+        },
     },
 
     mounted() {
@@ -545,6 +573,17 @@ export default {
         loadingIdentifier() {
             let conversation = this.sharedConversationState.currentConversationInfo.conversation;
             return conversation.type + '-' + conversation.target + '-' + conversation.line;
+        },
+        currentVoiceMessage() {
+            let voice = this.sharedConversationState.currentVoiceMessage;
+            if (voice) {
+                this.playVoice(voice);
+            } else {
+                if (amr) {
+                    amr.stop();
+                }
+            }
+            return null;
         }
     },
 

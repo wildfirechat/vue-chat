@@ -62,6 +62,7 @@ let store = {
             quotedMessage: null,
 
             downloadingMessageIds: [],
+            currentVoiceMessage: null,
         },
 
         contact: {
@@ -438,6 +439,7 @@ let store = {
 
         conversationState.enableMessageMultiSelection = false;
         conversationState.quotedMessage = null;
+        conversationState.currentVoiceMessage = null;
 
         clearTimeout(conversationState.inputClearHandler);
         conversationState.inputtingUser = null;
@@ -553,6 +555,12 @@ let store = {
         console.log('preview medias', conversationState.previewMediaItems, conversationState.previewMediaIndex)
     },
 
+    playVoice(message) {
+        if(conversationState.currentVoiceMessage){
+            conversationState.currentVoiceMessage._isPlaying = false;
+        }
+        conversationState.currentVoiceMessage = message;
+    },
     /**
      *
      * @param message
