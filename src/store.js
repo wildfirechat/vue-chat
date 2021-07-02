@@ -126,6 +126,9 @@ let store = {
                 this._loadDefaultData();
 
                 this.updateTray();
+                if(!isElectron()){
+                    window.__store = wfc._getStore();
+                }
             }
         });
 
