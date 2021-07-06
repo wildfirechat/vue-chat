@@ -44,12 +44,12 @@
 [在线体验野火IM Web版](http://web.wildfirechat.cn)，请使用野火IM Andorid或iOS Demo扫码登录
 
 ## 截图
-![](./image/contact.png)
-![](./image/group-conversation-info.png)
-![](./image/home.png)
-![](./image/picker-user.png)
-![](./image/quote.png)
-![](./image/sticker.png)
+![](https://static.wildfirechat.net/web-contact.png)
+![](https://static.wildfirechat.net/web-group-conversation-info.png)
+![](https://static.wildfirechat.net/web-home.png)
+![](https://static.wildfirechat.net/web-picker-user.png)
+![](https://static.wildfirechat.net/web-quote.png)
+![](https://static.wildfirechat.net/web-sticker.png)
 ## 开发、打包依赖
 1. nodejs v10.16.3
 2. npm 6.9.0
@@ -68,6 +68,10 @@ $ npm run serve
 $ npm install
 $ npm run build
 ```
+
+## 压缩/混淆配置说明
+1. ```wfc```目录整体不能压缩
+2. ```config.js```不能压缩
 
 ## License
 
