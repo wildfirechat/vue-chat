@@ -309,6 +309,10 @@ let store = {
         });
 
         if (isElectron()) {
+            ipcRenderer.on('deep-link', (event, args) => {
+                // TODO
+                console.log('deep-link', args)
+            })
             ipcRenderer.on('file-downloaded', (event, args) => {
                 let messageId = args.messageId;
                 let localPath = args.filePath;
@@ -719,7 +723,7 @@ let store = {
         let fileOrLocalPath = null;
         let remotePath = null;
         if (typeof file === 'string') {
-            if (file.startsWith('/')) {
+            if (!file.startsWith('http')) {
                 fileOrLocalPath = file;
             } else {
                 remotePath = file;
@@ -914,6 +918,12 @@ let store = {
             this._patchCompositeMessageContent(m.messageContent);
         }
 
+        // TODO 如果Im server支持备选网络，需要根据当前的网络情况，判断当前是处于主网络，还是备选网络，并动态修改媒体类消息的remotePath，不然可能会出现不能正常加载的情况
+        // 如何判断是主网络，还是备选网络，这儿提供一种思路：分别通过主网络和备选网络测试访问im server的/api/version接口
+        // 判断是主网络，还是备选网络，一般启动的时候，检测到网络网络变化的时候，在判断一次。
+        // if(m.messageContent instanceof MediaMessageContent){
+        // TODO 动态修改remotePath
+        // }
         return m;
     },
 
@@ -977,8 +987,18 @@ let store = {
     },
 
     _loadFriendRequest() {
-        let requests = wfc.getIncommingFriendRequest()
-        requests = requests.concat(wfc.getOutgoingFriendRequest());
+        let incomingRequests = wfc.getIncommingFriendRequest()
+        let requests = incomingRequests;
+        let outgoingRequests = wfc.getOutgoingFriendRequest();
+        // 当针对同一个人，有邀请(out)和被邀请（in)，过滤掉邀请
+        outgoingRequests.forEach(or => {
+            let index = incomingRequests.findIndex(ir => {
+                return or.target === ir.target;
+            })
+            if (index === -1) {
+                requests.push(or);
+            }
+        })
         requests.sort((a, b) => numberValue(b.timestamp) - numberValue(a.timestamp))
         requests = requests.length >= 20 ? requests.slice(0, 20) : requests;
         let uids = [];
@@ -1083,7 +1103,7 @@ let store = {
         if (query) {
             console.log('search', query)
             searchState.contactSearchResult = this.searchContact(query);
-            searchState.groupSearchResult = this.searchFavGroup(query);
+            searchState.groupSearchResult = this.searchGroupConversation(query);
             searchState.conversationSearchResult = this.searchConversation(query);
             searchState.messageSearchResult = this.searchMessage(query);
             // 默认不搜索新用户
@@ -1115,11 +1135,8 @@ let store = {
 
     // TODO 到底是什么匹配了
     searchContact(query) {
-        let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
         let result = contactState.friendList.filter(u => {
-            return u._displayName.indexOf(query) > -1 || u._displayName.indexOf(queryPinyin) > -1
-                || u._pinyin.indexOf(query) > -1 || u._pinyin.indexOf(queryPinyin) > -1
-                || u._firstLetters.indexOf(query) > -1 || u._firstLetters.indexOf(queryPinyin) > -1
+            return u._displayName.indexOf(query) > -1 || u._firstLetters.indexOf(query) > -1 || u._pinyin.indexOf(query) > -1
         });
 
         console.log('friend searchResult', result)
@@ -1170,8 +1187,20 @@ let store = {
 
     // TODO
     searchConversation(query) {
+        return conversationState.conversationInfoList.filter(info => {
+            let displayNamePinyin = convert(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
+            return info.conversation._target._displayName.indexOf(query) > -1 || displayNamePinyin.indexOf(query.toLowerCase()) > -1
+        })
+    },
 
-        return [];
+    searchGroupConversation(query) {
+        query = query.toLowerCase();
+        let groups = conversationState.conversationInfoList.filter(info => info.conversation.type === ConversationType.Group).map(info => info.conversation._target);
+        return groups.filter(groupInfo => {
+            let namePinyin = convert(groupInfo.name, {style: 0}).join('').trim().toLowerCase();
+            let firstLetters = convert(groupInfo.name, {style: 4}).join('').trim().toLowerCase();
+            return groupInfo.name.indexOf(query) > -1 || namePinyin.indexOf(query) > -1 || firstLetters.indexOf(query) > -1
+        })
     },
 
     // TODO

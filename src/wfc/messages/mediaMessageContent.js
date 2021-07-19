@@ -23,7 +23,7 @@ export default class MediaMessageContent extends MessageContent {
         if (!fileOrLocalPath) {
             this.localPath = '';
             this.remotePath = remotePath;
-        } else if (typeof fileOrLocalPath === "string" && fileOrLocalPath.startsWith("/")) {
+        } else if (typeof fileOrLocalPath === "string" && !fileOrLocalPath.startsWith("http")) {
             this.localPath = fileOrLocalPath;
             this.remotePath = remotePath;
         } else {

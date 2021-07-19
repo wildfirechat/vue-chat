@@ -15,7 +15,7 @@ export default class MessageContentType {
     static File = 5;
     static Video = 6;
     static Sticker = 7;
-    static ImageText = 8;
+    static Link = 8;
     static P_Text = 9;
     static UserCard = 10;
     static Composite_Message = 11;

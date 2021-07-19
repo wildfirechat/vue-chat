@@ -15,7 +15,7 @@
                 <div class="content-container">
                     <!--self-->
                     <div class="participant-container">
-                        <div v-if="audioOnly || status !== 4 || !selfUserInfo._stream"
+                        <div v-if="audioOnly || !selfUserInfo._stream"
                              class="flex-column flex-justify-center flex-align-center">
                             <img class="avatar" :src="selfUserInfo.portrait">
                             <video v-if="audioOnly && selfUserInfo._stream"

@@ -15,6 +15,7 @@
 <script>
 import store from "@/store";
 import PickerUserView from "@/ui/main/pick/PickUserView";
+import Config from "../../../config";
 
 export default {
     name: "SearchView",
@@ -59,10 +60,14 @@ export default {
             let closed = (event) => {
                 console.log('Close...', event)
             };
+            let users = this.sharedContactState.favContactList.concat(this.sharedContactState.friendList);
+            users = users.filter(u => {
+               return u.uid !== Config.FILE_HELPER_ID
+            });
             this.$modal.show(
                 PickerUserView,
                 {
-                    users: this.sharedContactState.favContactList.concat(this.sharedContactState.friendList),
+                    users: users,
                     confirmTitle: this.$t('common.create'),
                 }, {
                     name: 'pick-user-modal',

@@ -168,9 +168,9 @@ export default class MessageConfig {
             contentClazz: StickerMessageContent,
         },
         {
-            name: 'imageText',
+            name: 'link',
             flag: PersistFlag.Persist_And_Count,
-            type: MessageContentType.ImageText,
+            type: MessageContentType.Link,
         },
         {
             name: 'userCard',

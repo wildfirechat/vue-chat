@@ -127,5 +127,8 @@ ul li {
     padding-top: 10px;
 }
 
+.action i{
+    font-size: 20px;
+}
 
 </style>

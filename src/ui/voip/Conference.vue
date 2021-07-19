@@ -18,7 +18,7 @@
                         <!--self-->
                         <div v-if="!session.audience" class="participant-video-item"
                              v-bind:class="{highlight: selfUserInfo._volume > 0}">
-                            <div v-if="status !== 4 || !selfUserInfo._stream || selfUserInfo._isVideoMuted"
+                            <div v-if="!selfUserInfo._stream || selfUserInfo._isVideoMuted"
                                  class="flex-column flex-justify-center flex-align-center">
                                 <img class="avatar" :src="selfUserInfo.portrait">
                             </div>

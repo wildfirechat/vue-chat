@@ -82,6 +82,7 @@ import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfi
 import PickUserView from "@/ui/main/pick/PickUserView";
 import {ipcRenderer, isElectron} from "@/platform";
 import {copyText} from "../../util/clipboard";
+import EventType from "../../../wfc/client/wfcEvent";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -107,6 +108,7 @@ export default {
             emojiCategories: categoriesDefault,
             emojis: emojisDefault,
             lastConversationInfo: null,
+            storeDraftIntervalId: 0
         }
     },
     methods: {
@@ -561,9 +563,18 @@ export default {
             }
         },
 
+        onGroupMembersUpdate(groupId) {
+            console.log('messageInput onGroupMembersUpdate', groupId)
+            if (this.conversationInfo
+                && this.conversationInfo.conversation.type === ConversationType.Group
+                && this.conversationInfo.conversation.target === groupId) {
+                this.initMention(this.conversationInfo.conversation);
+            }
+        }
     },
 
     activated() {
+        this.restoreDraft();
         this.focusInput();
     },
 
@@ -583,7 +594,7 @@ export default {
 
         if (isElectron()) {
             ipcRenderer.on('screenshots-ok', (event, args) => {
-                console.log('screenshots-ok jxojoj', args)
+                console.log('screenshots-ok', args)
                 if (args.filePath) {
                     setTimeout(()=> {
                     document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
@@ -591,12 +602,23 @@ export default {
                 }
             });
         }
+        this.storeDraftIntervalId = setInterval(() => {
+            this.storeDraft(this.conversationInfo, this.quotedMessage);
+        }, 5 * 1000)
+    },
+
+    created() {
+        wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
     },
 
     destroyed() {
         if (isElectron()) {
             ipcRenderer.removeAllListeners('screenshots-ok');
         }
+        if (this.storeDraftIntervalId) {
+            clearInterval(this.storeDraftIntervalId)
+        }
+        wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
     },
 
     watch: {

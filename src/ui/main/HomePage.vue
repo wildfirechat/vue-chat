@@ -27,6 +27,7 @@
                         name="infoTrigger"
                         class="avatar"
                         draggable="false"
+                        @click="onClickPortrait()"
                         :src="sharedContactState.selfUserInfo.portrait"
                         alt=""
                     /></a>
@@ -135,6 +136,9 @@ export default {
     },
 
     methods: {
+        onClickPortrait() {
+            wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
+        },
         go2Conversation() {
             if (this.$router.currentRoute.path === '/home') {
                 return

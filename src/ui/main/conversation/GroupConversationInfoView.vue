@@ -130,6 +130,7 @@ export default {
                 {
                     users: groupMemberUserInfos,
                     confirmTitle: this.$t('common.remove'),
+                    showCategoryLabel: false,
                 }, {
                     name: 'pick-user-modal',
                     width: 600,

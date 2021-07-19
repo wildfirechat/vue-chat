@@ -41,6 +41,7 @@
                     <img ref="userCardTippy"
                          :name="'infoTrigger' + this.message.messageId"
                          class="avatar"
+                         @click="onClickUserPortrait(message.from)"
                          draggable="false"
                          :src="message._from.portrait">
                 </div>
@@ -88,6 +89,9 @@ export default {
 
     },
     methods: {
+        onClickUserPortrait(userId) {
+            wfc.getUserInfo(userId, true);
+        },
         closeUserCard() {
             console.log('closeUserCard', this.$refs["userCardTippy"]);
             this.$refs["userCardTippy"]._tippy.hide();

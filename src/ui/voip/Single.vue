@@ -42,7 +42,7 @@
                 <!--video-->
                 <div v-else class="content-container">
                     <div class="local-media-container">
-                        <video v-if="status === 4"
+                        <video v-if="status === 4 || localStream"
                                ref="localVideo"
                                class="localVideo"
                                :srcObject.prop="localStream"

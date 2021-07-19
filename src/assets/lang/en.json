@@ -162,6 +162,7 @@
     "misc":{
         "beijing": "Beijing",
         "test_user": "Test User",
-        "gen_qr_code": "Generating QR code"
+        "gen_qr_code": "Generating QR code",
+        "send_to_friend": "Send to Friend..."
     }
 }
