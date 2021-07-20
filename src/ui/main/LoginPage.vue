@@ -118,11 +118,8 @@ export default {
                 this.appToken = session.token;
                 if (!userId || session.status === 0/*服务端pc login session不存在*/) {
                     this.qrCode = jrQRCode.getQrBase64(Config.QR_CODE_PREFIX_PC_SESSION + session.token);
-
-                    if (userId) {
-                        this.refreshQrCode();
+                    this.refreshQrCode();
                     }
-                }
                 this.login();
             }
         },

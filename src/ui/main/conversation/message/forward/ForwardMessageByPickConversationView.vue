@@ -2,15 +2,16 @@
     <div class="pick-conversation-container">
         <section class="conversation-list-panel">
             <div class="input-container">
-                <input type="text" :placeholder="$t('common.search')">
+                <input type="text" :placeholder="$t('common.search')"
+                       v-model="query">
             </div>
             <section class="conversation-list-container">
                 <div class="create-group" @click="showForwardByCreateConversationModal">
                     <p>{{ $t('conversation.create_group') }}</p>
                 </div>
                 <p>{{ $t('conversation.recent_conversation') }}</p>
-                <ul class="conversation-list">
-                    <li v-for="(conversationInfo, index) in sharedConversation.conversationInfoList"
+                <ul class="conversation-list" v-if="conversationInfos.length">
+                    <li v-for="(conversationInfo, index) in conversationInfos"
                         :key="index">
                         <div class="conversation-item"
                              @click.stop="onConversationItemClick(conversationInfo.conversation)">
@@ -77,6 +78,8 @@ export default {
         return {
             sharedConversation: store.state.conversation,
             sharedPickState: store.state.pick,
+            query: '',
+            sharedSearchState: store.state.search,
         }
     },
     methods: {
@@ -114,6 +117,16 @@ export default {
                     extraMessageText: this.$refs['forwardMessageView'].extraMessageText,
                 })
         },
+    },
+
+    computed: {
+        conversationInfos() {
+            if (this.query && this.query.trim()) {
+                return store.searchConversation(this.query)
+            } else {
+                return this.sharedConversation.conversationInfoList;
+            }
+        }
     },
 
     components: {ForwardMessageView},
