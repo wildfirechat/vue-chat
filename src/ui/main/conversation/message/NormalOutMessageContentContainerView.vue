@@ -41,6 +41,7 @@
                     <img ref="userCardTippy"
                          :name="'infoTrigger' + this.message.messageId"
                          class="avatar"
+                         @click="onClickUserPortrait(message.from)"
                          draggable="false"
                          :src="message._from.portrait">
                 </div>
@@ -88,6 +89,9 @@ export default {
 
     },
     methods: {
+        onClickUserPortrait(userId) {
+            wfc.getUserInfo(userId, true);
+        },
         closeUserCard() {
             console.log('closeUserCard', this.$refs["userCardTippy"]);
             this.$refs["userCardTippy"]._tippy.hide();
@@ -207,7 +211,9 @@ export default {
             if (this.message.messageContent.quoteInfo) {
                 let messageUid = this.message.messageContent.quoteInfo.messageUid;
                 let msg = store.getMessageByUid(messageUid);
-                console.log('quotedMessage, should not be null', this.message.messageContent.quoteInfo, msg)
+                if(!msg){
+                    console.log('quotedMessage, is null', this.message.messageContent.quoteInfo)
+                }
                 return msg;
             } else {
                 return null;
@@ -267,7 +273,7 @@ export default {
     display: flex;
     max-width: calc(100% - 60px);
     overflow: hidden;
-    max-height: 800px;
+    /*max-height: 800px;*/
     margin-left: auto;
     text-overflow: ellipsis;
     align-items: flex-start;

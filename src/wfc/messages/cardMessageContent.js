@@ -20,13 +20,15 @@ export default class CardMessageContent extends MessageContent {
     name;
     displayName;
     portrait;
+    from;
 
-    constructor(cardType, target, displayName, portrait) {
+    constructor(cardType, target, displayName, portrait, from) {
         super(MessageContentType.UserCard);
         this.cardType = cardType;
         this.target = target;
         this.displayName = displayName;
         this.portrait = portrait;
+        this.from = from;
     }
 
     encode() {
@@ -36,7 +38,8 @@ export default class CardMessageContent extends MessageContent {
             t: this.cardType,
             n: this.name,
             d: this.displayName,
-            p: this.portrait
+            p: this.portrait,
+            f: this.from,
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
         return payload;
@@ -50,6 +53,7 @@ export default class CardMessageContent extends MessageContent {
         this.name = obj.n;
         this.displayName = obj.d;
         this.portrait = obj.p;
+        this.from = obj.f;
     }
 
     digest() {

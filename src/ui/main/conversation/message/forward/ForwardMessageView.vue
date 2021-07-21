@@ -92,6 +92,7 @@ export default {
     border-radius: 5px;
     justify-content: center;
     max-height: 100px;
+    overflow: hidden;
 }
 
 .forward-message p {

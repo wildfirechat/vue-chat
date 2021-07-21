@@ -2,15 +2,16 @@
     <div class="pick-conversation-container">
         <section class="conversation-list-panel">
             <div class="input-container">
-                <input type="text" :placeholder="$t('common.search')">
+                <input type="text" :placeholder="$t('common.search')"
+                       v-model="query">
             </div>
             <section class="conversation-list-container">
                 <div class="create-group" @click="showForwardByCreateConversationModal">
                     <p>{{ $t('conversation.create_group') }}</p>
                 </div>
                 <p>{{ $t('conversation.recent_conversation') }}</p>
-                <ul class="conversation-list">
-                    <li v-for="(conversationInfo, index) in sharedConversation.conversationInfoList"
+                <ul class="conversation-list" v-if="conversationInfos.length">
+                    <li v-for="(conversationInfo, index) in conversationInfos"
                         :key="index">
                         <div class="conversation-item"
                              @click.stop="onConversationItemClick(conversationInfo.conversation)">
@@ -29,7 +30,9 @@
             <header>
                 <h2>{{ $t('conversation.forward_title') }}</h2>
                 <span
-                    v-if="sharedPickState.conversations.length === 0">{{ $t('conversation.not_select_conversation') }}</span>
+                    v-if="sharedPickState.conversations.length === 0">{{
+                        $t('conversation.not_select_conversation')
+                    }}</span>
                 <span v-else>{{
                         $t('conversation.select_conversation_desc', [this.sharedPickState.conversations.length])
                     }}</span>
@@ -38,8 +41,8 @@
                 <div class="picked-user-container" v-for="(conversation, index) in sharedPickState.conversations"
                      :key="index">
                     <div class="picked-user">
-                        <img class="avatar" :src="conversation._target.portrait">
-                        <button @click="unpConversation(conversation)" class="unpick-button">x</button>
+                        <img class="avatar" :src="conversation._target.portrait" alt="">
+                        <button @click="unpConversation(conversation)" class="unpick-button">X</button>
                     </div>
                     <span class="name single-line">{{ conversation._target._displayName }}</span>
                 </div>
@@ -75,6 +78,8 @@ export default {
         return {
             sharedConversation: store.state.conversation,
             sharedPickState: store.state.pick,
+            query: '',
+            sharedSearchState: store.state.search,
         }
     },
     methods: {
@@ -112,6 +117,16 @@ export default {
                     extraMessageText: this.$refs['forwardMessageView'].extraMessageText,
                 })
         },
+    },
+
+    computed: {
+        conversationInfos() {
+            if (this.query && this.query.trim()) {
+                return store.searchConversation(this.query)
+            } else {
+                return this.sharedConversation.conversationInfoList;
+            }
+        }
     },
 
     components: {ForwardMessageView},
@@ -201,7 +216,9 @@ export default {
     position: relative;
     width: 45px;
     height: 45px;
+    display: inline-block;
     top: 50%;
+    background: #d6d6d6;
     transform: translateY(-50%);
     border-radius: 3px;
 }
@@ -280,6 +297,8 @@ export default {
     width: 45px;
     height: 45px;
     margin: 10px 10px;
+    display: inline-block;
+    background: #d6d6d6;
     border-radius: 3px;
 }
 
@@ -287,7 +306,7 @@ export default {
     position: absolute;
     width: 20px;
     height: 20px;
-    border: 1px solid white;
+    border: 1px solid #e5e5e5;
     border-radius: 10px;
     top: 0;
     right: 0;

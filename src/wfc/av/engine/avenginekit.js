@@ -7,6 +7,7 @@ export class WfcAVEngineKit {
     /**
      * 音视频window显示的时候调用
      */
+    // TODO 将sessionCallback作为参数传递进来吧
     setup() {
     }
 

@@ -15,7 +15,7 @@
                 <div class="content-container">
                     <!--self-->
                     <div class="participant-container">
-                        <div v-if="audioOnly || status !== 4 || !selfUserInfo._stream"
+                        <div v-if="audioOnly || !selfUserInfo._stream"
                              class="flex-column flex-justify-center flex-align-center">
                             <img class="avatar" :src="selfUserInfo.portrait">
                             <video v-if="audioOnly && selfUserInfo._stream"
@@ -112,6 +112,8 @@ import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import CallState from "@/wfc/av/engine/callState";
+import {isElectron} from "../../platform";
+import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 
 export default {
     name: 'Multi',
@@ -201,6 +203,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                this.session = null;
             }
 
             sessionCallback.didVideoMuted = (userId, muted) => {
@@ -227,7 +230,43 @@ export default {
         },
 
         screenShare() {
-            this.session.isScreenSharing() ? this.session.stopScreenShare() : this.session.startScreenShare();
+            if (this.session.isScreenSharing()) {
+                this.session.stopScreenShare();
+            } else {
+                if (isElectron()) {
+                    let beforeClose = (event) => {
+                        // What a gamble... 50% chance to cancel closing
+                        if (!event.params) {
+                            return;
+                        }
+                        if (event.params.source) {
+                            let source = event.params.source;
+                            let desktopShareOptions = {
+                                sourceId: source.id,
+                                minWidth: 1280,
+                                maxWidth: 1280,
+                                minHeight: 720,
+                                maxHeight: 720
+                            }
+                            this.session.startScreenShare(desktopShareOptions);
+                        }
+                    };
+                    this.$modal.show(
+                        ScreenOrWindowPicker,
+                        {}, {
+                            width: 800,
+                            height: 600,
+                            name: 'screen-window-picker-modal',
+                            clickToClose: false,
+                        }, {
+                            // 'before-open': beforeOpen,
+                            'before-close': beforeClose,
+                            // 'closed': closed,
+                        })
+                } else {
+                    this.session.startScreenShare();
+                }
+            }
         },
 
         invite() {

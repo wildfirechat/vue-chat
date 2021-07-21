@@ -1,7 +1,7 @@
 <template>
     <section class="fav-list-container">
         <h2>{{ title }}</h2>
-        <div infinite-wrapper>
+        <div infinite-wrapper v-on:scroll="onScroll">
             <div v-if="category === 'media'">
                 <div v-for="group in groupedMediaItems"
                      :key="group.category"
@@ -9,6 +9,7 @@
                     <p>{{ group.category }}</p>
                     <ul class="media-category-items">
                         <li v-for="(favItem, index ) in group.items"
+                            @contextmenu="openFavContextMenu($event, favItem)"
                             @click="handleClickMedia(index, group.items)"
                             :key="favItem.id">
                             <div v-if="favItem.type === 3" class="media-item-image">
@@ -24,6 +25,7 @@
             </div>
             <ul v-else>
                 <li v-for="(favItem, index) in (filteredFavItems)"
+                    @contextmenu="openFavContextMenu($event, favItem)"
                     :key="index">
                     <div class="fav-item-container" @click="handleClick(favItem)">
                         <div class="fav-item-content">
@@ -44,6 +46,12 @@
                                 <video preload="metadata" :src="favItem.url"/>
                                 <i class="icon-ion-play"></i>
                             </div>
+                            <!--                            组合消息-->
+                            <div v-else-if="favItem.type === 11" class="fav-item-other">
+                                <p>
+                                    {{ favItem._content }}
+                                </p>
+                            </div>
                             <!--            其他-->
                             <div v-else class="fav-item-other">
                                 <p>
@@ -52,18 +60,27 @@
                             </div>
                         </div>
                         <div class="fav-item-sender-time">
-                            <p class="time">2021/01/30</p>
-                            <p class="sender">{{ $t('fav.from') + ': ' + favItem._senderName }}</p>
+                            <p class="time">{{ favItem._timeStr }}</p>
+                            <p class="sender">{{ $t('fav.from') + ': ' + favItem.origin }}</p>
                         </div>
                     </div>
                 </li>
             </ul>
-            <infinite-loading :identifier="'fav'" force-use-infinite-wrapper direction="bottom"
+            <infinite-loading :identifier="infiniteId" force-use-infinite-wrapper direction="bottom"
                               @infinite="infiniteHandler">
                 <!--            <template slot="spinner">加载中...</template>-->
                 <template slot="no-more">{{ $t('fav.no_more') }}</template>
                 <template slot="no-results">{{ $t('fav.all_fav_load') }}</template>
             </infinite-loading>
+            <vue-context ref="menu" v-slot="{data:favItem}" :close-on-scroll="true" v-on:close="onMenuClose">
+                <!--          更多menu item-->
+                <li>
+                    <a @click.prevent="deleteFav(favItem)">{{ $t('common.delete') }}</a>
+                </li>
+                <li>
+                    <a @click.prevent="forward(favItem)">{{ $t('misc.send_to_friend') }}</a>
+                </li>
+            </vue-context>
         </div>
     </section>
 
@@ -77,6 +94,9 @@ import wfc from "@/wfc/client/wfc";
 import InfiniteLoading from "vue-infinite-loading";
 import store from "@/store";
 import {ipcRenderer} from "@/platform";
+import FavItem from "../../../wfc/model/favItem";
+import {isElectron} from "../../../platform";
+import {_reverseToJsLongString, stringValue} from "../../../wfc/util/longUtil";
 
 export default {
     name: "FavListView",
@@ -91,6 +111,7 @@ export default {
         return {
             favItems: [],
             imagePlaceHolder: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==',
+            infiniteId: +new Date(),
         }
     },
     methods: {
@@ -105,9 +126,11 @@ export default {
             let response = await axios.post('/fav/list', {
                 id: startId,
                 count: 20,
-            }, {withCredentials: true});
-            if (response.data && response.data.result) {
-                let obj = response.data.result;
+            }, {withCredentials: true, transformResponse: [data => data]});
+            let data = _reverseToJsLongString(response.data, 'messageUid');
+            data = JSON.parse(data);
+            if (data && data.result) {
+                let obj = data.result;
                 let items = obj.items;
                 let found = false;
                 for (let i = 0; i < items.length; i++) {
@@ -145,7 +168,18 @@ export default {
             favItems.forEach(fi => {
                 if (fi.data) {
                     if (fi.type === MessageContentType.Composite_Message) {
-                        // TODO
+                        let favItem = Object.assign(new FavItem(), fi);
+                        favItem.favType = fi.type;
+                        let message = favItem.toMessage();
+                        let compositeContent = message.messageContent;
+                        fi._content = fi.title;
+                        for (let i = 0; i < compositeContent.messages.length && i < 2; i++) {
+                            fi._content += '\n';
+                            fi._content += compositeContent.messages[i].messageContent.digest(compositeContent.messages[i]);
+                        }
+                        message.messageContent = compositeContent;
+
+                        fi._message = message;
                     } else {
                         fi.data = JSON.parse(fi.data);
                     }
@@ -184,7 +218,23 @@ export default {
                     });
                     break;
                 case MessageContentType.Composite_Message:
-                    // TODO
+                    if (isElectron()) {
+                        if (!favItem._message.messageUid) {
+                            console.log('messageUid is empty')
+                            return;
+                        }
+                        let hash = window.location.hash;
+                        let url = window.location.origin;
+                        if (hash) {
+                            url = window.location.href.replace(hash, '#/composite');
+                        } else {
+                            url += "/composite"
+                        }
+                        ipcRenderer.send('show-composite-message-window', {
+                            messageUid: favItem.messageUid,
+                            url: url,
+                        });
+                    }
                     break;
                 default:
                     console.log('todo click', favItem)
@@ -203,6 +253,36 @@ export default {
                 })
             })
             store.previewMedias(mediaItems, index)
+        },
+        openFavContextMenu(event, favItem) {
+            if (!favItem) {
+                return;
+            }
+            this.$refs.menu.open(event, favItem);
+        },
+        onMenuClose() {
+            // do nothing
+        },
+
+        deleteFav(favItem) {
+            axios.post('/fav/del/' + favItem.id, {}, {withCredentials: true})
+                .then(response => {
+                    if (response.data.code === 0) {
+                        this.favItems = this.favItems.filter(fi => fi.id !== favItem.id);
+                    }
+                })
+        },
+
+        forward(favItem) {
+            favItem = Object.assign(new FavItem(), favItem);
+            favItem.favType = favItem.type;
+            this.$eventBus.$emit('forward-fav', {
+                favItem: favItem,
+            })
+        },
+        onScroll() {
+            // hide message context menu
+            this.$refs.menu && this.$refs.menu.close();
         }
     },
 
@@ -275,6 +355,12 @@ export default {
     mounted() {
         // this.loadFavList('all');
     },
+    deactivated() {
+        this.favItems = [];
+    },
+    activated() {
+        this.infiniteId += 1;
+    },
     components: {
         InfiniteLoading,
     }
@@ -341,6 +427,7 @@ export default {
 .fav-item-other p {
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    white-space: pre-line;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

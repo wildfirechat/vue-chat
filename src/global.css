@@ -1,3 +1,5 @@
+@import '~vue-context/dist/css/vue-context.css';
+
 * {
     margin: 0;
     padding: 0;
@@ -55,4 +57,3 @@ div {
     user-select: none;
 }
 
-@import '~vue-context/dist/css/vue-context.css';

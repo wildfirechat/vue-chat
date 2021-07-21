@@ -163,7 +163,7 @@ export default {
     width: 100%;
     height: 70px;
     display: flex;
-    border-bottom: 1px solid #eeeeee;
+    /*border-bottom: 1px solid #eeeeee;*/
     align-items: center;
     justify-content: center;
 }

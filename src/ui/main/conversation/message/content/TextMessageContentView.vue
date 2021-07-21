@@ -22,7 +22,10 @@ export default {
 
     computed: {
         textContent() {
-            return emojiParse(this.message.messageContent.digest(this.message))
+            let tmp = emojiParse(this.message.messageContent.digest(this.message));
+            // pls refer to https://stackoverflow.com/questions/4522124/replace-leading-spaces-with-nbsp-in-javascript
+            tmp = tmp.replace(/^[ \t]+/gm, function(x){ return new Array(x.length + 1).join('&nbsp;') })
+            return tmp;
         }
     }
 }

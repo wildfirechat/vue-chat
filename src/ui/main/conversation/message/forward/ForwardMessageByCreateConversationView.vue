@@ -2,7 +2,7 @@
     <div class="pick-user-container">
         <section class="user-list-panel">
             <div class="input-container">
-                <input type="text" :placeholder="$t('common.search')">
+                <input type="text" :placeholder="$t('common.search')" v-model="query">
             </div>
             <div class="user-list-container">
                 <div class="back" @click="backPickConversation">
@@ -10,7 +10,7 @@
                 </div>
                 <CheckableUserListView class="user-list"
                                        :enable-pick="true"
-                                       :users="users"
+                                       :users="filteredUsers"
                                        :padding-left="'20px'"
                                        :enable-category-label-sticky="true"/>
             </div>
@@ -46,6 +46,7 @@
 import store from "@/store";
 import ForwardMessageView from "@/ui/main/conversation/message/forward/ForwardMessageView";
 import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
+import Config from "../../../../../config";
 
 export default {
     name: "ForwardMessageByCreateConversationView",
@@ -67,6 +68,7 @@ export default {
     data() {
         return {
             sharedPickState: store.state.pick,
+            query: '',
         }
     },
     methods: {
@@ -101,6 +103,18 @@ export default {
                     extraMessageText: this.$refs['forwardMessageView'].extraMessageText,
                 })
         },
+    },
+
+    computed: {
+        filteredUsers() {
+            let result ;
+            if (this.query && this.query.trim()) {
+                result = store.searchContact(this.query)
+            } else {
+                result = this.users;
+            }
+            return result.filter(u => u.uid !== Config.FILE_HELPER_ID)
+        }
     },
 
     components: {

@@ -19,6 +19,7 @@
                  @dragleave="dragEvent($event, 'dragleave')"
                  @dragenter="dragEvent($event,'dragenter')"
                  @drop="dragEvent($event, 'drop')"
+                 :dummy_just_for_reactive="currentVoiceMessage"
             >
                 <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
                     <div class="drag-drop">
@@ -33,7 +34,7 @@
                         <template slot="no-more">{{ $t('conversation.no_more_message') }}</template>
                         <template slot="no-results">{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
-                    <ul>
+                    <ul v-if="fixTippy">
                         <!--todo item.messageId or messageUid as key-->
                         <li v-for="(message) in sharedConversationState.currentConversationMessageList"
                             :key="message.messageId">
@@ -88,12 +89,12 @@
                         <a @click.prevent="delMessage(message)">{{ $t('common.delete') }}</a>
                     </li>
                     <li v-if="isForwardable(message)">
-                        <a @click.prevent="forward(message)">{{ $t('common.forward') }}</a>
+                        <a @click.prevent="_forward(message)">{{ $t('common.forward') }}</a>
                     </li>
-                    <li v-if="isFavable">
-                        <a @click.prevent="">{{ $t('common.fav') }}</a>
+                    <li v-if="isFavable(message)">
+                        <a @click.prevent="favMessage(message)">{{ $t('common.fav') }}</a>
                     </li>
-                    <li>
+                    <li v-if="isQuotable(message)">
                         <a @click.prevent="quoteMessage(message)">{{ $t('common.quote') }}</a>
                     </li>
                     <li>
@@ -142,7 +143,16 @@ import {copyImg, copyText} from "@/ui/util/clipboard";
 import Message from "../../../wfc/messages/message";
 import {downloadFile} from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
+import localStorageEmitter from "../../../ipc/localStorageEmitter";
+import {remote} from "../../../platform";
+import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
+import MessageContentType from "../../../wfc/messages/messageContentType";
+import BenzAMRRecorder from "benz-amr-recorder";
+import axios from "axios";
+import FavItem from "../../../wfc/model/favItem";
+import {stringValue} from "../../../wfc/util/longUtil";
 
+var amr;
 export default {
     components: {
         MultiSelectActionView,
@@ -170,9 +180,18 @@ export default {
             saveMessageListViewFlexGrow: -1,
 
             dragAndDropEnterCount: 0,
+            // FIXME 选中一个会话，然后切换到其他page，比如联系人，这时该会话收到新消息或发送消息，会导致新收到/发送的消息的界面错乱，尚不知道原因，但这么做能解决。
+            fixTippy: false,
         };
     },
 
+    activated() {
+        this.fixTippy = true;
+    },
+
+    deactivated() {
+        this.fixTippy = false;
+    },
     methods: {
         dragEvent(e, v) {
             if (v === 'dragenter') {
@@ -308,11 +327,18 @@ export default {
         },
 
         isForwardable(message) {
+            if (message && message.messageContent instanceof SoundMessageContent) {
+                return false;
+            }
             return true;
         },
 
         isFavable(message) {
-            return true;
+            if (!message) {
+                return false;
+            }
+            return [MessageContentType.VOIP_CONTENT_TYPE_START,
+                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
         },
 
         isRecallable(message) {
@@ -330,6 +356,15 @@ export default {
             return false;
         },
 
+        isQuotable(message) {
+            if (!message) {
+                return false;
+            }
+            return [MessageContentType.VOIP_CONTENT_TYPE_START,
+                MessageContentType.Voice,
+                MessageContentType.Video,
+                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
+        },
         copy(message) {
             let content = message.messageContent;
             if (content instanceof TextMessageContent) {
@@ -371,11 +406,56 @@ export default {
         },
 
         forward(message) {
-            this.pickConversationAndForwardMessage(ForwardType.NORMAL, [message]);
+            return this.pickConversationAndForwardMessage(ForwardType.NORMAL, [message]);
         },
 
+        _forward(message){
+            this.forward(message).catch(()=>{
+               // do nothing
+            });
+        },
         quoteMessage(message) {
             store.quoteMessage(message);
+        },
+
+        favMessage(message) {
+            let favItem = FavItem.fromMessage(message);
+            axios.post('/fav/add', {
+                messageUid: stringValue(favItem.messageUid),
+                type: favItem.favType,
+                convType: favItem.conversation.type,
+                convTarget: favItem.conversation.target,
+                convLine: favItem.conversation.line,
+                origin: favItem.origin,
+                sender: favItem.sender,
+                title: favItem.title,
+                url: favItem.url,
+                thumbUrl: favItem.thumbUrl,
+                data: favItem.data,
+            }, {withCredentials: true})
+                .then(response => {
+                    if (response && response.data && response.data.code === 0) {
+                        this.$notify({
+                            // title: '收藏成功',
+                            text: '收藏成功',
+                            type: 'info'
+                        });
+                    } else {
+                        this.$notify({
+                            // title: '收藏成功',
+                            text: '收藏失败',
+                            type: 'error'
+                        });
+                    }
+                })
+                .catch(err => {
+                    this.$notify({
+                        // title: '收藏失败',
+                        text: '收藏失败',
+                        type: 'error'
+                    });
+
+                })
         },
 
         multiSelect(message) {
@@ -394,65 +474,92 @@ export default {
         },
 
         pickConversationAndForwardMessage(forwardType, messages) {
-            let beforeClose = (event) => {
-                console.log('Closing...', event, event.params)
-                // What a gamble... 50% chance to cancel closing
-                if (event.params.toCreateConversation) {
-                    console.log('to show')
-                    this.createConversationAndForwardMessage(forwardType, messages)
-                } else if (event.params.confirm) {
-                    let conversations = event.params.conversations;
-                    let extraMessageText = event.params.extraMessageText;
-                    // TODO 多选转发
-                    store.forwardMessage(forwardType, conversations, messages, extraMessageText)
-                } else {
-                    console.log('cancel')
-                    // TODO clear pick state
-                }
-            };
+            return new Promise(((resolve, reject) => {
+                let beforeClose = (event) => {
+                    console.log('Closing...', event, event.params)
+                    // What a gamble... 50% chance to cancel closing
+                    if (event.params.toCreateConversation) {
+                        console.log('to show')
+                        Promise.race([this.createConversationAndForwardMessage(forwardType, messages)])
+                            .then(resolve)
+                            .catch(reject);
+                    } else if (event.params.confirm) {
+                        let conversations = event.params.conversations;
+                        let extraMessageText = event.params.extraMessageText;
+                        // TODO 多选转发
+                        store.forwardMessage(forwardType, conversations, messages, extraMessageText)
+                        resolve();
+                    } else {
+                        console.log('cancel')
+                        reject();
+                    }
+                };
 
-            this.$modal.show(
-                ForwardMessageByPickConversationView,
-                {
-                    forwardType: forwardType,
-                    messages: messages
-                }, {
-                    name: 'forward-by-pick-conversation-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: false,
-                }, {
-                    'before-close': beforeClose,
-                })
+                this.$modal.show(
+                    ForwardMessageByPickConversationView,
+                    {
+                        forwardType: forwardType,
+                        messages: messages
+                    }, {
+                        name: 'forward-by-pick-conversation-modal',
+                        width: 600,
+                        height: 480,
+                        clickToClose: false,
+                    }, {
+                        'before-close': beforeClose,
+                    })
+            }));
         },
 
         createConversationAndForwardMessage(forwardType, messages) {
-            let beforeClose = (event) => {
-                console.log('Closing...', event, event.params)
-                if (event.params.backPickConversation) {
-                    this.pickConversationAndForwardMessage(forwardType, messages)
-                } else if (event.params.confirm) {
-                    let users = event.params.users;
-                    let extraMessageText = event.params.extraMessageText;
-                    store.forwardByCreateConversation(forwardType, users, messages, extraMessageText)
-                } else {
-                    console.log('cancel')
-                }
-            };
-            this.$modal.show(
-                ForwardMessageByCreateConversationView,
-                {
-                    forwardType: forwardType,
-                    messages: messages,
-                    users: this.sharedContactState.friendList,
-                }, {
-                    name: 'forward-by-create-conversation-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: false,
-                }, {
-                    'before-close': beforeClose,
-                })
+            return new Promise(((resolve, reject) => {
+
+                let beforeClose = (event) => {
+                    console.log('Closing...', event, event.params)
+                    if (event.params.backPickConversation) {
+                        Promise.race([this.pickConversationAndForwardMessage(forwardType, messages)])
+                            .then(resolve)
+                            .catch(reject);
+                    } else if (event.params.confirm) {
+                        let users = event.params.users;
+                        let extraMessageText = event.params.extraMessageText;
+                        store.forwardByCreateConversation(forwardType, users, messages, extraMessageText)
+                        resolve();
+                    } else {
+                        console.log('cancel')
+                        reject();
+                    }
+                };
+                this.$modal.show(
+                    ForwardMessageByCreateConversationView,
+                    {
+                        forwardType: forwardType,
+                        messages: messages,
+                        users: this.sharedContactState.friendList,
+                    }, {
+                        name: 'forward-by-create-conversation-modal',
+                        width: 600,
+                        height: 480,
+                        clickToClose: false,
+                    }, {
+                        'before-close': beforeClose,
+                    });
+            }));
+        },
+        playVoice(message) {
+            if (amr) {
+                amr.stop();
+            }
+            amr = new BenzAMRRecorder();
+            let voice = message.messageContent;
+            amr.initWithUrl(voice.remotePath).then(() => {
+                message._isPlaying = true;
+                amr.play();
+            });
+            amr.onEnded(() => {
+                message._isPlaying = false;
+                store.playVoice(null)
+            })
         },
     },
 
@@ -469,13 +576,35 @@ export default {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
             let message = new Message(null, fileMessageContent);
             this.forward(message)
-        })
+        });
+
+        this.$eventBus.$on('forward-fav', args => {
+            let favItem = args.favItem;
+            let message = favItem.toMessage();
+            this.forward(message);
+        });
+        localStorageEmitter.on('inviteConferenceParticipant', (ev, args) => {
+            if (isElectron()) {
+                remote.getCurrentWindow().focus();
+            }
+            let payload = args.messagePayload;
+            let messageContent = Message.messageContentFromMessagePayload(payload, wfc.getUserId());
+            let message = new Message(null, messageContent);
+            this.forward(message)
+                .then(() => {
+                    ev.reply('inviteConferenceParticipantDone')
+                })
+                .catch(() => {
+                    ev.reply('inviteConferenceParticipantCancel')
+                });
+        });
     },
 
     beforeDestroy() {
         document.removeEventListener('mouseup', this.dragEnd);
         document.removeEventListener('mousemove', this.drag);
         this.$eventBus.$off('send-file')
+        this.$eventBus.$off('forward-fav')
     },
 
     updated() {
@@ -489,9 +618,11 @@ export default {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
         }
         if (this.sharedConversationState.currentConversationInfo) {
-            let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
-            if (unreadCount.unread > 0) {
-                store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+            if (!this.sharedMiscState.isPageHidden) {
+                let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
+                if (unreadCount.unread > 0) {
+                    store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+                }
             }
         }
 
@@ -509,6 +640,17 @@ export default {
         loadingIdentifier() {
             let conversation = this.sharedConversationState.currentConversationInfo.conversation;
             return conversation.type + '-' + conversation.target + '-' + conversation.line;
+        },
+        currentVoiceMessage() {
+            let voice = this.sharedConversationState.currentVoiceMessage;
+            if (voice) {
+                this.playVoice(voice);
+            } else {
+                if (amr) {
+                    amr.stop();
+                }
+            }
+            return null;
         }
     },
 

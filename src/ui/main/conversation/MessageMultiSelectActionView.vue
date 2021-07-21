@@ -12,7 +12,7 @@
             <li>
                 <div class="action" @click="forwardComposite">
                     <div class="icon">
-                        <i class="icon-ion-forward"></i>
+                        <i class="icon-ion-quote"></i>
                     </div>
                     <p>{{ $t('conversation.forward_composite') }}</p>
                 </div>
@@ -28,7 +28,7 @@
             <li>
                 <div class="action">
                     <div @click="deleteMultiMessage" class="icon">
-                        <i class="icon-ion-android-remove"></i>
+                        <i class="icon-ion-android-delete"></i>
                     </div>
                     <p>{{ $t('common.delete') }}</p>
                 </div>
@@ -119,7 +119,7 @@ ul li {
 }
 
 .action .icon:active {
-    background-color: red;
+    background-color: lightgrey;
 
 }
 
@@ -127,5 +127,8 @@ ul li {
     padding-top: 10px;
 }
 
+.action i{
+    font-size: 20px;
+}
 
 </style>

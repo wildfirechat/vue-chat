@@ -41,7 +41,7 @@ export default {
             this.$modal.hide('friend-request-modal')
         },
         invite() {
-            wfc.sendFriendRequest(this.userInfo.uid, this.reason, () => {
+            wfc.sendFriendRequest(this.userInfo.uid, this.reason, null, () => {
                 // TODO
                 console.log('send friendRequest success', this.userInfo.uid)
             }, (err) => {

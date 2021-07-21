@@ -100,7 +100,7 @@ export default {
     },
 
     activated() {
-        console.log('asss')
+        console.log('favPage activated')
     },
 
     components: {

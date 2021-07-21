@@ -24,6 +24,16 @@ export class WfcManager {
     }
 
     /**
+     * 初始化，请参考本demo的用法
+     * 只可以在主窗口调用，其他窗口调用之后，会导致主窗口通知失效。
+     * 如果其他窗口想调用wfc里面的非通知方法，可以参考{@link attach}
+     * @param {[]} args，当采用script标签的方式引入，可传入Config配置对象，配置项，请参考{@link Config}
+     */
+    init(args = []) {
+        impl.init(args);
+        avenginekit.setup(self);
+    }
+    /**
      * 注册新的自定义消息
      *
      * @param {string} name
@@ -35,17 +45,6 @@ export class WfcManager {
         impl.registerMessageContent(name, flag, type, clazz);
     }
 
-    disconnect() {
-        impl.disconnect();
-    }
-
-    /**
-     * 获取host
-     */
-    getHost() {
-        return impl.getHost();
-    }
-
     /**
      * 获取clientId，获取用户token时，一定要通过调用此方法获取clientId，否则会连接失败。
      * @returns {string} clientId
@@ -54,26 +53,36 @@ export class WfcManager {
         return impl.getClientId();
     }
 
-    getEncodedClientId() {
-        return impl.getEncodedClientId();
+    /*
+     * 启用国密加密。注意需要服务器端同步开启国密配置
+     */
+    useSM4() {
+      impl.useSM4();
     }
 
     /**
-     *
-     * @param {string} data 将要编码的数据
-     * @returns {string} 编码结果，base64格式
+     * 连接服务器
+     * @param {string} userId 用户id
+     * @param {string} token 用户token，生成token时，所使用的clientId，一定要通过{@link getClientId}获取
      */
-    encodeData(data) {
-        return impl.encodeData(data);
+    connect(userId, token) {
+        impl.connect(userId, token);
     }
 
     /**
-     *
-     * @param {string} encodedData 将要解码的数据，base64格式
-     * @returns {null | string} 解码之后的数据
+     * 设置第三方推送设备token
+     * @param {number} pushType 推送类型，0-5 移动端已经使用了。
+     * @param {String} token 设备token
      */
-    decodeData(encodedData) {
-        return impl.decodeData(encodedData);
+    setDeviceToken(pushType, token) {
+        impl.setDeviceToken(pushType, token);
+    }
+    disconnect() {
+        impl.disconnect();
+    }
+
+    setPackageName(packageName) {
+        impl.setPackageName(packageName);
     }
 
     /**
@@ -371,6 +380,14 @@ export class WfcManager {
     }
 
     /**
+     * 好友列表
+     * @returns {[Friend]}
+     */
+    getFriendList(fresh = false) {
+        return impl.getFriendList(fresh);
+    }
+
+    /**
      * 获取好友别名
      * @param {string} userId
      * @returns {string}
@@ -402,15 +419,17 @@ export class WfcManager {
      * @param {number} groupType 群类型，可参考 {@link GroupType }
      * @param {string} name 群名称
      * @param {string} portrait 群头像的链接
+     * @param {string} groupExtra 群组扩展信息
      * @param {[string]} memberIds 群成员id
+     * @param {string} memberExtra 群组成员扩展信息
      * @param {[number]} lines 会话线路，默认传[0]即可
      * @param {CreateGroupNotification} notifyContent 通知信息，默认传null，服务端会生成默认通知
      * @param {function (string)} successCB 回调通知群id
      * @param {function (number)} failCB
      * @returns {Promise<void>}
      */
-    async createGroup(groupId, groupType, name, portrait, memberIds = [], lines = [0], notifyContent, successCB, failCB) {
-        impl.createGroup(groupId, groupType, name, portrait, memberIds, lines, notifyContent, successCB, failCB);
+    async createGroup(groupId, groupType, name, portrait, groupExtra, memberIds = [], memberExtra = '', lines = [0], notifyContent, successCB, failCB) {
+        impl.createGroup(groupId, groupType, name, portrait, groupExtra, memberIds, memberExtra, lines, notifyContent, successCB, failCB);
     }
 
     /**
@@ -453,13 +472,14 @@ export class WfcManager {
      * 添加群成员
      * @param  {string} groupId 群组id
      * @param {[string]} memberIds 新添加的群成员id
+     * @param  {string} extra 群成员扩展信息
      * @param {[number]} notifyLines
      * @param {AddGroupMemberNotification} notifyMessageContent
      * @param successCB
      * @param failCB
      */
-    addGroupMembers(groupId, memberIds, notifyLines, notifyMessageContent, successCB, failCB) {
-        impl.addGroupMembers(groupId, memberIds, notifyLines, notifyMessageContent, successCB, failCB);
+    addGroupMembers(groupId, memberIds, extra, notifyLines, notifyMessageContent, successCB, failCB) {
+        impl.addGroupMembers(groupId, memberIds, extra, notifyLines, notifyMessageContent, successCB, failCB);
     }
 
     /**
@@ -607,6 +627,36 @@ export class WfcManager {
      */
     async modifyGroupAlias(groupId, alias, lines, notifyMessageContent, successCB, failCB) {
         impl.modifyGroupAlias(groupId, alias, lines, notifyMessageContent, successCB, failCB);
+    }
+
+    /**
+     * 修改群成员在群组的别名
+     * @param {string} groupId 群id
+     * @param {string} memberId 群成员id
+     * @param {string} alias 别名
+     * @param lines
+     * @param notifyMessageContent
+     * @param successCB
+     * @param failCB
+     * @returns {Promise<void>}
+     */
+    async modifyGroupMemberAlias(groupId, memberId, alias, lines, notifyMessageContent, successCB, failCB) {
+        impl.modifyGroupMemberAlias(groupId, memberId, alias, lines, notifyMessageContent, successCB, failCB);
+    }
+
+    /**
+     * 修改群成员在群组的附加信息
+     * @param {string} groupId 群id
+     * @param {string} memberId 群成员id
+     * @param {string} extra 群成员附加信息
+     * @param lines
+     * @param notifyMessageContent
+     * @param successCB
+     * @param failCB
+     * @returns {Promise<void>}
+     */
+    async modifyGroupMemberExtra(groupId, memberId, extra, lines, notifyMessageContent, successCB, failCB) {
+        impl.modifyGroupMemberExtra(groupId, memberId, extra, lines, notifyMessageContent, successCB, failCB);
     }
 
     /**
@@ -1024,6 +1074,15 @@ export class WfcManager {
     }
 
     /**
+     * 设置消息本地扩展信息
+     * @param {number} messageId 消息id，不是消息uid!
+     * @param {string} extra 扩展信息
+     */
+    setMessageLocalExtra(messageId, extra) {
+        impl.setMessageLocalExtra(messageId, extra);
+    }
+
+    /**
      * 判断是否是好友
      * @param {string} userId 用户id
      * @returns {boolean}
@@ -1065,12 +1124,13 @@ export class WfcManager {
      * 发送好友请求
      * @param {string} userId 目标用户id
      * @param {string} reason 发送好友请求的原因
+     * @param {string} extra 请求的扩展信息
      * @param {function ()} successCB
      * @param {function (number)} failCB
      * @returns {Promise<void>}
      */
-    async sendFriendRequest(userId, reason, successCB, failCB) {
-        impl.sendFriendRequest(userId, reason, successCB, failCB);
+    async sendFriendRequest(userId, reason, extra, successCB, failCB) {
+        impl.sendFriendRequest(userId, reason, extra, successCB, failCB);
     }
 
     /**
@@ -1321,9 +1381,11 @@ export class WfcManager {
      * @param {number} status 消息状态，可选值参考{@link MessageStatus}
      * @param {boolean} notify 是否触发onReceiveMessage
      * @param {Number} serverTime 服务器时间，精度到毫秒
+     *
+     * @return {Message} 插入的消息
      */
     insertMessage(conversation, messageContent, status, notify = false, serverTime = 0) {
-        impl.insertMessage(conversation, messageContent, status, notify, serverTime);
+        return impl.insertMessage(conversation, messageContent, status, notify, serverTime);
     }
 
     /**
@@ -1359,23 +1421,6 @@ export class WfcManager {
         impl.uploadMedia(fileName, fileOrData, mediaType, successCB, failCB, progressCB);
     }
 
-    /**
-     * 连接服务器
-     * @param {string} userId 用户id
-     * @param {string} token 用户token，生成token时，所使用的clientId，一定要通过{@link getClientId}获取
-     */
-    connect(userId, token) {
-        impl.connect(userId, token);
-    }
-
-    /**
-     * 设置第三方推送设备token
-     * @param {number} pushType 推送类型，0-5 移动端已经使用了。
-     * @param {String} token 设备token
-     */
-    setDeviceToken(pushType, token) {
-        impl.setDeviceToken(pushType, token);
-    }
 
     getVersion() {
         return impl.getVersion();
@@ -1546,6 +1591,36 @@ export class WfcManager {
     }
 
     /**
+     * 获取host
+     */
+    getHost() {
+        return impl.getHost();
+    }
+
+
+    getEncodedClientId() {
+        return impl.getEncodedClientId();
+    }
+
+    /**
+     *
+     * @param {string} data 将要编码的数据
+     * @returns {string} 编码结果，base64格式
+     */
+    encodeData(data) {
+        return impl.encodeData(data);
+    }
+
+    /**
+     *
+     * @param {string} encodedData 将要解码的数据，base64格式
+     * @returns {null | string} 解码之后的数据
+     */
+    decodeData(encodedData) {
+        return impl.decodeData(encodedData);
+    }
+
+    /**
      * 发送会议相关请求
      * @param sessionId
      * @param roomId
@@ -1554,21 +1629,18 @@ export class WfcManager {
      * @param callback
      */
     sendConferenceRequest(sessionId, roomId, request, data, callback) {
-        impl.sendConferenceRequest(sessionId, roomId, request, data, callback)
+        this.sendConferenceRequestEx(sessionId, roomId, request, data, false, callback)
+    }
+
+    sendConferenceRequestEx(sessionId, roomId, request, data, advance, callback) {
+        impl.sendConferenceRequest(sessionId, roomId, request, data, advance, callback);
     }
 
     _getStore() {
         return impl._getStore();
     }
 
-    /**
-     * 初始化，请参考本demo的用法
-     * @param {[]} args，当采用script标签的方式引入，可传入Config配置对象，配置项，请参考{@link Config}
-     */
-    init(args = []) {
-        impl.init(args);
-        avenginekit.setup(self);
-    }
+
 
     /**
      * utf8转base64

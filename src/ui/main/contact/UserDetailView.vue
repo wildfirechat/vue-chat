@@ -41,6 +41,7 @@
 import store from "@/store";
 import ConversationType from "@/wfc/model/conversationType";
 import Conversation from "@/wfc/model/conversation";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "UserDetailView",
@@ -71,6 +72,10 @@ export default {
             } else {
                 name = friend.name;
             }
+            // side
+            (async () => {
+                wfc.getUserInfo(friend.uid, true)
+            })();
             return name;
         }
     }

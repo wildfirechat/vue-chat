@@ -1,6 +1,6 @@
 <!--只运行在electron里面-->
 <template>
-    <div id="window-controls">
+    <div id="window-controls" ref="content">
 
         <div class="button" id="min-button" @click="minimize">
             <img class="icon"
@@ -8,7 +8,8 @@
                  draggable="false" alt=""/>
         </div>
 
-        <div class="button" v-bind:class="{disabled: !maximizable}" id="max-button" @click="maximize">
+        <div class="button" v-bind:class="{disabled: !maximizable}" v-if="maximizable" id="max-button"
+             @click="maximize">
             <img class="icon"
                  srcset="@/assets/windows_control_icons/max-k-10.png 1x, @/assets/windows_control_icons/max-k-12.png 1.25x, @/assets/windows_control_icons/max-k-15.png 1.5x, @/assets/windows_control_icons/max-k-15.png 1.75x, @/assets/windows_control_icons/max-k-20.png 2x, @/assets/windows_control_icons/max-k-20.png 2.25x, @/assets/windows_control_icons/max-k-24.png 2.5x, @/assets/windows_control_icons/max-k-30.png 3x, @/assets/windows_control_icons/max-k-30.png 3.5x"
                  draggable="false" alt=""/>
@@ -32,6 +33,8 @@
 
 <script>
 import {remote} from "@/platform";
+import wfc from "../../wfc/client/wfc";
+import {app} from "../../platform";
 
 export default {
     name: "ElectronWindowsControlButtonView",
@@ -40,6 +43,12 @@ export default {
             type: Boolean,
             required: false,
             default: true,
+        }
+    },
+    mounted() {
+        if (!this.maximizable) {
+            this.$refs.content.style.setProperty('--control-count', '2');
+            this.$refs.content.style.setProperty('--close-button-column', '2');
         }
     },
     methods: {
@@ -61,6 +70,9 @@ export default {
         close() {
             const win = remote.getCurrentWindow();
             win.close();
+            if(!wfc.isLogin()){
+                app.exit(0)
+            }
         },
         toggleMaxRestoreButtons() {
             const win = remote.getCurrentWindow();
@@ -77,8 +89,10 @@ export default {
 
 <style lang="css" scoped>
 #window-controls {
+    --control-count: 3;
+    --close-button-column: 3;
     display: grid;
-    grid-template-columns: repeat(3, 46px);
+    grid-template-columns: repeat(var(--control-count), 46px);
     /*position: absolute;*/
     /*top: 0;*/
     /*right: 0;*/
@@ -114,7 +128,7 @@ export default {
 
 #window-controls .button.disabled {
     pointer-events: none;
-    /*background-color: #d9d9d9;*/
+    background-color: #d9d9d9;
 }
 
 #window-controls .button:hover {
@@ -158,7 +172,7 @@ export default {
 }
 
 #close-button {
-    grid-column: 3;
+    grid-column: var(--close-button-column);
 }
 
 #restore-button {

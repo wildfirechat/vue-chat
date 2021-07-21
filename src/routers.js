@@ -8,6 +8,8 @@ import Multi from "@/ui/voip/Multi";
 import FileRecordPage from "@/ui/fileRecord/FileRecordPage";
 import FavPage from "@/ui/main/fav/FavPage";
 import WorkspacePage from "./ui/workspace/WorkspacePage";
+import Conference from "./ui/voip/Conference";
+import CompositeMessagePage from "./ui/main/CompositeMessagePage";
 
 const routers = [
     {
@@ -51,6 +53,11 @@ const routers = [
         component: Multi,
     },
     {
+        name: 'voip-conference',
+        path: '/voip/conference',
+        component: Conference,
+    },
+    {
         name: 'files',
         path: '/files',
         component: FileRecordPage,
@@ -59,12 +66,12 @@ const routers = [
         name: 'workspace',
         path: '/workspace',
         component: WorkspacePage,
+    },
+    {
+        name: 'composite-message',
+        path: '/composite',
+        component: CompositeMessagePage,
     }
-    // {
-    //     name: 'voip-conference',
-    //     path: '/voip/conference',
-    //     component: Conference,
-    // },
 
 ]
 export default routers

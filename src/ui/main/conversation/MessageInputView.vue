@@ -25,13 +25,32 @@
                 <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
             </ul>
         </section>
-        <div @keydown.enter="send($event)"
+        <div @keypress.enter="send($event)"
              ref="input" class="input"
              @paste="handlePaste"
              draggable="false"
+             title="Enter发送，Ctrl+Enter换行"
              autofocus
-             placeholder="hello" contenteditable="true">
+             @contextmenu.prevent="$refs.menu.open($event)"
+             onmouseover="this.setAttribute('org_title', this.title); this.title='';"
+             onmouseout="this.title = this.getAttribute('org_title');"
+             contenteditable="true">
         </div>
+        <vue-context ref="menu" :lazy="true">
+            <li>
+                <a @click.prevent="handlePaste($event)">
+                    {{ $t('common.paste') }}
+                </a>
+            </li>
+            <li v-show="hasInputTextOrImage">
+                <a @click.prevent="copy">
+                    {{ $t('common.copy') }}
+                </a>
+            </li>
+            <li>
+                <a @click.prevent="cut">{{ $t('common.cut') }}</a>
+            </li>
+        </vue-context>
         <QuoteMessageView
             v-if="quotedMessage !== null"
             style="padding: 10px 20px"
@@ -65,6 +84,8 @@ import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import {ipcRenderer, isElectron} from "@/platform";
+import {copyText} from "../../util/clipboard";
+import EventType from "../../../wfc/client/wfcEvent";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -90,6 +111,7 @@ export default {
             emojiCategories: categoriesDefault,
             emojis: emojisDefault,
             lastConversationInfo: null,
+            storeDraftIntervalId: 0
         }
     },
     methods: {
@@ -112,11 +134,17 @@ export default {
             store.quoteMessage(null)
         },
 
-        handlePaste(e) {
-            let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        async handlePaste(e) {
+            let text;
+            if ((e.originalEvent || e).clipboardData) {
+                text = (e.originalEvent || e).clipboardData.getData('text/plain');
+            } else {
+                text = await navigator.clipboard.readText();
+            }
             if (text && text.trim()) {
                 e.preventDefault();
                 document.execCommand('insertText', false, text);
+                return;
             }
             if (isElectron()) {
                 let args = ipcRenderer.sendSync('file-paste');
@@ -125,6 +153,17 @@ export default {
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
                 }
             }
+        },
+        copy() {
+            let text = this.$refs['input'].innerText;
+            if(text){
+                copyText(text)
+            }
+        },
+
+        cut() {
+            this.copy();
+            this.$refs['input'].innerHTML = '';
         },
 
         send(e) {
@@ -276,7 +315,6 @@ export default {
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);
-                console.log('in 10')
             } else if (document.selection && document.selection.createRange) {
                 document.selection.createRange().text = html;
             }
@@ -528,9 +566,18 @@ export default {
             }
         },
 
+        onGroupMembersUpdate(groupId) {
+            console.log('messageInput onGroupMembersUpdate', groupId)
+            if (this.conversationInfo
+                && this.conversationInfo.conversation.type === ConversationType.Group
+                && this.conversationInfo.conversation.target === groupId) {
+                this.initMention(this.conversationInfo.conversation);
+            }
+        }
     },
 
     activated() {
+        this.restoreDraft();
         this.focusInput();
     },
 
@@ -550,17 +597,31 @@ export default {
 
         if (isElectron()) {
             ipcRenderer.on('screenshots-ok', (event, args) => {
+                console.log('screenshots-ok', args)
                 if (args.filePath) {
+                    setTimeout(()=> {
                     document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
+                    }, 100)
                 }
             });
         }
+        this.storeDraftIntervalId = setInterval(() => {
+            this.storeDraft(this.conversationInfo, this.quotedMessage);
+        }, 5 * 1000)
+    },
+
+    created() {
+        wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
     },
 
     destroyed() {
         if (isElectron()) {
             ipcRenderer.removeAllListeners('screenshots-ok');
         }
+        if (this.storeDraftIntervalId) {
+            clearInterval(this.storeDraftIntervalId)
+        }
+        wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
     },
 
     watch: {
@@ -569,9 +630,11 @@ export default {
                 this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
             }
 
+            if (this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
+                this.restoreDraft();
+                this.initMention(this.conversationInfo.conversation)
+            }
             this.lastConversationInfo = this.conversationInfo;
-            this.initMention(this.conversationInfo.conversation)
-            this.restoreDraft();
             this.focusInput();
         },
     },
@@ -580,6 +643,11 @@ export default {
         quotedMessage() {
             lastQuotedMessage = this.sharedConversationState.quotedMessage;
             return this.sharedConversationState.quotedMessage;
+        },
+
+        hasInputTextOrImage() {
+            // TODO 监听input的输入情况
+            return true;
         }
     },
 
@@ -630,12 +698,18 @@ export default {
     -webkit-user-select: text;
 }
 
-ul li {
+.input:empty:before{
+    content: attr(title);
+    color: gray;
+    font-size: 13px;
+}
+
+.input-action-container ul li {
     display: inline;
     margin-left: 20px;
 }
 
-ul li:last-of-type {
+.input-action-container ul li:last-of-type {
     margin-right: 20px;
 }
 

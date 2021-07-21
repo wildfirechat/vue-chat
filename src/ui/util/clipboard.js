@@ -7,7 +7,7 @@ const createImage = (options) => {
     return img;
 };
 
-const copyToClipboard = async (blob) => {
+export const copyToClipboard = async (blob) => {
     try {
         await navigator.clipboard.write([
             // eslint-disable-next-line no-undef

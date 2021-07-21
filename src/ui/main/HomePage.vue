@@ -1,5 +1,5 @@
 <template>
-    <div class="home-container">
+    <div class="home-container" ref="home-container">
         <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                           v-if="sharedMiscState.isElectronWindowsOrLinux"/>
         <div class="home">
@@ -27,6 +27,7 @@
                         name="infoTrigger"
                         class="avatar"
                         draggable="false"
+                        @click="onClickPortrait()"
                         :src="sharedContactState.selfUserInfo.portrait"
                         alt=""
                     /></a>
@@ -63,6 +64,10 @@
                             <i class="icon-ion-android-upload"
                                @click="showUploadDialog"></i>
                         </li>
+                        <li v-if="supportConference">
+                            <i class="icon-ion-speakerphone"
+                               @click="createConference"></i>
+                        </li>
                         <li>
                             <i class="icon-ion-android-settings"
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
@@ -74,8 +79,23 @@
             <keep-alive>
                 <router-view :key="$route.fullPath"></router-view>
             </keep-alive>
-            <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
+            <div class="drag-area" :style="dragAreaLeft"></div>
+            <div v-if="!sharedMiscState.isElectron"
+                 v-show="voipProxy.useIframe && voipProxy.callId"
+                 class="voip-iframe-container"
+                 v-draggable="draggableValue"
+                 v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
+            >
+                <div ref="voip-dragger" class="title">
+                    <i class="icon-ion-arrow-move"></i>
+                    <p> 音视频通话</p>
+                </div>
+                <iframe ref="voip-iframe" class="content"
+                        allow="geolocation; microphone; camera; midi; encrypted-media;">
+                    <!--voip iframe-->
+                </iframe>
+            </div>
         </div>
     </div>
 </template>
@@ -90,6 +110,12 @@ import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControl
 import {removeItem} from "@/ui/util/storageHelper";
 import {ipcRenderer} from "@/platform";
 import UploadRecordView from "./bigFile/UploadRecordView";
+import CreateConferenceView from "../voip/CreateConferenceView";
+import avenginekit from "../../wfc/av/internal/engine.min";
+import localStorageEmitter from "../../ipc/localStorageEmitter";
+import CallEndReason from "../../wfc/av/engine/callEndReason";
+import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
+import {Draggable} from 'draggable-vue-directive'
 
 export default {
     data() {
@@ -97,12 +123,22 @@ export default {
             sharedContactState: store.state.contact,
             sharedMiscState: store.state.misc,
             shareConversationState: store.state.conversation,
+            supportConference: avenginekit.startConference !== undefined,
             isSetting: false,
             fileWindow: null,
+            voipProxy: avenginekitproxy,
+            draggableValue: {
+                handle: undefined,
+                boundingElement: undefined,
+                resetInitialPos: true,
+            },
         };
     },
 
     methods: {
+        onClickPortrait() {
+            wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
+        },
         go2Conversation() {
             if (this.$router.currentRoute.path === '/home') {
                 return
@@ -194,6 +230,29 @@ export default {
             console.log('closeUserCard')
             this.$refs["userCardTippy"]._tippy.hide();
         },
+        createConference() {
+            let beforeOpen = () => {
+                console.log('Opening...')
+            };
+            let beforeClose = (event) => {
+                console.log('Closing...', event, event.params)
+            };
+            let closed = (event) => {
+                console.log('Close...', event)
+            };
+            this.$modal.show(
+                CreateConferenceView,
+                {}, {
+                    name: 'create-conference-modal',
+                    width: 320,
+                    height: 400,
+                    clickToClose: true,
+                }, {
+                    'before-open': beforeOpen,
+                    'before-close': beforeClose,
+                    'closed': closed,
+                })
+        },
 
         onConnectionStatusChange(status) {
             if (status === ConnectionStatus.ConnectionStatusRejected
@@ -248,6 +307,44 @@ export default {
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         this.onConnectionStatusChange(wfc.getConnectionStatus())
+        localStorageEmitter.on('join-conference-failed', (args) => {
+            let reason = args.reason;
+            let session = args.session;
+            if (reason === CallEndReason.RoomNotExist) {
+                if (session.host === wfc.getUserId()) {
+                    this.$alert({
+                        content: '会议已结束，是否重新开启会议？',
+                        cancelCallback: () => {
+                            // do nothing
+                        },
+                        confirmCallback: () => {
+                            avenginekitproxy.startConference(session.callId, session.audioOnly, session.pin, session.host, session.title, session.desc, session.audience, session.advance)
+                        }
+                    })
+                } else {
+                    this.$notify({
+                        title: '会议已结束',
+                        text: '请联系主持人开启会议',
+                        type: 'warn'
+                    });
+                }
+            } else if (reason === CallEndReason.RoomParticipantsFull) {
+                this.$notify({
+                    title: '加入会议失败',
+                    text: '参与者已满，请重试',
+                    type: 'warn'
+                });
+            }
+        });
+    },
+
+    mounted() {
+        if (avenginekitproxy.useIframe) {
+            let voipIframe = this.$refs["voip-iframe"];
+            avenginekitproxy.setVoipIframe(voipIframe)
+            this.draggableValue.handle = this.$refs['voip-dragger'];
+            this.draggableValue.boundingElement = this.$refs['home-container']
+        }
     },
     destroyed() {
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange);
@@ -258,6 +355,9 @@ export default {
         UserCardView,
         ElectronWindowsControlButtonView
     },
+    directives: {
+        Draggable,
+    }
 };
 </script>
 
@@ -370,6 +470,57 @@ i.active {
     padding: 15px 0;
     text-align: center;
     background: #f2f2f280;
-    box-shadow: 0 0 1px #000;
+    /*box-shadow: 0 0 1px #000;*/
 }
+
+.voip-iframe-container {
+    background: #292929;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.voip-iframe-container.single {
+    width: 360px;
+    height: 640px;
+}
+
+.voip-iframe-container.multi {
+    width: 1024px;
+    height: 800px;
+}
+
+.voip-iframe-container.conference {
+    width: 1024px;
+    height: 800px;
+}
+
+.voip-iframe-container .title {
+    text-align: center;
+    padding: 5px 0;
+    background: #b6b6b6;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.voip-iframe-container .title i {
+    pointer-events: none;
+}
+
+.voip-iframe-container .title i:hover {
+    color: #868686;
+}
+
+.voip-iframe-container .title i:active {
+    color: #868686;
+}
+
+.voip-iframe-container .content {
+    flex: 1;
+    border: none;
+}
+
 </style>

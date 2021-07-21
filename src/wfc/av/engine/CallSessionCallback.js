@@ -2,6 +2,7 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
+// TODO 后续移除所有userInfo相关参数，采用ipc调用获取
 export default class CallSessionCallback {
 
     /**
@@ -10,7 +11,7 @@ export default class CallSessionCallback {
      * @param {UserInfo} selfUserInfo 自己的用户信息
      * @param {UserInfo} initiatorUserInfo 发起者用户信息
      * @param {[UserInfo]} participantUserInfos 参与者用户信息，不包含自己
-     * @param {[UserInfo]} groupMemberUserInfos 多人音视频通话是有效。 发起音视频通话所在群的群成员信息。
+     * @param {[UserInfo]} groupMemberUserInfos 多人音视频通话时有效。 发起音视频通话所在群的群成员信息。
      */
     onInitial(session, selfUserInfo, initiatorUserInfo, participantUserInfos, groupMemberUserInfos) {
 
@@ -67,6 +68,11 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 音量通知
+     * @param {string} userId
+     * @param {number} volume 0 -1
+     */
     didReportAudioVolume(userId, volume) {
 
     }
@@ -75,6 +81,26 @@ export default class CallSessionCallback {
     }
 
     didChangeInitiator(initiator) {
+
+    }
+
+    /**
+     * 会议时有效
+     * 听众或互动者角色变更回调
+     * @param {string} userId
+     * @param {boolean} audience
+     */
+    didChangeType(userId, audience) {
+
+    }
+
+    /**
+     * 会议时有效
+     * 听众和互动者角色切换回调
+     * @param {string} userId 用户id
+     * @param {boolean} audience 是否是切换为听众
+     */
+    onRequestChangeMode(userId, audience) {
 
     }
 }

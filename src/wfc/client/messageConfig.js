@@ -14,12 +14,16 @@ import UnknownMessageContent from '../messages/unknownMessageContent';
 import UnsupportMessageContent from '../messages/unsupportMessageConten';
 import ChangeGroupNameNotification from '../messages/notification/changeGroupNameNotification';
 import KickoffGroupMemberNotification from '../messages/notification/kickoffGroupMemberNotification';
+import KickoffGroupMemberVisiableNotification from '../messages/notification/kickoffGroupMemberVisiableNotification';
 import AddGroupMemberNotification from '../messages/notification/addGroupMemberNotification';
 import ChangeGroupPortraitNotification from '../messages/notification/changeGroupPortraitNotification';
 import CreateGroupNotification from '../messages/notification/createGroupNotification';
 import DismissGroupNotification from '../messages/notification/dismissGroupNotification';
 import ModifyGroupAliasNotification from '../messages/notification/modifyGroupAliasNotification';
+import ModifyGroupExtraNotification from '../messages/notification/modifyGroupExtraNotification';
+import ModifyGroupMemberExtraNotification from '../messages/notification/modifyGroupMemberExtraNotification';
 import QuitGroupNotification from '../messages/notification/quitGroupNotification';
+import QuitGroupVisiableNotification from '../messages/notification/quitGroupVisiableNotification';
 import TransferGroupOwnerNotification from '../messages/notification/transferGroupOwnerNotification';
 import FileMessageContent from '../messages/fileMessageContent';
 import VideoMessageContent from '../messages/videoMessageContent';
@@ -46,6 +50,9 @@ import MuteGroupMemberNotification from '../messages/notification/muteGroupMembe
 import AllowGroupMemberNotification from '../messages/notification/allowGroupMemberNotification'
 import CardMessageContent from '../messages/cardMessageContent'
 import CompositeMessageContent from "../messages/compositeMessageContent";
+import ConferenceInviteMessageContent from "../av/messages/conferenceInviteMessageContent";
+import ConferenceChangeModeContent from "../av/messages/conferenceChangeModeContent";
+import ConferenceKickoffMemberMessageContent from "../av/messages/conferenceKickoffMemberMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -161,9 +168,9 @@ export default class MessageConfig {
             contentClazz: StickerMessageContent,
         },
         {
-            name: 'imageText',
+            name: 'link',
             flag: PersistFlag.Persist_And_Count,
-            type: MessageContentType.ImageText,
+            type: MessageContentType.Link,
         },
         {
             name: 'userCard',
@@ -226,16 +233,40 @@ export default class MessageConfig {
             contentClazz: KickoffGroupMemberNotification,
         },
         {
+            name: 'kickoffGroupMemberVisiableNotification',
+            flag: PersistFlag.Persist,
+            type: MessageContentType.KickOffGroupMember_Visiable_Notification,
+            contentClazz: KickoffGroupMemberVisiableNotification,
+        },
+        {
             name: 'modifyGroupAliasNotification',
             flag: PersistFlag.Persist,
             type: MessageContentType.ModifyGroupAlias_Notification,
             contentClazz: ModifyGroupAliasNotification,
         },
         {
+            name: 'modifyGroupExtraNotification',
+            flag: PersistFlag.Persist,
+            type: MessageContentType.ModifyGroupExtra_Notification,
+            contentClazz: ModifyGroupExtraNotification,
+        },
+        {
+            name: 'modifyGroupMemberExtraNotification',
+            flag: PersistFlag.Persist,
+            type: MessageContentType.ModifyGroupMemberExtra_Notification,
+            contentClazz: ModifyGroupMemberExtraNotification,
+        },
+        {
             name: 'quitGroupNotification',
             flag: PersistFlag.Persist,
             type: MessageContentType.QuitGroup_Notification,
             contentClazz: QuitGroupNotification,
+        },
+        {
+            name: 'quitGroupVisiableNotification',
+            flag: PersistFlag.Persist,
+            type: MessageContentType.QuitGroup_Visiable_Notification,
+            contentClazz: QuitGroupVisiableNotification,
         },
         {
             name: 'transferGroupOwnerNotification',
@@ -339,5 +370,23 @@ export default class MessageConfig {
             type: MessageContentType.VOIP_CONTENT_TYPE_MUTE_VIDEO,
             contentClazz: MuteVideoMessageContent,
         },
+        {
+            name: 'conferenceInvite',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE,
+            contentClazz: ConferenceInviteMessageContent,
+        },
+        {
+            name: 'conferenceChangeMode',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.CONFERENCE_CONTENT_TYPE_CHANGE_MODE,
+            contentClazz: ConferenceChangeModeContent,
+        },
+        {
+            name: 'conferenceKickoffMember',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER,
+            contentClazz:ConferenceKickoffMemberMessageContent,
+        }
     ];
 }

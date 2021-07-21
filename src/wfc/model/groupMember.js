@@ -8,6 +8,7 @@ export default class GroupMember {
     groupId = '';
     memberId = '';
     alias = '';
+    extra = '';
     type = 0;
     updateDt = 0;
     createDt = 0;

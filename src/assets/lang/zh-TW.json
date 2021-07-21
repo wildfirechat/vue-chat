@@ -133,6 +133,8 @@
         "create": "創建",
         "none": "無",
         "copy": "復制",
+        "paste": "粘貼",
+        "cut": "剪切",
         "delete": "刪除",
         "forward": "轉發",
         "fav": "收藏",
@@ -160,6 +162,7 @@
     "misc":{
         "beijing": "北京",
         "test_user": "測試用戶",
-        "gen_qr_code": "二維碼生成中"
+        "gen_qr_code": "二維碼生成中",
+        "send_to_friend": "發送給朋友..."
     }
 }

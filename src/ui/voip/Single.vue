@@ -42,7 +42,7 @@
                 <!--video-->
                 <div v-else class="content-container">
                     <div class="local-media-container">
-                        <video v-if="status === 4"
+                        <video v-if="status === 4 || localStream"
                                ref="localVideo"
                                class="localVideo"
                                :srcObject.prop="localStream"
@@ -117,6 +117,8 @@
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
+import {isElectron} from "../../platform";
+import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 
 export default {
     name: 'Single',
@@ -174,6 +176,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                this.session = null;
             }
             sessionCallback.didVideoMuted = (userId, muted) => {
                 this.muted = muted;
@@ -197,7 +200,43 @@ export default {
             this.session.downgrade2Voice();
         },
         screenShare() {
-            this.session.isScreenSharing() ? this.session.stopScreenShare() : this.session.startScreenShare();
+            if (this.session.isScreenSharing()) {
+                this.session.stopScreenShare();
+            } else {
+                if (isElectron()) {
+                    let beforeClose = (event) => {
+                        // What a gamble... 50% chance to cancel closing
+                        if (!event.params) {
+                            return;
+                        }
+                        if (event.params.source) {
+                            let source = event.params.source;
+                            let desktopShareOptions = {
+                                sourceId: source.id,
+                                // minWidth: 1280,
+                                // maxWidth: 1280,
+                                // minHeight: 720,
+                                // maxHeight: 720
+                            }
+                            this.session.startScreenShare(desktopShareOptions);
+                        }
+                    };
+                    this.$modal.show(
+                        ScreenOrWindowPicker,
+                        {}, {
+                            width: 360,
+                            height: 620,
+                            name: 'screen-window-picker-modal',
+                            clickToClose: false,
+                        }, {
+                            // 'before-open': beforeOpen,
+                            'before-close': beforeClose,
+                            // 'closed': closed,
+                        })
+                } else {
+                    this.session.startScreenShare();
+                }
+            }
         },
         timestampFormat(timestamp) {
             timestamp = ~~(timestamp / 1000);

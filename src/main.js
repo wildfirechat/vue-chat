@@ -18,13 +18,16 @@ import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'
 import Config from "./config";
+import Alert from "./ui/common/Alert.js";
 
 Vue.config.productionTip = false
 
 // init
 {
     let href = window.location.href;
-    if (href.indexOf('voip') < 0 && href.indexOf('files') < 0) {
+    let path = href.substring(href.indexOf('#') + 1)
+    console.log('init', href, path)
+    if (path === '/'/*login*/ || path === '/home' || href.indexOf('#') === -1) {
         console.log('init wfc')
         if (isElectron()) {
             let sharedObj = remote.getGlobal('sharedObj');
@@ -45,7 +48,7 @@ Vue.config.productionTip = false
         }
         store.init(true);
     } else {
-        console.log('voip/files window, not init wfc')
+        console.log('not home window, not init wfc')
         if (isElectron()) {
             let sharedObj = remote.getGlobal('sharedObj');
             wfc.attach(sharedObj.proto)
@@ -68,6 +71,7 @@ Vue.use(VModal);
 Vue.use(visibility);
 
 Vue.use(VueI18n)
+Vue.use(Alert)
 
 const i18n = new VueI18n({
     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态

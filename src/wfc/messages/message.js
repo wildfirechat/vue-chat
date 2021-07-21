@@ -56,10 +56,10 @@ export default class Message {
     messageId = 0;
     direction = 0;
     status = 0;
-    forceRerender = 0;
     messageUid = 0;
     timestamp = 0;
     to = '';
+    localExtra = '';
 
     constructor(conversation, messageContent) {
         this.conversation = conversation;
@@ -78,6 +78,7 @@ export default class Message {
 
             msg.messageUid = Long.fromValue(msg.messageUid);
             msg.timestamp = Long.fromValue(msg.timestamp).toNumber();
+            msg.localExtra = obj.localExtra;
             msg.conversation = new Conversation(obj.conversation.conversationType, obj.conversation.target, obj.conversation.line);
             let contentClazz = MessageConfig.getMessageContentClazz(msg.content.type);
             if (contentClazz) {
@@ -110,6 +111,7 @@ export default class Message {
             msg.content = obj.content;
             msg.messageUid = obj.messageId;
 
+            msg.localExtra = obj.localExtra;
             msg.timestamp = obj.serverTimestamp;
             let contentClazz = MessageConfig.getMessageContentClazz(obj.content.type);
             if (contentClazz) {
@@ -193,7 +195,6 @@ export default class Message {
 
     static toMessagePayload(message) {
 
-        // TODO
-        return null;
+        return message.messageContent.encode();
     }
 }
