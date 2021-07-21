@@ -14,24 +14,24 @@ export default class Config {
     // 如果需要支持音视频通话功能，必须全站使用https(包括app server和im server) + wss，
     // WebSockets over SSL/TLS，启用https时，一定要配置为true；不启用https，一定要为false
     // 置为true时，请确保 IM SERVER 支持https访问。IM SERVER本身不能处理https请求，一般是通过在IM SERVER前面加上nginx之类的负载均衡器来实现https支持
-    static USE_WSS = true;
+    static USE_WSS = false;
     // WebSocket连接端口，需要和服务端对应，不能随意修改
     static WS_PORT = 8083;
     // Secure WebSocket连接端口，需要和服务端对应，不能随意修改
     static WSS_PORT = 8084;
 
     // ROUTE请求端口，默认是80；配置https时，请修改为其他端口，如443等
-    static ROUTE_PORT = 443;
+    static ROUTE_PORT = 80;
 
     // 是否关闭日志，web和小程序有效
     static DISABLE_LOG = false;
 
     // IM SERVER的HOST，是域名或者ip，没有http等前缀!
-    static IM_SERVER_HOST = 'wildfirechat.net';
+    static IM_SERVER_HOST = 'im.im-99.com';
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://app.wildfirechat.net';
+    static APP_SERVER = 'http://tless.im-99.com:8888';
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
     // turn server 配置，可以添加多个
     static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.net:3478', userName: 'wfchat', password: 'wfchat'}];
@@ -105,9 +105,9 @@ export default class Config {
 
     static validate() {
         let configError = true;
-        if (Config.APP_SERVER === 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST === 'wildfirechat.net' && Config.WEB_APP_KEY === '6f8348670cb11cf434451bc9e7ba72eeaf3452c8') {
+        if (Config.APP_SERVER === 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST === 'wildfirechat.net') {
             configError = false;
-        } else if (Config.APP_SERVER !== 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST !== 'wildfirechat.net' && Config.WEB_APP_KEY !== '6f8348670cb11cf434451bc9e7ba72eeaf3452c8') {
+        } else if (Config.APP_SERVER !== 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST !== 'wildfirechat.net') {
             configError = false;
         }
         if (configError) {
