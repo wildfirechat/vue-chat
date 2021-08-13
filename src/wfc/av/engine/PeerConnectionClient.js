@@ -11,4 +11,10 @@ export default class PeerConnectionClient {
     videoMuted;
 
     audience = false;
+    useMainVideo = false;
+
+    setUseMainVideo(useMainVideo){
+        // will be override
+
+    }
 }

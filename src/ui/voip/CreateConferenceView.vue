@@ -43,6 +43,15 @@ export default {
             avenginekitproxy.startConference(null, !this.audioOnly, '', userId, this.title, this.desc, !this.audience, this.advance);
             this.$modal.hide('create-conference-modal')
         }
+    },
+    watch: {
+        advance() {
+            // 超级会议模式，一般参会人员会很多，但不需要所有人都能发言；互动模式，是允许每个人发言
+            // 开启超级会之后，需要再次确认开启互动模式
+            if (this.advance) {
+                this.audience = false;
+            }
+        }
     }
 }
 </script>

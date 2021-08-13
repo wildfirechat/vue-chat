@@ -210,7 +210,6 @@ export default {
 >>> .text-message-container {
     background-color: #f7f7f7;
     padding-left: 0;
-    padding-top: 0;
 }
 
 >>> .rightarrow::before {

@@ -95,7 +95,7 @@
                         <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
                     </div>
                     <div class="action">
-                        <img v-if="!session.muted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
+                        <img v-if="!session.audioMuted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
                         <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                         <p>静音</p>
                     </div>
@@ -193,7 +193,9 @@ export default {
         },
 
         mute() {
-            this.session.triggerMicrophone();
+            let enable = this.session.audioMuted ? true : false;
+            this.selfUserInfo._isAudioMuted = !enable;
+            this.session.setAudioEnabled(enable)
         },
 
         down2voice() {

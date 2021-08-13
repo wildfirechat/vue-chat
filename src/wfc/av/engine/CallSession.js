@@ -4,9 +4,9 @@
 
 // 运行在新的voip window
 export default class CallSession {
+    audioMuted = false
     videoMuted = false
     audioOnly = false
-    muted = false
 
     startTime
     startMsgUid
@@ -56,11 +56,6 @@ export default class CallSession {
     hangup() {
     }
 
-    /**
-     * 打开或者关闭麦克风
-     */
-    triggerMicrophone() {
-    }
 
     // 回落到语音
     downgrade2Voice() {
@@ -71,6 +66,14 @@ export default class CallSession {
      * @param enable
      */
     setVideoEnabled(enable) {
+
+    }
+
+    /**
+     * 静音或取消静音
+     * @param {boolean} enable
+     */
+    setAudioEnabled(enable){
 
     }
 
@@ -136,8 +139,10 @@ export default class CallSession {
      * 仅会议时有效
      * 会议踢人
      * @param {string} userId
+     * @param {function ()} successCB
+     * @param {function (errcode)} failCB
      */
-    kickoff(userId) {
+    kickoffParticipant(userId, successCB, failCB) {
 
     }
 }

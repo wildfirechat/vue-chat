@@ -109,7 +109,7 @@ export default {
         filteredUsers() {
             let result ;
             if (this.query && this.query.trim()) {
-                result = store.searchContact(this.query)
+                result = store.filterContact(this.query)
             } else {
                 result = this.users;
             }

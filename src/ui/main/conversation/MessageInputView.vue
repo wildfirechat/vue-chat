@@ -19,6 +19,8 @@
                 </li>
                 <li v-if="sharedMiscState.isElectron"><i id="screenShot" @click="screenShot"
                                                          class="icon-ion-scissors"></i></li>
+                <li v-if="sharedMiscState.isElectron"><i id="messageHistory" @click="showMessageHistory"
+                                                         class="icon-ion-android-chat"></i></li>
             </ul>
             <ul>
                 <li><i @click="startAudioCall" class="icon-ion-ios-telephone"></i></li>
@@ -86,6 +88,7 @@ import PickUserView from "@/ui/main/pick/PickUserView";
 import {ipcRenderer, isElectron} from "@/platform";
 import {copyText} from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
+import IPCRendererEventType from "../../../ipcRendererEventType";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -270,6 +273,23 @@ export default {
 
         screenShot() {
             ipcRenderer.send('screenshots-start', {});
+        },
+        showMessageHistory() {
+            let hash = window.location.hash;
+            let url = window.location.origin;
+            if (hash) {
+                url = window.location.href.replace(hash, '#/conversation-message-history');
+            } else {
+                url += "/conversation-message-history"
+            }
+            let conversation = this.conversationInfo.conversation;
+            ipcRenderer.send(IPCRendererEventType.showConversationMessageHistoryPage, {
+                url: url,
+                type: conversation.type,
+                target: conversation.target,
+                line: conversation.line,
+            });
+            console.log(IPCRendererEventType.showConversationMessageHistoryPage, url)
         },
 
         hideEmojiView(e) {
