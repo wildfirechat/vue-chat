@@ -118,7 +118,7 @@
                                      src='@/assets/images/av_conference_audio_mute.png'/>
                                 <p>静音</p>
                             </div>
-                            <div class="action" v-if="!session.isScreenSharing()">
+                            <div class="action" v-if="!session.audioOnly && !session.isScreenSharing()">
                                 <img v-if="!session.videoMuted" @click="muteVideo" class="action-img"
                                      src='@/assets/images/av_conference_video.png'/>
                                 <img v-else @click="muteVideo" class="action-img"
