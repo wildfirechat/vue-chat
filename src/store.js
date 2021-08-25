@@ -128,7 +128,7 @@ let store = {
 
                 this.updateTray();
                 if(!isElectron()){
-                    window.__store = wfc._getStore();
+                    window.__wfc = wfc;
                 }
             }
         });
