@@ -1,8 +1,6 @@
 import {isElectron} from './platform'
 
 export default class Config {
-    // 调试用
-    static ENABLE_AUTO_LOGIN = true;
     // 是否支持多人音视频通话
     static ENABLE_MULTI_VOIP_CALL = true;
     // 是否支持1对1音视频通话
@@ -15,10 +13,6 @@ export default class Config {
     // WebSockets over SSL/TLS，启用https时，一定要配置为true；不启用https，一定要为false
     // 置为true时，请确保 IM SERVER 支持https访问。IM SERVER本身不能处理https请求，一般是通过在IM SERVER前面加上nginx之类的负载均衡器来实现https支持
     static USE_WSS = true;
-    // WebSocket连接端口，需要和服务端对应，不能随意修改
-    static WS_PORT = 8083;
-    // Secure WebSocket连接端口，需要和服务端对应，不能随意修改
-    static WSS_PORT = 8084;
 
     // ROUTE请求端口，默认是80；配置https时，请修改为其他端口，如443等
     static ROUTE_PORT = 443;
