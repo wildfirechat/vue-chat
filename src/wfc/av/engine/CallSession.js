@@ -6,6 +6,7 @@
 export default class CallSession {
     audioMuted = false
     videoMuted = false
+    screenSharing = false
     audioOnly = false
 
     startTime
@@ -20,6 +21,7 @@ export default class CallSession {
     host;
     title;
     desc;
+    extra;
 
     /**
      * 播放来电响铃
@@ -64,16 +66,34 @@ export default class CallSession {
     /**
      * 打开或关闭摄像头
      * @param enable
+     * @deprecated 请使用{@link muteVideo}
      */
     setVideoEnabled(enable) {
 
     }
 
     /**
+     * 打开或关闭摄像头
+     * @param {boolean} mute true，关闭摄像头；false，打开摄像头
+     */
+    muteVideo(mute) {
+
+    }
+
+    /**
      * 静音或取消静音
      * @param {boolean} enable
+     * @deprecated 请使用{@link muteAudio}
      */
     setAudioEnabled(enable){
+
+    }
+
+    /**
+     * 静音或取消静音
+     * @param {boolean} mute true，静音；false，取消静音
+     */
+    muteAudio(mute) {
 
     }
 
@@ -143,6 +163,21 @@ export default class CallSession {
      * @param {function (errcode)} failCB
      */
     kickoffParticipant(userId, successCB, failCB) {
+    }
+
+    /**
+     * 仅会议时有效
+     * 离开会议
+     * @param {boolean} destroyRoom 是否销毁会议室
+     */
+    leaveConference(destroyRoom) {
+
+    }
+
+    /**
+     * 关闭音视频通话窗口
+     */
+    closeVoipWindow() {
 
     }
 }

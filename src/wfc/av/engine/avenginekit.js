@@ -2,13 +2,16 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 export default class WfcAVEngineKit {
+    /**
+     * CallSession 相关回调
+     * @deprecated 可能被移除，请勿直接设置，可通过{@link setup}参数直接传入
+     */
     sessionCallback;
 
     /**
      * 音视频window显示的时候调用
      */
-    // TODO 将sessionCallback作为参数传递进来吧
-    setup() {
+    setup(sessionCallback) {
     }
 
     static MAX_AUDIO_PARTICIPANT_COUNT = 16;

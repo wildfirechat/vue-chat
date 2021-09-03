@@ -6,8 +6,8 @@ export default class IpcSub {
         localStorageEmitter.invoke('getUserInfos', {userIds: userIds, groupId: groupId}, callback)
     }
 
-    static getUserId(callback) {
-        localStorageEmitter.invoke('getUserId', {}, callback)
+    static getUserId() {
+        return localStorageEmitter.promiseInvoke('getUserId', {})
     }
 
     static sendMessage(conversation, messageContent) {

@@ -42,16 +42,16 @@
                              class="participant-video-item"
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
+                            <video
+                                @click="setUseMainVideo(participant.uid)"
+                                class="video"
+                                :srcObject.prop="participant._stream"
+                                playsInline
+                                autoPlay/>
                             <div v-if="status !== 4 || !participant._stream || participant._isVideoMuted"
-                                 class="flex-column flex-justify-center flex-align-center">
+                                 class="avatar-container">
                                 <img class="avatar" :src="participant.portrait" :alt="participant">
                             </div>
-                            <video v-else
-                                   @click="setUseMainVideo(participant.uid)"
-                                   class="video"
-                                   :srcObject.prop="participant._stream"
-                                   playsInline
-                                   autoPlay/>
                             <div class="video-stream-tip-container">
                                 <p>点击视频，切换清晰度</p>
                             </div>
@@ -126,8 +126,11 @@
                                 <p>视频</p>
                             </div>
                             <div v-if="!audioOnly" class="action">
-                                <img @click="screenShare" class="action-img"
+                                <img v-if="!session.screenSharing" @click="screenShare"
+                                     class="action-img"
                                      src='@/assets/images/av_conference_screen_sharing.png'/>
+                                <img v-else @click="screenShare" class="action-img"
+                                     src='@/assets/images/av_conference_screen_sharing_hover.png'/>
                                 <p class="single-line">共享屏幕</p>
                             </div>
                             <div class="action">
@@ -209,6 +212,7 @@ import ConferenceInviteMessageContent from "../../wfc/av/messages/conferenceInvi
 import localStorageEmitter from "../../ipc/localStorageEmitter";
 import {isElectron, remote} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
+import CallEndReason from "../../wfc/av/engine/callEndReason";
 
 export default {
     name: 'Conference',
@@ -260,7 +264,6 @@ export default {
 
             sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo) => {
                 this.session = session;
-
 
                 this.audioOnly = session.audioOnly;
                 this.selfUserInfo = selfUserInfo;
@@ -317,6 +320,14 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                // 可以根据reason，进行一些提示
+                // alert('会议已结束');
+                if (reason === CallEndReason.RoomNotExist) {
+                    console.log('join conference failed', reason, this.session)
+                    let obj = {reason: reason, session: this.session};
+                    localStorageEmitter.send('join-conference-failed', obj);
+                }
+                this.session.closeVoipWindow();
                 this.session = null;
             }
 
@@ -369,17 +380,18 @@ export default {
                     })
 
                 })
-            }
+            };
 
             avenginekit.sessionCallback = sessionCallback;
         },
+
 
         answer() {
             this.session.call();
         },
 
         hangup() {
-            this.session.hangup();
+            this.session.leaveConference(false);
         },
 
         mute() {
@@ -439,6 +451,9 @@ export default {
         },
 
         screenShare() {
+            if (this.session.audioOnly) {
+                return;
+            }
             if (this.session.isScreenSharing()) {
                 this.session.stopScreenShare();
             } else {
@@ -635,6 +650,7 @@ export default {
 
 .content-container.video {
     background: black;
+    object-fit: contain;
 }
 
 .content-container.audio {
@@ -665,6 +681,20 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.participant-video-item .avatar-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #2d3033;
 }
 
 .participant-video-item:hover .video-stream-tip-container {

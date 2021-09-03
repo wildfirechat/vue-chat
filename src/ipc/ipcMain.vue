@@ -4,7 +4,6 @@
 
 <script>
 import localStorageEmitter from "./localStorageEmitter";
-import {isElectron, remote} from "../platform";
 import wfc from "../wfc/client/wfc";
 import Message from "../wfc/messages/message";
 
