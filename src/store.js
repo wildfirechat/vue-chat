@@ -679,7 +679,7 @@ let store = {
                 formData.append('token', token)
                 formData.append(file, file)
                 xhr.open('POST', url);
-                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(fileName)}"`);
+                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(file.name)}"`);
                 xhr.send(formData);
             } else {
                 // 野火专业存储
