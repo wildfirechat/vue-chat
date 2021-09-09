@@ -24,7 +24,7 @@
                                 <img class="avatar" :src="selfUserInfo.portrait">
                             </div>
                             <video v-else
-                                   class="video"
+                                   class="video me"
                                    ref="localVideo"
                                    :srcObject.prop="selfUserInfo._stream"
                                    playsInline
@@ -915,5 +915,10 @@ footer {
     top: 0;
     color: white;
     background: #e0d6d6d6;
+}
+
+.video.me{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 </style>

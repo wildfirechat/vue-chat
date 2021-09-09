@@ -26,7 +26,7 @@
                             <p>我</p>
                         </div>
                         <video v-else
-                               class="video"
+                               class="video me"
                                ref="localVideo"
                                :srcObject.prop="selfUserInfo._stream"
                                playsInline
@@ -436,5 +436,10 @@ footer {
 .action-img {
     width: 60px;
     height: 60px;
+}
+
+.video.me{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 </style>

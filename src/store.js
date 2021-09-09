@@ -679,11 +679,13 @@ let store = {
                 formData.append('token', token)
                 formData.append(file, file)
                 xhr.open('POST', url);
+                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(fileName)}"`);
                 xhr.send(formData);
             } else {
                 // 野火专业存储
                 xhr = this._uploadXMLHttpRequest(file.name, remoteUrl, progressCB, successCB, failCB);
                 xhr.open('PUT', uploadUrl);
+                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(file.name)}"`);
                 xhr.send(file);
             }
             miscState.uploadBigFiles.push({

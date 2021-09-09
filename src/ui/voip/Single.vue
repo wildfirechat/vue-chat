@@ -44,7 +44,7 @@
                     <div class="local-media-container">
                         <video v-if="status === 4 || localStream"
                                ref="localVideo"
-                               class="localVideo"
+                               class="localVideo me"
                                :srcObject.prop="localStream"
                                muted
                                playsInline autoPlay/>
@@ -351,6 +351,11 @@ export default {
     top: 0;
     background-color: #cccccc;
     left: 0;
+}
+
+.localVideo.me{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 
 .video {
