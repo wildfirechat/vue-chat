@@ -305,7 +305,10 @@ let store = {
         wfc.eventEmitter.on(EventType.MessageRead, (readEntries) => {
             // optimization
             if (conversationState.currentConversationInfo) {
-                conversationState.currentConversationRead = wfc.getConversationRead(conversationState.currentConversationInfo.conversation);
+                // wfc.getConversationRead 每次返回同一个对象，只是该对象的值不一样。
+                // 由于 VUE 不能检测到初始化时，不存在的属性的变更，故此处重新 new 一个新的对象，并赋值。
+                // FYI:https://vuejs.org/v2/guide/reactivity.html
+                conversationState.currentConversationRead = new Map(wfc.getConversationRead(conversationState.currentConversationInfo.conversation));
             }
         });
 
