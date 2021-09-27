@@ -26,7 +26,7 @@
                             <p>我</p>
                         </div>
                         <video v-else
-                               class="video"
+                               class="video me"
                                ref="localVideo"
                                :srcObject.prop="selfUserInfo._stream"
                                playsInline
@@ -92,7 +92,7 @@
                             <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
                         </div>
                         <div class="action">
-                            <img v-if="!session.muted" @click="mute" class="action-img"
+                            <img v-if="!session.audioMuted" @click="mute" class="action-img"
                                  src='@/assets/images/av_mute.png'/>
                             <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                             <p>静音</p>
@@ -203,6 +203,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                this.session.closeVoipWindow();
                 this.session = null;
             }
 
@@ -222,7 +223,9 @@ export default {
         },
 
         mute() {
-            this.session.triggerMicrophone();
+            let enable = this.session.audioMuted ? true : false;
+            this.selfUserInfo._isAudioMuted = !enable;
+            this.session.setAudioEnabled(enable)
         },
 
         down2voice() {
@@ -433,5 +436,10 @@ footer {
 .action-img {
     width: 60px;
     height: 60px;
+}
+
+.video.me{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 </style>

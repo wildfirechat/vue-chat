@@ -363,6 +363,7 @@ export default {
             return [MessageContentType.VOIP_CONTENT_TYPE_START,
                 MessageContentType.Voice,
                 MessageContentType.Video,
+                MessageContentType.Composite_Message,
                 MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
         },
         copy(message) {

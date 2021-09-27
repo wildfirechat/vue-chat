@@ -122,7 +122,7 @@ export default {
     computed: {
         conversationInfos() {
             if (this.query && this.query.trim()) {
-                return store.searchConversation(this.query)
+                return store.filterConversation(this.query)
             } else {
                 return this.sharedConversation.conversationInfoList;
             }

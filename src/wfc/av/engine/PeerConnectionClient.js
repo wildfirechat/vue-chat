@@ -2,6 +2,7 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 
+import WfcAVEngineKit from "./avenginekit";
 export default class PeerConnectionClient {
     isInitiator = false;
     userId;
@@ -11,4 +12,10 @@ export default class PeerConnectionClient {
     videoMuted;
 
     audience = false;
+    useMainVideo = WfcAVEngineKit.DEFAULT_USE_MAIN_VIDEO;
+
+    setUseMainVideo(useMainVideo){
+        // will be override
+
+    }
 }

@@ -56,10 +56,10 @@
                         {{ $t('search.view_all') + this.sharedSearchState.groupSearchResult.length }}
                     </div>
                 </li>
-                <li class="category-item" v-if="sharedSearchState.messageSearchResult.length > 0">
+                <li class="category-item" v-if="sharedMiscState.isElectron">
                     <label>{{ $t('search.message_history') }}</label>
-                    <div class="search-result-item message">
-                        {{ $t('search.search_message_history') }}
+                    <div class="search-result-item message" @click="showMessageHistoryPage">
+                        <p>{{ $t('search.search_message_history') }} </p>
                     </div>
                 </li>
             </ul>
@@ -73,6 +73,8 @@ import store from "@/store";
 import Conversation from "@/wfc/model/conversation";
 import ConversationType from "@/wfc/model/conversationType";
 import FriendRequestView from "@/ui/main/contact/FriendRequestView";
+import IPCRendererEventType from "../../../ipcRendererEventType";
+import {ipcRenderer} from "../../../platform";
 
 export default {
     name: "SearchResultView",
@@ -82,6 +84,7 @@ export default {
     data() {
         return {
             sharedSearchState: store.state.search,
+            sharedMiscState: store.state.misc,
             shouldShowAllUser: false,
             shouldShowAllContact: false,
             shouldShowAllGroup: false,
@@ -89,13 +92,7 @@ export default {
     },
 
     mounted() {
-        console.log('mounted');
-        this.$nextTick(function () {
-            let searchResultItems = document.getElementsByClassName('search-result-item');
-            if (searchResultItems && searchResultItems.length > 0) {
-                searchResultItems[0].style.backgroundColor = '#d9d9d9'
-            }
-        });
+        // do nothing
     },
 
     beforeDestroy() {
@@ -160,6 +157,20 @@ export default {
             let conversation = new Conversation(ConversationType.Group, group.target, 0);
             store.setCurrentConversation(conversation);
             store.toggleSearchView(false);
+        },
+
+        showMessageHistoryPage() {
+            let hash = window.location.hash;
+            let url = window.location.origin;
+            if (hash) {
+                url = window.location.href.replace(hash, '#/message-history');
+            } else {
+                url += "/message-history"
+            }
+            ipcRenderer.send(IPCRendererEventType.showMessageHistoryPage, {
+                url: url,
+            });
+            console.log(IPCRendererEventType.showMessageHistoryPage, url)
         }
 
     },
@@ -265,6 +276,12 @@ export default {
 .search-result-item.group span {
     font-size: 14px;
     padding-left: 10px;
+}
+
+.search-result-item.message {
+    height: 54px;
+    display: flex;
+    align-items: center;
 }
 
 .show-all {

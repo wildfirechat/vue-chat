@@ -24,7 +24,9 @@ export default {
         textContent() {
             let tmp = emojiParse(this.message.messageContent.digest(this.message));
             // pls refer to https://stackoverflow.com/questions/4522124/replace-leading-spaces-with-nbsp-in-javascript
-            tmp = tmp.replace(/^[ \t]+/gm, function(x){ return new Array(x.length + 1).join('&nbsp;') })
+            tmp = tmp.replace(/^[ \t]+/gm, function (x) {
+                return new Array(x.length + 1).join('&nbsp;')
+            })
             return tmp;
         }
     }
@@ -38,6 +40,8 @@ export default {
     background-color: white;
     position: relative;
     border-radius: 5px;
+    display: flex;
+    align-items: center;
 }
 
 .text-message-container p {
@@ -53,6 +57,12 @@ export default {
 .text-message-container .text {
     color: #050505;
     font-size: 16px;
+    line-height: 25px;
+    max-height: 1000px;
+    word-break: break-word;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
 }
 
 </style>

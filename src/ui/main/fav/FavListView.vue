@@ -96,7 +96,8 @@ import store from "@/store";
 import {ipcRenderer} from "@/platform";
 import FavItem from "../../../wfc/model/favItem";
 import {isElectron} from "../../../platform";
-import {_reverseToJsLongString, stringValue} from "../../../wfc/util/longUtil";
+import {_reverseToJsLongString} from "../../../wfc/util/longUtil";
+import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
 
 export default {
     name: "FavListView",
@@ -173,9 +174,11 @@ export default {
                         let message = favItem.toMessage();
                         let compositeContent = message.messageContent;
                         fi._content = fi.title;
+                        if (compositeContent instanceof CompositeMessageContent) {
                         for (let i = 0; i < compositeContent.messages.length && i < 2; i++) {
                             fi._content += '\n';
                             fi._content += compositeContent.messages[i].messageContent.digest(compositeContent.messages[i]);
+                            }
                         }
                         message.messageContent = compositeContent;
 

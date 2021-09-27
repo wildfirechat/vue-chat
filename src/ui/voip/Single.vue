@@ -44,7 +44,7 @@
                     <div class="local-media-container">
                         <video v-if="status === 4 || localStream"
                                ref="localVideo"
-                               class="localVideo"
+                               class="localVideo me"
                                :srcObject.prop="localStream"
                                muted
                                playsInline autoPlay/>
@@ -95,7 +95,7 @@
                         <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
                     </div>
                     <div class="action">
-                        <img v-if="!session.muted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
+                        <img v-if="!session.audioMuted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
                         <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                         <p>静音</p>
                     </div>
@@ -176,6 +176,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                this.session.closeVoipWindow();
                 this.session = null;
             }
             sessionCallback.didVideoMuted = (userId, muted) => {
@@ -193,7 +194,9 @@ export default {
         },
 
         mute() {
-            this.session.triggerMicrophone();
+            let enable = this.session.audioMuted ? true : false;
+            this.session.selfUserInfo._isAudioMuted = !enable;
+            this.session.setAudioEnabled(enable)
         },
 
         down2voice() {
@@ -348,6 +351,11 @@ export default {
     top: 0;
     background-color: #cccccc;
     left: 0;
+}
+
+.localVideo.me{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 
 .video {

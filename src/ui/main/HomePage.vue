@@ -272,6 +272,7 @@ export default {
                     || status === ConnectionStatus.ConnectionStatusRejected) {
                     removeItem("userId");
                     removeItem('token')
+                    avenginekitproxy.forceCloseVoipWindow();
                 }
             }
         },
@@ -307,7 +308,7 @@ export default {
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         this.onConnectionStatusChange(wfc.getConnectionStatus())
-        localStorageEmitter.on('join-conference-failed', (args) => {
+        localStorageEmitter.on('join-conference-failed', (sender, args) => {
             let reason = args.reason;
             let session = args.session;
             if (reason === CallEndReason.RoomNotExist) {
@@ -318,7 +319,10 @@ export default {
                             // do nothing
                         },
                         confirmCallback: () => {
+                            // 等待之前的音视频通话窗口完全关闭
+                            setTimeout(() => {
                             avenginekitproxy.startConference(session.callId, session.audioOnly, session.pin, session.host, session.title, session.desc, session.audience, session.advance)
+                            }, 1000);
                         }
                     })
                 } else {
@@ -344,6 +348,22 @@ export default {
             avenginekitproxy.setVoipIframe(voipIframe)
             this.draggableValue.handle = this.$refs['voip-dragger'];
             this.draggableValue.boundingElement = this.$refs['home-container']
+        }
+        avenginekitproxy.onVoipCallErrorCallback = (errorCode) => {
+            if (errorCode === -1) {
+                this.$notify({
+                    title: '不能发起或接听新的音视频通话',
+                    text: '目前有音视频通话正在进行中',
+                    type: 'warn'
+                });
+
+            } else if (errorCode === -2) {
+                this.$notify({
+                    title: '不支持音视频通话',
+                    text: '请到手机上接听音视频通话',
+                    type: 'warn'
+                });
+            }
         }
     },
     destroyed() {

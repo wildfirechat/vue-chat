@@ -77,7 +77,19 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 多人版生效，高级版调用的是 {@link didMuteStateChanged}
+     * @param {string} userId
+     * @param {boolean} muted
+     */
     didVideoMuted(userId, muted) {
+    }
+
+    /**
+     * 高级版生效，多人版调用的是 {@link didVideoMuted}
+     * @param {[string]} participants
+     */
+    didMuteStateChanged(participants) {
     }
 
     didChangeInitiator(initiator) {

@@ -25,7 +25,7 @@ import SearchType from "@/wfc/model/searchType";
 import Config from "@/config";
 import {getItem, setItem} from "@/ui/util/storageHelper";
 import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
-import IPCEventType from "./ipcEventType";
+import IPCEventType from "./ipc/ipcEventType";
 import localStorageEmitter from "./ipc/localStorageEmitter";
 import {stringValue} from "./wfc/util/longUtil";
 
@@ -128,7 +128,7 @@ let store = {
 
                 this.updateTray();
                 if(!isElectron()){
-                    window.__store = wfc._getStore();
+                    window.__wfc = wfc;
                 }
             }
         });
@@ -305,7 +305,10 @@ let store = {
         wfc.eventEmitter.on(EventType.MessageRead, (readEntries) => {
             // optimization
             if (conversationState.currentConversationInfo) {
-                conversationState.currentConversationRead = wfc.getConversationRead(conversationState.currentConversationInfo.conversation);
+                // wfc.getConversationRead 每次返回同一个对象，只是该对象的值不一样。
+                // 由于 VUE 不能检测到初始化时，不存在的属性的变更，故此处重新 new 一个新的对象，并赋值。
+                // FYI:https://vuejs.org/v2/guide/reactivity.html
+                conversationState.currentConversationRead = new Map(wfc.getConversationRead(conversationState.currentConversationInfo.conversation));
             }
         });
 
@@ -679,11 +682,13 @@ let store = {
                 formData.append('token', token)
                 formData.append(file, file)
                 xhr.open('POST', url);
+                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(file.name)}"`);
                 xhr.send(formData);
             } else {
                 // 野火专业存储
                 xhr = this._uploadXMLHttpRequest(file.name, remoteUrl, progressCB, successCB, failCB);
                 xhr.open('PUT', uploadUrl);
+                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(file.name)}"`);
                 xhr.send(file);
             }
             miscState.uploadBigFiles.push({
@@ -798,6 +803,31 @@ let store = {
         conversationState.quotedMessage = message;
     },
 
+    getConversationInfo(conversation){
+        let info = wfc.getConversationInfo(conversation);
+        return this._patchConversationInfo(info, false);
+    },
+
+    getMessages(conversation, fromUid = 0, before = true, withUser = '', callback) {
+        let msg = wfc.getMessageByUid(fromUid);
+        let fromIndex = 0;
+        fromIndex = msg ? msg.messageId : 0;
+        let lmsgs = wfc.getMessages(conversation, fromIndex, before, 20);
+        if (lmsgs.length > 0) {
+            lmsgs = lmsgs.map(m => this._patchMessage(m, 0));
+            setTimeout(() => callback(lmsgs), 200)
+        } else {
+            callback([]);
+            // 只获取本地的消息
+            // wfc.loadRemoteConversationMessages(conversation, fromUid, 20,
+            //     (msgs) => {
+            //         callback(msgs.map(m => this._patchMessage(m, 0)))
+            //     },
+            //     (error) => {
+            //         callback([])
+            //     });
+        }
+    },
     _loadCurrentConversationMessages() {
         if (!conversationState.currentConversationInfo) {
             return;
@@ -1108,10 +1138,10 @@ let store = {
         searchState.query = query;
         if (query) {
             console.log('search', query)
-            searchState.contactSearchResult = this.searchContact(query);
-            searchState.groupSearchResult = this.searchGroupConversation(query);
-            searchState.conversationSearchResult = this.searchConversation(query);
-            searchState.messageSearchResult = this.searchMessage(query);
+            searchState.contactSearchResult = this.filterContact(query);
+            searchState.groupSearchResult = this.filterGroupConversation(query);
+            searchState.conversationSearchResult = this.filterConversation(query);
+            // searchState.messageSearchResult = this.searchMessage(query);
             // 默认不搜索新用户
             // this.searchUser(query);
 
@@ -1140,7 +1170,7 @@ let store = {
     },
 
     // TODO 到底是什么匹配了
-    searchContact(query) {
+    filterContact(query) {
         let result = contactState.friendList.filter(u => {
             return u._displayName.indexOf(query) > -1 || u._firstLetters.indexOf(query) > -1 || u._pinyin.indexOf(query) > -1
         });
@@ -1178,7 +1208,7 @@ let store = {
 
     // TODO 匹配类型，是群名称匹配上了，还是群成员的名称匹配上了？
     // 目前只搜索群名称
-    searchFavGroup(query) {
+    filterFavGroup(query) {
         console.log('to search group', contactState.favGroupList)
         let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
         let result = contactState.favGroupList.filter(g => {
@@ -1192,7 +1222,7 @@ let store = {
     },
 
     // TODO
-    searchConversation(query) {
+    filterConversation(query) {
         return conversationState.conversationInfoList.filter(info => {
             let displayNamePinyin = convert(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
             let firstLetters = convert(info.conversation._target._displayName, {style: 4}).join('').trim().toLowerCase();
@@ -1200,7 +1230,7 @@ let store = {
         })
     },
 
-    searchGroupConversation(query) {
+    filterGroupConversation(query) {
         query = query.toLowerCase();
         let groups = conversationState.conversationInfoList.filter(info => info.conversation.type === ConversationType.Group).map(info => info.conversation._target);
         return groups.filter(groupInfo => {
@@ -1210,10 +1240,19 @@ let store = {
         })
     },
 
-    // TODO
-    searchMessage(query) {
+    searchMessage(conversation, query) {
+        let msgs = wfc.searchMessage(conversation, query)
+        msgs = msgs.reverse();
+        return msgs.map(m => this._patchMessage(m, 0));
+    },
 
-        return [];
+    searchConversation(query, types = [0, 1, 2], lines = [0, 1, 2]) {
+        let results = wfc.searchConversation(query, types, lines);
+        return results.map(r => {
+            let info = wfc.getConversationInfo(r.conversation);
+            r._conversationInfo = this._patchConversationInfo(info, false);
+            return r;
+        })
     },
 
     // pick actions
