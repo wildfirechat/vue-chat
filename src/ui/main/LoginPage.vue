@@ -69,7 +69,7 @@ export default {
             sharedMiscState: store.state.misc,
             qrCode: '',
             userName: '',
-            loginStatus: 0, //0 等待扫码； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求 4 调试时，自动登录
+            loginStatus: 1, //0 等待扫码； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求 4 调试时，自动登录
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
@@ -78,7 +78,7 @@ export default {
     },
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
-        axios.defaults.baseURL = Config.APP_SERVER;
+        axios.defaults.baseURL = 'http://localhost:8080/api';
 
         axios.defaults.headers.common['authToken'] = getItem('authToken');
         let userId = getItem('userId');
@@ -128,7 +128,7 @@ export default {
             if (!this.qrCodeTimer) {
                 this.qrCodeTimer = setInterval(() => {
                     this.appToken = '';
-                    this.loginStatus = 0;
+                    this.loginStatus = 1;
                     this.createPCLoginSession(null);
                 }, 30 * 1000);
             }
@@ -136,11 +136,19 @@ export default {
 
         async login() {
             this.lastAppToken = this.appToken;
-            let response = await axios.post('/session_login/' + this.appToken, "", {withCredentials: true});
-            console.log('---------- login', response.data);
-            if (this.lastAppToken !== this.appToken) {
-                return;
+            let postData = {
+                "mobile": "131",
+                "password": "131",
+                "clientId": wfc.getClientId(),
+                "platform": "5",
+                "channel": "1"
             }
+            let response = await axios.post('/login', postData, {withCredentials: true});
+            // let response = await axios.post('/session_login/' + this.appToken, "", {withCredentials: true});
+            console.log('---------- login', response.data);
+            // if (this.lastAppToken !== this.appToken) {
+            //     return;
+            // }
             if (response.data) {
                 switch (response.data.code) {
                     case 0:
@@ -160,6 +168,13 @@ export default {
                                 setItem('authToken', appAuthToken);
                                 axios.defaults.headers.common['authToken'] = appAuthToken;
                             }
+                            //联系客服
+                            let contactResponse = await axios.post('/im/customer/contact', {
+                                "source": "game",
+                                "device": "5",
+                                "deviceVersion": "0.1.0",
+                            });
+                            console.log('---------- contact', contactResponse);
                         }
                         break;
                     case 9:

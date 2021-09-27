@@ -26,20 +26,20 @@ export default class Config {
     // 是否关闭日志，web和小程序有效
     static DISABLE_LOG = false;
 
-    // IM SERVER的HOST，是域名或者ip，没有http等前缀!
-    static IM_SERVER_HOST = 'im.im-99.com';
+    static PROD = false
 
-    // APP SERVER的地址，启用https时，APP SERVER也需要支持https
-    // 默认的app server使用端口是8888
-    static APP_SERVER = 'http://tless.im-99.com:8888';
+    static IM_SERVER_HOST = this.PROD ? 'im.ninthchat.com' : 'tim.im-99.com';
+    static APP_SERVER = process.env.VUE_APP_API_BASE_URL;
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
     // turn server 配置，可以添加多个
-    static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.net:3478', userName: 'wfchat', password: 'wfchat'}];
+    static ICE_SERVERS = [
+        {uri: 'turn:47.57.171.96:3478', userName: 'im99', password: 'im99'},
+    ];
     static LANGUAGE = 'zh_CN';
 
     // appId和appKey和专业版im server是绑定的，一定要做对应修改
     static WEB_APP_ID = 'web_12345678';
-    static WEB_APP_KEY = '6f8348670cb11cf434451bc9e7ba72eeaf3452c8';
+    static WEB_APP_KEY = this.PROD ? 'c74cca10dc9a079d3d04c943d6606e8b7deaa342' : '6f8348670cb11cf434451bc9e7ba72eeaf3452c8';
 
     static MESSAGE_ROAMING = 1;
     // 拉取最近2小时的消息
