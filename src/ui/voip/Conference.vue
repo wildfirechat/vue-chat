@@ -24,7 +24,8 @@
                                 <img class="avatar" :src="selfUserInfo.portrait">
                             </div>
                             <video v-else
-                                   class="video me"
+                                   class="video"
+                                   v-bind:style="{transform:!session.isScreenSharing() ? 'scaleX(-1)' :'none','-webkit-transform': !session.isScreenSharing() ? 'scaleX(-1)' :'none'}"
                                    ref="localVideo"
                                    :srcObject.prop="selfUserInfo._stream"
                                    playsInline
@@ -42,17 +43,20 @@
                              class="participant-video-item"
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
-                            <video
+                            <video v-if="!participant._isVideoMuted"
                                 @click="setUseMainVideo(participant.uid)"
                                 class="video"
                                 :srcObject.prop="participant._stream"
                                 playsInline
+                                   autoPlay/>
+                            <audio v-else
+                                   :srcObject.prop="participant._stream"
                                 autoPlay/>
                             <div v-if="status !== 4 || !participant._stream || participant._isVideoMuted"
                                  class="avatar-container">
                                 <img class="avatar" :src="participant.portrait" :alt="participant">
                             </div>
-                            <div class="video-stream-tip-container">
+                            <div v-if="!participant._isVideoMuted" class="video-stream-tip-container">
                                 <p>点击视频，切换清晰度</p>
                             </div>
                             <div class="info-container">
@@ -290,6 +294,7 @@ export default {
 
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
                 let p;
+                console.log('didReceiveRemoteVideoTrack', userId)
                 for (let i = 0; i < this.participantUserInfos.length; i++) {
                     p = this.participantUserInfos[i];
                     if (p.uid === userId) {
@@ -303,10 +308,12 @@ export default {
                 console.log('didParticipantJoined', userId)
                 IpcSub.getUserInfos([userId], null, (userInfos) => {
                     let userInfo = userInfos[0];
-                    userInfo._stream = null;
-                    userInfo._isAudience = this.session.getPeerConnectionClient(userId).audience;
+                    console.log('didParticipantJoined & getUserInfos', userInfo.uid)
+                    let client = this.session.getPeerConnectionClient(userId);
+                    userInfo._stream = client.stream;
+                    userInfo._isAudience = client.audience;
                     userInfo._isHost = this.session.host === userId;
-                    userInfo._isVideoMuted = this.session.getPeerConnectionClient(userId).videoMuted;
+                    userInfo._isVideoMuted = client.videoMuted;
                     userInfo._volume = 0;
                     this.participantUserInfos.push(userInfo);
                 })
@@ -687,7 +694,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 99;
+    //z-index: 99;
     width: 100%;
     height: 100%;
     display: flex;

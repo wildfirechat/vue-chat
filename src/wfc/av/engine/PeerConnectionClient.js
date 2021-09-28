@@ -10,6 +10,7 @@ export default class PeerConnectionClient {
     joinTime = 0;
     acceptTime = 0;
     videoMuted;
+    stream;
 
     audience = false;
     useMainVideo = WfcAVEngineKit.DEFAULT_USE_MAIN_VIDEO;

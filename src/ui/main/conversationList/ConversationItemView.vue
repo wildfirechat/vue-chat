@@ -93,7 +93,7 @@ export default {
         conversationTitle() {
             let info = this.conversationInfo;
             if (info.conversation.type === ConversationType.Single) {
-                return info.conversation._target.displayName;
+                return info.conversation._target._displayName;
             } else {
                 return info.conversation._target.name;
             }

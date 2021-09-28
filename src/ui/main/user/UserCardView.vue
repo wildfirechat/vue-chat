@@ -2,7 +2,7 @@
     <section @click.stop="" class="user-info-container">
         <div class="header">
             <div class="desc">
-                <h2>{{ userInfo._displayName }}</h2>
+                <h2>{{ userInfo.displayName }}</h2>
                 <label>{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
             </div>
             <div>
@@ -11,10 +11,13 @@
         </div>
         <div class="content">
             <ul>
-                <li>
+                <li v-if="isFriend">
                     <label>{{ $t('common.alias') }}</label>
                     <div class="alias">
-                        <input @click.stop="" type="text" placeholder="备注名"/>
+                        <input @click.stop="" type="text"
+                               v-model="friendAlias"
+                               @keyup.enter="updateFriendAlias"
+                               placeholder="备注名"/>
                     </div>
                 </li>
                 <li>
@@ -50,6 +53,11 @@ export default {
             required: true,
         },
     },
+    data() {
+        return {
+            friendAlias: this.userInfo.friendAlias,
+        }
+    },
     methods: {
         share() {
             // TODO share
@@ -74,6 +82,17 @@ export default {
                     height: 250,
                     clickToClose: false,
                 }, {})
+        },
+        updateFriendAlias() {
+            if (this.friendAlias !== this.userInfo.friendAlias) {
+                wfc.setFriendAlias(this.userInfo.uid, this.friendAlias,
+                    () => {
+                        // do nothing
+                    },
+                    (error) => {
+                        // do nothing
+                    })
+            }
         },
         close() {
             this.$emit('close');

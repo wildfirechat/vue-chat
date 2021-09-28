@@ -211,7 +211,7 @@ export default {
             if (this.message.messageContent.quoteInfo) {
                 let messageUid = this.message.messageContent.quoteInfo.messageUid;
                 let msg = store.getMessageByUid(messageUid);
-                if(!msg){
+                if (!msg) {
                     console.log('quotedMessage, is null', this.message.messageContent.quoteInfo)
                 }
                 return msg;

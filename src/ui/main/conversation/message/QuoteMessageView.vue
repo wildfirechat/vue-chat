@@ -111,6 +111,9 @@ export default {
                 if ([MessageContentType.Image, MessageContentType.Video, MessageContentType.Sticker].indexOf(this.quotedMessage.messageContent.type) < 0) {
                     str += this.quotedMessage.messageContent.digest(this.quotedMessage);
                 }
+                if(MessageContentType.RecallMessage_Notification === this.quotedMessage.messageContent.type){
+                    str = "引用内容已撤回"
+                }
             } else {
                 str = this.quotedMessageDigest;
             }

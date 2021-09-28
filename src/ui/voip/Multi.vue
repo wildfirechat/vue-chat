@@ -15,7 +15,7 @@
                 <div class="content-container">
                     <!--self-->
                     <div class="participant-container">
-                        <div v-if="audioOnly || !selfUserInfo._stream"
+                        <div v-if="audioOnly || !selfUserInfo._stream || selfUserInfo._isVideoMuted"
                              class="flex-column flex-justify-center flex-align-center">
                             <img class="avatar" :src="selfUserInfo.portrait">
                             <video v-if="audioOnly && selfUserInfo._stream"
@@ -37,7 +37,7 @@
                     <!--participants-->
                     <div v-for="(participant) in participantUserInfos" :key="participant.uid"
                          class="participant-container">
-                        <div v-if="audioOnly || status !== 4 || !participant._stream"
+                        <div v-if="audioOnly || status !== 4 || !participant._stream || participant._isVideoMuted"
                              class="flex-column flex-justify-center flex-align-center">
                             <img class="avatar" :src="participant.portrait" :alt="participant">
                             <video v-if="audioOnly && participant._stream"
@@ -97,6 +97,13 @@
                             <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                             <p>静音</p>
                         </div>
+                        <div class="action">
+                            <img v-if="!session.videoMuted" @click="muteVideo" class="action-img"
+                                 src='@/assets/images/av_conference_video.png'/>
+                            <img v-else @click="muteVideo" class="action-img"
+                                 src='@/assets/images/av_conference_video_mute.png'/>
+                            <p>关闭摄像头</p>
+                        </div>
                         <div v-if="!audioOnly" class="action">
                             <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
                         </div>
@@ -121,7 +128,6 @@ export default {
         return {
             session: null,
             audioOnly: false,
-            muted: false,
             status: 1,
             selfUserInfo: null,
             initiatorUserInfo: null,
@@ -208,7 +214,13 @@ export default {
             }
 
             sessionCallback.didVideoMuted = (userId, muted) => {
-                this.muted = muted;
+                this.participantUserInfos.forEach(u => {
+                    if (u.uid === userId) {
+                        let client = this.session.getClient(userId);
+                        u._isVideoMuted = client.videoMuted;
+                        console.log('didMuteStateChanged', client.videoMuted, client.audioMuted)
+                    }
+                })
             };
 
             avenginekit.sessionCallback = sessionCallback;
@@ -223,9 +235,15 @@ export default {
         },
 
         mute() {
-            let enable = this.session.audioMuted ? true : false;
-            this.selfUserInfo._isAudioMuted = !enable;
-            this.session.setAudioEnabled(enable)
+            let toMute = this.session.audioMuted ? false : true;
+            this.selfUserInfo._isAudioMuted = toMute;
+            this.session.muteAudio(toMute)
+        },
+
+        muteVideo() {
+            let toMute = this.session.videoMuted ? false : true;
+            this.selfUserInfo._isVideoMuted = toMute;
+            this.session.muteVideo(toMute)
         },
 
         down2voice() {

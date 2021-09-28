@@ -161,6 +161,8 @@ let store = {
         wfc.eventEmitter.on(EventType.FriendListUpdate, (updatedFriendIds) => {
             this._loadFriendList();
             this._loadFavContactList();
+            this._loadDefaultConversationList();
+            this._loadCurrentConversationMessages();
         });
 
         wfc.eventEmitter.on(EventType.GroupInfosUpdate, (groupInfos) => {

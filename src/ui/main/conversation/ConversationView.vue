@@ -151,6 +151,8 @@ import BenzAMRRecorder from "benz-amr-recorder";
 import axios from "axios";
 import FavItem from "../../../wfc/model/favItem";
 import {stringValue} from "../../../wfc/util/longUtil";
+import ConversationType from "../../../wfc/model/conversationType";
+import GroupMemberType from "../../../wfc/model/groupMemberType";
 
 var amr;
 export default {
@@ -342,7 +344,24 @@ export default {
         },
 
         isRecallable(message) {
-            return message && message.direction === 0 && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000;
+            if (message) {
+                if (message.conversation.type === ConversationType.Group) {
+                    let groupInfo = wfc.getGroupInfo(message.conversation.target);
+                    let selfUserId = wfc.getUserId();
+                    if (groupInfo && groupInfo.owner === selfUserId) {
+                        return true;
+                    }
+
+                    let groupMember = wfc.getGroupMember(message.conversation.target, selfUserId);
+                    if (groupMember && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) > -1) {
+                        return true;
+                    }
+                }
+                if (message.direction === 0 && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000) {
+                    return true;
+                }
+            }
+            return false;
         },
 
         isLocalFile(message) {

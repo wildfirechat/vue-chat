@@ -145,8 +145,8 @@ export default {
                 text = await navigator.clipboard.readText();
             }
             if (text && text.trim()) {
-                e.preventDefault();
-                document.execCommand('insertText', false, text);
+                // e.preventDefault();
+                // document.execCommand('insertText', false, text);
                 return;
             }
             if (isElectron()) {
