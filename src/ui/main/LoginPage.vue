@@ -78,7 +78,7 @@ export default {
     },
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
-        axios.defaults.baseURL = 'http://localhost:8080/api';
+        axios.defaults.baseURL = Config.APP_SERVER;
 
         axios.defaults.headers.common['authToken'] = getItem('authToken');
         let userId = getItem('userId');
