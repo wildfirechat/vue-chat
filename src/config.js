@@ -105,6 +105,12 @@ export default class Config {
             configError = false;
         }
 
+        console.log(`当前配置信息:
+                    app server: ${Config.APP_SERVER}
+                    im server host: ${Config.IM_SERVER_HOST}
+                    key: ${Config.WEB_APP_KEY}, 6fxxx 为野火key
+                    use wss: ${Config.USE_WSS}
+                    route port: ${Config.ROUTE_PORT}`)
         if (configError) {
             throw new Error('配置错误, Config.APP_SERVER,Config.IM_SERVER_HOST,Config.WEB_APP_KEY 是配对的，必须一起修改');
         }
@@ -126,7 +132,6 @@ export default class Config {
         if (!Config.USE_WSS && Config.ROUTE_PORT !== 80) {
             console.warn(`配置使用WS连接时，默认端口是${Config.ROUTE_PORT}，但目前配置是，请确认!!`);
         }
-        console.log(`当前配置信息: ${Config.APP_SERVER} ${Config.IM_SERVER_HOST} ${Config.WEB_APP_KEY} ${Config.USE_WSS} ${Config.ROUTE_PORT}`)
     }
 }
 
