@@ -32,7 +32,9 @@
                     <p class="name">{{ message._from._displayName }}</p>
                     <div class="flex-column flex-align-start">
                         <div class="flex-row">
-                            <MessageContentContainerView :message="message"
+                            <MessageContentContainerView class="message-content-container"
+                                                         v-bind:class="{highlight:highLight}"
+                                                         :message="message"
                                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
                             <LoadingView v-if="isDownloading"/>
                         </div>
@@ -68,6 +70,7 @@ export default {
         return {
             sharedConversationState: store.state.conversation,
             sharedPickState: store.state.pick,
+            highLight: false,
         }
     },
     methods: {
@@ -80,7 +83,13 @@ export default {
         },
         openMessageContextMenu(event, message) {
             this.$parent.$emit('openMessageContextMenu', event, message)
+            this.highLight = true;
         }
+    },
+    mounted() {
+        this.$parent.$on('contextMenuClosed', () => {
+            this.highLight = false;
+        })
     },
     computed: {
         quotedMessage() {
@@ -168,6 +177,12 @@ export default {
     color: #bdbdbd;
     font-size: 12px;
     margin-bottom: 2px;
+}
+
+.message-content-container.highlight {
+    background-color: #dadada;
+    opacity: 0.5;
+    --in-arrow-color: #dadada !important;
 }
 
 </style>

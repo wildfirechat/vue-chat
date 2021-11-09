@@ -52,6 +52,12 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 创建本地音视频流失败，可能原因可能是没有摄像头、或者没有麦克风
+     */
+    didCreateLocalVideoTrackError(){
+
+    }
     didError(error) {
 
     }

@@ -1,8 +1,8 @@
 import resizeImage from "resize-image";
 import wfc from '../../wfc/client/wfc';
-import {lt} from "../../wfc/util/longUtil";
 import ConversationType from "../../wfc/model/conversationType";
 import Config from "../../config";
+import GroupMemberType from "../../wfc/model/groupMemberType";
 
 function mergeImages(sources = [], options = {}) {
     // Defaults
@@ -295,17 +295,19 @@ async function getGroupPortrait(groupId) {
     }
 
     let portrait = groupPortraitMap.get(groupId);
-    if (!portrait || lt(portrait.timestamp, groupInfo.updateDt)) {
+    let now = new Date().getTime();
+    if (!portrait || now - portrait.timestamp > 10 * 1000) {
         let groupMembers = wfc.getGroupMembers(groupId, false);
         if (!groupMembers || groupMembers.length === 0) {
             return Config.DEFAULT_PORTRAIT_URL;
         }
+        groupMembers = groupMembers.filter(m => m.type !== GroupMemberType.Removed);
         let groupMemberPortraits = [];
         for (let i = 0; i < Math.min(9, groupMembers.length); i++) {
             groupMemberPortraits.push(groupMembers[i].getPortrait())
         }
         portrait = await mergeImages(groupMemberPortraits)
-        groupPortraitMap.set(groupId, {timestamp: groupInfo.updateDt, uri: portrait})
+        groupPortraitMap.set(groupId, {timestamp: now, uri: portrait})
         return portrait;
     } else {
         return portrait.uri;

@@ -63,6 +63,45 @@ export class AvEngineKitProxy {
             ipcRenderer.on('voip-message', this.sendVoipListener);
             ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
             ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
+            ipcRenderer.on('start-screen-share', (event, args) => {
+                if (this.callWin) {
+                    let screenWidth = args.width;
+                    this.callWin.resizable = true;
+                    this.callWin.closable = true;
+                    this.callWin.maximizable = false;
+                    this.callWin.transparent = true;
+                    this.callWin.setMinimumSize(800, 800);
+                    this.callWin.setSize(800, 800);
+                    // console.log('screen width', screen, screen.width);
+                    this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
+                }
+            });
+            ipcRenderer.on('stop-screen-share', (event, args) => {
+                if (this.callWin) {
+                    let type = args.type;
+                    let width = 360;
+                    let height = 640;
+                    switch (type) {
+                        case 'single':
+                            width = 360;
+                            height = 640;
+                            break;
+                        case 'multi':
+                        case 'conference':
+                            width = 1024;
+                            height = 800;
+                            break;
+                        default:
+                            break;
+                    }
+                    this.callWin.resizable = true;
+                    this.callWin.closable = true;
+                    this.callWin.maximizable = true;
+                    this.callWin.setMinimumSize(width, height);
+                    this.callWin.setSize(width, height);
+                    this.callWin.center();
+                }
+            })
         }
     }
 
@@ -432,7 +471,7 @@ export class AvEngineKitProxy {
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
             return;
         }
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || !this.hasWebcam) {
+        if (!this.isSupportVoip) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
@@ -488,6 +527,8 @@ export class AvEngineKitProxy {
                     minHeight: height,
                     resizable: true,
                     maximizable: false,
+                    transparent: true,
+                    frame: false,
                     webPreferences: {
                         scrollBounce: false,
                         nativeWindowOpen: true,

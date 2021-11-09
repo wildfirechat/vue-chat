@@ -14,6 +14,13 @@ export default class WfcAVEngineKit {
     setup(sessionCallback) {
     }
 
+    /**
+     * 返回当前音视频通话session
+     * 仅在音视频窗口调用有效
+     */
+    getCurrentSession() {
+    }
+
     static MAX_AUDIO_PARTICIPANT_COUNT = 16;
     static MAX_VIDEO_PARTICIPANT_COUNT = 9;
     // 是否禁用双流模式

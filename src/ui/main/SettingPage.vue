@@ -20,6 +20,11 @@
                 <input type="checkbox" :checked="sharedMiscState.enableCloseWindowToExit"
                        @change="enableCloseWindowToExit($event.target.checked)">
             </label>
+            <label v-if="sharedMiscState.isElectron">
+                {{ $t('setting.enable_minimize') }}
+                <input type="checkbox" :checked="sharedMiscState.enableMinimize"
+                       @change="enableMinimize($event.target.checked)">
+            </label>
             <label
                 v-if="sharedMiscState.isElectron || (sharedMiscState.config.CLIENT_ID_STRATEGY === 1 || sharedMiscState.config.CLIENT_ID_STRATEGY === 2)">
                 {{ $t('setting.auto_login') }}
@@ -63,6 +68,13 @@
                 <i class="icon-ion-social-github"/>
             </a>
 
+            <a
+                class="button"
+                href="https://wildfirechat.cn"
+                target="_blank">
+                关于野火
+                <i class="icon-ion-home"/>
+            </a>
         </footer>
     </div>
 </template>
@@ -94,6 +106,9 @@ export default {
 
         enableNotification(enable) {
             store.setEnableNotification(enable)
+        },
+        enableMinimize(enable) {
+            store.setEnableMinimize(enable)
         },
         enableNotificationDetail(enable) {
             store.setEnableNotificationDetail(enable)
@@ -169,7 +184,6 @@ export default {
 .setting-container .button {
     /* position: relative; */
     margin-right: 17px;
-    width: 166px;
     color: rgba(0, 0, 0, .8);
     font-size: 14px;
     padding: 9px 8px;

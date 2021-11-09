@@ -111,10 +111,6 @@ export default class CompositeMessageContent extends MessageContent {
 
             msg.messageContent = Message.messageContentFromMessagePayload(payload, msg.from);
             this.messages.push(msg);
-            let savedMsg = wfc.getMessageByUid(msg.messageUid);
-            if (!savedMsg) {
-                wfc.insertMessage(msg.conversation, msg.messageContent, 6, false, msg.timestamp);
-            }
         });
     }
 }

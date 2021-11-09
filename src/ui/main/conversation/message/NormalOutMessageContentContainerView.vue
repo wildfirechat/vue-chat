@@ -15,6 +15,8 @@
                     <i v-if="message.status === 2" class="icon-ion-close-circled" style="color: red" @click="resend"/>
                     <div class="flex-column flex-align-end">
                         <MessageContentContainerView :message="message"
+                                                     class="message-content-container-view"
+                                                     v-bind:class="{highlight:highLight}"
                                                      @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
                         <QuoteMessageView v-if="quotedMessage"
                                           style="padding: 5px 0; max-width: 80%"
@@ -78,6 +80,7 @@ export default {
         return {
             sharedConversationState: store.state.conversation,
             sharedPickState: store.state.pick,
+            highLight: false,
         }
     },
     components: {
@@ -87,6 +90,11 @@ export default {
         UserCardView,
         // TextMessageContentView,
 
+    },
+    mounted() {
+        this.$parent.$on('contextMenuClosed', () => {
+            this.highLight = false;
+        })
     },
     methods: {
         onClickUserPortrait(userId) {
@@ -102,6 +110,7 @@ export default {
         },
         openMessageContextMenu(event, message) {
             this.$parent.$emit('openMessageContextMenu', event, message)
+            this.highLight = true;
         },
 
         showMessageReceiptDetail() {
@@ -283,6 +292,12 @@ export default {
     width: 40px;
     height: 40px;
     border-radius: 3px;
+}
+
+.message-content-container-view.highlight {
+    background-color: #dadada;
+    opacity: 0.5;
+    --out-arrow-color: #dadada !important;
 }
 
 </style>

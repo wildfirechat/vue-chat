@@ -6,20 +6,27 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center">
-        <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
+    <div class="flex-column flex-align-center flex-justify-center voip-container" ref="contentContainer">
+        <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
+            <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px"
+                                              :title="'野火会议'"
+                                              :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
+            <ScreenShareControlView v-if="session && session.isScreenSharing()" type="conference"/>
+            <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
 
-        <div v-if="session" class="conference-container">
+        </div>
+        <div v-if="session" class="conference-container"
+             v-bind:style="{display: session.isScreenSharing() && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="conference-main-content-container">
                 <!--main-->
                 <!--video-->
                 <div v-if="!audioOnly" style="width: 100%; height: 100%">
-                    <section class="content-container video" ref="contentContainer">
+                    <section class="content-container video">
                         <!--self-->
                         <div v-if="!session.audience" class="participant-video-item"
                              v-bind:class="{highlight: selfUserInfo._volume > 0}">
                             <div
-                                v-if="!selfUserInfo._stream || (selfUserInfo._isVideoMuted && !session.isScreenSharing())"
+                                v-if="!selfUserInfo._stream || (session.videoMuted && !session.isScreenSharing())"
                                 class="flex-column flex-justify-center flex-align-center">
                                 <img class="avatar" :src="selfUserInfo.portrait">
                             </div>
@@ -44,14 +51,14 @@
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
                             <video v-if="!participant._isVideoMuted"
-                                @click="setUseMainVideo(participant.uid)"
-                                class="video"
-                                :srcObject.prop="participant._stream"
-                                playsInline
+                                   @click="setUseMainVideo(participant.uid)"
+                                   class="video"
+                                   :srcObject.prop="participant._stream"
+                                   playsInline
                                    autoPlay/>
                             <audio v-else
                                    :srcObject.prop="participant._stream"
-                                autoPlay/>
+                                   autoPlay/>
                             <div v-if="status !== 4 || !participant._stream || participant._isVideoMuted"
                                  class="avatar-container">
                                 <img class="avatar" :src="participant.portrait" :alt="participant">
@@ -115,21 +122,22 @@
                     <div class="duration-action-container">
                         <p>{{ duration }}</p>
                         <div class="action-container">
-                            <div class="action">
+                            <div class="action" v-if="!session.audience">
                                 <img v-if="!session.audioMuted" @click="mute" class="action-img"
                                      src='@/assets/images/av_conference_audio.png'/>
                                 <img v-else @click="mute" class="action-img"
                                      src='@/assets/images/av_conference_audio_mute.png'/>
                                 <p>静音</p>
                             </div>
-                            <div class="action" v-if="!session.audioOnly && !session.isScreenSharing()">
+                            <div class="action"
+                                 v-if="!session.audience && !session.audioOnly && !session.isScreenSharing()">
                                 <img v-if="!session.videoMuted" @click="muteVideo" class="action-img"
                                      src='@/assets/images/av_conference_video.png'/>
                                 <img v-else @click="muteVideo" class="action-img"
                                      src='@/assets/images/av_conference_video_mute.png'/>
                                 <p>视频</p>
                             </div>
-                            <div v-if="!audioOnly" class="action">
+                            <div v-if="!session.audience && !audioOnly" class="action">
                                 <img v-if="!session.screenSharing" @click="screenShare"
                                      class="action-img"
                                      src='@/assets/images/av_conference_screen_sharing.png'/>
@@ -196,7 +204,7 @@
                                   v-if="user._isHost">主持人</span>
                             <span v-else class="single-line label"
                                   @click.stop="requestChangeMode(user)"
-                                  v-bind:class="{audience: user._isAudience}">互动成员</span>
+                                  v-bind:class="{audience: user._isAudience}">{{ user._isAudience ? '听众' : '互动成员' }}</span>
                         </div>
                     </li>
                 </ul>
@@ -214,9 +222,13 @@ import ClickOutside from 'vue-click-outside'
 import UserCardView from "../main/user/UserCardView";
 import ConferenceInviteMessageContent from "../../wfc/av/messages/conferenceInviteMessageContent";
 import localStorageEmitter from "../../ipc/localStorageEmitter";
-import {isElectron, remote} from "../../platform";
+import {currentWindow, isElectron, remote} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import CallEndReason from "../../wfc/av/engine/callEndReason";
+import ScreenShareControlView from "./ScreenShareControlView";
+import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
+import ElectronWindowsControlButtonView from "../common/ElectronWindowsControlButtonView";
+import store from "../../store";
 
 export default {
     name: 'Conference',
@@ -232,11 +244,13 @@ export default {
 
             startTimestamp: 0,
             currentTimestamp: 0,
+            ddd: '',
 
             showParticipantList: false,
+            sharedMiscState: store.state.misc,
         }
     },
-    components: {UserCardView},
+    components: {ScreenShareControlView, UserCardView, ElectronWindowsControlButtonView},
     methods: {
         setUseMainVideo(userId) {
             if (!this.session) {
@@ -272,7 +286,7 @@ export default {
                 this.audioOnly = session.audioOnly;
                 this.selfUserInfo = selfUserInfo;
                 this.selfUserInfo._isHost = session.host === selfUserInfo.uid;
-                this.selfUserInfo._audience = session.audience;
+                this.selfUserInfo._isAudience = session.audience;
                 this.selfUserInfo._isVideoMuted = session.videoMuted;
                 this.selfUserInfo._volume = 0;
                 this.initiatorUserInfo = initiatorUserInfo;
@@ -290,6 +304,12 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream) => {
                 this.selfUserInfo._stream = stream;
+            };
+
+            sessionCallback.didCreateLocalVideoTrackError = () => {
+                // TODO
+                // 没有摄像头或者麦克风，加入会议时，会回调到此处，自己断会显示自己的头像，其他端会显示黑屏
+                // 可以进行相关提示
             };
 
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
@@ -434,6 +454,11 @@ export default {
         },
 
         requestChangeMode(user) {
+            if (user.uid === this.selfUserInfo.uid) {
+                // TODO 需要根据实际产品定义处理，这儿直接禁止
+                //this.session.switchAudience(!user._isAudience);
+                return;
+            }
             this.$alert({
                 content: user._isAudience ? `邀请${this.userName(user)}参与互动?` : `取消${this.userName(user)}参与互动?`,
                 cancelCallback: () => {
@@ -457,12 +482,16 @@ export default {
             })
         },
 
+        test() {
+            alert('test alert')
+        },
         screenShare() {
             if (this.session.audioOnly) {
                 return;
             }
             if (this.session.isScreenSharing()) {
                 this.session.stopScreenShare();
+                // currentWindow.setIgnoreMouseEvents(false)
             } else {
                 if (isElectron()) {
                     let beforeClose = (event) => {
@@ -480,6 +509,7 @@ export default {
                                 maxHeight: 720
                             }
                             this.session.startScreenShare(desktopShareOptions);
+                            avenginekitproxy.emitToMain('start-screen-share', {})
                         }
                     };
                     this.$modal.show(
@@ -564,7 +594,7 @@ export default {
             }
             let videoParticipants = infos.filter(u => !u.audience)
             let count = videoParticipants.length;
-            if (!this.selfUserInfo._audience) {
+            if (!this.selfUserInfo._isAudience) {
                 count++;
             }
             let width = '100%';
@@ -602,16 +632,37 @@ export default {
         avenginekit.setup();
         this.setupSessionCallback();
 
-        localStorageEmitter.on('inviteConferenceParticipantDone', (ev, args) => {
-            if (isElectron()) {
+        if (isElectron()) {
+            let listener = (ev, args) => {
                 remote.getCurrentWindow().focus();
             }
-        })
-        localStorageEmitter.on('inviteConferenceParticipantCancel', (ev, args) => {
-            if (isElectron()) {
-                remote.getCurrentWindow().focus();
-            }
-        })
+            localStorageEmitter.on('inviteConferenceParticipantDone', listener)
+            localStorageEmitter.on('inviteConferenceParticipantCancel', listener)
+            //
+            // this.$on('stop-screen-share', () => {
+            //     this.session.stopScreenShare();
+            //     this.$forceUpdate();
+            // })
+
+            window.addEventListener("mousemove", (event) => {
+                if (!this.session.isScreenSharing()) {
+                    return;
+                }
+                this.ddd = event.target.id;
+                if (event.target.id === "main-content-container") {
+                    currentWindow.setIgnoreMouseEvents(true, {forward: true});
+                } else {
+                    currentWindow.setIgnoreMouseEvents(false);
+                }
+            });
+            window.addEventListener("mouseleave", (event) => {
+                currentWindow.setIgnoreMouseEvents(false);
+            })
+
+            this.$refs.contentContainer.style.setProperty('--conference-container-margin-top', '30px');
+        }else {
+            this.$refs.contentContainer.style.setProperty('--conference-container-margin-top', '0px');
+        }
     },
 
     destroyed() {
@@ -623,10 +674,17 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.voip-container {
+    --participant-video-item-width: 100%;
+    --participant-video-item-height: 100%;
+    --conference-container-margin-top: 30px;
+    background: #00000000 !important;
+}
 
 .conference-container {
     width: 100vw;
-    height: 100vh;
+    margin-top: var(--conference-container-margin-top);
+    height: calc(100vh - var(--conference-container-margin-top));
     display: flex;
 }
 
@@ -651,8 +709,6 @@ export default {
     align-items: center;
     align-content: center;
 
-    --participant-video-item-width: 100%;
-    --participant-video-item-height: 100%;
 }
 
 .content-container.video {
@@ -694,7 +750,6 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    //z-index: 99;
     width: 100%;
     height: 100%;
     display: flex;
@@ -924,7 +979,7 @@ footer {
     background: #e0d6d6d6;
 }
 
-.video.me{
+.video.me {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
 }

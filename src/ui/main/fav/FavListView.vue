@@ -46,6 +46,12 @@
                                 <video preload="metadata" :src="favItem.url"/>
                                 <i class="icon-ion-play"></i>
                             </div>
+                            <!--            语音消息-->
+                            <div v-else-if="favItem.type === 2" class="fav-item-audio">
+                                <audio preload="auto" controls controlsList="nodownload">
+                                    <source :src="appServerAudioUrl(favItem.url)" type="audio/mp4"/>
+                                </audio>
+                            </div>
                             <!--                            组合消息-->
                             <div v-else-if="favItem.type === 11" class="fav-item-other">
                                 <p>
@@ -98,6 +104,7 @@ import FavItem from "../../../wfc/model/favItem";
 import {isElectron} from "../../../platform";
 import {_reverseToJsLongString} from "../../../wfc/util/longUtil";
 import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
+import Config from "../../../config";
 
 export default {
     name: "FavListView",
@@ -286,6 +293,10 @@ export default {
         onScroll() {
             // hide message context menu
             this.$refs.menu && this.$refs.menu.close();
+        },
+
+        appServerAudioUrl(url) {
+            return Config.AMR_TO_MP3_SERVER_ADDRESS + url;
         }
     },
 
@@ -508,6 +519,15 @@ export default {
     right: 0;
     width: 10px;
     margin-right: auto;
+}
+
+.fav-item-audio {
+    margin: 0 10px;
+}
+
+.fav-item-audio audio {
+    outline: none;
+    filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%);
 }
 
 .fav-item-sender-time {

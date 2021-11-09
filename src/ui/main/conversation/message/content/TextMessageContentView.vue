@@ -27,6 +27,10 @@ export default {
             tmp = tmp.replace(/^[ \t]+/gm, function (x) {
                 return new Array(x.length + 1).join('&nbsp;')
             })
+            if (tmp.indexOf('<img') >= 0) {
+                tmp = tmp.replace(/<img/g, '<img style="max-width:800px;"')
+                return tmp;
+            }
             return tmp;
         }
     }
@@ -65,4 +69,9 @@ export default {
     text-overflow: ellipsis;
 }
 
+/*style for v-html */
+.text-message-container .text >>> img {
+    max-width: 800px !important;
+    display: inline-block;
+}
 </style>

@@ -1,4 +1,4 @@
-<template>
+ <template>
     <section>
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
             <h1>^~^</h1>
@@ -257,12 +257,6 @@ export default {
             return message && message.messageContent instanceof NotificationMessageContent;
         },
 
-        openMessageContextMenu(event, message) {
-            if (!message || message.messageContent instanceof NotificationMessageContent) {
-                return;
-            }
-            this.$refs.menu.open(event, message);
-        },
 
         onScroll(e) {
             // hide tippy userCard
@@ -316,6 +310,7 @@ export default {
         },
 
         onMenuClose() {
+            this.$emit('contextMenuClosed')
         },
 
         // message context menu
@@ -388,7 +383,12 @@ export default {
         copy(message) {
             let content = message.messageContent;
             if (content instanceof TextMessageContent) {
+                let selectedText = window.getSelection().toString()
+                if (selectedText) {
+                    copyText(selectedText);
+                } else {
                 copyText(content.content)
+                }
             } else {
                 copyImg(content.remotePath)
             }

@@ -104,6 +104,7 @@
         "enable_notification": "开启通知",
         "enable_notification_detail": "通知显示消息内容",
         "close_window_to_exit": "关闭窗口时，直接退出",
+        "enable_minimize": "支持最小化",
         "auto_login": "记住登录",
         "exit_switch_user": "退出/切换账号",
         "feedback": "发送反馈给我们",
