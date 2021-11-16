@@ -23,12 +23,12 @@ export default class FileMessageContent extends MediaMessageContent {
     }
 
     digest() {
-        return '[文件]';
+        return '[文件]' + this.name;
     }
 
     encode() {
         let payload = super.encode();
-        payload.searchableContent = FileMessageContent.FILE_NAME_PREFIX + this.name;
+        payload.searchableContent = this.name;
         payload.content = this.size + '';
         return payload;
     }
