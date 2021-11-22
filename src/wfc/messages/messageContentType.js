@@ -20,6 +20,7 @@ export default class MessageContentType {
     static UserCard = 10;
     static Composite_Message = 11;
 
+    static Mark_Unread_Sync = 31;
 
     // 提醒消息
     static RecallMessage_Notification = 80;
@@ -47,9 +48,9 @@ export default class MessageContentType {
     // 全局禁言之后，允许群成员发言的通知消息
     static AllowGroupMember_Notification = 119;
     //踢出群成员的可见通知消息
-    static KickOffGroupMember_Visiable_Notification = 120;
+    static KickOffGroupMember_Visible_Notification = 120;
     //退群的可见通知消息
-    static QuitGroup_Visiable_Notification = 121;
+    static QuitGroup_Visible_Notification = 121;
 
     static ModifyGroupExtra_Notification = 122;
     static ModifyGroupMemberExtra_Notification = 123;

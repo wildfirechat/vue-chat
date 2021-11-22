@@ -9,7 +9,6 @@ import MessageContentType from "./messageContentType";
 export default class FileMessageContent extends MediaMessageContent {
     name = '';
     size = 0;
-    static FILE_NAME_PREFIX = '[文件] ';
 
     constructor(fileOrLocalPath, remotePath, name, size) {
         super(MessageContentType.File, MessageContentMediaType.File, fileOrLocalPath, remotePath);

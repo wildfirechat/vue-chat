@@ -223,6 +223,26 @@ export default {
                 })
             };
 
+            sessionCallback.didMediaLostPacket = (media, lostPacket) => {
+                if (lostPacket > 6) {
+                    console.log('您的网络不好');
+                }
+            };
+
+            sessionCallback.didUserMediaLostPacket = (userId, media, lostPacket, uplink) => {
+                //如果uplink ture对方网络不好，false您的网络不好
+                //接收方丢包超过10为网络不好
+                if (lostPacket > 10) {
+                    if (uplink) {
+                        let userInfos = this.participantUserInfos.filter(u => u.uid === userId);
+                        if (userInfos && userInfos.length > 0) {
+                            console.log(userInfos[0].displayName, "网络不好");
+                        }
+                    } else {
+                        console.log('您的网络不好');
+                    }
+                }
+            };
             avenginekit.sessionCallback = sessionCallback;
         },
 

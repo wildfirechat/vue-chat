@@ -27,7 +27,8 @@
     },
     "group": {
         "name": "Group name {0}",
-        "chat": "Start group chat"
+        "chat": "Start group chat",
+        "fav": "Save to contact list"
     },
     "message":{
         "send_message": "Send Message",
@@ -57,9 +58,9 @@
         "no_more_message": "No more messages",
         "all_message_load": "All messages have been loaded :(",
         "drag_to_send_limit_tip": "Send up to 5 files at a time",
-        "group_name": "Group Name",
-        "group_announcement": "Group Announcement",
-        "add_member": "Add Member",
+        "group_name": "Group name",
+        "group_announcement": "Group announcement",
+        "add_member": "Add member",
         "remove_member": "Remove member",
         "quit_group": "Quit group chat",
         "click_to_edit_group_announcement": "click to edit group announcement",
@@ -67,7 +68,9 @@
         "sticky_top": "sticky_top",
         "cancel_sticky_top": "Cancel sticky top",
         "enable_notification": "Allow notification",
-        "disable_notification": "Not Disturb"
+        "disable_notification": "Not disturb",
+        "mark_as_unread": "Mark as unread",
+        "mark_as_read": "Mark as read"
     },
     "fav": {
         "fav": "Collection",

@@ -53,6 +53,7 @@ import CompositeMessageContent from "../messages/compositeMessageContent";
 import ConferenceInviteMessageContent from "../av/messages/conferenceInviteMessageContent";
 import ConferenceChangeModeContent from "../av/messages/conferenceChangeModeContent";
 import ConferenceKickoffMemberMessageContent from "../av/messages/conferenceKickoffMemberMessageContent";
+import MarkUnreadMessageContent from "../messages/markUnreadMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -235,7 +236,7 @@ export default class MessageConfig {
         {
             name: 'kickoffGroupMemberVisiableNotification',
             flag: PersistFlag.Persist,
-            type: MessageContentType.KickOffGroupMember_Visiable_Notification,
+            type: MessageContentType.KickOffGroupMember_Visible_Notification,
             contentClazz: KickoffGroupMemberVisiableNotification,
         },
         {
@@ -265,7 +266,7 @@ export default class MessageConfig {
         {
             name: 'quitGroupVisiableNotification',
             flag: PersistFlag.Persist,
-            type: MessageContentType.QuitGroup_Visiable_Notification,
+            type: MessageContentType.QuitGroup_Visible_Notification,
             contentClazz: QuitGroupVisiableNotification,
         },
         {
@@ -387,6 +388,12 @@ export default class MessageConfig {
             flag: PersistFlag.Transparent,
             type: MessageContentType.CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER,
             contentClazz:ConferenceKickoffMemberMessageContent,
+        },
+        {
+            name: 'markUnreadMessage',
+            flag: PersistFlag.No_Persist,
+            type: MessageContentType.Mark_Unread_Sync,
+            contentClazz: MarkUnreadMessageContent,
         }
     ];
 }

@@ -420,7 +420,7 @@ export class WfcManager {
      * @param {string} name 群名称
      * @param {string} portrait 群头像的链接
      * @param {string} groupExtra 群组扩展信息
-     * @param {[string]} memberIds 群成员id
+     * @param {[string]} memberIds 群成员id列表
      * @param {string} memberExtra 群组成员扩展信息
      * @param {[number]} lines 会话线路，默认传[0]即可
      * @param {CreateGroupNotification} notifyContent 通知信息，默认传null，服务端会生成默认通知
@@ -851,14 +851,13 @@ export class WfcManager {
      * 创建频道
      * @param {string} name 频道名称
      * @param {string} portrait 频道头像的链接地址
-     * @param {number} status 频道的状态，可选值参考{@link ChannelStatus}
      * @param {string} desc 描述
      * @param {string} extra 额外信息
      * @param {function (string)} successCB 创建成功，会回调通知channelId
      * @param {function (number)} failCB
      */
-    createChannel(name, portrait, status, desc, extra, successCB, failCB) {
-        impl.createChannel(name, portrait, status, desc, extra, successCB, failCB);
+    createChannel(name, portrait, desc, extra, successCB, failCB) {
+        impl.createChannel(name, portrait, desc, extra, successCB, failCB);
     }
 
     /**
@@ -1051,6 +1050,16 @@ export class WfcManager {
     }
 
     /**
+     * 将会话最后一条消息置为未读
+     * @param {Conversation} conversation 会话
+     * @param {boolean} syncToOtherClient 是否同步给其他端
+     * @return {boolean} 是否操作成功
+     */
+    markConversationAsUnread(conversation, syncToOtherClient) {
+        return impl.markConversationAsUnread(conversation, syncToOtherClient);
+    }
+
+    /**
      * 清除单条消息的未读状态
      * @param messageId
      */
@@ -1136,9 +1145,9 @@ export class WfcManager {
     /**
      * 获取会话消息
      * @param {Conversation} conversation 目标会话
-     * @param {number} fromIndex 本参数暂时无效! messageId，表示从那一条消息开始获取
-     * @param {boolean} before 本参数暂时无效! true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
-     * @param {number} count 本参数暂时无效! 获取多少条消息
+     * @param {number} fromIndex messageId，表示从那一条消息开始获取
+     * @param {boolean} before true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
+     * @param {number} count 获取多少条消息
      * @param {string} withUser 只有会话类型为{@link ConversationType#Channel}时生效, channel主用来查询和某个用户的所有消息
      * @return {[Message]} 会话消息列表，参考{@link Message}
      */

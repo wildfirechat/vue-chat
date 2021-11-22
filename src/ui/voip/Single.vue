@@ -182,6 +182,23 @@ export default {
             sessionCallback.didVideoMuted = (userId, muted) => {
                 this.muted = muted;
             };
+            sessionCallback.didMediaLostPacket = (media, lostPacket) => {
+                if (lostPacket > 6) {
+                    console.log('您的网络不好');
+                }
+            };
+
+            sessionCallback.didUserMediaLostPacket = (userId, media, lostPacket, uplink) => {
+                //如果uplink ture对方网络不好，false您的网络不好
+                //接收方丢包超过10为网络不好
+                if (lostPacket > 10) {
+                    if (uplink) {
+                        console.log('对方网络不好');
+                    } else {
+                        console.log('您的网络不好');
+                    }
+                }
+            };
             avenginekit.sessionCallback = sessionCallback;
         },
 

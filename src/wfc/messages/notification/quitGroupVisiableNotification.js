@@ -11,7 +11,7 @@ export default class QuitVisiableGroupNotification extends GroupNotificationCont
     operator = '';
 
     constructor(operator) {
-        super(MessageContentType.QuitGroup_Visiable_Notification);
+        super(MessageContentType.QuitGroup_Visible_Notification);
         this.operator = operator;
     }
 

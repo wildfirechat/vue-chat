@@ -985,6 +985,7 @@ let store = {
             info.conversation._target._displayName = wfc.getUserDisplayNameEx(info.conversation._target);
         } else if (info.conversation.type === ConversationType.Group) {
             info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
+            info.conversation._target._isFav = wfc.isFavGroup(info.conversation.target);
             info.conversation._target._displayName = info.conversation._target.name;
         }
         if (!info.conversation._target.portrait) {
@@ -1002,6 +1003,9 @@ let store = {
             this._patchMessage(info.lastMessage, 0)
         }
 
+        if (info.unreadCount) {
+            info._unread = info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll;
+        }
         return info;
     },
 
@@ -1112,6 +1116,9 @@ let store = {
         }
     },
 
+    reloadFavGroupList() {
+        this._loadFavGroupList();
+    },
     setCurrentFriendRequest(friendRequest) {
         contactState.currentFriendRequest = friendRequest;
         contactState.currentFriend = null;

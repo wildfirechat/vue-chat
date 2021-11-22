@@ -27,7 +27,8 @@
     },
     "group": {
         "name": "群名稱{0}",
-        "chat": "進入群聊"
+    "chat": "進入群聊",
+    "fav": "保存到通訊錄"
     },
     "message":{
         "send_message": "發消息",
@@ -67,7 +68,9 @@
         "sticky_top": "置頂",
         "cancel_sticky_top": "取消置頂",
         "enable_notification": "允許通知",
-        "disable_notification": "消息免打擾"
+    "disable_notification": "消息免打擾",
+    "mark_as_unread": "標記為未讀",
+    "mark_as_read": "標記為已讀"
     },
     "fav": {
         "fav": "收藏",
@@ -104,6 +107,7 @@
         "enable_notification": "開啟通知",
         "enable_notification_detail": "通知顯示消息內容",
         "close_window_to_exit": "關閉窗口時，直接退出",
+    "enable_minimize": "支持最小化",
         "auto_login": "記住登錄",
         "exit_switch_user": "退出/切換賬號",
         "feedback": "發送反饋給我們",
@@ -132,7 +136,7 @@
         "back": "返回",
         "create": "創建",
         "none": "無",
-        "copy": "復制",
+    "copy": "復製",
         "paste": "粘貼",
         "cut": "剪切",
         "delete": "刪除",

@@ -374,12 +374,12 @@ export class AvEngineKitProxy {
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
             return;
         }
+        console.log(`speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
         if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || !this.hasWebcam) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
         }
-        console.log(`speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         participants = participants.filter(uid => uid !== selfUserInfo.uid);
         let callId = conversation.target + Math.floor(Math.random() * 10000);

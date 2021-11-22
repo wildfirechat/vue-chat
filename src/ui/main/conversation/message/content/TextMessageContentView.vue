@@ -1,7 +1,7 @@
 <template>
     <div class="text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <p class="text" v-html="this.textContent"></p>
+        <p class="text" v-html="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
     </div>
 </template>
 
@@ -17,9 +17,34 @@ export default {
             required: true,
         }
     },
+    data() {
+        return {
+            textSelected: false,
+        }
+    },
     mounted() {
     },
 
+    methods: {
+        mouseUp(event) {
+            let selection = window.getSelection().toString();
+            this.textSelected = !!selection;
+
+        },
+        preventContextMenuTextSelection(event) {
+            if (!this.textSelected) {
+                if (window.getSelection) {
+                    if (window.getSelection().empty) {  // Chrome
+                        window.getSelection().empty();
+                    } else if (window.getSelection().removeAllRanges) {  // Firefox
+                        window.getSelection().removeAllRanges();
+                    }
+                } else if (document.selection) {  // IE?
+                    document.selection.empty();
+                }
+            }
+        }
+    },
     computed: {
         textContent() {
             let tmp = emojiParse(this.message.messageContent.digest(this.message));

@@ -17,6 +17,13 @@
                        v-model="newGroupAnnouncement"
                        :placeholder="groupAnnouncement">
             </label>
+            <label class="switch">
+                保存到通讯录
+                <input type="checkbox"
+                       :checked="conversationInfo.conversation._target._isFav"
+                       @change="setFavGroup(conversationInfo.conversation.target, $event.target.checked)">
+                <span class="slider"></span>
+            </label>
         </header>
         <div class="search-item">
             <input type="text" v-model="filterQuery" :placeholder="$t('common.search')">
@@ -191,6 +198,14 @@ export default {
         quitGroup() {
             store.quitGroup(this.conversationInfo.conversation.target)
         },
+        setFavGroup(groupId, fav) {
+            wfc.setFavGroup(groupId, fav, () => {
+                this.conversationInfo.conversation._target._isFav = fav;
+                store.reloadFavGroupList();
+            }, (err) => {
+                console.log('setFavGroup error', err);
+            })
+        }
     },
 
     created() {
@@ -360,6 +375,15 @@ header label input {
 
 .quit-group-item:active {
     background: #d6d6d6;
+}
+
+.switch {
+    display: flex;
+    flex-direction: row;
+}
+
+.switch input {
+    margin-left: 20px;
 }
 
 </style>

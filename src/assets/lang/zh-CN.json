@@ -27,7 +27,8 @@
     },
     "group": {
         "name": "群名称{0}",
-        "chat": "进入群聊"
+        "chat": "进入群聊",
+        "fav": "保存到通讯录"
     },
     "message":{
         "send_message": "发消息",
@@ -67,7 +68,9 @@
         "sticky_top": "置顶",
         "cancel_sticky_top": "取消置顶",
         "enable_notification": "允许通知",
-        "disable_notification": "消息免打扰"
+        "disable_notification": "消息免打扰",
+        "mark_as_unread": "标记为未读",
+        "mark_as_read": "标记为已读"
     },
     "fav": {
         "fav": "收藏",

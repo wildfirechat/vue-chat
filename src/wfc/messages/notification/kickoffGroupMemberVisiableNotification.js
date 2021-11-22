@@ -12,7 +12,7 @@ export default class KickoffGroupMemberVisiableNotification extends GroupNotific
     kickedMembers = [];
 
     constructor(operator, kickedMembers) {
-        super(MessageContentType.KickOffGroupMember_Visiable_Notification);
+        super(MessageContentType.KickOffGroupMember_Visible_Notification);
         this.operator = operator;
         this.kickedMembers = kickedMembers;
     }
