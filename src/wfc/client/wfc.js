@@ -1226,37 +1226,40 @@ export class WfcManager {
      * 已废弃，请使用{@link loadRemoteConversationMessages}
      * 获取会还的远程历史消息
      * @param {Conversation} conversation 目标会话
+     * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
      * @param {number} count
      * @param {function (Message)} successCB
      * @param failCB
      */
-    loadRemoteMessages(conversation, beforeUid, count, successCB, failCB) {
-        impl.loadRemoteMessages(conversation, beforeUid, count, successCB, failCB);
+    loadRemoteMessages(conversation, contentTypes, beforeUid, count, successCB, failCB) {
+        impl.loadRemoteMessages(conversation, contentTypes, beforeUid, count, successCB, failCB);
     }
 
     /**
      * 获取会话的远程历史消息
      * @param {Conversation} conversation 目标会话
+     * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
      * @param {number} count
      * @param {function ([Message])} successCB
      * @param failCB
      */
-    loadRemoteConversationMessages(conversation, beforeUid, count, successCB, failCB) {
-        impl.loadRemoteMessages(conversation, beforeUid, count, successCB, failCB);
+    loadRemoteConversationMessages(conversation, contentTypes, beforeUid, count, successCB, failCB) {
+        impl.loadRemoteMessages(conversation, contentTypes, beforeUid, count, successCB, failCB, contentTypes);
     }
 
     /**
      * 根据会话线路，获取远程历史消息
      * @param {number} line 会话线路
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
+     * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
      * @param {number} count
      * @param {function ([Message])} successCB
      * @param failCB
      */
-    loadRemoteLineMessages(line, beforeUid, count, successCB, failCB) {
-        impl.loadRemoteLineMessages(line, beforeUid, count, successCB, failCB)
+    loadRemoteLineMessages(line,contentTypes, beforeUid, count, successCB, failCB){
+        impl.loadRemoteLineMessages(line, contentTypes, beforeUid, count, successCB, failCB)
     }
 
     /**

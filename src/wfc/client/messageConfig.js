@@ -86,7 +86,7 @@ export default class MessageConfig {
                 return content.flag;
             }
         }
-        return 0;
+        return -1;
     }
 
     static getMessageContentType(messageContent) {
