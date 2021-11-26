@@ -3,7 +3,7 @@
  */
 
 import EventType from "../../client/wfcEvent";
-import {BrowserWindow, ipcRenderer, isElectron, PostMessageEventEmitter} from "../../../platform";
+import {BrowserWindow, ipcRenderer, isElectron, PostMessageEventEmitter, remote} from "../../../platform";
 import ConversationType from "../../model/conversationType";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc";
@@ -318,6 +318,8 @@ export class AvEngineKitProxy {
         if (isElectron()) {
             // renderer/main to renderer
             if (this.callWin) {
+                // fix object of long.js can be send inter-process
+                args = JSON.stringify(args)
                 this.callWin.webContents.send(event, args);
             } else if (this.queueEvents) {
                 this.queueEvents.push({event, args});
@@ -375,8 +377,8 @@ export class AvEngineKitProxy {
             return;
         }
         console.log(`speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || !this.hasWebcam) {
-            console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
+        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
+            console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
         }
@@ -533,9 +535,13 @@ export class AvEngineKitProxy {
                         scrollBounce: false,
                         nativeWindowOpen: true,
                         nodeIntegration: true,
+                        contextIsolation: false,
                     },
                 }
             );
+            // const remoteMain = require("@electron/remote").require("@electron/remote/main");
+            const remoteMain = remote.require("@electron/remote/main");
+            remoteMain.enable(win.webContents);
 
             win.webContents.on('did-finish-load', () => {
                 this.onVoipWindowReady(win);

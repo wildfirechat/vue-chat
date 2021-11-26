@@ -3,6 +3,7 @@
  */
 
 export default class ConnectionStatus {
+    static kConnectionStatusKickedOff = -7;
     static ConnectionStatusSecretKeyMismatch = -6;
     static ConnectionStatusTokenIncorrect = -5;
     static ConnectionStatusServerDown = -4;

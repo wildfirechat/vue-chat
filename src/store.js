@@ -729,7 +729,7 @@ let store = {
             } else {
                 console.log('file too big, and not support upload big file')
             }
-            return;
+            return true;
         }
         let fileOrLocalPath = null;
         let remotePath = null;

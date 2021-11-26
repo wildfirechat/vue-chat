@@ -40,7 +40,7 @@
         </div>
         <vue-context ref="menu" :lazy="true">
             <li>
-                <a @click.prevent="handlePaste($event)">
+                <a @click.prevent="handlePaste($event, 'menu')">
                     {{ $t('common.paste') }}
                 </a>
             </li>
@@ -137,16 +137,16 @@ export default {
             store.quoteMessage(null)
         },
 
-        async handlePaste(e) {
+        async handlePaste(e, source) {
             let text;
             if ((e.originalEvent || e).clipboardData) {
                 text = (e.originalEvent || e).clipboardData.getData('text/plain');
             } else {
                 text = await navigator.clipboard.readText();
             }
-            if (text && text.trim()) {
-                // e.preventDefault();
-                // document.execCommand('insertText', false, text);
+            if (source === 'menu' && text && text.trim()) {
+                e.preventDefault();
+                document.execCommand('insertText', false, text);
                 return;
             }
             if (isElectron()) {

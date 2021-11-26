@@ -202,6 +202,24 @@ export default {
                 this.dragAndDropEnterCount--;
             } else if (v === 'drop') {
                 this.dragAndDropEnterCount--;
+                let isFile;
+                if (e.dataTransfer.items) {
+                    if (typeof (e.dataTransfer.items[0].webkitGetAsEntry) == "function") {
+                        isFile = e.dataTransfer.items[0].webkitGetAsEntry().isFile;
+                    } else if (typeof (e.dataTransfer.items[0].getAsEntry) == "function") {
+                        isFile = e.dataTransfer.items[0].getAsEntry().isFile;
+                    }
+                } else {
+                    return true;
+                }
+                if (!isFile) {
+                    this.$notify({
+                        // title: '不支持',
+                        text: this.$t('conversation.not_support_send_folder'),
+                        type: 'warn'
+                    });
+                    return true;
+                }
                 let length = e.dataTransfer.files.length;
                 if (length > 0 && length < 5) {
                     for (let i = 0; i < length; i++) {
@@ -209,9 +227,11 @@ export default {
                         store.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
                     }
                 } else {
-                    // TODO
-                    // toast
-                    console.log(this.$t('conversation.drag_to_send_limit_tip'));
+                    this.$notify({
+                        // title: '大文件提示',
+                        text: this.$t('conversation.drag_to_send_limit_tip'),
+                        type: 'warn'
+                    });
                 }
             } else if (v === 'dragover') {
                 // If not st as 'copy', electron will open the drop file

@@ -58,6 +58,7 @@
         "no_more_message": "No more messages",
         "all_message_load": "All messages have been loaded :(",
         "drag_to_send_limit_tip": "Send up to 5 files at a time",
+        "not_support_send_folder": "Not support send folder",
         "group_name": "Group name",
         "group_announcement": "Group announcement",
         "add_member": "Add member",
