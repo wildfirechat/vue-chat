@@ -682,7 +682,7 @@ let store = {
                 let formData = new FormData();
                 formData.append('key', key)
                 formData.append('token', token)
-                formData.append(file, file)
+                formData.append('file', file)
                 xhr.open('POST', url);
                 xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(file.name)}"`);
                 xhr.send(formData);
@@ -690,10 +690,7 @@ let store = {
                 // 野火专业存储或阿里云
                 xhr = this._uploadXMLHttpRequest(file.name, remoteUrl, progressCB, successCB, failCB);
                 xhr.open('PUT', uploadUrl);
-                xhr.setRequestHeader("content-disposition", `attachment; filename="${encodeURI(file.name)}"`);
-                if (serverType === 1) { //aliyun
-                    xhr.setRequestHeader("content-type", `application/octet-stream`);
-                }
+                xhr.setRequestHeader("content-type", `application/octet-stream`);
                 xhr.send(file);
             }
             miscState.uploadBigFiles.push({
