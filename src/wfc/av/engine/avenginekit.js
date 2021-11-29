@@ -25,6 +25,10 @@ export default class WfcAVEngineKit {
     static MAX_VIDEO_PARTICIPANT_COUNT = 9;
     // 是否禁用双流模式
     static DISABLE_DUAL_STREAM = false;
+    /**
+     禁止双流模式下，小流低帧率。默认为false，小流的帧率为8fps。当为true时使用同大流一样的帧率
+     */
+     static DISABLE_SMALL_STREAM_LOW_FPS = false;
     // 是否默认使用大流
     static DEFAULT_USE_MAIN_VIDEO = true;
 }
