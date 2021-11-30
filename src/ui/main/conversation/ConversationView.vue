@@ -771,6 +771,7 @@ export default {
     flex: 1;
     height: calc(100% - 60px);
     position: relative;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     background-color: #f3f3f3;

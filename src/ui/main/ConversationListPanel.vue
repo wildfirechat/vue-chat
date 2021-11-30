@@ -53,6 +53,7 @@ export default {
     max-height: calc(100% - 60px);
     position: relative;
     background-color: #f3f3f3;
+    overflow-y: auto;
     flex: 1;
 }
 

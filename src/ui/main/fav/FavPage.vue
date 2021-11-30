@@ -135,6 +135,7 @@ export default {
     position: relative;
     background-color: #fafafa;
     flex: 1;
+    overflow-y: auto;
 }
 
 .search-result-container {

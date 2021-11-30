@@ -105,7 +105,9 @@ export default {
     margin-right: 10px;
     padding: 0 10px 0 20px;
     text-align: left;
-    flex: 1;
+    /* flex: 1; */
+    /* 兼容Firefox 52 */
+    width: 209px;
     border: 1px solid #e5e5e5;
     border-radius: 3px;
     outline: none;
@@ -123,6 +125,9 @@ export default {
 .search-input-container i {
     position: absolute;
     left: 15px;
+    /* 兼容Firefox 52 */
+    top: 50%;
+    transform: translate(0, -50%);
 }
 
 .search-input-container button {
