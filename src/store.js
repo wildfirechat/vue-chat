@@ -669,7 +669,7 @@ let store = {
     },
 
     uploadBigFile(file, mediaType, progressCB, successCB, failCB) {
-        wfc.getUploadMediaUrl(file.name, mediaType, (uploadUrl, remoteUrl, backUploadUrl, serverType) => {
+        wfc.getUploadMediaUrl(file.name, mediaType, `application/octet-stream`, (uploadUrl, remoteUrl, backUploadUrl, serverType) => {
             let xhr;
             if (serverType === 1) {
                 // qiniu
