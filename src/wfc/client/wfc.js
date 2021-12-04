@@ -1367,6 +1367,16 @@ export class WfcManager {
     }
 
     /**
+     * 删除远程消息
+     * @param {Long | string} msgUid 消息uid
+     * @param {function ()} successCB
+     * @param {function (number)} failCB
+     */
+    deleteRemoteMessageByUid(msgUid, successCB, failCB){
+        impl.deleteRemoteMessage(msgUid, successCB, failCB);
+    }
+
+    /**
      * 清除会话消息
      * @param {Conversation} conversation 目标会话
      * @returns {Promise<void>}
