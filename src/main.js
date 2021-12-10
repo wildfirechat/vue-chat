@@ -32,12 +32,18 @@ Vue.config.productionTip = false
         if (isElectron()) {
             let sharedObj = remote.getGlobal('sharedObj');
             wfc.init([sharedObj.proto])
+            // 双网环境配置
+            //     // 设置网络策略
+            //     wfc.setBackupAddressStrategy(0)
+            //     // 设置备选网络
+            //     wfc.setBackupAddress('192.168.10.11', 80)
         } else {
             wfc.init();
+            // 双网环境配置
             // 可以根据访问网页的地址，配置是否切换备选网络策略
             // 比如公网，通过域名访问，采用默认的主网络；内网，通过ip访问，使用备选网络
             // 需要在wfc.connect之前调用
-            // if (new URL(window.origin).host.startsWith('localhost')) {
+            // if (new URL(window.origin).host.startsWith('192.168.2.169')) {
             //     // 设置备选网络不走WSS
             //     Config.USE_WSS = false;
             //     // 设置网络策略
