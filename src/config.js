@@ -20,9 +20,6 @@ export default class Config {
     // 是否关闭日志，web和小程序有效
     static DISABLE_LOG = false;
 
-    // IM SERVER的HOST，是域名或者ip，没有http等前缀!
-    static IM_SERVER_HOST = 'wildfirechat.net';
-
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
     static APP_SERVER = 'https://app.wildfirechat.net';
@@ -30,10 +27,6 @@ export default class Config {
     // turn server 配置，可以添加多个
     static ICE_SERVERS = [{uri: 'turn:turn.wildfirechat.net:3478', userName: 'wfchat', password: 'wfchat'}];
     static LANGUAGE = 'zh_CN';
-
-    // appId和appKey和专业版im server是绑定的，一定要做对应修改
-    static WEB_APP_ID = 'web_12345678';
-    static WEB_APP_KEY = '6f8348670cb11cf434451bc9e7ba72eeaf3452c8';
 
     static MESSAGE_ROAMING = 1;
     // 拉取最近2小时的消息
@@ -99,27 +92,17 @@ export default class Config {
 
     static validate() {
         let configError = true;
-        if (Config.APP_SERVER === 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST === 'wildfirechat.net' && Config.WEB_APP_KEY === '6f8348670cb11cf434451bc9e7ba72eeaf3452c8') {
-            configError = false;
-        } else if (Config.APP_SERVER !== 'https://app.wildfirechat.net' && Config.IM_SERVER_HOST !== 'wildfirechat.net' && Config.WEB_APP_KEY !== '6f8348670cb11cf434451bc9e7ba72eeaf3452c8') {
-            configError = false;
+        if (Config.APP_SERVER === 'https://app.wildfirechat.net') {
+            console.warn("APP SERVER 配置为野火官方，如果需要连接自行部署的IM Server，请修改为说部署的app server")
         }
 
         console.log(`当前配置信息:
                     app server: ${Config.APP_SERVER}
-                    im server host: ${Config.IM_SERVER_HOST}
-                    key: ${Config.WEB_APP_KEY}, 6fxxx 为野火key
                     use wss: ${Config.USE_WSS}
                     route port: ${Config.ROUTE_PORT}`)
-        if (configError) {
-            throw new Error('配置错误, Config.APP_SERVER,Config.IM_SERVER_HOST,Config.WEB_APP_KEY 是配对的，必须一起修改');
-        }
 
         if (!Config.APP_SERVER.startsWith("http")) {
             throw new Error('配置错误, Config.APP_SERVER 必须是完整的http地址');
-        }
-        if (Config.IM_SERVER_HOST.startsWith('http') || Config.IM_SERVER_HOST.indexOf(':') > -1) {
-            throw new Error('配置错误, Config.IM_SERVER_HOST 必选是域名或者ip');
         }
 
         if (Config.USE_WSS) {

@@ -735,7 +735,7 @@ export class WfcManager {
 
     /**
      * 修改个人信息
-     * @param {[ModifyMyInfoEntry]} modifyMyInfoEntries 需要修改的信息列表
+     * @param {[ModifyMyInfoEntry]} modifyMyInfoEntries 需要修改的信息列表，pc端，一次只允许修改一个项。
      * @param successCB
      * @param failCB
      */

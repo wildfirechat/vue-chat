@@ -1,12 +1,5 @@
 <template>
     <div ref="container" class="audio-message-container" :style="widthStyle" @click="playVoice">
-        <!--    <i class="icon-ion-android-volume-up"></i>-->
-        <!--    <span> {{ duration }} </span>-->
-
-        <!--        <audio preload="auto" controls controlsList="nodownload">-->
-        <!--            <source :src="remotePath" type="audio/mp4"/>-->
-        <!--        </audio>-->
-
         <p v-if="message.direction === 0" class="duration">{{ duration }}"</p>
         <div class="volume-container">
             <i v-show="!message._isPlaying" class="icon-ion-android-volume-up"></i>
@@ -19,9 +12,7 @@
 
 <script>
 import Message from "@/wfc/messages/message";
-import Config from "@/config";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
-import BenzAMRRecorder from "benz-amr-recorder";
 import store from "../../../../../store";
 
 export default {
@@ -57,15 +48,6 @@ export default {
     },
 
     computed: {
-        voice() {
-            return this.message.messageContent;
-        },
-
-        remotePath() {
-            let voice = this.message.messageContent;
-            return Config.AMR_TO_MP3_SERVER_ADDRESS + voice.remotePath;
-        },
-
         duration() {
             let voice = this.message.messageContent;
             let times = voice.duration * 1000;
