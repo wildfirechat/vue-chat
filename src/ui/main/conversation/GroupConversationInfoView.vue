@@ -4,6 +4,7 @@
             <label>
                 {{ $t('conversation.group_name') }}
                 <input type="text"
+                       ref="groupNameInput"
                        :disabled="!enableEditGroupNameOrAnnouncement"
                        v-model="newGroupName"
                        @keyup.enter="updateGroupName"
@@ -12,6 +13,7 @@
             <label>
                 {{ $t('conversation.group_announcement') }}
                 <input type="text"
+                       ref="groupAnnouncementInput"
                        :disabled="!enableEditGroupNameOrAnnouncement"
                        @keyup.enter='updateGroupAnnouncement'
                        v-model="newGroupAnnouncement"
@@ -176,6 +178,7 @@ export default {
 
             wfc.modifyGroupInfo(groupId, ModifyGroupInfoType.Modify_Group_Name, this.newGroupName, [0], null, () => {
                 this.conversationInfo.conversation._target._displayName = this.newGroupName;
+                this.$refs.groupNameInput.blur();
             }, (err) => {
                 // do nothing
             })
@@ -192,6 +195,7 @@ export default {
             }, {withCredentials: true});
             if (response.data && response.data.code === 0) {
                 this.groupAnnouncement = this.newGroupAnnouncement;
+                this.$refs.groupAnnouncementInput.blur();
             }
         },
 
