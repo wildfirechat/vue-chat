@@ -3,6 +3,7 @@
  */
 
 import MessageContent from './messageContent'
+import Config from '../../config'
 
 export default class MediaMessageContent extends MessageContent {
     file;
@@ -51,11 +52,9 @@ export default class MediaMessageContent extends MessageContent {
         super.decode(payload);
         this.localPath = payload.localMediaPath;
         this.remotePath = payload.remoteMediaUrl;
-        this.mediaType = payload.mediaType;
+        if (Config.urlRedirect){
+            this.remotePath = Config.urlRedirect(payload.remoteMediaUrl);
     }
-    // TODO 双网环境时，媒体的远程地址需要进行 主网 和 备选网络 之间的转换
-    // route 时，返回备选媒体网络信息，然后根据备选网络策略进行转换
-    fixedRemotePath(){
-        return this.remotePath;
+        this.mediaType = payload.mediaType;
     }
 }
