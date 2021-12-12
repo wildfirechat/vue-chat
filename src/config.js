@@ -90,8 +90,24 @@ export default class Config {
         });
     }
 
+    /**
+     * 网络地址重定向
+     *
+     * 仅当双网环境时，需要特殊处理，默认原样返回
+     *
+     * @param {string} url
+     * @return {string} newUrl
+     */
+    static urlRedirect(url){
+        if (!url){
+            return url;
+        }
+        // 示例代码
+        // url = url.replace('oss.xxxx.com', '192.168.2.19');
+        return url;
+    }
+
     static validate() {
-        let configError = true;
         if (Config.APP_SERVER === 'https://app.wildfirechat.net') {
             console.warn("APP SERVER 配置为野火官方，如果需要连接自行部署的IM Server，请修改为说部署的app server")
         }
