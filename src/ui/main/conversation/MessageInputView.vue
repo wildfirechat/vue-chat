@@ -693,7 +693,6 @@ export default {
 #emoji {
     position: absolute;
     bottom: 55px;
-    left: -50px;
 }
 
 /*pls refer to https://vue-loader.vuejs.org/guide/scoped-css.html#child-component-root-elements*/

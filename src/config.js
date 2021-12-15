@@ -29,8 +29,6 @@ export default class Config {
     static LANGUAGE = 'zh_CN';
 
     static MESSAGE_ROAMING = 1;
-    // 拉取最近2小时的消息
-    static MESSAGE_ROAMING_HOUR_COUNT = 2;
 
     // 配置clientId的生成策略，可选0，1，2；默认0
     // 0 clientId存储于内存，每次刷新网页，都会随机生成新的clientId
@@ -67,6 +65,11 @@ export default class Config {
     static CONVERSATION_EXPIRE_TIME = 30;
     // 文件传输助手ID
     static FILE_HELPER_ID = 'wfc_file_transfer';
+    // 是否将用户信息、群组信息、频道信息、聊天室信息持久化
+    static ENABLE_INFO_PERSISTENCE = true;
+
+    // 是否打开日志
+    static ENABLE_LOG = true;
 
     static getWFCPlatform() {
         if (isElectron()) {
