@@ -36,6 +36,7 @@
              @contextmenu.prevent="$refs.menu.open($event)"
              onmouseover="this.setAttribute('org_title', this.title); this.title='';"
              onmouseout="this.title = this.getAttribute('org_title');"
+             v-on:tribute-replaced="onTributeReplaced"
              contenteditable="true">
         </div>
         <vue-context ref="menu" :lazy="true">
@@ -114,10 +115,18 @@ export default {
             emojiCategories: categoriesDefault,
             emojis: emojisDefault,
             lastConversationInfo: null,
-            storeDraftIntervalId: 0
+            storeDraftIntervalId: 0,
+            tributeReplaced: false,
         }
     },
     methods: {
+        onTributeReplaced(e){
+            // 正常下面这两行应当就生效了，不知道为啥不生效，所以采用了后面的 trick
+            e.detail.event.preventDefault();
+            e.detail.event.stopPropagation();
+
+            this.tributeReplaced = true;
+        },
         canisend() {
             let target = this.conversationInfo.conversation._target;
             if (target instanceof GroupInfo) {
@@ -170,7 +179,8 @@ export default {
         },
 
         send(e) {
-            if (this.tribute && this.tribute.isActive) {
+            if (this.tribute && this.tribute.isActive || this.tributeReplaced) {
+                this.tributeReplaced = false;
                 return;
             }
 
