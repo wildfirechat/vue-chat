@@ -269,11 +269,8 @@ let store = {
         wfc.eventEmitter.on(EventType.MessageDeleted, (messageUid) => {
             this._loadDefaultConversationList();
             if (conversationState.currentConversationInfo) {
-                let msg = wfc.getMessageByUid(messageUid);
-                if (msg && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
-                    if (conversationState.currentConversationMessageList) {
-                        conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
-                    }
+                if (conversationState.currentConversationMessageList) {
+                    conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.filter(msg => !eq(msg.messageUid, messageUid))
                 }
             }
             this.updateTray();
@@ -524,7 +521,7 @@ let store = {
                 let title = '';
                 let msgConversation = messages[0].conversation;
                 if (msgConversation.type === ConversationType.Single) {
-                    let users = store.getUserInfos([wfc.getUserId(), msgConversation.target], '');
+                    let users = store.getUserInfos([wfc. getUserId(), msgConversation.target], '');
                     title = users[0]._displayName + '和' + users[1]._displayName + '的聊天记录';
                 } else {
                     title = '群的聊天记录';
