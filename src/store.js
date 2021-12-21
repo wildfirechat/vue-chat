@@ -29,6 +29,9 @@ import IPCEventType from "./ipc/ipcEventType";
 import localStorageEmitter from "./ipc/localStorageEmitter";
 import {stringValue} from "./wfc/util/longUtil";
 import {getConversationPortrait} from "./ui/util/imageUtil";
+import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
+import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffGroupMemberNotification";
+import QuitGroupNotification from "./wfc/messages/notification/quitGroupNotification";
 
 /**
  * 一些说明
@@ -184,6 +187,15 @@ let store = {
                 this._loadDefaultConversationList();
             }
             if (conversationState.currentConversationInfo && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+
+                if(msg.messageContent instanceof DismissGroupNotification
+                    || (msg.messageContent instanceof KickoffGroupMemberNotification && msg.messageContent.kickedMembers.indexOf(wfc.getUserId()) >= 0)
+                    || (msg.messageContent instanceof QuitGroupNotification && msg.messageContent.operator === wfc.getUserId())
+                ){
+                    conversationState.currentConversationInfo = null;
+                    conversationState.currentConversationMessageList = [];
+                    return;
+                }
                 // 移动端，目前只有单聊会发送typing消息
                 if (msg.messageContent.type === MessageContentType.Typing) {
                     let groupId = msg.conversation.type === 1 ? msg.conversation.target : '';

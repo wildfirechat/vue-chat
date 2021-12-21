@@ -87,6 +87,7 @@ export default {
     color: #050505;
     font-size: 16px;
     line-height: 25px;
+    /*max-width: 600px;*/
     max-height: 1000px;
     word-break: break-word;
     overflow: hidden;
@@ -98,5 +99,8 @@ export default {
 .text-message-container .text >>> img {
     max-width: 800px !important;
     display: inline-block;
+}
+.text-message-container .text >>> a{
+    white-space: normal;
 }
 </style>
