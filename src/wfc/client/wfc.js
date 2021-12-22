@@ -1263,6 +1263,16 @@ export class WfcManager {
     }
 
     /**
+     * 根据消息 uid，获取远程消息
+     * @param {Long} messageUid 消息uid
+     * @param {function ([Message])} successCB
+     * @param failCB
+     */
+    loadRemoteMessage(messageUid, successCB, failCB){
+        impl.loadRemoteMessage(messageUid, successCB, failCB);
+    }
+
+    /**
      * 获取消息
      * @param {number} messageId 消息id
      * @returns {null|Message}
