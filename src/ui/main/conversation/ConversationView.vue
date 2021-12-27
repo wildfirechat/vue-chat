@@ -153,6 +153,7 @@ import FavItem from "../../../wfc/model/favItem";
 import {stringValue} from "../../../wfc/util/longUtil";
 import ConversationType from "../../../wfc/model/conversationType";
 import GroupMemberType from "../../../wfc/model/groupMemberType";
+import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
 
 var amr;
 export default {
@@ -458,6 +459,25 @@ export default {
             store.quoteMessage(message);
         },
 
+        // call from child
+        favMessages(messages){
+            console.log('fav messages');
+            let compositeMessageContent = new CompositeMessageContent();
+            let title = '';
+            let msgConversation = messages[0].conversation;
+            if (msgConversation.type === ConversationType.Single) {
+                let users = store.getUserInfos([wfc.getUserId(), msgConversation.target], '');
+                title = users[0]._displayName + '和' + users[1]._displayName + '的聊天记录';
+            } else {
+                title = '群的聊天记录';
+            }
+            compositeMessageContent.title = title;
+            compositeMessageContent.messages = messages;
+
+            let message = new Message(msgConversation, compositeMessageContent);
+            message.from = wfc.getUserId();
+            this.favMessage(message);
+        },
         favMessage(message) {
             let favItem = FavItem.fromMessage(message);
             axios.post('/fav/add', {
@@ -526,7 +546,6 @@ export default {
                     } else if (event.params.confirm) {
                         let conversations = event.params.conversations;
                         let extraMessageText = event.params.extraMessageText;
-                        // TODO 多选转发
                         store.forwardMessage(forwardType, conversations, messages, extraMessageText)
                         resolve();
                     } else {

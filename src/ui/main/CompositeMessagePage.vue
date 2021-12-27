@@ -72,6 +72,9 @@ import StickerMessageContentView from "./conversation/message/content/StickerMes
 import UnknowntMessageContentView from "./conversation/message/content/UnknownMessageContentView";
 import Message from "../../wfc/messages/message";
 import {stringValue} from "../../wfc/util/longUtil";
+import wfc from "../../wfc/client/wfc";
+import FavItem from "../../wfc/model/favItem";
+import Conversation from "../../wfc/model/conversation";
 
 export default {
     name: "CompositeMessagePage",
@@ -95,9 +98,18 @@ export default {
             return;
         }
         let hash = window.location.hash;
+        if(hash.indexOf('messageUid=') >= 0){
         let messageUid = hash.substring(hash.indexOf('=') + 1);
         this.compositeMessage = store.getMessageByUid(messageUid);
-        console.log('xxx', hash, messageUid, this.compositeMessage)
+        }else {
+            let faveItemData = hash.substring(hash.indexOf('=') + 1);
+            let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
+            let favItem = Object.assign(new FavItem(), favItemRaw);
+            favItem.conversation = new Conversation(favItem.convType, favItem.convTarget, favItem.convLine);
+            favItem.favType = favItem.type;
+            this.compositeMessage = favItem.toMessage();
+        }
+        store._patchMessage(this.compositeMessage, 0);
         document.title = this.compositeMessage.messageContent.title;
     },
 

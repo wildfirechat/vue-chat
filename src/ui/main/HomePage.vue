@@ -42,9 +42,14 @@
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '99' : unread }}</em>
                             </div>
                         </li>
-                        <li><i class="icon-ion-android-contact"
+                        <li>
+                            <div class="menu-item">
+                                <i class="icon-ion-android-contact"
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/contact'}"
-                               @click="go2Contact"></i></li>
+                                   @click="go2Contact"></i>
+                                <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount}}</em>
+                            </div>
+                        </li>
                         <li v-if="sharedMiscState.isElectron">
                             <i class="icon-ion-android-favorite"
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/fav'}"

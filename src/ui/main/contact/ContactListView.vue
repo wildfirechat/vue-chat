@@ -4,7 +4,10 @@
             <li>
                 <div @click="showNewFriends" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
+                    <div class="category-item">
                     <span class="title">{{ $t('contact.new_friend') }}</span>
+                        <span class="desc" v-if="sharedContactState.unreadFriendRequestCount > 0">{{ sharedContactState.unreadFriendRequestCount }}</span>
+                    </div>
                 </div>
                 <NewFriendListView v-if="sharedContactState.expandFriendRequestList"/>
             </li>

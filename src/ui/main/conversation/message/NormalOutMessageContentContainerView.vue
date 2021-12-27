@@ -81,6 +81,7 @@ export default {
             sharedConversationState: store.state.conversation,
             sharedPickState: store.state.pick,
             highLight: false,
+            quotedMessage: null,
         }
     },
     components: {
@@ -94,7 +95,22 @@ export default {
     mounted() {
         this.$parent.$on('contextMenuClosed', () => {
             this.highLight = false;
+        });
+
+        if (this.message.messageContent.quoteInfo) {
+            let messageUid = this.message.messageContent.quoteInfo.messageUid;
+            let msg = store.getMessageByUid(messageUid);
+            if (!msg) {
+                wfc.loadRemoteMessage(messageUid, (ms) => {
+                    msg = store._patchMessage(ms[0]);
+                    this.quotedMessage = msg;
+                }, err => {
+                    console.log('load remote message error', messageUid, err)
         })
+            } else {
+                this.quotedMessage = msg;
+            }
+        }
     },
     methods: {
         onClickUserPortrait(userId) {
@@ -216,18 +232,6 @@ export default {
             return receiptDesc;
         },
 
-        quotedMessage() {
-            if (this.message.messageContent.quoteInfo) {
-                let messageUid = this.message.messageContent.quoteInfo.messageUid;
-                let msg = store.getMessageByUid(messageUid);
-                if (!msg) {
-                    console.log('quotedMessage, is null', this.message.messageContent.quoteInfo)
-                }
-                return msg;
-            } else {
-                return null;
-            }
-        },
 
         isDownloading() {
             return store.isDownloadingMessage(this.message.messageId);

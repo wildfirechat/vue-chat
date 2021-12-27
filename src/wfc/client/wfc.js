@@ -1696,6 +1696,18 @@ export class WfcManager {
     b64_to_utf8(str) {
         return decodeURIComponent(escape(atob(str)));
     }
+
+    unescape (str) {
+        return (str + '==='.slice((str.length + 3) % 4))
+            .replace(/-/g, '+')
+            .replace(/_/g, '/')
+    }
+
+    escape (str) {
+        return str.replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '')
+    }
 }
 
 const self = new WfcManager();

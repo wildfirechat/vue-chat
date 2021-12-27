@@ -79,6 +79,7 @@ let store = {
             expandFriendList: true,
             expandGroup: false,
 
+            unreadFriendRequestCount: 0,
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
@@ -162,6 +163,7 @@ let store = {
 
         wfc.eventEmitter.on(EventType.FriendListUpdate, (updatedFriendIds) => {
             this._loadFriendList();
+            this._loadFriendRequest();
             this._loadFavContactList();
             this._loadDefaultConversationList();
             this._loadCurrentConversationMessages();
@@ -951,7 +953,7 @@ let store = {
         return msg;
     },
 
-    _patchMessage(m, lastTimestamp) {
+    _patchMessage(m, lastTimestamp = 0) {
         // TODO
         // _from
         // _showTime
@@ -1072,6 +1074,7 @@ let store = {
         });
 
         contactState.friendRequestList = requests;
+        contactState.unreadFriendRequestCount = wfc.getUnreadFriendRequestCount();
     },
 
     _patchAndSortUserInfos(userInfos, groupId = '', compareFn) {

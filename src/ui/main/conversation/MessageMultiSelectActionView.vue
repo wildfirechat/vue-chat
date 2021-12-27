@@ -18,7 +18,7 @@
                 </div>
             </li>
             <li>
-                <div class="action">
+                <div class="action" @click="fav">
                     <div class="icon">
                         <i class="icon-ion-android-favorite"></i>
                     </div>
@@ -71,6 +71,12 @@ export default {
         forwardComposite() {
             let messages = [...this.sharedPickState.messages];
             this.$parent.pickConversationAndForwardMessage(ForwardType.COMPOSITE, messages);
+            store.toggleMessageMultiSelection();
+        },
+
+        fav(){
+            let messages = [...this.sharedPickState.messages];
+            this.$parent.favMessages(messages);
             store.toggleMessageMultiSelection();
         }
     },
