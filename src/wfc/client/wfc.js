@@ -1250,6 +1250,20 @@ export class WfcManager {
     }
 
     /**
+     * 获取会话的远程历史消息，仅 web 有效
+     * @param {Conversation} conversation 目标会话
+     * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
+     * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
+     * @param {number} count
+     * @param {boolean} filterLocalMessage 是否过滤本地已经存在的消息
+     * @param {function ([Message])} successCB
+     * @param failCB
+     */
+    loadRemoteConversationMessagesEx(conversation, contentTypes, beforeUid, count, filterLocalMessage, successCB, failCB){
+        impl.loadRemoteMessages(conversation, contentTypes, beforeUid, count, successCB, failCB, filterLocalMessage);
+    }
+
+    /**
      * 根据会话线路，获取远程历史消息
      * @param {number} line 会话线路
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
@@ -1260,6 +1274,20 @@ export class WfcManager {
      */
     loadRemoteLineMessages(line,contentTypes, beforeUid, count, successCB, failCB){
         impl.loadRemoteLineMessages(line, contentTypes, beforeUid, count, successCB, failCB)
+    }
+
+    /**
+     * 根据会话线路，获取远程历史消息，仅 web 端有效
+     * @param {number} line 会话线路
+     * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
+     * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
+     * @param {number} count
+     * @param {boolean} filterLocalMessage 是否过滤本地已经存在的消息
+     * @param {function ([Message])} successCB
+     * @param failCB
+     */
+    loadRemoteLineMessages(line,contentTypes, beforeUid, count, filterLocalMessage, successCB, failCB){
+        impl.loadRemoteLineMessages(line, contentTypes, beforeUid, count, successCB, failCB, filterLocalMessage)
     }
 
     /**
