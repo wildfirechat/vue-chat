@@ -138,7 +138,8 @@ export default {
 
         openPcChat() {
             // pc 端，deeplink 的 scheme 是 wfc://
-            let url = 'wfc://home';
+            // 打开和 小火的会话
+            let url = 'wfc://conversation?target=FireRobot&line=0&type=0';
             // 未安装 pc  版时，跳转到 pc 版的下载链接
             let fallback = 'https://github.com/wildfirechat/vue-pc-chat';
             window.location = url;
