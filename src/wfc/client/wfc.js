@@ -864,7 +864,7 @@ export class WfcManager {
      * 获取频道信息
      * @param {string} channelId 频道id
      * @param {boolean} refresh 是否强制刷新
-     * @returns {ChannelInfo|null}
+     * @returns {ChannelInfo|NullChannelInfo}
      */
     getChannelInfo(channelId, refresh) {
         return impl.getChannelInfo(channelId, refresh);

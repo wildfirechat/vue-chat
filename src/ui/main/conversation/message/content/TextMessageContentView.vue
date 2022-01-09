@@ -53,7 +53,7 @@ export default {
                 return new Array(x.length + 1).join('&nbsp;')
             })
             if (tmp.indexOf('<img') >= 0) {
-                tmp = tmp.replace(/<img/g, '<img style="max-width:800px;"')
+                tmp = tmp.replace(/<img/g, '<img style="max-width:400px;"')
                 return tmp;
             }
             return tmp;
@@ -97,7 +97,7 @@ export default {
 
 /*style for v-html */
 .text-message-container .text >>> img {
-    max-width: 800px !important;
+    max-width: 400px !important;
     display: inline-block;
 }
 .text-message-container .text >>> a{

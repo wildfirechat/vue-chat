@@ -14,12 +14,12 @@
             <img v-else @click="audioMute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
             <p>{{ session && session.audioMuted ? '取消静音' : '静音' }}</p>
         </div>
-        <div class="action">
+        <div class="action" v-if="false">
             <img @click="videoMute" class="action-img" src='@/assets/images/av_video_answer.png'/>
             <p>开启视频</p>
         </div>
         <div class="action">
-            <img @click="stopScreenShare" class="action-img" src='@/assets/images/av_hang_up.png'/>
+            <img @click="stopScreenShare" class="action-img" src='@/assets/images/av_video_answer.png'/>
             <p>结束共享</p>
         </div>
     </div>

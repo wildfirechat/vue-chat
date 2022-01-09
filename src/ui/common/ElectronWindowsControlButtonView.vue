@@ -28,7 +28,11 @@
             </div>
         </div>
     </div>
-    <div v-else id="window-controls" ref="content">
+    <div v-else class="titlebar webkit-draggable">
+        <div class="title">
+            <p class="single-line">{{ title }}</p>
+        </div>
+        <div id="window-controls" ref="content">
 
         <div class="button" id="min-button" @click="minimize" v-if="sharedMiscState.enableMinimize">
             <img class="icon"
@@ -56,6 +60,7 @@
                  draggable="false" alt=""/>
         </div>
 
+        </div>
     </div>
 </template>
 
@@ -112,10 +117,23 @@ export default {
             });
         },
         close() {
+            if (process.platform === 'linux') {
+                this.$alert({
+                    content: '确定退出野火 IM？',
+                    cancelCallback: () => {
+                        // do nothing
+                    },
+                    confirmCallback: () => {
+                        app.exit(0)
+                    }
+                })
+
+            } else {
             const win = remote.getCurrentWindow();
             win.close();
-            if(!wfc.isLogin()){
+                if (!wfc.isLogin() && this.sharedMiscState.isMainWindow) {
                 app.exit(0)
+                }
             }
         },
         toggleMaxRestoreButtons() {
@@ -268,6 +286,8 @@ export default {
 
 /*windows or linux*/
 #window-controls {
+    position: absolute;
+    right: 0;
     --control-count: 3;
     --close-button-column: 3;
     display: grid;

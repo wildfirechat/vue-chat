@@ -106,7 +106,6 @@ let store = {
         },
 
         misc: {
-            test: false,
             connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
             isPageHidden: false,
             enableNotification: true,
@@ -116,8 +115,8 @@ let store = {
             enableAutoLogin: false,
             isElectron: isElectron(),
             isElectronWindowsOrLinux: process && (process.platform === 'win32' || process.platform === 'linux'),
-            // isElectronWindowsOrLinux: true,
             isMainWindow: false,
+            linuxUpdateTitleInterval: 0,
             uploadBigFiles: [],
             wfc: wfc,
             config: Config,
@@ -177,6 +176,9 @@ let store = {
 
         });
 
+        wfc.eventEmitter.on(EventType.ChannelInfosUpdate, (groupInfos) => {
+            this._loadDefaultConversationList();
+        });
         wfc.eventEmitter.on(EventType.ConversationInfoUpdate, (conversationInfo) => {
             this._loadDefaultConversationList();
             if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
@@ -326,8 +328,19 @@ let store = {
 
         if (isElectron()) {
             ipcRenderer.on('deep-link', (event, args) => {
-                // TODO
                 console.log('deep-link', args)
+                // 下面是示例
+                // 可以根据 pathname 和 query parameter 进行相应的逻辑处理，这儿是跳转到对应的会话
+                let url = new URL(args);
+                let pathname = url.pathname;
+                let searchParams = url.searchParams;
+                if ('//conversation' === pathname) {
+                    let target = searchParams.get('target');
+                    let line = Number(searchParams.get('line'));
+                    let type = Number(searchParams.get('type'))
+                    let conversation = new Conversation(type, target, line)
+                    this.setCurrentConversation(conversation);
+                }
             })
             ipcRenderer.on('file-downloaded', (event, args) => {
                 let messageId = args.messageId;
@@ -403,10 +416,10 @@ let store = {
     },
 
     _loadDefaultConversationList() {
-        this._loadConversationList([0, 1], [0])
+        this._loadConversationList([0, 1, 3], [0])
     },
 
-    _loadConversationList(conversationType = [0, 1], lines = [0]) {
+    _loadConversationList(conversationType = [0, 1, 3], lines = [0]) {
         let conversationList = wfc.getConversationList(conversationType, lines);
         conversationList.forEach(info => {
             this._patchConversationInfo(info);
@@ -995,6 +1008,9 @@ let store = {
             info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
             info.conversation._target._isFav = wfc.isFavGroup(info.conversation.target);
             info.conversation._target._displayName = info.conversation._target.name;
+        }else if (info.conversation.type === ConversationType.Channel){
+            info.conversation._target = wfc.getChannelInfo(info.conversation.target, false);
+            info.conversation._target._displayName = info.conversation._target.name;
         }
         if (!info.conversation._target.portrait) {
             getConversationPortrait(info.conversation).then((portrait => {
@@ -1049,18 +1065,7 @@ let store = {
     },
 
     _loadFriendRequest() {
-        let incomingRequests = wfc.getIncommingFriendRequest()
-        let requests = incomingRequests;
-        let outgoingRequests = wfc.getOutgoingFriendRequest();
-        // 当针对同一个人，有邀请(out)和被邀请（in)，过滤掉邀请
-        outgoingRequests.forEach(or => {
-            let index = incomingRequests.findIndex(ir => {
-                return or.target === ir.target;
-            })
-            if (index === -1) {
-                requests.push(or);
-            }
-        })
+        let requests = wfc.getIncommingFriendRequest()
         requests.sort((a, b) => numberValue(b.timestamp) - numberValue(a.timestamp))
         requests = requests.length >= 20 ? requests.slice(0, 20) : requests;
         let uids = [];
@@ -1539,7 +1544,27 @@ let store = {
             let unreadCount = info.unreadCount;
             count += unreadCount.unread;
         });
+        if (process.platform === 'linux') {
+            this.updateLinuxTitle(count);
+        } else {
         ipcRenderer.send('update-badge', count)
+        }
+    },
+
+    updateLinuxTitle(unreadCount) {
+        this.updateLinuxTitle.title = '野火IM';
+        this.updateLinuxTitle.unreadCount = unreadCount;
+        this.updateLinuxTitle.showTitle = true;
+        if (!miscState.linuxUpdateTitleInterval) {
+            miscState.linuxUpdateTitleInterval = setInterval(() => {
+                if (this.updateLinuxTitle.showTitle || this.updateLinuxTitle.unreadCount < 1) {
+                    document.title = this.updateLinuxTitle.title;
+                } else {
+                    document.title = this.updateLinuxTitle.title + ' ' + this.updateLinuxTitle.unreadCount;
+                }
+                this.updateLinuxTitle.showTitle = !this.updateLinuxTitle.showTitle;
+            }, 1000)
+        }
     }
 }
 

@@ -27,7 +27,7 @@
                 <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
             </ul>
         </section>
-        <div @keyup.enter="send($event)"
+        <div @keydown.enter="send($event)"
              ref="input" class="input"
              @paste="handlePaste"
              draggable="false"
@@ -163,6 +163,11 @@ export default {
                 if (args.hasImage) {
                     e.preventDefault();
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
+                }else if (args.hasFile){
+                    e.preventDefault();
+                    args.files.forEach(file => {
+                        store.sendFile(this.conversationInfo.conversation, file)
+                    })
                 }
             }
         },
@@ -266,6 +271,7 @@ export default {
                     let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
                     textMessageContent.setQuoteInfo(quoteInfo);
                 }
+
                 wfc.sendConversationMessage(conversation, textMessageContent);
                 this.$refs['input'].innerHTML = '';
             }

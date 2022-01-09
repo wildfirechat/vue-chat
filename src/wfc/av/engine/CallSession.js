@@ -180,4 +180,19 @@ export default class CallSession {
     closeVoipWindow() {
 
     }
+    /**
+     * 设置音频输入设备
+     * @param {string} audioDeviceId 音频设备 id
+     */
+    setAudioInputDeviceId(audioDeviceId){
+
+    }
+
+    /**
+     * 设置音频输入设备
+     * @param {string} videoDeviceId  视频设备 id
+     */
+    setVideoInputDeviceId(videoDeviceId){
+
+    }
 }

@@ -3,7 +3,7 @@
         <div v-if="conversationInfo" class="conversation-message-history-page">
             <div class="title-container">
                 <div class="portrait-container">
-                    <img :src="conversationInfo.conversation._target.portrait" alt="">
+                    <img :src="conversationInfo.conversation._target.portrait" draggable="false" alt="">
                 </div>
                 <p class="single-line">{{ conversationInfo.conversation._target._displayName }}</p>
             </div>
@@ -64,6 +64,7 @@
                 </ul>
             </div>
         </div>
+        <div class="drag-area"/>
     </section>
 </template>
 
@@ -185,6 +186,16 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.drag-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: -1;
+    -webkit-app-region: drag;
 }
 
 .title-container .portrait-container {
