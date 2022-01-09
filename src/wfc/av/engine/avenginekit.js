@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
+import VideoProfile from './videoProfile'
 export default class WfcAVEngineKit {
     /**
      * CallSession 相关回调
@@ -31,4 +32,5 @@ export default class WfcAVEngineKit {
      static DISABLE_SMALL_STREAM_LOW_FPS = false;
     // 是否默认使用大流
     static DEFAULT_USE_MAIN_VIDEO = true;
+    static VIDEO_PROFILE = VideoProfile.VP1080P_5;
 }
