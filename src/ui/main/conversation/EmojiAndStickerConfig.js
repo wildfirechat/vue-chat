@@ -1,5 +1,14 @@
 import {Category, Emoji, emojisDefault} from "@imndx/v-emoji-picker";
 
+// 如何修改、添加自定义动态表情
+/*
+ 1. 构造一个表情```new Emoji('data', 'category', ['alias1', 'alias2'])```
+     1. 约定```category```以```Sticker```开头的为动态表情，其他的为普通表情
+     2. 动态表情时，```data```为动态表情的 url
+ 2. 构造一个类别```new Category('name', 'icon');
+    1. ```Category.name``` 和 ```Emoji.category```是对应的，一个类别下，有一系列的表情
+    2. ```icon```是该类别的 uri
+*/
 export function config() {
     // 动态表情的category约定以Sticker-开头
     let customStickers = [
@@ -146,7 +155,12 @@ export function config() {
 
           `,
     };
+    // 只显示类别为 Peoples 的表情
+    // let customCategories = [
+    //     new Category("Peoples", icons["peoples"]),
+    // ];
     let customCategories = [
+        // 默认表情里面，类别为 Peoples 的表情
         new Category("Peoples", icons["peoples"]),
         new Category("Sticker-b", icons["sticker_b"]),
         new Category("Sticker-p", icons["sticker_p"])
@@ -155,7 +169,9 @@ export function config() {
     let emojis = [...emojisDefault, ...customStickers];
 
     return {
+        // 显示那些类别的表情，比如：只包含 Peoples  类别时，那么将只显示默认表情里面，类别为 Peoples 的表情
         emojiCategories: customCategories,
+        //  表情列表，如果包含的表情的类别不在 emojiCategories 里面，则会被过滤掉
         emojis: emojis,
     }
 }

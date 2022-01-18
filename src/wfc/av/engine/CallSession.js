@@ -181,6 +181,7 @@ export default class CallSession {
 
     }
     /**
+     * 仅会议时有效
      * 设置音频输入设备
      * @param {string} audioDeviceId 音频设备 id
      */
@@ -189,10 +190,19 @@ export default class CallSession {
     }
 
     /**
+     * 仅会议时有效
      * 设置音频输入设备
      * @param {string} videoDeviceId  视频设备 id
      */
     setVideoInputDeviceId(videoDeviceId){
+
+    }
+    /**
+     * 仅会议时有效
+     * 设置视频最大码率
+     * @param maxBitrateKbps
+     */
+    setVideoMaxBitrate(maxBitrateKbps){
 
     }
 }

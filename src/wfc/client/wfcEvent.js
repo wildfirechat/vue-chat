@@ -24,6 +24,8 @@ export default class EventType {
     static MessageStatusUpdate = 'msgStatusUpdate';
     // function (connectionStatus) {}
     static ConnectionStatusChanged = 'connectionStatusChanged';
+    // function (host/ip/port) {}
+    static ConnectToServer = 'connectToServer';
     // function (userInfos) {}
     static UserInfosUpdate = 'userInfosUpdate';
     // function (channelInfos) {}

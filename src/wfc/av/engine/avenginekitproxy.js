@@ -343,7 +343,7 @@ export class AvEngineKitProxy {
     }
 
     emitToMain(event, args) {
-        console.log('emit to main', event, args);
+        // console.log('emit to main', event, args);
         if (isElectron()) {
             // renderer to main
             ipcRenderer.send(event, args);
