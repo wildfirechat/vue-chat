@@ -48,6 +48,8 @@ let store = {
             currentConversationInfo: null,
             conversationInfoList: [],
             currentConversationMessageList: [],
+            currentConversationOldestMessageId: 0,
+            currentConversationOldestMessageUid: 0,
 
             currentConversationDeliveries: null,
             currentConversationRead: null,
@@ -196,8 +198,7 @@ let store = {
                     || (msg.messageContent instanceof KickoffGroupMemberNotification && msg.messageContent.kickedMembers.indexOf(wfc.getUserId()) >= 0)
                     || (msg.messageContent instanceof QuitGroupNotification && msg.messageContent.operator === wfc.getUserId())
                 ){
-                    conversationState.currentConversationInfo = null;
-                    conversationState.currentConversationMessageList = [];
+                    this.setCurrentConversationInfo(null);
                     return;
                 }
                 // 移动端，目前只有单聊会发送typing消息
@@ -239,6 +240,8 @@ let store = {
                 }
                 this._patchMessage(msg, lastTimestamp);
                 conversationState.currentConversationMessageList.push(msg);
+                conversationState.currentConversationOldestMessageId = conversationState.currentConversationMessageList[0].messageId;
+                conversationState.currentConversationOldestMessageUid = conversationState.currentConversationMessageList[0].messageUid;
             }
 
             if (msg.conversation.type !== 2 && miscState.isPageHidden && (miscState.enableNotification || msg.status === MessageStatus.AllMentioned || msg.status === MessageStatus.Mentioned)) {
@@ -457,6 +460,8 @@ let store = {
             conversationState.currentConversationInfo = null;
             conversationState.shouldAutoScrollToBottom = false;
             conversationState.currentConversationMessageList.length = 0;
+            conversationState.currentConversationOldestMessageId = 0;
+            conversationState.currentConversationOldestMessageUid = 0;
             conversationState.currentConversationDeliveries = null;
             conversationState.currentConversationRead = null;
             conversationState.enableMessageMultiSelection = false;
@@ -469,6 +474,8 @@ let store = {
         conversationState.currentConversationInfo = conversationInfo;
         conversationState.shouldAutoScrollToBottom = true;
         conversationState.currentConversationMessageList.length = 0;
+        conversationState.currentConversationOldestMessageId = 0;
+        conversationState.currentConversationOldestMessageUid = 0;
         this._loadCurrentConversationMessages();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
@@ -866,13 +873,19 @@ let store = {
             lastTimestamp = m.timestamp;
         });
         conversationState.currentConversationMessageList = msgs;
+        if (msgs.length){
+            conversationState.currentConversationOldestMessageId = msgs[0].messageId;
+            conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
+        }
     },
+
 
     _onloadConversationMessages(conversation, messages) {
         let loadNewMsg = false;
         if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
             let lastTimestamp = 0;
             let newMsgs = [];
+            conversationState.currentConversationOldestMessageUid = messages[0].messageUid;
             messages.forEach(m => {
                 let index = conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid))
                 if (index === -1) {
@@ -883,6 +896,9 @@ let store = {
                 }
             });
             conversationState.currentConversationMessageList = newMsgs.concat(conversationState.currentConversationMessageList);
+            if (newMsgs.length){
+                conversationState.currentConversationOldestMessageId = newMsgs[0].messageId;
+            }
         }
         return loadNewMsg;
     },
@@ -892,23 +908,20 @@ let store = {
             return;
         }
         let conversation = conversationState.currentConversationInfo.conversation;
-        let firstMsg = conversationState.currentConversationMessageList.length > 0 ? conversationState.currentConversationMessageList[0] : null;
-        let firstMsgUid = conversationState.currentConversationMessageList.length > 0 ? conversationState.currentConversationMessageList[0].messageUid : 0;
-        let firstMsgId = conversationState.currentConversationMessageList.length > 0 ? conversationState.currentConversationMessageList[0].messageId : 0;
-        console.log('loadConversationHistoryMessage', conversation, firstMsgId, stringValue(firstMsgUid), firstMsg);
-        let lmsgs = wfc.getMessages(conversation, firstMsgId, true, 20);
+        console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
+        let lmsgs = wfc.getMessages(conversation, conversationState.currentConversationOldestMessageId, true, 20);
         if (lmsgs.length > 0) {
             let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
             if (!loadNewMsg) {
                 setTimeout(() => completeCB(), 200)
             } else {
-            setTimeout(() => loadedCB(), 200)
+                setTimeout(() => loadedCB(), 200)
             }
         } else {
-            wfc.loadRemoteConversationMessages(conversation,[], firstMsgUid, 20,
+            wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
-                    let loadNewMsg = this._onloadConversationMessages(conversation, msgs)
-                    if (!loadNewMsg) {
+                    this._onloadConversationMessages(conversation, msgs)
+                    if (msgs.length === 0) {
                         completeCB();
                     } else {
                         this._loadDefaultConversationList();
@@ -1266,13 +1279,15 @@ let store = {
     },
 
     filterGroupConversation(query) {
-        query = query.toLowerCase();
-        let groups = conversationState.conversationInfoList.filter(info => info.conversation.type === ConversationType.Group).map(info => info.conversation._target);
-        return groups.filter(groupInfo => {
-            let namePinyin = convert(groupInfo.name, {style: 0}).join('').trim().toLowerCase();
-            let firstLetters = convert(groupInfo.name, {style: 4}).join('').trim().toLowerCase();
-            return groupInfo.name.indexOf(query) > -1 || namePinyin.indexOf(query) > -1 || firstLetters.indexOf(query) > -1
-        })
+        // query = query.toLowerCase();
+        // let groups = conversationState.conversationInfoList.filter(info => info.conversation.type === ConversationType.Group).map(info => info.conversation._target);
+        // return groups.filter(groupInfo => {
+        //     let namePinyin = convert(groupInfo.name, {style: 0}).join('').trim().toLowerCase();
+        //     let firstLetters = convert(groupInfo.name, {style: 4}).join('').trim().toLowerCase();
+        //     return groupInfo.name.indexOf(query) > -1 || namePinyin.indexOf(query) > -1 || firstLetters.indexOf(query) > -1
+        // })
+        let gsr = wfc.searchGroups(query)
+        return gsr.map(r => r.groupInfo);
     },
 
     searchMessage(conversation, query) {
@@ -1450,6 +1465,15 @@ let store = {
         }, failCB);
     },
 
+    deleteFriend(target){
+        wfc.deleteFriend(target, ()=> {
+            wfc.removeConversation(new Conversation(ConversationType.Single, target, 0), true);
+            this._loadDefaultConversationList();
+        }, (err) => {
+            console.log('deleteFriend error', err);
+        });
+    },
+
     _patchFileRecords(fileRecords) {
         fileRecords.forEach(fileRecord => {
             let groupId = fileRecord.conversation.type === 1 ? fileRecord.conversation.target : '';
@@ -1574,4 +1598,5 @@ let searchState = store.state.search;
 let pickState = store.state.pick;
 let miscState = store.state.misc;
 
+window.__store = store;
 export default store
