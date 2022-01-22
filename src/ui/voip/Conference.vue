@@ -13,7 +13,6 @@
                                               :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
             <ScreenShareControlView v-if="session && session.isScreenSharing()" type="conference"/>
             <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
-
         </div>
         <div v-if="session" class="conference-container"
              v-bind:style="{display: session.isScreenSharing() && sharedMiscState.isElectron ? 'none' : 'flex'}">
@@ -469,7 +468,6 @@ export default {
                 console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
             })
         },
-
         mute() {
             let enable = this.session.audioMuted ? true : false;
             this.selfUserInfo._isAudioMuted = !enable;
@@ -534,10 +532,12 @@ export default {
         test() {
             alert('test alert')
         },
+
         screenShare() {
             if (this.session.audioOnly) {
                 return;
             }
+
             // if (true) {
             //     navigator.mediaDevices.enumerateDevices().then(deviceInfos => {
             //         // test input
@@ -581,6 +581,8 @@ export default {
             //     this.testCount++;
             //     return;
             // }
+
+
             if (this.session.isScreenSharing()) {
                 this.session.stopScreenShare();
                 // currentWindow.setIgnoreMouseEvents(false)
@@ -600,6 +602,7 @@ export default {
                                 minHeight: 720,
                                 maxHeight: 720
                             }
+
                             this.session.startScreenShare(desktopShareOptions);
                             avenginekitproxy.emitToMain('start-screen-share', {})
                         }
@@ -633,6 +636,7 @@ export default {
                 videoEl.setSinkId(deviceId);
             }
         },
+
         userName(user) {
             let name = '';
             if (user.groupAlias) {
@@ -691,34 +695,37 @@ export default {
     },
 
     watch: {
-        participantUserInfos(infos) {
-            if (this.audioOnly) {
-                return;
-            }
-            let videoParticipants = infos.filter(u => !u.audience)
-            let count = videoParticipants.length;
-            if (!this.selfUserInfo._isAudience) {
-                count++;
-            }
-            let width = '100%';
-            let height = '100%';
-            if (count <= 1) {
-                width = '100%';
-                height = '100%';
-            } else if (count <= 4) {
-                width = '50%';
-                height = '45%';
-            } else if (count <= 9) {
-                width = '33%';
-                height = '33%'
-            } else {
-                // max 16
-                width = '25%';
-                height = '25%'
-            }
-            if (this.$refs.contentContainer) {
-                this.$refs.contentContainer.style.setProperty('--participant-video-item-width', width);
-                this.$refs.contentContainer.style.setProperty('--participant-video-item-height', height);
+        participantUserInfos: {
+            deep: true,
+            handler(infos) {
+                if (this.audioOnly) {
+                    return;
+                }
+                let videoParticipants = infos.filter(u => !u._isAudience)
+                let count = videoParticipants.length;
+                if (!this.selfUserInfo._isAudience) {
+                    count++;
+                }
+                let width = '100%';
+                let height = '100%';
+                if (count <= 1) {
+                    width = '100%';
+                    height = '100%';
+                } else if (count <= 4) {
+                    width = '50%';
+                    height = '45%';
+                } else if (count <= 9) {
+                    width = '33%';
+                    height = '33%'
+                } else {
+                    // max 16
+                    width = '25%';
+                    height = '25%'
+                }
+                if (this.$refs.contentContainer) {
+                    this.$refs.contentContainer.style.setProperty('--participant-video-item-width', width);
+                    this.$refs.contentContainer.style.setProperty('--participant-video-item-height', height);
+                }
             }
         }
     },
@@ -746,7 +753,6 @@ export default {
             //     this.session.stopScreenShare();
             //     this.$forceUpdate();
             // })
-
             window.addEventListener("mousemove", (event) => {
                 if (!this.session.isScreenSharing()) {
                     return;
@@ -760,7 +766,6 @@ export default {
             window.addEventListener("mouseleave", (event) => {
                 currentWindow.setIgnoreMouseEvents(false);
             })
-
             this.$refs.contentContainer.style.setProperty('--conference-container-margin-top', '30px');
         } else {
             this.$refs.contentContainer.style.setProperty('--conference-container-margin-top', '0px');
@@ -776,6 +781,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+
 .voip-container {
     --participant-video-item-width: 100%;
     --participant-video-item-height: 100%;
@@ -810,7 +816,6 @@ export default {
     justify-content: center;
     align-items: center;
     align-content: center;
-
 }
 
 .content-container.video {
