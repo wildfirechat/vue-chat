@@ -2,6 +2,7 @@
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
 import VideoProfile from './videoProfile'
+
 export default class WfcAVEngineKit {
     /**
      * CallSession 相关回调
@@ -14,23 +15,41 @@ export default class WfcAVEngineKit {
      */
     setup(sessionCallback) {
     }
-
     /**
      * 返回当前音视频通话session
      * 仅在音视频窗口调用有效
      */
     getCurrentSession() {
-    }
 
+    }
     static MAX_AUDIO_PARTICIPANT_COUNT = 16;
     static MAX_VIDEO_PARTICIPANT_COUNT = 9;
+
     // 是否禁用双流模式
     static DISABLE_DUAL_STREAM = false;
+
     /**
-     禁止双流模式下，小流低帧率。默认为false，小流的帧率为8fps。当为true时使用同大流一样的帧率
+     禁止双流模式下，小流低帧率。默认为false，小流的帧率为8fps。当为true时使用 {@link SMALL_STREAM_FPS}， 或者使用同大流一样的帧率
      */
      static DISABLE_SMALL_STREAM_LOW_FPS = false;
+
+    /**
+     * 小流分辨率，宽度
+     */
+     static SMALL_STREAM_WIDTH = 200;
+
+    /**
+     * 小流分辨率， 高度
+     */
+     static SMALL_STREAM_HEIGHT = 200;
+
+    /**
+     * 小流 fps
+     */
+    static SMALL_STREAM_FPS = 8;
+
     // 是否默认使用大流
     static DEFAULT_USE_MAIN_VIDEO = true;
+
     static VIDEO_PROFILE = VideoProfile.VPDEFAULT;
 }
