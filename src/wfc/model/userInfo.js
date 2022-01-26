@@ -36,5 +36,5 @@ export default class UserInfo {
     type = 0; //0 normal; 1 robot; 2 thing;
     //0 normal; 1 deleted;
     deleted = 0;
-    updateDt = 1550652404513;
+    updateDt = 0;
 }

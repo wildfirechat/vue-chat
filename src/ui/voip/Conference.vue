@@ -254,6 +254,7 @@ export default {
             showParticipantList: false,
             sharedMiscState: store.state.misc,
             videoInputDeviceIndex: 0,
+            refreshUserInfoInternal: 0,
         }
     },
     components: {ScreenShareControlView, UserCardView, ElectronWindowsControlButtonView},
@@ -661,6 +662,33 @@ export default {
             let sec = ~~((timestamp % 60));
             str += (sec < 10 ? "0" : "") + sec
             return str;
+        },
+
+        refreshUserInfos() {
+            let toRefreshUsers = [];
+            this.participantUserInfos.forEach(pu => {
+                if (!pu.updateDt) {
+                    toRefreshUsers = pu.uid;
+                }
+            });
+
+            if (toRefreshUsers.length > 0) {
+                IpcSub.getUserInfos(toRefreshUsers, null, (userInfos) => {
+                    userInfos.forEach(u => {
+                        let index = this.participantUserInfos.findIndex(p => p.uid === u.uid);
+                        if (u.updateDt && index > -1) {
+                            let ou = this.participantUserInfos[index];
+                            u._stream = ou._stream;
+                            u._isAudience = ou._isAudience;
+                            u._isHost = ou._isHost;
+                            u._isVideoMuted = ou._isVideoMuted;
+                            u._isAudioMuted = ou._isAudioMuted;
+                            u._volume = ou._volume;
+                            this.participantUserInfos[index] = u;
+                        }
+                    })
+                })
+            }
         }
     },
 
@@ -736,6 +764,9 @@ export default {
 
     created() {
         document.title = '在线会议';
+        this.refreshUserInfoInternal = setInterval(() => {
+            this.refreshUserInfos();
+        }, 3 * 1000)
     },
 
     mounted() {
@@ -754,7 +785,7 @@ export default {
             //     this.$forceUpdate();
             // })
             window.addEventListener("mousemove", (event) => {
-                if (!this.session.isScreenSharing()) {
+                if (!this.session || !this.session.isScreenSharing()) {
                     return;
                 }
                 if (event.target.id === "main-content-container") {
@@ -776,6 +807,7 @@ export default {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.participantUserInfos.forEach(m => this.$set(m, "_stream", null))
+        clearInterval(this.refreshUserInfoInternal);
     }
 }
 </script>

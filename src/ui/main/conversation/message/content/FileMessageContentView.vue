@@ -35,7 +35,7 @@ export default {
             if (isElectron()) {
                 let localPath = this.message.messageContent.localPath;
                 if (localPath && fs.existsSync(localPath)) {
-                    shell.openItem(localPath);
+                    shell.openPath(localPath);
                 } else {
                     if (!this.isDownloading()) {
                         downloadFile(this.message)

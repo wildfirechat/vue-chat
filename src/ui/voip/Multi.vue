@@ -136,6 +136,7 @@ export default {
 
             startTimestamp: 0,
             currentTimestamp: 0,
+            videoInputDeviceIndex: 0,
         }
     },
     methods: {
@@ -252,6 +253,27 @@ export default {
 
         hangup() {
             this.session.hangup();
+        },
+
+        switchCamera() {
+            if (!this.session || this.session.isScreenSharing()) {
+                return;
+            }
+            // The order is significant - the default capture devices will be listed first.
+            // navigator.mediaDevices.enumerateDevices()
+            navigator.mediaDevices.enumerateDevices().then(devices => {
+                devices = devices.filter(d => d.kind === 'videoinput');
+                if (devices.length < 2) {
+                    console.log('switchCamera error, no more video input device')
+                    return;
+                }
+                this.videoInputDeviceIndex++;
+                if (this.videoInputDeviceIndex >= devices.length) {
+                    this.videoInputDeviceIndex = 0;
+                }
+                this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
+                console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
+            })
         },
 
         mute() {
