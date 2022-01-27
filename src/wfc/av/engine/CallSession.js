@@ -26,7 +26,7 @@ export default class CallSession {
     /**
      * 播放来电响铃
      */
-    playIncomingRing() {
+    playIncomingRing () {
         // TODO
         //在界面初始化时播放来电铃声
     }
@@ -34,7 +34,7 @@ export default class CallSession {
     /**
      * 停止响铃
      */
-    stopIncomingRing() {
+    stopIncomingRing () {
         // TODO
         //再接听/语音接听/结束媒体时停止播放来电铃声，可能有多次，需要避免出问题
     }
@@ -43,24 +43,24 @@ export default class CallSession {
      * 多人音视频通话中，邀请新成员
      * @param newParticipantIds
      */
-    inviteNewParticipants(newParticipantIds) {
+    inviteNewParticipants (newParticipantIds) {
     }
 
     /**
      * 接听来电
      */
-    call() {
+    call () {
     }
 
     /**
      * 挂断
      */
-    hangup() {
+    hangup () {
     }
 
 
     // 回落到语音
-    downgrade2Voice() {
+    downgrade2Voice () {
     }
 
     /**
@@ -68,7 +68,7 @@ export default class CallSession {
      * @param enable
      * @deprecated 请使用{@link muteVideo}
      */
-    setVideoEnabled(enable) {
+    setVideoEnabled (enable) {
 
     }
 
@@ -76,7 +76,7 @@ export default class CallSession {
      * 打开或关闭摄像头
      * @param {boolean} mute true，关闭摄像头；false，打开摄像头
      */
-    muteVideo(mute) {
+    muteVideo(mute){
 
     }
 
@@ -93,7 +93,7 @@ export default class CallSession {
      * 静音或取消静音
      * @param {boolean} mute true，静音；false，取消静音
      */
-    muteAudio(mute) {
+    muteAudio(mute){
 
     }
 
@@ -103,7 +103,7 @@ export default class CallSession {
      * @param {[string]} types 媒体源类型，可选screen、window
      * @return {Promise<DesktopCapturerSource[]>}
      */
-    getDesktopSources(types) {
+    getDesktopSources (types) {
 
     }
 
@@ -115,15 +115,16 @@ export default class CallSession {
                 maxHeight: 720}} desktopShareOptions 仅当桌面时有效
      * 开始屏幕共享
      */
-    async startScreenShare(desktopShareOptions) {
+    async startScreenShare (desktopShareOptions) {
 
     }
 
-    isScreenSharing() {
+    isScreenSharing () {
 
     }
 
-    stopScreenShare() {
+    stopScreenShare () {
+
     }
 
     /**
@@ -131,8 +132,7 @@ export default class CallSession {
      * @param {string} userId
      * @return {PeerConnectionClient}
      */
-    getPeerConnectionClient(userId) {
-
+    getPeerConnectionClient(userId){
     }
 
 
@@ -171,15 +171,15 @@ export default class CallSession {
      * @param {boolean} destroyRoom 是否销毁会议室
      */
     leaveConference(destroyRoom) {
-
     }
 
     /**
      * 关闭音视频通话窗口
      */
-    closeVoipWindow() {
+    closeVoipWindow(){
 
     }
+
     /**
      * 仅会议时有效
      * 设置音频输入设备
@@ -197,6 +197,15 @@ export default class CallSession {
     setVideoInputDeviceId(videoDeviceId){
 
     }
+
+    /**
+     * 切换摄像头，手机端有效
+     * @return true，支持切换摄像头，正在切换；false，不支持切换摄像头
+     */
+    switchCamera(){
+
+    }
+
     /**
      * 仅会议时有效
      * 设置视频最大码率
@@ -205,4 +214,5 @@ export default class CallSession {
     setVideoMaxBitrate(maxBitrateKbps){
 
     }
+
 }
