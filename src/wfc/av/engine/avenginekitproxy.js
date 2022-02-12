@@ -17,6 +17,7 @@ import Conversation from "../../../wfc/model/conversation";
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
 export class AvEngineKitProxy {
+    wfc;
     queueEvents = [];
     callWin;
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
@@ -46,6 +47,11 @@ export class AvEngineKitProxy {
      * @param wfc
      */
     setup(wfc) {
+        if (this.wfc === wfc) {
+            console.log('re-setup, just ignore');
+            return;
+        }
+        this.wfc = wfc;
         DetectRTC.load(() => {
             this.isSupportVoip = DetectRTC.isWebRTCSupported;
             this.hasMicrophone = DetectRTC.hasMicrophone;
@@ -57,52 +63,7 @@ export class AvEngineKitProxy {
         });
         this.event = wfc.eventEmitter;
         this.event.on(EventType.ReceiveMessage, this.onReceiveMessage);
-        this.event.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent)
-
-        if (isElectron()) {
-            ipcRenderer.on('voip-message', this.sendVoipListener);
-            ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
-            ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
-            ipcRenderer.on('start-screen-share', (event, args) => {
-                if (this.callWin) {
-                    let screenWidth = args.width;
-                    this.callWin.resizable = true;
-                    this.callWin.closable = true;
-                    this.callWin.maximizable = false;
-                    this.callWin.transparent = true;
-                    this.callWin.setMinimumSize(800, 800);
-                    this.callWin.setSize(800, 800);
-                    // console.log('screen width', screen, screen.width);
-                    this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
-                }
-            });
-            ipcRenderer.on('stop-screen-share', (event, args) => {
-                if (this.callWin) {
-                    let type = args.type;
-                    let width = 360;
-                    let height = 640;
-                    switch (type) {
-                        case 'single':
-                            width = 360;
-                            height = 640;
-                            break;
-                        case 'multi':
-                        case 'conference':
-                            width = 1024;
-                            height = 800;
-                            break;
-                        default:
-                            break;
-                    }
-                    this.callWin.resizable = true;
-                    this.callWin.closable = true;
-                    this.callWin.maximizable = true;
-                    this.callWin.setMinimumSize(width, height);
-                    this.callWin.setSize(width, height);
-                    this.callWin.center();
-                }
-            })
-        }
+        this.event.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);
     }
 
     /**
@@ -129,6 +90,7 @@ export class AvEngineKitProxy {
     }
 
     sendConferenceRequestListener = (event, request) => {
+        console.log('to send conference request', request)
         wfc.sendConferenceRequestEx(request.sessionId ? request.sessionId : 0, request.roomId ? request.roomId : '', request.request, request.data, request.advance, (errorCode, res) => {
             this.emitToVoip('sendConferenceRequestResult', {
                 error: errorCode,
@@ -140,6 +102,7 @@ export class AvEngineKitProxy {
 
     // 发送消息时，返回的timestamp，已经过修正，后面使用时,不用考虑和服务器的时间差
     sendVoipListener = (event, msg) => {
+
         let contentClazz = MessageConfig.getMessageContentClazz(msg.content.type);
 
         let content = new contentClazz();
@@ -288,7 +251,7 @@ export class AvEngineKitProxy {
                         }, 200)
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
-                    if(content.callId !== this.callId){
+                    if (content.callId !== this.callId) {
                         return;
                     }
                     this.conversation = null;
@@ -343,7 +306,7 @@ export class AvEngineKitProxy {
     }
 
     emitToMain(event, args) {
-        // console.log('emit to main', event, args);
+        console.log('emit to main', event, args);
         if (isElectron()) {
             // renderer to main
             ipcRenderer.send(event, args);
@@ -382,6 +345,7 @@ export class AvEngineKitProxy {
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
         }
+
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         participants = participants.filter(uid => uid !== selfUserInfo.uid);
         let callId = conversation.target + Math.floor(Math.random() * 10000);
@@ -634,20 +598,69 @@ export class AvEngineKitProxy {
             this.callId = null;
             this.participants = [];
             this.callWin = null;
-            this.voipEventRemoveAllListeners(['message']);
+            this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
         }, 2000);
     }
 
     onVoipWindowReady(win) {
         this.callWin = win;
+        console.log('onVoipWindowReady')
         if (!isElectron()) {
-            this.events = new PostMessageEventEmitter(win, window.location.origin)
+            if (!this.events) {
+                this.events = new PostMessageEventEmitter(win, window.location.origin)
+            }
+            console.log('windowEmitter subscribe events');
             this.events.on('voip-message', this.sendVoipListener)
             this.events.on('conference-request', this.sendConferenceRequestListener);
             this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
             if (this.useIframe) {
                 this.events.on('close-iframe-window', this.onVoipWindowClose)
             }
+        } else {
+            console.log('ipcRenderer subscribe events');
+            ipcRenderer.on('voip-message', this.sendVoipListener);
+            ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
+            ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
+            ipcRenderer.on('start-screen-share', (event, args) => {
+                if (this.callWin) {
+                    let screenWidth = args.width;
+                    this.callWin.resizable = true;
+                    this.callWin.closable = true;
+                    this.callWin.maximizable = false;
+                    this.callWin.transparent = true;
+                    this.callWin.setMinimumSize(800, 800);
+                    this.callWin.setSize(800, 800);
+                    // console.log('screen width', screen, screen.width);
+                    this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
+                }
+            });
+            ipcRenderer.on('stop-screen-share', (event, args) => {
+                if (this.callWin) {
+                    let type = args.type;
+                    let width = 360;
+                    let height = 640;
+                    switch (type) {
+                        case 'single':
+                            width = 360;
+                            height = 640;
+                            break;
+                        case 'multi':
+                        case 'conference':
+                            width = 1024;
+                            height = 800;
+                            break;
+                        default:
+                            break;
+                    }
+                    this.callWin.resizable = true;
+                    this.callWin.closable = true;
+                    this.callWin.maximizable = true;
+                    this.callWin.setMinimumSize(width, height);
+                    this.callWin.setSize(width, height);
+                    this.callWin.center();
+                }
+            })
+
         }
         if (this.queueEvents.length > 0) {
             this.queueEvents.forEach((eventArgs) => {
@@ -657,7 +670,7 @@ export class AvEngineKitProxy {
         }
     }
 
-    voipEventRemoveAllListeners(events = []) {
+    voipEventRemoveAllListeners(...events) {
         if (isElectron()) {
             // renderer
             events.forEach(e => ipcRenderer.removeAllListeners(e));
@@ -669,8 +682,8 @@ export class AvEngineKitProxy {
         }
     }
 
-    forceCloseVoipWindow(){
-        if (this.callWin){
+    forceCloseVoipWindow() {
+        if (this.callWin) {
             this.callWin.close();
         }
     }

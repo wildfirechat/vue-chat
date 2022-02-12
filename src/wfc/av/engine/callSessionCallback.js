@@ -32,15 +32,15 @@ export default class CallSessionCallback {
 
     }
 
-    didParticipantJoined(userId, userInfo) {
+    didParticipantJoined(userId, screenSharing = false) {
 
     }
 
-    didParticipantConnected(userId) {
+    didParticipantConnected(userId, screenSharing = false) {
 
     }
 
-    didParticipantLeft(userId, callEndReason) {
+    didParticipantLeft(userId, callEndReason, screenSharing = false) {
 
     }
 
@@ -55,9 +55,10 @@ export default class CallSessionCallback {
     /**
      * 创建本地音视频流失败，可能原因可能是没有摄像头、或者没有麦克风
      */
-    didCreateLocalVideoTrackError(){
+    didCreateLocalVideoTrackError() {
 
     }
+
     didError(error) {
 
     }
@@ -66,7 +67,7 @@ export default class CallSessionCallback {
 
     }
 
-    didReceiveRemoteVideoTrack(userId, stream) {
+    didReceiveRemoteVideoTrack(userId, stream, screenSharing = false) {
 
     }
 
@@ -96,14 +97,16 @@ export default class CallSessionCallback {
      * @param {[string]} participants
      */
     didMuteStateChanged(participants) {
+
     }
 
     /**
      * 当前用户发送媒体丢包回调
      * @param media 媒体类型，audio 或 video
      * @param lostPacket 丢包数
+     * @param {boolean} screenSharing
      */
-    didMediaLostPacket(media, lostPacket) {
+    didMediaLostPacket(media, lostPacket, screenSharing = false) {
 
     }
 
@@ -113,8 +116,10 @@ export default class CallSessionCallback {
      * @param media 媒体类型，audio 或 video
      * @param lostPacket 丢包数
      * @param uplink 方向，true是对方丢的，false是己方丢的
+     * @param {boolean} screenSharing
      */
-    didUserMediaLostPacket(userId, media, lostPacket, uplink) {
+    didUserMediaLostPacket(userId, media, lostPacket, uplink, screenSharing = false) {
+
     }
 
     didChangeInitiator(initiator) {
@@ -126,8 +131,9 @@ export default class CallSessionCallback {
      * 听众或互动者角色变更回调
      * @param {string} userId
      * @param {boolean} audience
+     * @param {boolean} screenSharing
      */
-    didChangeType(userId, audience) {
+    didChangeType(userId, audience, screenSharing = false) {
 
     }
 

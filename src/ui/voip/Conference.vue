@@ -49,7 +49,7 @@
 
                         <!--participants-->
                         <div v-for="(participant) in participantUserInfos.filter(u => !u._isAudience)"
-                             :key="participant.uid"
+                             :key="participant.uid + participant._isScreenSharing"
                              class="participant-video-item"
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
@@ -220,7 +220,7 @@
 
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
-import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
+import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import IpcSub from "../../ipc/ipcSub";
 import ClickOutside from 'vue-click-outside'
@@ -263,9 +263,9 @@ export default {
             if (!this.session) {
                 return
             }
-            let client = this.session.getClient(userId);
-            if (client) {
-                client.setUseMainVideo(!client.useMainVideo);
+            let subscriber = this.session.getSubscriber(userId);
+            if (subscriber) {
+                subscriber.setUseMainVideo(!subscriber.useMainVideo);
             }
         },
         setupSessionCallback() {
@@ -319,37 +319,41 @@ export default {
                 // 可以进行相关提示
             };
 
-            sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
+            sessionCallback.didReceiveRemoteVideoTrack = (userId, stream, screenSharing) => {
                 let p;
-                console.log('didReceiveRemoteVideoTrack', userId)
+                console.log('didReceiveRemoteVideoTrack', userId, stream, screenSharing);
                 for (let i = 0; i < this.participantUserInfos.length; i++) {
                     p = this.participantUserInfos[i];
-                    if (p.uid === userId) {
+                    if (p.uid === userId && p._isScreenSharing === screenSharing) {
                         p._stream = stream;
                         break;
                     }
                 }
             };
 
-            sessionCallback.didParticipantJoined = (userId) => {
-                console.log('didParticipantJoined', userId)
+            sessionCallback.didParticipantJoined = (userId, screenSharing) => {
+                console.log('didParticipantJoined', userId, screenSharing)
                 IpcSub.getUserInfos([userId], null, (userInfos) => {
                     let userInfo = userInfos[0];
-                    console.log('didParticipantJoined & getUserInfos', userInfo.uid)
-                    let client = this.session.getPeerConnectionClient(userId);
-                    userInfo._stream = client.stream;
-                    userInfo._isAudience = client.audience;
+                    let subscriber = this.session.getSubscriber(userId, screenSharing);
+                    userInfo._stream = subscriber.stream;
+                    userInfo._isAudience = subscriber.audience;
                     userInfo._isHost = this.session.host === userId;
-                    userInfo._isVideoMuted = client.videoMuted;
+                    userInfo._isVideoMuted = subscriber.videoMuted;
                     userInfo._volume = 0;
+                    userInfo._isScreenSharing = screenSharing;
                     this.participantUserInfos.push(userInfo);
+                    console.log('joined', this.participantUserInfos.length);
                 })
             }
 
-            sessionCallback.didParticipantLeft = (userId) => {
-                console.log('didParticipantLeft', userId, this.participantUserInfos.length)
-                this.participantUserInfos = this.participantUserInfos.filter(p => p.uid !== userId);
-                console.log('didParticipantLeft d', userId, this.participantUserInfos.length)
+            sessionCallback.didParticipantLeft = (userId, endReason, screenSharing) => {
+                console.log('didParticipantLeft', userId, endReason, screenSharing, JSON.stringify(this.participantUserInfos), this.participantUserInfos.length)
+                //this.participantUserInfos = this.participantUserInfos.filter(p => p.uid !== userId && p._isScreenSharing !== screenSharing);
+                this.participantUserInfos = this.participantUserInfos.filter(p => {
+                    return !(p.uid === userId && p._isScreenSharing === screenSharing);
+                });
+                console.log('didParticipantLeft d', userId, endReason, screenSharing, this.participantUserInfos.length)
             }
 
             sessionCallback.didCallEndWithReason = (reason) => {
@@ -382,9 +386,10 @@ export default {
                 })
             };
 
-            sessionCallback.didChangeType = (userId, audience) => {
+            sessionCallback.didChangeType = (userId, audience, screenSharing) => {
+                console.log('didChangeType', userId, audience, screenSharing);
                 this.participantUserInfos.forEach(u => {
-                    if (u.uid === userId) {
+                    if (u.uid === userId && u._isScreenSharing === screenSharing) {
                         u._isAudience = audience;
                     }
                 })
@@ -395,7 +400,7 @@ export default {
                     this.selfUserInfo._volume = volume;
                 } else {
                     this.participantUserInfos.forEach(u => {
-                        if (u.uid === userId) {
+                        if (u.uid === userId && u._isScreenSharing === false) {
                             u._volume = volume;
                         }
                     })
@@ -406,28 +411,30 @@ export default {
                 console.log('conference', 'didMuteStateChanged', participants)
                 participants.forEach(p => {
                     this.participantUserInfos.forEach(u => {
-                        if (u.uid === p) {
-                            let client = this.session.getClient(p);
-                            u._isVideoMuted = client.videoMuted;
-                            console.log('didMuteStateChanged', client.videoMuted, client.audioMuted)
+                        if (u.uid === p && u._isScreenSharing === false) {
+                            let subscriber = this.session.getSubscriber(p);
+                            u._isVideoMuted = subscriber.videoMuted;
+                            console.log('didMuteStateChanged', subscriber.videoMuted, subscriber.audioMuted)
                         }
                     })
 
                 })
             };
 
-            sessionCallback.didMediaLostPacket = (media, lostPacket) => {
+            sessionCallback.didMediaLostPacket = (media, lostPacket, screenSharing) => {
+                console.log('didMediaLostPacket', media, lostPacket, screenSharing);
                 if (lostPacket > 6) {
                     console.log('您的网络不好');
                 }
             };
 
-            sessionCallback.didUserMediaLostPacket = (userId, media, lostPacket, uplink) => {
+            sessionCallback.didUserMediaLostPacket = (userId, media, lostPacket, uplink, screenSharing) => {
+                console.log('didUserMediaLostPacket', userId, media, lostPacket, uplink, screenSharing);
                 //如果uplink ture对方网络不好，false您的网络不好
                 //接收方丢包超过10为网络不好
                 if (lostPacket > 10) {
                     if (uplink) {
-                        let userInfos = this.participantUserInfos.filter(u => u.uid === userId);
+                        let userInfos = this.participantUserInfos.filter(u => u.uid === userId && u._isScreenSharing === screenSharing);
                         if (userInfos && userInfos.length > 0) {
                             console.log(userInfos[0].displayName, "网络不好");
                         }
@@ -453,22 +460,21 @@ export default {
             if (!this.session || this.session.isScreenSharing()) {
                 return;
             }
-            this.session.switchCamera();
-            // // The order is significant - the default capture devices will be listed first.
-            // // navigator.mediaDevices.enumerateDevices()
-            // navigator.mediaDevices.enumerateDevices().then(devices => {
-            //     devices = devices.filter(d => d.kind === 'videoinput');
-            //     if (devices.length < 2) {
-            //         console.log('switchCamera error, no more video input device')
-            //         return;
-            //     }
-            //     this.videoInputDeviceIndex++;
-            //     if (this.videoInputDeviceIndex >= devices.length) {
-            //         this.videoInputDeviceIndex = 0;
-            //     }
-            //     this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
-            //     console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
-            // })
+            // The order is significant - the default capture devices will be listed first.
+            // navigator.mediaDevices.enumerateDevices()
+            navigator.mediaDevices.enumerateDevices().then(devices => {
+                devices = devices.filter(d => d.kind === 'videoinput');
+                if (devices.length < 2) {
+                    console.log('switchCamera error, no more video input device')
+                    return;
+                }
+                this.videoInputDeviceIndex++;
+                if (this.videoInputDeviceIndex >= devices.length) {
+                    this.videoInputDeviceIndex = 0;
+                }
+                this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
+                console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
+            })
         },
         mute() {
             let enable = this.session.audioMuted ? true : false;
@@ -669,7 +675,7 @@ export default {
             let toRefreshUsers = [];
             this.participantUserInfos.forEach(pu => {
                 if (!pu.updateDt) {
-                    toRefreshUsers = pu.uid;
+                    toRefreshUsers.push(pu.uid);
                 }
             });
 

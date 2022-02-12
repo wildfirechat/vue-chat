@@ -115,7 +115,7 @@
 
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
-import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
+import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
