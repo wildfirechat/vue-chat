@@ -5,6 +5,7 @@ import WfcAVEngineKit from "./avenginekit";
 export default class Subsriber {
     isInitiator = false;
     userId;
+    callExtra;
     status;
     joinTime = 0;
     acceptTime = 0;

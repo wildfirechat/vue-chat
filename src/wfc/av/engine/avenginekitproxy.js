@@ -332,8 +332,9 @@ export class AvEngineKitProxy {
      * @param {Conversation} conversation 会话
      * @param {Boolean} audioOnly 是否是音频通话
      * @param {[String]} participants 参与者用户id列表
+     * @param {string} callExtra 通话附加信息，会议版有效
      */
-    startCall(conversation, audioOnly, participants) {
+    startCall(conversation, audioOnly, participants, callExtra) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
@@ -366,7 +367,8 @@ export class AvEngineKitProxy {
             callId: callId,
             selfUserInfo: selfUserInfo,
             groupMemberUserInfos: groupMemberUserInfos,
-            participantUserInfos: participantUserInfos
+            participantUserInfos: participantUserInfos,
+            callExtra: callExtra,
         });
     }
 
@@ -381,9 +383,10 @@ export class AvEngineKitProxy {
      * @param {boolean} audience 其他人加入会议时，是否默认为观众；true，默认为观众；false，默认为互动者
      * @param {boolean} advance 是否为高级会议，当预计参与人员很多的时候，开需要开启超级会议
      * @param {boolean} record 是否开启服务端录制
-     * @param {Object} extra 一些额外信息，主要用于将信息传到音视频通话窗口
+     * @param {Object} extra 一些额外信息，主要用于将信息传到音视频通话窗口，会议的其他参与者，无法看到该附加信息
+     * @param {string} callExtra  通话附件信息，会议的所有参与者都能看到该附加信息
      */
-    startConference(callId, audioOnly, pin, host, title, desc, audience, advance, record = false, extra) {
+    startConference(callId, audioOnly, pin, host, title, desc, audience, advance, record = false, extra, callExtra) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
@@ -414,6 +417,7 @@ export class AvEngineKitProxy {
             record: record,
             selfUserInfo: selfUserInfo,
             extra: extra,
+            callExtra: callExtra,
         });
     }
 
@@ -430,8 +434,9 @@ export class AvEngineKitProxy {
      * @param {boolean} muteAudio 是否是静音加入会议
      * @param {boolean} muteVideo 是否是关闭摄像头加入会议
      * @param {Object} extra 一些额外信息，主要用于将信息传到音视频通话窗口
+     * @param {string} callExtra 通话附加信息，会议的所有参与者都能看到该附加信息
      */
-    joinConference(callId, audioOnly, pin, host, title, desc, audience, advance, muteAudio, muteVideo, extra) {
+    joinConference(callId, audioOnly, pin, host, title, desc, audience, advance, muteAudio, muteVideo, extra, callExtra) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
@@ -462,6 +467,7 @@ export class AvEngineKitProxy {
             muteVideo: muteVideo,
             selfUserInfo: selfUserInfo,
             extra: extra,
+            callExtra: callExtra,
         });
     }
 

@@ -21,6 +21,13 @@ export default class CallSession {
     host;
     title;
     desc;
+    /**
+     * 通话附加信息，会议的所有参与者都能看到
+     */
+    callExtra;
+    /**
+     * 本地附加信息，主要用于主窗口向音视频通话窗口传递额外信息
+     */
     extra;
 
     /**
@@ -48,8 +55,18 @@ export default class CallSession {
 
     /**
      * 接听来电
+     * @deprecated  参考{@link answer}
      */
     call () {
+        this.answer(false, null);
+    }
+
+    /**
+     * 接听电话
+     * @param {boolean} audioOnly
+     * @param {string} callExtra 通话附加信息
+     */
+    answer(audioOnly, callExtra) {
     }
 
     /**
