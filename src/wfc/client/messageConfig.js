@@ -176,11 +176,6 @@ export default class MessageConfig {
             contentClazz: LinkMessageContent,
         },
         {
-            name: 'link',
-            flag: PersistFlag.Persist_And_Count,
-            type: MessageContentType.Link,
-        },
-        {
             name: 'userCard',
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.UserCard,
