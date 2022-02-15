@@ -29,6 +29,7 @@ export default class LinkMessageContent extends MessageContent {
 
     decode(payload) {
         super.decode(payload);
+        this.title = payload.searchableContent;
         let obj = JSON.parse(wfc.b64_to_utf8(payload.binaryContent));
         this.contentDigest = obj.d;
         this.url = obj.u;
