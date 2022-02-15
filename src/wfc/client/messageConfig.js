@@ -54,6 +54,7 @@ import ConferenceInviteMessageContent from "../av/messages/conferenceInviteMessa
 import ConferenceChangeModeContent from "../av/messages/conferenceChangeModeContent";
 import ConferenceKickoffMemberMessageContent from "../av/messages/conferenceKickoffMemberMessageContent";
 import MarkUnreadMessageContent from "../messages/markUnreadMessageContent";
+import LinkMessageContent from "../messages/linkMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -167,6 +168,12 @@ export default class MessageConfig {
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.Sticker,
             contentClazz: StickerMessageContent,
+        },
+        {
+            name: 'link',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Link,
+            contentClazz: LinkMessageContent,
         },
         {
             name: 'link',
