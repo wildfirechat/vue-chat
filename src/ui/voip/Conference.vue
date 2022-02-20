@@ -54,7 +54,7 @@
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
                             <video v-if="!participant._isVideoMuted"
-                                   @click="setUseMainVideo(participant.uid)"
+                                   @click="setUseMainVideo(participant.uid, participant._isScreenSharing)"
                                    class="video"
                                    :srcObject.prop="participant._stream"
                                    playsInline
@@ -259,11 +259,11 @@ export default {
     },
     components: {ScreenShareControlView, UserCardView, ElectronWindowsControlButtonView},
     methods: {
-        setUseMainVideo(userId) {
+        setUseMainVideo(userId, screenSharing) {
             if (!this.session) {
                 return
             }
-            let subscriber = this.session.getSubscriber(userId);
+            let subscriber = this.session.getSubscriber(userId, screenSharing);
             if (subscriber) {
                 subscriber.setUseMainVideo(!subscriber.useMainVideo);
             }
