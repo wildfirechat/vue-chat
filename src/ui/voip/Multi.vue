@@ -222,7 +222,7 @@ export default {
             sessionCallback.didVideoMuted = (userId, muted) => {
                 this.participantUserInfos.forEach(u => {
                     if (u.uid === userId) {
-                        let client = this.session.getClient(userId);
+                        let client = this.session.getSubscriber(userId);
                         u._isVideoMuted = client.videoMuted;
                         console.log('didMuteStateChanged', client.videoMuted, client.audioMuted)
                     }

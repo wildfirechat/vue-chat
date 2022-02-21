@@ -48,7 +48,7 @@ export default class CallSessionCallback {
 
     }
 
-    didCreateLocalVideoTrack(stream) {
+    didCreateLocalVideoTrack(stream, screenSharing) {
 
     }
 
