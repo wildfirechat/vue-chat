@@ -9,8 +9,8 @@ export default class Subsriber {
     status;
     joinTime = 0;
     acceptTime = 0;
-    audioMuted;
-    videoMuted;
+    audioMuted = false;
+    videoMuted = false;
     stream;
     audience = false;
     useMainVideo = WfcAVEngineKit.DEFAULT_USE_MAIN_VIDEO;
