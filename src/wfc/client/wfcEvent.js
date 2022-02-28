@@ -45,4 +45,6 @@ export default class EventType {
 
     // function (event) {}
     static ConferenceEvent = 'conferenceEvent';
+    // function (UserOnlineState[]) {}
+    static UserOnlineEvent = 'onlineEvent';
 }

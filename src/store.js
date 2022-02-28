@@ -272,6 +272,11 @@ let store = {
             this.updateTray();
         });
 
+        wfc.eventEmitter.on(EventType.UserOnlineEvent, (xxx) => {
+            console.log('xxxx userOnlineEvent', xxx);
+            wfc.setMyCustomState(1, 'hello world', () => console.log('xxx setMyCustomState ok'), (err) => console.log('xxx setMyCustomState error', err))
+        })
+
         // 服务端删除
         wfc.eventEmitter.on(EventType.MessageDeleted, (messageUid) => {
             this._loadDefaultConversationList();
