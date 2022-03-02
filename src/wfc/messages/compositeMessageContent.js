@@ -39,7 +39,7 @@ export default class CompositeMessageContent extends MessageContent {
                 tos: msg.to,
                 direction: msg.direction,
                 status: msg.status,
-                serverTime: msg.timestamp,
+                serverTime: stringValue(msg.timestamp),
                 ctype: msgPayload.type,
                 csc: msgPayload.searchableContent,
                 cpc: msgPayload.pushContent,
@@ -70,6 +70,7 @@ export default class CompositeMessageContent extends MessageContent {
         }
         let str = JSON.stringify(obj);
         str = str.replace(/"uid":"([0-9]+)"/, "\"uid\":$1");
+        str = str.replace(/"serverTime":"([0-9]+)"/, "\"serverTime\":$1");
 
         payload.binaryContent = wfc.utf8_to_b64(str)
         return payload;
@@ -83,6 +84,7 @@ export default class CompositeMessageContent extends MessageContent {
         // FIXME node 环境，decodeURIComponent 方法，有时候会在最后添加上@字符，目前尚未找到原因，先规避
         str = str.substring(0, str.lastIndexOf('}') + 1);
         str = str.replace(/"uid":([0-9]+)/g, "\"uid\":\"$1\"");
+        str = str.replace(/"serverTime":([0-9]+)/g, "\"serverTime\":\"$1\"");
         let obj = JSON.parse(str);
         obj.ms.forEach(o => {
             let conv = new Conversation(o.type, o.target, o.line);
@@ -93,7 +95,7 @@ export default class CompositeMessageContent extends MessageContent {
             msg.to = o.tos;
             msg.direction = o.direction;
             msg.status = o.status;
-            msg.timestamp = o.serverTime;
+            msg.timestamp = Long.fromValue(o.serverTime);
 
             let payload = new MessagePayload();
             payload.type = o.ctype;
