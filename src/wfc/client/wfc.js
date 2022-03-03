@@ -1459,6 +1459,19 @@ export class WfcManager {
     }
 
     /**
+   * 更新远程消息消息内容，只有专业版支持。客户端仅能更新自己发送的消息，更新的消息类型不能变，更新的消息类型是服务配置允许更新的内容。Server API更新则没有限制。
+   * @param {Long | string} msgUid 消息uid
+   * @param {MessageContent} messageContent 具体的消息内容，一定要求是{@link MessageContent} 的子类，不能是普通的object
+   * @param {boolean} distribute 是否重新分发给其他客户端
+   * @param {boolean} updateLocal 是否更新本地消息内容
+   * @param {function ()} successCB
+   * @param {function (number)} failCB
+   */
+  updateRemoteMessageContent(msgUid, messageContent, distribute, updateLocal, successCB, failCB){
+    impl.updateRemoteMessageContent(msgUid, messageContent, distribute, updateLocal, successCB, failCB);
+  }
+
+    /**
      * 更新消息状态
      * @param {number} messageId 消息id
      * @param {MessageStatus} 消息状态，可选值参考{@link MessageStatus}
@@ -1700,6 +1713,27 @@ export class WfcManager {
     sendConferenceRequestEx(sessionId, roomId, request, data, advance, callback) {
         impl.sendConferenceRequest(sessionId, roomId, request, data, advance, callback);
     }
+
+    isUserOnlineStateEnabled(){
+        return impl.isUserOnlineStateEnabled();
+    }
+
+    watchOnlineState(type, targets, duration, successCB, failCB){
+        impl.watchOnlineState(type, targets, duration, successCB, failCB);
+    }
+
+    unwatchOnlineState(type, targets, successCB, failCB){
+        impl.unwatchOnlineState(type, targets, successCB, failCB);
+    }
+
+    setMyCustomState(customState, customText, successCB, failCB){
+        impl.setMyCustomState(customState, customText, successCB, failCB)
+    }
+
+    _getStore() {
+        return impl._getStore();
+    }
+
 
     _getStore() {
         return impl._getStore();
