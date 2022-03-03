@@ -22,6 +22,16 @@ export default {
             return userInfos;
         });
 
+        localStorageEmitter.handle('getUserInfo', (ev, args) => {
+            console.log('getUserInfo', ev, args)
+            let userId = args.userId;
+            let groupId = args.groupId;
+            let refresh = args.refresh;
+            let userInfo = wfc.getUserInfo(userId, refresh, groupId);
+            console.log('getUserInfo result', userInfo)
+            return userInfo;
+        });
+
         localStorageEmitter.handle('getUserId', (ev, args) => {
             return wfc.getUserId();
         });
