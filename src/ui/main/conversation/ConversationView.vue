@@ -1,4 +1,4 @@
- <template>
+<template>
     <section>
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
             <h1>^~^</h1>
@@ -6,7 +6,10 @@
         <div v-else class="conversation-container">
             <header>
                 <div class="title-container">
-                    <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
+                    <div>
+                        <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
+                        <p class="single-line user-online-status">{{ targetUserOnlineStateDesc }}</p>
+                    </div>
                     <a href="#"><i class="icon-ion-ios-settings-strong"
                                    style="display: inline-block"
                                    v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
@@ -130,10 +133,8 @@ import wfc from "@/wfc/client/wfc";
 import {numberValue} from "@/wfc/util/longUtil";
 import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
-import ForwardMessageByPickConversationView
-    from "@/ui/main/conversation/message/forward/ForwardMessageByPickConversationView";
-import ForwardMessageByCreateConversationView
-    from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
+import ForwardMessageByPickConversationView from "@/ui/main/conversation/message/forward/ForwardMessageByPickConversationView";
+import ForwardMessageByCreateConversationView from "@/ui/main/conversation/message/forward/ForwardMessageByCreateConversationView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
 import {fs, isElectron, shell} from "@/platform";
@@ -408,7 +409,7 @@ export default {
                 if (selectedText) {
                     copyText(selectedText);
                 } else {
-                copyText(content.content)
+                    copyText(content.content)
                 }
             } else {
                 copyImg(content.remotePath)
@@ -450,9 +451,9 @@ export default {
             return this.pickConversationAndForwardMessage(ForwardType.NORMAL, [message]);
         },
 
-        _forward(message){
-            this.forward(message).catch(()=>{
-               // do nothing
+        _forward(message) {
+            this.forward(message).catch(() => {
+                // do nothing
             });
         },
         quoteMessage(message) {
@@ -460,7 +461,7 @@ export default {
         },
 
         // call from child
-        favMessages(messages){
+        favMessages(messages) {
             console.log('fav messages');
             let compositeMessageContent = new CompositeMessageContent();
             let title = '';
@@ -667,7 +668,7 @@ export default {
     },
 
     updated() {
-        if (!this.sharedConversationState.currentConversationInfo){
+        if (!this.sharedConversationState.currentConversationInfo) {
             return;
         }
 
@@ -700,6 +701,12 @@ export default {
             let info = this.sharedConversationState.currentConversationInfo;
             return info.conversation._target._displayName;
         },
+
+        targetUserOnlineStateDesc() {
+            let info = this.sharedConversationState.currentConversationInfo;
+            return info.conversation._targetOnlineStateDesc;
+        },
+
         loadingIdentifier() {
             let conversation = this.sharedConversationState.currentConversationInfo.conversation;
             return conversation.type + '-' + conversation.target + '-' + conversation.line;
@@ -861,6 +868,11 @@ export default {
     height: 3px;
     border-top: 1px solid #e2e2e2;
     margin: 0 auto;
+}
+
+.user-online-status {
+    color: gray;
+    font-size: 10px;
 }
 
 .message-input-container {

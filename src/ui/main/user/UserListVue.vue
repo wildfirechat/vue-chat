@@ -33,8 +33,10 @@
                         && user.uid === sharedContactState.currentFriend.uid) || (currentUser && currentUser.uid === user.uid)}"
                                  @click.stop="clickUserItem(user)">
                                 <img class="avatar" :src="user.portrait" alt="">
-                                <span
-                                    class="single-line"> {{ user._displayName }}</span>
+                                <div style="padding-left: 10px">
+                                    <p class="single-line"> {{ user._displayName }}</p>
+                                    <p v-if="user._userOnlineStatusDesc" class="single-line user-online-status"> {{ user._userOnlineStatusDesc }}</p>
+                                </div>
                             </div>
 
                         </li>
@@ -106,7 +108,8 @@ export default {
         },
         closeUserCard(user) {
             this.$refs["userCardTippy-" + user.uid][0]._tippy.hide();
-        }
+        },
+
 
     },
 
@@ -224,6 +227,11 @@ ul {
 
 .contact-item .content:active {
     background-color: #d6d6d6;
+}
+
+.user-online-status {
+    color: gray;
+    font-size: 10px;
 }
 
 /*.contact-item .content:hover {*/

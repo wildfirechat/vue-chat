@@ -1718,6 +1718,14 @@ export class WfcManager {
         return impl.isUserOnlineStateEnabled();
     }
 
+    /**
+     *
+     * @param {number} type 会话类型， 支持{@link ConversationType.Single}和{@link ConversationType.Group}
+     * @param {string[]} targets 会话类型为单聊时，是用户 id列表；会话类型为群组时，是群组 id 列表
+     * @param {number} duration 关注时间长度，单位是秒
+     * @param {function(UserOnlineState[])} successCB
+     * @param {function(number)} failCB
+     */
     watchOnlineState(type, targets, duration, successCB, failCB){
         impl.watchOnlineState(type, targets, duration, successCB, failCB);
     }
