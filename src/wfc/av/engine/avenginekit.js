@@ -29,6 +29,11 @@ export default class WfcAVEngineKit {
     static DISABLE_DUAL_STREAM = false;
 
     /**
+     屏幕分享替换模式。为ture时，屏幕分享会替换摄像头的数据流。为false时，屏幕分享会再单独发起一路，不会影响摄像头的输入。
+     */
+    static SCREEN_SHARING_REPLACE_MODE = true;
+
+    /**
      禁止双流模式下，小流低帧率。默认为false，小流的帧率为8fps。当为true时使用 {@link SMALL_STREAM_FPS}， 或者使用同大流一样的帧率
      */
      static DISABLE_SMALL_STREAM_LOW_FPS = false;

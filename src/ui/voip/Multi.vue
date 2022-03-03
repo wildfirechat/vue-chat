@@ -116,11 +116,12 @@
 
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
-import CallSessionCallback from "../../wfc/av/engine/CallSessionCallback";
+import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
 import PickUserView from "@/ui/main/pick/PickUserView";
 import CallState from "@/wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
+import IpcSub from "../../ipc/ipcSub";
 
 export default {
     name: 'Multi',
@@ -196,10 +197,14 @@ export default {
                 }
             };
 
-            sessionCallback.didParticipantJoined = (userId, userInfo) => {
+            sessionCallback.didParticipantJoined = (userId, screenSharing) => {
+                IpcSub.getUserInfos([userId], null, (userInfos) => {
+                    userInfos.forEach(u => {
                 console.log('didParticipantJoined', userId)
-                userInfo._stream = null;
-                this.participantUserInfos.push(userInfo);
+                        u._stream = null;
+                        this.participantUserInfos.push(u);
+                    })
+                })
             }
 
             sessionCallback.didParticipantLeft = (userId) => {
@@ -217,7 +222,7 @@ export default {
             sessionCallback.didVideoMuted = (userId, muted) => {
                 this.participantUserInfos.forEach(u => {
                     if (u.uid === userId) {
-                        let client = this.session.getClient(userId);
+                        let client = this.session.getSubscriber(userId);
                         u._isVideoMuted = client.videoMuted;
                         console.log('didMuteStateChanged', client.videoMuted, client.audioMuted)
                     }
