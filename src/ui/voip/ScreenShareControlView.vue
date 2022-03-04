@@ -86,6 +86,7 @@ export default {
         },
 
         stopScreenShare() {
+            console.log('stopScreenShare', this.session);
             this.session.stopScreenShare();
             AvEngineKitProxy.emitToMain('stop-screen-share', {type: this.type})
             // 不太明白session明显变动了，但父组件没有去刷新，所以强制刷新下

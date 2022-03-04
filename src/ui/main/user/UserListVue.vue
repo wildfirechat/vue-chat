@@ -108,7 +108,7 @@ export default {
         },
         closeUserCard(user) {
             this.$refs["userCardTippy-" + user.uid][0]._tippy.hide();
-        },
+        }
 
 
     },

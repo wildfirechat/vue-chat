@@ -1,6 +1,6 @@
 /*
 视频属性 (Profile) 定义
-视频属性	枚举值	分辨率（宽x高）	帧率（fps）	码率（kpbs）
+视频属性	枚举值	分辨率（宽x高）	帧率（fps）	码率（kbps）
 120P	0	160x120	15	120
 120P_3	2	120x120	15	100
 180P	10	320x180	15	280
@@ -147,6 +147,9 @@ export default class VideoProfile {
             case VideoProfile.VP720P_5:
                 return new VideoProfile(960, 720, 15, 1920)
             case VideoProfile.VP720P_6:
+                //1080P 60 1920 * 1080 15 2080
+                //1080P_3 62 1920 * 1080 30 3150
+                //1080P_5 64 1920 * 1080 60 4780
                 return new VideoProfile(960, 720, 30, 2880)
             case VideoProfile.VP1080P:
                 return new VideoProfile(1920, 1080, 15, 4200)

@@ -26,6 +26,9 @@ export default class RecallMessageNotification extends NotificationMessageConten
     }
 
     formatNotification(message) {
+        if (this.operatorId === wfc.getUserId()){
+            return "你撤回了一条消息";
+        }
         if (message.conversation.type === ConversationType.Group) {
             return wfc.getGroupMemberDisplayName(message.conversation.target, this.operatorId) + "撤回了一条消息";
         } else {

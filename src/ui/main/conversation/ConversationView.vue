@@ -44,6 +44,7 @@
                             <!--todo 不同的消息类型 notification in out-->
 
                             <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
+                            <RecallNotificationMessageContentView :message="message" v-if="isRecallNotificationMessage(message)"/>
                             <NormalOutMessageContentView
                                 @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
                                 :message="message"
@@ -63,6 +64,7 @@
                      class="divider-handler"></div>
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                                   v-show="!sharedConversationState.enableMessageMultiSelection"
+                                  ref="messageInputView"
                                   class="message-input-container"/>
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
                 <SingleConversationInfoView
@@ -113,6 +115,12 @@
                         <a @click.prevent="openDir(message)">{{ $t('common.open_dir') }}</a>
                     </li>
                 </vue-context>
+                <vue-context ref="messageSenderContextMenu" v-slot="{data: message}" :close-on-scroll="true" v-on:close="onMessageSenderContextMenuClose">
+                    <!--          更多menu item，比如添加到通讯录等-->
+                    <li>
+                        <a @click.prevent="mentionMessageSender(message)">{{ mentionMessageSenderTitle(message) }}</a>
+                    </li>
+                </vue-context>
             </div>
         </div>
     </section>
@@ -126,6 +134,7 @@ import ClickOutside from 'vue-click-outside'
 import NormalOutMessageContentView from "@/ui/main/conversation/message/NormalOutMessageContentContainerView";
 import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInMessageContentContainerView";
 import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
+import RecallNotificationMessageContentView from "@/ui/main/conversation/message/RecallNotificationMessageContentView";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
 import store from "@/store";
@@ -161,6 +170,7 @@ export default {
     components: {
         MultiSelectActionView,
         NotificationMessageContentView,
+        RecallNotificationMessageContentView,
         NormalInMessageContentView,
         NormalOutMessageContentView,
         MessageInputView,
@@ -276,9 +286,16 @@ export default {
         },
 
         isNotificationMessage(message) {
-            return message && message.messageContent instanceof NotificationMessageContent;
+            return message && message.messageContent instanceof NotificationMessageContent && message.messageContent.type !== MessageContentType.RecallMessage_Notification;
         },
 
+        isRecallNotificationMessage(message) {
+            return message && message.messageContent.type === MessageContentType.RecallMessage_Notification;
+        },
+
+        reedit(message){
+            this.$refs.messageInputView.insertText(message.messageContent.originalSearchableContent);
+        },
 
         onScroll(e) {
             // hide tippy userCard
@@ -296,6 +313,7 @@ export default {
                 store.setShouldAutoScrollToBottom(false)
             } else {
                 store.setShouldAutoScrollToBottom(true)
+                store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
             }
         },
 
@@ -333,6 +351,9 @@ export default {
 
         onMenuClose() {
             this.$emit('contextMenuClosed')
+        },
+        onMessageSenderContextMenuClose() {
+            console.log('onMessageSenderContextMenuClose')
         },
 
         // message context menu
@@ -621,6 +642,17 @@ export default {
                 store.playVoice(null)
             })
         },
+        mentionMessageSenderTitle(message) {
+            if (!message){
+                return ''
+            }
+            let displayName = wfc.getGroupMemberDisplayName(message.conversation.target, message.from);
+            return '@' + displayName;
+        },
+
+        mentionMessageSender(message) {
+            this.$refs.messageInputView.mention(message.conversation.target, message.from);
+        }
     },
 
     mounted() {
@@ -628,8 +660,15 @@ export default {
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
 
-        this.$on('openMessageContextMenu', function (event, message) {
+        this.$on('openMessageContextMenu', (event, message) => {
             this.$refs.menu.open(event, message);
+        });
+
+        this.$on('openMessageSenderContextMenu', (event, message) => {
+            // 目前只支持群会话里面，消息发送者右键@
+            if (message.conversation.type === ConversationType.Group) {
+                this.$refs.messageSenderContextMenu.open(event, message);
+            }
         });
 
         this.$eventBus.$on('send-file', args => {

@@ -23,6 +23,7 @@
                     <img ref="userCardTippy"
                          :name="'infoTrigger' + this.message.messageId"
                          @click="onClickUserPortrait(message.from)"
+                         @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
                          class="avatar"
                          draggable="false"
                          :src="message._from.portrait">
@@ -85,7 +86,10 @@ export default {
         openMessageContextMenu(event, message) {
             this.$parent.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
-        }
+        },
+        openMessageSenderContextMenu(event, message) {
+            this.$parent.$emit('openMessageSenderContextMenu', event, message)
+        },
     },
     mounted() {
         this.$parent.$on('contextMenuClosed', () => {

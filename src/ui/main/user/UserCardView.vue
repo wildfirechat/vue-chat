@@ -101,7 +101,7 @@ export default {
 
     computed: {
         isFriend() {
-            return this.userInfo.uid === wfc.getUserId() || wfc.isMyFriend(this.userInfo.uid)
+            return wfc.isMyFriend(this.userInfo.uid)
         }
     }
 };

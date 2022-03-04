@@ -14,7 +14,7 @@
                 <li>
                     <label>{{ $t('common.alias') }}</label>
                     <div class="alias">
-                        <input type="text" v-model="friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias"/>
+                        <input type="text" ref="input" :value="sharedStateContact.currentFriend.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias"/>
                     </div>
                 </li>
                 <li>
@@ -51,7 +51,6 @@ export default {
     data() {
         return {
             sharedStateContact: store.state.contact,
-            friendAlias: store.state.contact.currentFriend.friendAlias
         }
     },
 
@@ -62,10 +61,12 @@ export default {
             this.$router.replace('/home');
         },
         updateFriendAlias() {
-            if (this.friendAlias !== this.sharedStateContact.currentFriend.friendAlias) {
-                wfc.setFriendAlias(this.user.uid, this.friendAlias,
+            let friendAlias = this.$refs.input.value;
+            if (friendAlias.trim() && friendAlias !== this.sharedStateContact.currentFriend.friendAlias) {
+                wfc.setFriendAlias(this.user.uid, friendAlias,
                     () => {
                         // do nothing
+                        console.log('setFriendAlias success', this.user, friendAlias);
                     },
                     (error) => {
                         // do nothing

@@ -1555,8 +1555,11 @@ let store = {
     },
 
     clearConversationUnreadStatus(conversation) {
-        wfc.clearConversationUnreadStatus(conversation);
-        this.updateTray();
+        let info = wfc.getConversationInfo(conversation);
+        if (info && (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll) > 0) {
+        	wfc.clearConversationUnreadStatus(conversation);
+        	this.updateTray();
+        }
     },
 
     notify(msg) {

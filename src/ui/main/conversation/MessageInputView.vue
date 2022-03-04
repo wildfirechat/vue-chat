@@ -148,28 +148,45 @@ export default {
 
         async handlePaste(e, source) {
             let text;
+            e.preventDefault();
             if ((e.originalEvent || e).clipboardData) {
                 text = (e.originalEvent || e).clipboardData.getData('text/plain');
             } else {
                 text = await navigator.clipboard.readText();
             }
-            if (source === 'menu' && text && text.trim()) {
-                e.preventDefault();
+            if (text && text.trim()) {
                 document.execCommand('insertText', false, text);
                 return;
             }
             if (isElectron()) {
                 let args = ipcRenderer.sendSync('file-paste');
                 if (args.hasImage) {
-                    e.preventDefault();
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
                 }else if (args.hasFile){
-                    e.preventDefault();
                     args.files.forEach(file => {
                         store.sendFile(this.conversationInfo.conversation, file)
                     })
                 }
             }
+        },
+        mention(groupId, memberId){
+            let displayName = wfc.getGroupMemberDisplayName(groupId, memberId);
+            this.mentions.push({
+                key: displayName,
+                value: '@' + memberId,
+            })
+            let text = this.$refs.input.innerText;
+            let mentionValue;
+            if (text.endsWith(' ')){
+                mentionValue = '@' + displayName + ' ';
+            }else {
+                mentionValue = ' @' + displayName + ' ';
+            }
+            document.execCommand('insertText', false, mentionValue);
+        },
+
+        insertText(text){
+            document.execCommand('insertText', false, text);
         },
         copy() {
             let text = this.$refs['input'].innerText;
@@ -260,6 +277,7 @@ export default {
                 .replace(/<div>/g, '\n')
                 .replace(/<\/div>/g, '')
                 .replace(/&nbsp;/g, ' ');
+            // TODO 可以在此对文本消息进行处理，比如过滤掉 script，iframe 等标签
 
             message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
                 .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
