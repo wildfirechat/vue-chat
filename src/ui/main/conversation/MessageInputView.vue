@@ -156,6 +156,8 @@ export default {
             }
             if (text && text.trim()) {
                 document.execCommand('insertText', false, text);
+                // Safari 浏览器 execCommand 失效，可以采用下面这种方式处理粘贴
+                // this.$refs.input.innerText += text;
                 return;
             }
             if (isElectron()) {
