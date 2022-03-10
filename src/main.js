@@ -17,7 +17,6 @@ import {isElectron, remote} from "@/platform";
 import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'
-import Config from "./config";
 import Alert from "./ui/common/Alert.js";
 
 Vue.config.productionTip = false

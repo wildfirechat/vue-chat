@@ -124,7 +124,10 @@ export default {
                         // do nothing
                     },
                     confirmCallback: () => {
-                        app.exit(0)
+                        wfc.disconnect();
+                        setTimeout(()=> {
+                        	app.exit(0)
+                        }, 1000)
                     }
                 })
 

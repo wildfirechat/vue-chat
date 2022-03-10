@@ -223,7 +223,7 @@ let store = {
                     conversationState.inputtingUser = null;
                 }
 
-                if (!this._isDisplayMessage(msg)) {
+                if (!this._isDisplayMessage(msg) || msg.messageContent.type === MessageContentType.RecallMessage_Notification) {
                     return;
                 }
                 let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
