@@ -27,7 +27,8 @@
                 <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
             </ul>
         </section>
-        <div @keydown.enter="send($event)"
+        <div @keydown.13="send($event)"
+             @keydown.229="()=>{}"
              ref="input" class="input"
              @paste="handlePaste"
              draggable="false"
