@@ -310,14 +310,8 @@ export default {
                 this.audioOnly = audioOnly;
             };
 
-            sessionCallback.didCreateLocalVideoTrack = (stream, screenSharing) => {
+            sessionCallback.didCreateLocalVideoTrack = (stream) => {
                 this.selfUserInfo._stream = stream;
-
-                if (!screenSharing) {
-                    setTimeout(() => {
-                        this.screenShare();
-                    }, 1000)
-                }
             };
 
             sessionCallback.didCreateLocalVideoTrackError = () => {
