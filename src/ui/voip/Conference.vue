@@ -56,6 +56,7 @@
                             <video v-if="!participant._isVideoMuted"
                                    @click="setUseMainVideo(participant.uid, participant._isScreenSharing)"
                                    class="video"
+                                   v-bind:style="{objectFit:participant._isScreenSharing ? 'contain' : 'fit'}"
                                    :srcObject.prop="participant._stream"
                                    playsInline
                                    autoPlay/>

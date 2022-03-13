@@ -279,6 +279,7 @@ export class AvEngineKitProxy {
 
     emitToVoip(event, args) {
         if (isElectron()) {
+            console.log('emitToVoip', event, args)
             // renderer/main to renderer
             if (this.callWin) {
                 // fix object of long.js can be send inter-process

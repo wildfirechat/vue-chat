@@ -35,7 +35,7 @@ export default {
         joinConference() {
             if (avenginekit.joinConference) {
                 let cmc = this.message.messageContent;
-                avenginekitproxy.joinConference(cmc.callId, cmc.audioOnly, cmc.pin, cmc.host, cmc.title, cmc.desc, cmc.audience, cmc.advance, false, false)
+                avenginekitproxy.joinConference(cmc.callId, cmc.audioOnly, cmc.pin, cmc.host, cmc.title, cmc.desc, cmc.audience, cmc.advanced, false, false)
             } else {
                 console.log('not support conference')
             }
