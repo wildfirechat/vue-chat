@@ -10,12 +10,15 @@ import Message from "@/wfc/messages/message";
 
 // 未知消息
 export default {
-    name: "UnknowntMessageContentView",
+    name: "UnknownMessageContentView",
     props: {
         message: {
             type: Message,
             required: true,
         }
+    },
+    mounted() {
+        console.log('UnknownMessageContentView', this.message)
     }
 }
 </script>

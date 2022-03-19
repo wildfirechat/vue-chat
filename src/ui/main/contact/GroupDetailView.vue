@@ -47,14 +47,14 @@ export default {
 .group-info-container a {
     color: white;
     padding: 10px 40px;
-    background-color: #20fb64;
+    background-color: #3497f1;
     border-radius: 5px;
     font-size: 14px;
     border: 1px solid transparent;
 }
 
 .group-info-container a:active {
-    background-color: red;
+    background-color: #4168e0;
 }
 
 .group-info {

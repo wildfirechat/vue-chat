@@ -56,7 +56,7 @@ export default class Message {
     messageId = 0;
     direction = 0;
     status = 0;
-    messageUid = 0;
+    messageUid = undefined;
     timestamp = 0;
     to = '';
     localExtra = '';

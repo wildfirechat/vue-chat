@@ -152,8 +152,8 @@ export default {
 
         infiniteHandlerTop($state) {
             let firstMsg = this.contextMessages[0];
-            let conversaiton = this.currentConversationSearchResult.conversation;
-            store.getMessages(conversaiton, firstMsg.messageUid, true, '', msgs => {
+            let conversation = this.currentConversationSearchResult.conversation;
+            store.getMessages(conversation, firstMsg.messageId, true, '', msgs => {
                 if (msgs.length > 0) {
                     this.contextMessages = msgs.concat(this.contextMessages);
                     $state.loaded();
@@ -166,7 +166,7 @@ export default {
         infiniteHandlerBottom($state) {
             let lastMsg = this.contextMessages[this.contextMessages.length - 1];
             let conversation = this.currentConversationSearchResult.conversation;
-            store.getMessages(conversation, lastMsg.messageUid, false, '', msgs => {
+            store.getMessages(conversation, lastMsg.messageId, false, '', msgs => {
                 if (msgs.length > 0) {
                     this.contextMessages = this.contextMessages.concat(msgs);
                     $state.loaded();

@@ -44,7 +44,7 @@
                             <!--todo 不同的消息类型 notification in out-->
 
                             <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-                            <RecallNotificationMessageContentView :message="message" v-if="isRecallNotificationMessage(message)"/>
+                            <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
                             <NormalOutMessageContentView
                                 @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
                                 :message="message"

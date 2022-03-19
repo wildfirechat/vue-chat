@@ -42,7 +42,7 @@ export default class UserOnlineState {
             let ps = ['未知', 'iOS', 'Android', 'Windows', 'mac', 'Web', '小程序', 'Linux', 'iPad', 'Android-Pad'];
             if (s.state === 0) {
                 onlineClientDesc += ps[s.platform] + ' '
-            } else {
+            } else if ([1, 2, 8, 9].indexOf(s.platform) >= 0) {
                 // TODO
                 lastSeenDesc += ps[s.platform] + ' ';
             }

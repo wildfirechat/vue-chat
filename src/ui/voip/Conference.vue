@@ -412,7 +412,7 @@ export default {
                 console.log('conference', 'didMuteStateChanged', participants)
                 participants.forEach(p => {
                     let s = this.session.getSubscriber(p);
-                    console.log('conference', 'didMuteStateChanged', p, s);
+                    console.log('conference', 'didMuteStateChanged', p, s.videoMuted, s.audioMuted);
                     this.participantUserInfos.forEach(u => {
                         if (u.uid === p && u._isScreenSharing === false) {
                             let subscriber = this.session.getSubscriber(p);
@@ -446,7 +446,7 @@ export default {
                 }
             };
 
-            avenginekit.sessionCallback = sessionCallback;
+            avenginekit.setup(sessionCallback);
         },
 
 
@@ -779,7 +779,6 @@ export default {
     },
 
     mounted() {
-        avenginekit.setup();
         this.setupSessionCallback();
 
         if (isElectron()) {

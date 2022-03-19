@@ -16,6 +16,9 @@ export default {
             type: Message,
             required: true,
         }
+    },
+    mounted() {
+        console.log('UnsupportMessageContentView', this.message)
     }
 }
 </script>

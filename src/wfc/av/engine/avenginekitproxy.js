@@ -168,7 +168,8 @@ export class AvEngineKitProxy {
         let content = msg.messageContent;
         if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
             || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
-            if (this.callWin) {
+            if (this.callWin && content.participants.indexOf(wfc.getUserId()) >= 0) {
+                // 已在音视频通话中，其他的音视频通话，又邀请自己
                 this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
                 return;
             }

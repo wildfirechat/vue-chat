@@ -168,7 +168,7 @@ export default {
     margin-top: 30px;
     color: white;
     padding: 10px 40px;
-    background-color: #34b7f1;
+    background-color: #3497f1;
     border-radius: 5px;
     border: 1px solid transparent;
 }
