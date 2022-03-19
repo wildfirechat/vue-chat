@@ -55,6 +55,8 @@ import ConferenceChangeModeContent from "../av/messages/conferenceChangeModeCont
 import ConferenceKickoffMemberMessageContent from "../av/messages/conferenceKickoffMemberMessageContent";
 import MarkUnreadMessageContent from "../messages/markUnreadMessageContent";
 import LinkMessageContent from "../messages/linkMessageContent";
+import FriendAddedNotification from "../messages/notification/friendAddedNotification";
+import FriendGreetingNotification from "../messages/notification/friendGreetingNotification";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -204,6 +206,18 @@ export default class MessageConfig {
             flag: PersistFlag.Transparent,
             type: MessageContentType.Typing,
             contentClazz: TypingMessageContent,
+        },
+        {
+            name: 'friendGreeting',
+            flag: PersistFlag.No_Persist,
+            type: MessageContentType.Friend_Added,
+            contentClazz: FriendGreetingNotification,
+        },
+        {
+            name: 'friendAdded',
+            flag: PersistFlag.No_Persist,
+            type: MessageContentType.Friend_Greeting,
+            contentClazz: FriendAddedNotification,
         },
         {
             name: 'addGroupMemberNotification',

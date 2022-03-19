@@ -958,7 +958,8 @@ let store = {
                     if (msgs.length === 0) {
                         completeCB();
                     } else {
-                        this._onloadConversationMessages(conversation, msgs)
+                        msgs = msgs.filter(m => m.messageId !== 0);
+                        this._onloadConversationMessages(conversation, msgs);
                         this._loadDefaultConversationList();
                         loadedCB();
                     }

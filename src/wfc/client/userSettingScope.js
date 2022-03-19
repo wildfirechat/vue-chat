@@ -28,6 +28,9 @@ export default class UserSettingScope {
     static ConversationClearMessage = 18;
     static ConversationDraft = 19;
     static DisableSyncDraft = 20;
+    static VoipSilent = 21;
+    static PttReserved = 22;
+    static CustomState = 23;
 
     // 用户自定义的scope需从1000开始，以防冲突
     static kUserSettingCustomBegin = 1000;
