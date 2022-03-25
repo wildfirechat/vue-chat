@@ -40,7 +40,7 @@ export default class EventType {
     static ConversationInfoUpdate = 'conversationInfoUpdate';
     // function () {}
     static SettingUpdate = 'settingUpdate';
-    // function (groupId) {}
+    // function (groupId, GroupMember[]) {}
     static GroupMembersUpdate = 'groupMembersUpdate';
 
     // function (event) {}

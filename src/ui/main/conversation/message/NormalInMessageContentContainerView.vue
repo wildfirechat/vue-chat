@@ -37,7 +37,7 @@
                                                          v-bind:class="{highlight:highLight}"
                                                          :message="message"
                                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
-                            <LoadingView v-if="isDownloading"/>
+<!--                            <LoadingView v-if="isDownloading"/>-->
                         </div>
                         <QuoteMessageView style="padding: 5px 0; max-width: 80%"
                                           v-if="quotedMessage"

@@ -69,8 +69,27 @@ let store = {
             enableMessageMultiSelection: false,
             quotedMessage: null,
 
-            downloadingMessageIds: [],
+            downloadingMessages: [],
             currentVoiceMessage: null,
+            _reset() {
+                this.currentConversationInfo = null;
+                this.conversationInfoList = []
+                this.currentConversationMessageList = [];
+                this.currentConversationOldestMessageId = 0;
+                this.currentConversationOldestMessageUid = 0;
+                this.currentConversationDeliveries = null;
+                this.currentConversationRead = null;
+                this.isMessageReceiptEnable = false;
+                this.inputtingUser = null;
+                this.inputClearHandler = null;
+                this.shouldAutoScrollToBottom = true;
+                this.previewMediaItems = [];
+                this.previewMediaIndex = null;
+                this.enableMessageMultiSelection = false;
+                this.quotedMessage = null;
+                this.downloadingMessages = [];
+                this.currentVoiceMessage = null;
+            }
         },
 
         contact: {
@@ -89,6 +108,23 @@ let store = {
             favContactList: [],
 
             selfUserInfo: null,
+            _reset() {
+                this.currentFriendRequest = null;
+                this.currentGroup = null;
+                this.currentFriend = null;
+
+                this.expandFriendRequestList = false;
+                this.expandFriendList = true;
+                this.expandGroup = false;
+
+                this.unreadFriendRequestCount = 0;
+                this.friendList = [];
+                this.friendRequestList = [];
+                this.favGroupList = [];
+                this.favContactList = [];
+
+                this.selfUserInfo = null;
+            }
         },
 
         search: {
@@ -100,12 +136,28 @@ let store = {
             conversationSearchResult: [],
             messageSearchResult: [],
 
+            _reset() {
+                this.query = null;
+                this.show = false;
+                this.userSearchResult = [];
+                this.contactSearchResult = [];
+                this.groupSearchResult = [];
+                this.conversationSearchResult = [];
+                this.messageSearchResult = [];
+
+            }
         },
 
         pick: {
             users: [],
             conversations: [],
             messages: [],
+            _reset() {
+                this.users = [];
+                this.conversations = [];
+                this.messages = [];
+
+            }
         },
 
         misc: {
@@ -124,6 +176,23 @@ let store = {
             wfc: wfc,
             config: Config,
             userOnlineStateMap: new Map(),
+            _reset() {
+                this.connectionStatus = ConnectionStatus.ConnectionStatusUnconnected;
+                this.isPageHidden = false;
+                this.enableNotification = true;
+                this.enableMinimize = getItem('minimizable') === '1';
+                this.enableNotificationMessageDetail = true;
+                this.enableCloseWindowToExit = false;
+                this.enableAutoLogin = false;
+                this.isElectron = isElectron();
+                this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
+                this.isMainWindow = false;
+                this.linuxUpdateTitleInterval = 0;
+                this.uploadBigFiles = [];
+                this.wfc = wfc;
+                this.config = Config;
+                this.userOnlineStateMap = new Map();
+            }
         },
     },
 
@@ -136,6 +205,8 @@ let store = {
                 this._loadDefaultData();
 
                 this.updateTray();
+            } else if (status === ConnectionStatus.ConnectionStatusLogout) {
+                _reset();
             }
         });
 
@@ -359,7 +430,7 @@ let store = {
                 let localPath = args.filePath;
                 console.log('file-downloaded', args)
 
-                conversationState.downloadingMessageIds = conversationState.downloadingMessageIds.filter(v => v !== messageId);
+                conversationState.downloadingMessages = conversationState.downloadingMessages.filter(v => v.messageId !== messageId);
                 let msg = wfc.getMessageById(messageId);
                 if (msg) {
                     msg.messageContent.localPath = localPath;
@@ -375,7 +446,7 @@ let store = {
 
             ipcRenderer.on('file-download-failed', (event, args) => {
                 let messageId = args.messageId;
-                conversationState.downloadingMessageIds = conversationState.downloadingMessageIds.filter(v => v !== messageId);
+                conversationState.downloadingMessages = conversationState.downloadingMessages.filter(v => v.messageId !== messageId);
                 // TODO 其他下载失败处理
             });
 
@@ -383,8 +454,12 @@ let store = {
                 let messageId = args.messageId;
                 let receivedBytes = args.receivedBytes;
                 let totalBytes = args.totalBytes;
-                console.log('file download progress', messageId, receivedBytes, totalBytes);
-                // do nothing now
+                let dm = conversationState.downloadingMessages.find(dm => dm.messageId === messageId);
+                if (dm) {
+                    dm.receivedBytes = receivedBytes;
+                    dm.totalBytes = totalBytes;
+                }
+                // console.log('file download progress', messageId, receivedBytes, totalBytes);
             });
             localStorageEmitter.on('wf-ipc-to-main', (events, args) => {
                 let type = args.type;
@@ -1083,7 +1158,11 @@ let store = {
     },
 
     addDownloadingMessage(messageId) {
-        conversationState.downloadingMessageIds.push(messageId);
+        conversationState.downloadingMessages.push({
+            messageId: messageId,
+            receivedBytes: 0,
+            totalBytes: Number.MAX_SAFE_INTEGER,
+        });
         console.log('add downloading')
     },
 
@@ -1092,7 +1171,11 @@ let store = {
         if (!isElectron()) {
             return false;
         }
-        return conversationState.downloadingMessageIds.indexOf(messageId) >= 0
+        return conversationState.downloadingMessages.findIndex(dm => dm.messageId === messageId) >= 0;
+    },
+
+    getDownloadingMessageStatus(messageId) {
+        return conversationState.downloadingMessages.find(dm => dm.messageId === messageId);
     },
 
     // contact actions
@@ -1124,7 +1207,7 @@ let store = {
     _patchCurrentConversationOnlineStatus() {
         let convInfo = conversationState.currentConversationInfo;
         if (convInfo && convInfo.conversation.type === ConversationType.Single) {
-            // 在讲 object 和 ui 绑定之前，想 object 中新增的属性是 reactive 的，但绑定之后，才新增的属性，不是 reactive 的，
+            // 在 将 object 和 ui 绑定之前， 向 object 中新增的属性是 reactive 的，但绑定之后，才新增的属性，不是 reactive 的，
             // 故需要通过下面这种方法，让其成为 reactive 的属性
             // conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = userOnlineStatus.desc();
             Vue.set(conversationState.currentConversationInfo.conversation, '_targetOnlineStateDesc', this.getUserOnlineState(convInfo.conversation.target))
@@ -1657,6 +1740,13 @@ let contactState = store.state.contact;
 let searchState = store.state.search;
 let pickState = store.state.pick;
 let miscState = store.state.misc;
+function _reset() {
+    conversationState._reset();
+    contactState._reset();
+    searchState._reset();
+    pickState._reset();
+    miscState._reset();
+}
 
 window.__store = store;
 export default store

@@ -164,6 +164,7 @@ export default {
             if (isElectron()) {
                 let args = ipcRenderer.sendSync('file-paste');
                 if (args.hasImage) {
+                    document.execCommand('insertText', false, ' ');
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
                 }else if (args.hasFile){
                     args.files.forEach(file => {
@@ -265,7 +266,8 @@ export default {
                     let src = img.src;
                     let file;
                     if (isElectron()) {
-                        file = src.substring(17, src.length);
+                        // 'local-resource://' + 绝对路径
+                        file = decodeURI(src.substring(17, src.length));
                     } else {
                         file = fileFromDataUri(src, new Date().getTime() + '.png');
                     }
@@ -456,6 +458,16 @@ export default {
             //   showMessage('Send file not allowed to exceed 100M.');
             //   return false;
             // }
+            if (isElectron()) {
+                if (new Date().getTime() - file.lastModified < 30 * 1000 && file.path.indexOf('/var/folders') === 0) {
+                    console.log('not support file', file)
+                    this.$notify({
+                        text: ' 不支持的文件类型',
+                        type: 'warn'
+                    });
+                    return;
+                }
+            }
             this.$eventBus.$emit('uploadFile', file)
             store.sendFile(this.conversationInfo.conversation, file);
         },
@@ -579,6 +591,7 @@ export default {
                 .replace(/&nbsp;/g, '')
                 .replace(/<img class="emoji" draggable="false" alt="/g, '')
                 .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
+                .replace(/<img src="local-resource:.*">/g, '')
                 .trimStart()
                 .replace(/\s+$/g, ' ')
             ;

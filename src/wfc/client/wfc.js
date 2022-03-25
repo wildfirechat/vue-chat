@@ -27,7 +27,7 @@ export class WfcManager {
      * 初始化，请参考本demo的用法
      * 只可以在主窗口调用，其他窗口调用之后，会导致主窗口通知失效。
      * 如果其他窗口想调用wfc里面的非通知方法，可以参考{@link attach}
-     * @param {[]} args，当采用script标签的方式引入，可传入Config配置对象，配置项，请参考{@link Config}
+     * @param {[]} args，pc 时，传入[node实例]; web 时，可以传入Config配置对象，配置项，请参考{@link Config}
      */
     init(args = []) {
         impl.init(args);

@@ -18,6 +18,7 @@
                         arrow
                     >
                         <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
+                                      :enable-update-portrait="true"
                                       :user-info="sharedContactState.selfUserInfo"/>
                     </tippy>
 

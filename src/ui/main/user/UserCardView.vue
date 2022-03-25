@@ -6,7 +6,10 @@
                 <label>{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
             </div>
             <div>
-                <img class="avatar" draggable="false" v-bind:src="userInfo.portrait"/>
+                <img class="avatar" draggable="false" v-bind:src="userInfo.portrait" @click="pickFile"/>
+                <input v-if="enableUpdatePortrait" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                       accept="image/png, image/jpeg"
+                       style="display: none">
             </div>
         </div>
         <div class="content">
@@ -44,6 +47,9 @@ import Conversation from "@/wfc/model/conversation";
 import ConversationType from "@/wfc/model/conversationType";
 import FriendRequestView from "@/ui/main/contact/FriendRequestView";
 import wfc from "@/wfc/client/wfc";
+import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
+import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
+import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";
 
 export default {
     name: "UserCardView",
@@ -52,6 +58,10 @@ export default {
             type: Object,
             required: true,
         },
+        enableUpdatePortrait: {
+            type: Boolean,
+            required: false,
+        }
     },
     data() {
         return {
@@ -96,12 +106,37 @@ export default {
         },
         close() {
             this.$emit('close');
-        }
+        },
+
+        pickFile() {
+            this.$refs['fileInput'].click();
+        },
+        onPickFile(event) {
+            // this.batchProcess(e.target.files[0]);
+            let file = event.target.files[0];
+
+            wfc.uploadMedia(file.name, file, MessageContentMediaType.Portrait, (url) => {
+                let entry = new ModifyMyInfoEntry();
+                entry.type = ModifyMyInfoType.Modify_Portrait;
+                entry.value = url;
+
+                wfc.modifyMyInfo([entry], () => {
+                    //this.userInfo.portrait = url;
+                    // 会触发userInfosUpdate 通知
+                }, (err) => {
+                    console.log('modify my info error', err)
+                })
+            }, (err) => {
+                console.log('err', err)
+            }, (p, t) => {
+                console.log('progress', p, t)
+            })
+        },
     },
 
     computed: {
         isFriend() {
-            return wfc.isMyFriend(this.userInfo.uid)
+            return wfc.getUserId() === this.userInfo.uid || wfc.isMyFriend(this.userInfo.uid)
         }
     }
 };
