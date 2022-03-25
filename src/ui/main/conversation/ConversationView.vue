@@ -395,7 +395,9 @@ export default {
                         return true;
                     }
                 }
-                if (message.direction === 0 && new Date().getTime() - numberValue(message.timestamp) < 60 * 1000) {
+                let delta = wfc.getServerDeltaTime();
+                let now = new Date().getTime();
+                if (message.direction === 0 && now - (numberValue(this.message.timestamp) - delta) < 60 * 1000) {
                     return true;
                 }
             }
