@@ -397,7 +397,7 @@ export default {
                 }
                 let delta = wfc.getServerDeltaTime();
                 let now = new Date().getTime();
-                if (message.direction === 0 && now - (numberValue(this.message.timestamp) - delta) < 60 * 1000) {
+                if (message.direction === 0 && now - (numberValue(message.timestamp) - delta) < 60 * 1000) {
                     return true;
                 }
             }
@@ -443,7 +443,7 @@ export default {
                 downloadFile(message);
             } else {
                 if (!store.isDownloadingMessage(message.messageId)) {
-                    downloadFile(this.message)
+                    downloadFile(message)
                     store.addDownloadingMessage(message.messageId)
                 } else {
                     // TODO toast 下载中

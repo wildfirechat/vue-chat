@@ -474,10 +474,9 @@ let store = {
                         break;
                 }
             })
-        }
-
-        if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
-            this._loadDefaultData();
+        	if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
+            	this._loadDefaultData();
+        	}
         }
 
         miscState.isMainWindow = isMainWindow;

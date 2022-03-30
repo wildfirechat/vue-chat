@@ -8,7 +8,8 @@
     >
         <div class="conversation-item">
             <div class="header">
-                <img class="avatar" draggable="false" :src="conversationInfo.conversation._target.portrait" alt=""/>
+                <img class="avatar" draggable="false" :src="conversationInfo.conversation._target.portrait" alt=""
+                     @error="imgUrlAlt"/>
                 <em v-if="unread > 0" class="badge" v-bind:class="{silent:conversationInfo.isSilent}">{{ unread }}</em>
             </div>
             <div class="content-container">
@@ -38,6 +39,7 @@ import FileMessageContent from "@/wfc/messages/fileMessageContent";
 import Message from "@/wfc/messages/message";
 import wfc from "@/wfc/client/wfc";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
+import Config from "../../../config";
 
 export default {
     name: "ConversationItemView",
@@ -88,6 +90,9 @@ export default {
                 e.dataTransfer.dropEffect = 'copy';
             }
         },
+        imgUrlAlt(e){
+            e.target.src = Config.DEFAULT_PORTRAIT_URL;
+        }
     },
     computed: {
         conversationTitle() {

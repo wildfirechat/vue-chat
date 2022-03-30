@@ -522,7 +522,9 @@ export class AvEngineKitProxy {
             win.webContents.on('did-finish-load', () => {
                 this.onVoipWindowReady(win);
             });
-            // win.webContents.openDevTools();
+            if (localStorage.getItem("enable_voip_debug")) {
+                win.webContents.openDevTools();
+            }
             win.on('close', () => {
                 this.onVoipWindowClose();
             });
