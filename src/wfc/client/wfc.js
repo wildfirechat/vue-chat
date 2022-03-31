@@ -1773,10 +1773,6 @@ export class WfcManager {
     }
 
 
-    _getStore() {
-        return impl._getStore();
-    }
-
 
 
     /**
