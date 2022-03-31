@@ -68,8 +68,10 @@ export default class Config {
     // 是否将用户信息、群组信息、频道信息、聊天室信息持久化
     static ENABLE_INFO_PERSISTENCE = true;
 
-    // 是否打开日志
-    static ENABLE_LOG = true;
+    /**
+     * 允许重新编辑多长时间内的撤回消息，单位是秒
+     */
+    static RECALL_REEDIT_TIME_LIMIT = 60;
 
     static getWFCPlatform() {
         if (isElectron()) {

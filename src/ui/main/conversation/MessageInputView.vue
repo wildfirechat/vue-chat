@@ -190,6 +190,7 @@ export default {
         },
 
         insertText(text){
+            // this.$refs['input'].innerText = text;
             document.execCommand('insertText', false, text);
         },
         copy() {
