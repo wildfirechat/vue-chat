@@ -235,11 +235,21 @@ export default class CallSession {
     }
 
     /**
-     * 仅会议时有效
+     * 仅会议版有效
      * 设置视频最大码率
      * @param maxBitrateKbps
      */
     setVideoMaxBitrate(maxBitrateKbps){
+
+    }
+
+    /**
+     * 仅会议版有效
+     * 只支持缩小或者恢复原大小，不支持放大
+     * 相对于原始视频大小按比例缩小分辨率，具体可以参考{@link https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpEncodingParameters/scaleResolutionDownBy}
+     * @param {number} scalingFactor
+     */
+    scaleVideoResolutionDownBy(scalingFactor){
 
     }
 
