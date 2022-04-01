@@ -716,7 +716,7 @@ let store = {
      */
     previewMessage(message, continuous) {
         conversationState.previewMediaItems.length = 0;
-        conversationState.previewMediaIndex = null;
+        conversationState.previewMediaIndex = 0;
         if (continuous) {
             let mediaMsgs = conversationState.currentConversationMessageList.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) > -1)
             let msg;
@@ -736,6 +736,25 @@ let store = {
             conversationState.previewMediaItems.push({
                 src: message.messageContent.remotePath,
                 thumb: 'data:image/png;base64,' + message.messageContent.thumbnail,
+                autoplay: true,
+            });
+        }
+    },
+
+    previewCompositeMessage(compositeMessage, focusMessageUid) {
+        conversationState.previewMediaItems.length = 0;
+        conversationState.previewMediaIndex = 0;
+
+        let mediaMsgs = compositeMessage.messageContent.messages.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) > -1)
+        let msg;
+        for (let i = 0; i < mediaMsgs.length; i++) {
+            msg = mediaMsgs[i];
+            if (eq(msg.messageUid,  focusMessageUid)) {
+                conversationState.previewMediaIndex = i;
+            }
+            conversationState.previewMediaItems.push({
+                src: msg.messageContent.remotePath,
+                thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail,
                 autoplay: true,
             });
         }

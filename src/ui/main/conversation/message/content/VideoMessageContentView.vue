@@ -21,12 +21,21 @@ export default {
         message: {
             type: Message,
             required: true,
+        },
+        isInCompositeView:{
+            default: false,
+            type: Boolean,
+            required: false,
         }
     },
     methods: {
         preview(message) {
-            console.log('preview', message);
-            store.previewMessage(message, false);
+            if (this.isInCompositeView) {
+                this.$parent.previewCompositeMessage(message.messageUid);
+            } else {
+            	console.log('preview', message);
+                store.previewMessage(message, true);
+            }
         },
 
         dragVideo(event) {

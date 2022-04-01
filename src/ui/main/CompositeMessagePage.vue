@@ -30,12 +30,14 @@
                             <!--                            <AudioMessageContentView :message="message"-->
                             <!--                                                     v-else-if="message.messageContent.type === 2"/>-->
                             <ImageMessageContentView :message="message"
+                                                     :is-in-composite-view="true"
                                                      v-else-if="message.messageContent.type === 3"/>
                             <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
                             <FileMessageContentView :message="message"
                                                     v-else-if="message.messageContent.type === 5"
                                                     v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
                             <VideoMessageContentView :message="message"
+                                                     :is-in-composite-view="true"
                                                      v-else-if="message.messageContent.type === 6"/>
                             <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
                             <StickerMessageContentView :message="message"
@@ -116,6 +118,9 @@ export default {
     methods: {
         hideCompositeMessagePage() {
             this.$modal.hide('show-composite-message-modal' + '-' + stringValue(this.message.messageUid))
+        },
+        previewCompositeMessage(messageUid){
+            store.previewCompositeMessage(this.compositeMessage, messageUid);
         }
     },
 

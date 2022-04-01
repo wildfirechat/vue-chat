@@ -18,6 +18,11 @@ export default {
         message: {
             type: Message,
             required: true,
+        },
+        isInCompositeView:{
+            default: false,
+            type: Boolean,
+            required: false,
         }
     },
     data() {
@@ -27,8 +32,12 @@ export default {
     },
     methods: {
         preview(message) {
+            if (this.isInCompositeView) {
+                this.$parent.previewCompositeMessage(message.messageUid);
+            } else {
             console.log('preview', message);
             store.previewMessage(message, true);
+            }
         },
         onImageLoaded() {
             this.imageLoaded = true

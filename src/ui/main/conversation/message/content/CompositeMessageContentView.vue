@@ -67,6 +67,7 @@ export default {
                     CompositeMessagePage,
                     {
                         message: this.message,
+                        isInCompositeView:true,
                     }, {
                         name: 'show-composite-message-modal' + '-' + stringValue(this.message.messageUid),
                         width: 800,
