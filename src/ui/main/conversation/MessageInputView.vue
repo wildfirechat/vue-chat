@@ -61,6 +61,9 @@
             v-on:cancelQuoteMessage="cancelQuoteMessage"
             :enable-message-preview="false"
             :quoted-message="quotedMessage" :show-close-button="true"/>
+        <div v-if="muted" style="width: 100%; height: 100%; background: lightgrey; position: absolute; display: flex; justify-content: center; align-items: center">
+            <p style="color: white">群禁言或者你被禁言</p>
+        </div>
     </section>
 </template>
 
@@ -75,7 +78,6 @@ import '../../../tribute.css'
 import ConversationType from "@/wfc/model/conversationType";
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import GroupInfo from "@/wfc/model/groupInfo";
-import GroupType from "@/wfc/model/groupType";
 import GroupMemberType from "@/wfc/model/groupMemberType";
 import QuoteInfo from "@/wfc/model/quoteInfo";
 import Draft from "@/ui/util/draft";
@@ -132,11 +134,10 @@ export default {
             let target = this.conversationInfo.conversation._target;
             if (target instanceof GroupInfo) {
                 let groupInfo = target;
-                if (groupInfo.type === GroupType.Restricted) {
-                    let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
-                    if (groupInfo.mute === 1 && groupMember.type === GroupMemberType.Normal) {
-                        return false;
-                    }
+                let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
+                if (groupInfo.mute === 1) {
+                    return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) >= 0
+                        || groupMember.type === GroupMemberType.Allowed;
                 }
             }
 
@@ -719,7 +720,20 @@ export default {
         hasInputTextOrImage() {
             // TODO 监听input的输入情况
             return true;
-        }
+        },
+        muted() {
+            let target = this.conversationInfo.conversation._target;
+            if (target instanceof GroupInfo) {
+                let groupInfo = target;
+                let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
+                if (groupInfo.mute === 1){
+                    return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) < 0;
+                }else {
+                    return groupMember.type === GroupMemberType.Muted;
+        		}
+            }
+            return false;
+        },
     },
 
     components: {
