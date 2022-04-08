@@ -1504,7 +1504,7 @@ export class WfcManager {
     /**
      * 更新消息状态
      * @param {number} messageId 消息id
-     * @param {MessageStatus} 消息状态，可选值参考{@link MessageStatus}
+     * @param {MessageStatus} status 消息状态，可选值参考{@link MessageStatus}
      */
     async updateMessageStatus(messageId, status) {
         impl.updateMessageStatus(messageId, status);
@@ -1643,23 +1643,25 @@ export class WfcManager {
      * @param {Conversation} conversation 会话
      * @param {String} fromUser 来源用户
      * @param {Long} beforeMessageUid 消息uid，表示获取此消息uid之前的文件记录
+     * @param {int} order 排序。0 按照时间逆序；1 按照时间顺序；2 按照大小逆序；3 按照大小顺序。
      * @param {number} count 数量
      * @param {function (FileRecord[])} successCB 成功回调
      * @param {function (number)} failCB 失败回调
      */
-    getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, successCB, failCB) {
-        impl.getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, successCB, failCB);
+    getConversationFileRecords(conversation, fromUser, beforeMessageUid, order, count, successCB, failCB) {
+        impl.getConversationFileRecords(conversation, fromUser, beforeMessageUid, order, count, successCB, failCB);
     }
 
     /**
      * 获取我发送的文件记录
      * @param {Long} beforeMessageUid 消息uid，表示获取此消息uid之前的文件记录
+     * @param {int} order 排序。0 按照时间逆序；1 按照时间顺序；2 按照大小逆序；3 按照大小顺序。
      * @param {number} count 数量
      * @param {function (FileRecord[])} successCB 成功回调
      * @param {function (number)} failCB 失败回调
      */
-    getMyFileRecords(beforeMessageUid, count, successCB, failCB) {
-        impl.getMyFileRecords(beforeMessageUid, count, successCB, failCB);
+    getMyFileRecords(beforeMessageUid, order, count, successCB, failCB) {
+        impl.getMyFileRecords(beforeMessageUid, order, count, successCB, failCB);
     }
 
     /**
@@ -1677,25 +1679,27 @@ export class WfcManager {
      * @param {string} keyword
      * @param {Conversation} conversation 会话，如果为空则获取当前用户所有收到和发出的文件记录
      * @param {string} fromUser 文件发送用户，如果为空则获取该用户发出的文件记录
-     * @param {Long | string} beforeMessageId 起始消息的消息id
+     * @param {Long | string} beforeMessageUid 起始消息的消息id
+     * @param {int} order 排序。0 按照时间逆序；1 按照时间顺序；2 按照大小逆序；3 按照大小顺序。
      * @param {number} count
      * @param {function (FileRecord[])} successCB
      * @param {function (number)} failCB
      */
-    searchFiles(keyword, conversation, fromUser, beforeMessageId, count, successCB, failCB) {
-        impl.searchFiles(keyword, conversation, fromUser, beforeMessageId, count, successCB, failCB)
+    searchFiles(keyword, conversation, fromUser, beforeMessageUid, order, count, successCB, failCB) {
+        impl.searchFiles(keyword, conversation, fromUser, beforeMessageId, order, count, successCB, failCB)
     }
 
     /**
      * 搜索我自己的远程文件记录
      * @param keyword
      * @param beforeMessageUid
+     * @param {int} order 排序。0 按照时间逆序；1 按照时间顺序；2 按照大小逆序；3 按照大小顺序。
      * @param count
      * @param successCB
      * @param failCB
      */
-    searchMyFiles(keyword, beforeMessageUid, count, successCB, failCB) {
-        impl.searchMyFiles(keyword, beforeMessageUid, count, successCB, failCB);
+    searchMyFiles(keyword, beforeMessageUid, order, count, successCB, failCB) {
+        impl.searchMyFiles(keyword, beforeMessageUid, order, count, successCB, failCB);
     }
 
     /**
