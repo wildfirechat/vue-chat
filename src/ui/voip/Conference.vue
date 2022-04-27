@@ -412,6 +412,10 @@ export default {
                 console.log('conference', 'didMuteStateChanged', participants)
                 participants.forEach(p => {
                     let s = this.session.getSubscriber(p);
+                    // 自己
+                    if (!s){
+                        return;
+                    }
                     console.log('conference', 'didMuteStateChanged', p, s.videoMuted, s.audioMuted);
                     this.participantUserInfos.forEach(u => {
                         if (u.uid === p && u._isScreenSharing === false) {

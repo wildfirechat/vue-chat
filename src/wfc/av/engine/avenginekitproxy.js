@@ -12,6 +12,7 @@ import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
+import store from "../../../store";
 
 
 // main window renderer process -> voip window renderer process
@@ -168,10 +169,13 @@ export class AvEngineKitProxy {
         let content = msg.messageContent;
         if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
             || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
-            if (this.callWin && content.participants.indexOf(wfc.getUserId()) >= 0) {
+            if (this.callWin) {
+                if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
+                    || (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT && content.participants.indexOf(wfc.getUserId()) >= 0)) {
                 // 已在音视频通话中，其他的音视频通话，又邀请自己
                 this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
                 return;
+                }
             }
             if (!this.isSupportVoip || !this.hasMicrophone || !this.hasSpeaker || !this.hasWebcam) {
                 this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
@@ -256,7 +260,7 @@ export class AvEngineKitProxy {
                         return;
                     }
                     this.conversation = null;
-                    this.queueEvents = [];
+                    // this.queueEvents = [];
                     this.callId = null;
                     this.inviteMessageUid = null;
                     this.participants = [];
@@ -603,10 +607,12 @@ export class AvEngineKitProxy {
                 // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
                 return;
             }
+            store.updateVoipStatus(this.conversation, false)
             this.conversation = null;
             this.queueEvents = [];
             this.callId = null;
             this.participants = [];
+            this.queueEvents = [];
             this.callWin = null;
             this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
         }, 2000);
@@ -615,6 +621,7 @@ export class AvEngineKitProxy {
     onVoipWindowReady(win) {
         this.callWin = win;
         console.log('onVoipWindowReady')
+        store.updateVoipStatus(this.conversation, true)
         if (!isElectron()) {
             if (!this.events) {
                 this.events = new PostMessageEventEmitter(win, window.location.origin)

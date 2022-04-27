@@ -33,6 +33,7 @@ import {getConversationPortrait} from "./ui/util/imageUtil";
 import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
 import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffGroupMemberNotification";
 import QuitGroupNotification from "./wfc/messages/notification/quitGroupNotification";
+import avenginekitproxy from "./wfc/av/engine/avenginekitproxy";
 
 /**
  * 一些说明
@@ -1172,6 +1173,11 @@ let store = {
         if (info.unreadCount) {
             info._unread = info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll;
         }
+        if (info.conversation.equal(avenginekitproxy.conversation)){
+            info._isVoipOngoing = true;
+        }else {
+            info._isVoipOngoing = false;
+        }
         return info;
     },
 
@@ -1378,7 +1384,7 @@ let store = {
     // TODO 到底是什么匹配了
     filterContact(query) {
         let result = contactState.friendList.filter(u => {
-            return u._displayName.indexOf(query) > -1 || u._firstLetters.indexOf(query) > -1 || u._pinyin.indexOf(query) > -1
+            return u._displayName.indexOf(query) > -1 || u._firstLetters.indexOf(query.toLowerCase()) > -1 || u._pinyin.indexOf(query.toLowerCase()) > -1
         });
 
         console.log('friend searchResult', result)
@@ -1389,7 +1395,7 @@ let store = {
         if (!keyword) {
             return;
         }
-        wfc.searchFiles(keyword, null, '', beforeMessageUid, 20,
+        wfc.searchFiles(keyword, null, '', beforeMessageUid, 0, 20,
             (files) => {
                 this._patchFileRecords(files);
                 successCB && successCB(files);
@@ -1610,14 +1616,14 @@ let store = {
         if (!successCB) {
             return;
         }
-        wfc.getMyFileRecords(beforeUid, count, fileRecords => {
+        wfc.getMyFileRecords(beforeUid, 0, count, fileRecords => {
             this._patchFileRecords(fileRecords)
             successCB(fileRecords);
         }, failCB)
     },
 
     getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, successCB, failCB) {
-        wfc.getConversationFileRecords(conversation, fromUser, beforeMessageUid, count, fileRecords => {
+        wfc.getConversationFileRecords(conversation, fromUser, beforeMessageUid, 0, count, fileRecords => {
             this._patchFileRecords(fileRecords)
             successCB(fileRecords);
         }, failCB);
@@ -1750,6 +1756,16 @@ let store = {
                 this.updateLinuxTitle.showTitle = !this.updateLinuxTitle.showTitle;
             }, 1000)
         }
+    },
+
+    updateVoipStatus(conversation, isOngoing) {
+        conversationState.conversationInfoList.forEach(ci => {
+            if (ci.conversation.equal(conversation)) {
+                ci._isVoipOngoing = isOngoing;
+            } else {
+                ci._isVoipOngoing = false;
+            }
+        })
     }
 }
 

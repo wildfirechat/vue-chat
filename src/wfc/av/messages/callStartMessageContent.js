@@ -52,8 +52,14 @@ export default class CallStartMessageContent extends MessageContent {
             p: this.pin
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
+        let pushData = {
+            callId: this.callId,
+            audioOnly:this.audioOnly,
+            participants:this.targetIds,
+        }
+        payload.pushData = JSON.toString(pushData);
         return payload;
-    };
+    }
 
     decode(payload) {
         super.decode(payload);

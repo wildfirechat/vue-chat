@@ -1679,13 +1679,13 @@ export class WfcManager {
      * @param {string} keyword
      * @param {Conversation} conversation 会话，如果为空则获取当前用户所有收到和发出的文件记录
      * @param {string} fromUser 文件发送用户，如果为空则获取该用户发出的文件记录
-     * @param {Long | string} beforeMessageUid 起始消息的消息id
+     * @param {Long | string} beforeMessageId 起始消息的消息id
      * @param {int} order 排序。0 按照时间逆序；1 按照时间顺序；2 按照大小逆序；3 按照大小顺序。
      * @param {number} count
      * @param {function (FileRecord[])} successCB
      * @param {function (number)} failCB
      */
-    searchFiles(keyword, conversation, fromUser, beforeMessageUid, order, count, successCB, failCB) {
+    searchFiles(keyword, conversation, fromUser, beforeMessageId, order, count, successCB, failCB) {
         impl.searchFiles(keyword, conversation, fromUser, beforeMessageId, order, count, successCB, failCB)
     }
 

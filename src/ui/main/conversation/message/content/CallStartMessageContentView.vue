@@ -8,6 +8,7 @@
 
 <script>
 import Message from "@/wfc/messages/message";
+import CallEndReason from "../../../../../wfc/av/engine/callEndReason";
 
 export default {
     name: "CallStartMessageContentView",
@@ -24,18 +25,60 @@ export default {
         textContent() {
             let voip = this.message.messageContent;
             let desc = this.$t('voip.desc');
-            if (voip.status === 0) {
-                desc = this.$t('voip.not_answer');
-
-            } else if (voip.status === 1) {
-                desc = this.$t('voip.ongoing');
+            if (voip.endTime > 0 && voip.connectTime > 0) {
+                let duration = parseInt((voip.endTime - voip.connectTime) / 1000);
+                desc = `通话时长：${duration}''`
             } else {
-                if (voip.connectTime && voip.connectedTime > 0) {
-                    let duration = (voip.endTime - voip.connectTime()) / 1000;
-                    desc = this.$t('voip.duration') + ` : ${duration}`
+                let reason = voip.status;
+                switch (reason) {
+                    case CallEndReason.REASON_Unknown:
+                desc = this.$t('voip.not_answer');
+                        break;
+                    case CallEndReason.REASON_Busy:
+                        desc = '线路忙';
+                        break;
+                    case CallEndReason.REASON_SignalError:
+                        desc = '网络错误';
+                        break;
+                    case CallEndReason.REASON_Hangup:
+                        desc = '已取消';
+                        break;
+                    case CallEndReason.REASON_RemoteHangup:
+                        desc = '对方已取消';
+                        break;
+                    case CallEndReason.REASON_OpenCameraFailure:
+                        desc = '网络错误';
+                        break;
+                    case CallEndReason.REASON_Timeout:
+                        desc = '未接听';
+                        break;
+                    case CallEndReason.REASON_AcceptByOtherClient:
+                        desc = '已在其他端接听';
+                        break;
+                    case CallEndReason.REASON_AllLeft:
+                        desc = '通话已结束';
+                        break;
+                    case CallEndReason.RemoteBusy:
+                        desc = '对方忙';
+                        break;
+                    case CallEndReason.RemoteTimeout:
+                        desc = '对方未接听';
+                        break;
+                    case CallEndReason.RemoteNetworkError:
+                        desc = '对方网络错误';
+                        break;
+                    case CallEndReason.RoomDestroyed:
+                        desc = '通话已结束';
+                        break;
+                    case CallEndReason.RoomNotExist:
+                        desc = '通话已结束';
+                        break;
+                    case CallEndReason.RoomParticipantsFull:
+                        desc = ' 已达最大通话人数';
+                        break;
+                    default:
+                        break
 
-                } else {
-                    desc = this.$t('voip.desc');
                 }
             }
             return desc;

@@ -207,7 +207,7 @@ export default {
         },
 
         send(e) {
-            if (this.tribute && this.tribute.isActive || this.tributeReplaced) {
+            if (this.tribute && this.tribute.isActive) {
                 this.tributeReplaced = false;
                 return;
             }
@@ -238,7 +238,10 @@ export default {
             if (e.ctrlKey) {
                 // e.preventDefault();
                 // this.refs.input.innerHTML = this.refs.input.innerHTML+ "<div><br></div>";
+                let nextChar = window.getSelection().focusNode.textContent.charAt(window.getSelection().focusOffset)
+                if (!nextChar) {
                 document.execCommand('InsertHTML', true, '<br>');
+                }
                 if (window.getSelection) {
                     let selection = window.getSelection(),
                         range = selection.getRangeAt(0),
@@ -286,6 +289,8 @@ export default {
                 .replace(/&nbsp;/g, ' ');
             // TODO 可以在此对文本消息进行处理，比如过滤掉 script，iframe 等标签
 
+            //  自行部署表情时，需要手动替换下面的正则
+            // TODO 在正则中使用变量，避免手动替换
             message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
                 .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
 
@@ -638,7 +643,7 @@ export default {
             }
         },
 
-        onGroupMembersUpdate(groupId) {
+        onGroupMembersUpdate(groupId, groupMembers) {
             console.log('messageInput onGroupMembersUpdate', groupId)
             if (this.conversationInfo
                 && this.conversationInfo.conversation.type === ConversationType.Group

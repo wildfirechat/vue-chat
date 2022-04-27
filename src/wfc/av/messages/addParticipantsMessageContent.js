@@ -43,6 +43,14 @@ export default class AddParticipantsMessageContent extends NotificationMessageCo
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
 
+        let epids = this.existParticipants.map(p => p.userId);
+        let pushData = {
+            callId:this.callId,
+            audioOnly:this.audioOnly,
+            participants:this.participants,
+            existParticipants: epids,
+        }
+        payload.pushData = JSON.stringify(pushData);
         return payload;
     }
 

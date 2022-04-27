@@ -19,6 +19,7 @@
                 </div>
                 <div class="content">
                     <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
+                    <p class="draft single-line" v-else-if="shouldShowVoipStatus" v-html="voipOngoingDesc"></p>
                     <p class="last-message-desc single-line" v-else>
                         <i v-if="unreadMention > 0">[有人@我]</i>
                         {{ lastMessageContent }}
@@ -115,6 +116,9 @@ export default {
             return draft.text.trim() !== '' || draft.quotedMessage !== null;
         },
 
+        shouldShowVoipStatus(){
+            return this.conversationInfo._isVoipOngoing;
+        },
         draft() {
             let draft = Draft.getConversationDraftEx(this.conversationInfo);
             let draftText = `<em>[${this.$t('common.draft')}]</em>` + draft.text;
@@ -125,6 +129,11 @@ export default {
                 draftText += '...'
             }
             return draftText;
+        },
+
+        voipOngoingDesc() {
+            let voipStatus = `<em>[音视频通话进行中]</em>`;
+            return voipStatus;
         },
 
         lastMessageContent() {

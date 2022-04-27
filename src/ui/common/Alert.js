@@ -25,13 +25,16 @@ export default {
                 {
                     title: options.title,
                     content: options.content,
+                    cancelText: options.cancelText,
+                    confirmText: options.confirmText,
                 },
                 {
                     name: 'alert-modal',
                     clickToClose: true,
                     adaptive: true,
-                    width: 360,
+                    width: 260,
                     height: 200,
+                    borderRadius: 10,
                 }, {
                     'before-open': beforeOpen,
                     'before-close': beforeClose,

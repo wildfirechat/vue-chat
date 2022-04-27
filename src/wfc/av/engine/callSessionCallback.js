@@ -17,6 +17,10 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     *  自己挂断回调
+     * @param {CallEndReason} reason 挂断原因
+     */
     didCallEndWithReason(reason) {
 
     }
@@ -25,37 +29,63 @@ export default class CallSessionCallback {
      * 可用来实现响铃相关
      * 1. outgoing -> connecting: 开始 -> 结束播放呼出铃声
      * 2. incoming -> connecting: 开始 -> 结束播放呼入铃声
-     * 通话状态变化时调用
-     * @param {CallState} state
+     *  自己通话状态变化时调用
+     * @param {CallState} state 状态
      */
     didChangeState(state) {
 
     }
 
+    /**
+     * 新参与者加入回调
+     * @param {string} userId 用户 id
+     * @param {boolean} screenSharing 是否是屏幕共享
+     */
     didParticipantJoined(userId, screenSharing = false) {
 
     }
 
+    /**
+     * 参与者连接成功
+     * @param {string} userId 用户 id
+     * @param {boolean} screenSharing 是否是屏幕共享
+     */
     didParticipantConnected(userId, screenSharing = false) {
 
     }
 
+    /**
+     * 参与者挂断回调
+     * @param {string} userId 用户 id
+     * @param {CallEndReason} callEndReason 挂断原因
+     * @param {boolean} screenSharing 是否是屏幕共享
+     */
     didParticipantLeft(userId, callEndReason, screenSharing = false) {
 
     }
 
+    /**
+     * 视频通话切换到语音通话回调
+     * @param {boolean} audioOnly 目前都是 true
+     */
     didChangeMode(audioOnly) {
 
     }
 
+    /**
+     * 本地音视频流创建成功回调
+     * @param {MediaStream} stream 音视频流
+     * @param {boolean} screenSharing 是否是屏幕共享
+     */
     didCreateLocalVideoTrack(stream, screenSharing) {
 
     }
 
     /**
-     * 创建本地音视频流失败，可能原因可能是没有摄像头、或者没有麦克风
+     * 创建本地音视频流失败 回调，可能原因可能是没有摄像头、或者没有麦克风
+     * @param {Error} e
      */
-    didCreateLocalVideoTrackError() {
+    didCreateLocalVideoTrackError(e) {
 
     }
 
@@ -67,18 +97,28 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 收到其他参与者音视频流回调
+     * @param {string} userId 用户 id
+     * @param {MediaStream} stream 音视频流
+     * @param {boolean} screenSharing 是否是屏幕共享
+     */
     didReceiveRemoteVideoTrack(userId, stream, screenSharing = false) {
 
     }
 
+    /**
+     *  其他参与者音视频流结束回调
+     * @param {string} userId 用户 id
+     */
     didRemoveRemoteVideoTrack(userId) {
 
     }
 
     /**
      * 音量通知
-     * @param {string} userId
-     * @param {number} volume 0 -1
+     * @param {string} userId 用户 id
+     * @param {number} volume  音量，取值范围是 0-1
      */
     didReportAudioVolume(userId, volume) {
 
@@ -122,6 +162,10 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 发起者变更回调，多人通话过程中，原始发起者退出通话，会触发选举新的发起者
+     * @param {string} initiator 新的发起者
+     */
     didChangeInitiator(initiator) {
 
     }
