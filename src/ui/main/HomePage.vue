@@ -66,10 +66,6 @@
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
                                @click="go2Workspace"></i>
                         </li>
-                        <li>
-                            <i class="icon-ion-android-upload"
-                               @click="showUploadDialog"></i>
-                        </li>
                         <li v-if="supportConference">
                             <i class="icon-ion-speakerphone"
                                @click="createConference"></i>
@@ -115,7 +111,6 @@ import ConnectionStatus from "@/wfc/client/connectionStatus";
 import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
 import {removeItem} from "@/ui/util/storageHelper";
 import {ipcRenderer} from "@/platform";
-import UploadRecordView from "./bigFile/UploadRecordView";
 import CreateConferenceView from "../voip/CreateConferenceView";
 import avenginekit from "../../wfc/av/internal/engine.min";
 import localStorageEmitter from "../../ipc/localStorageEmitter";
@@ -199,37 +194,6 @@ export default {
             }
             this.$router.push({path: "/home/setting"});
             this.isSetting = true;
-        },
-        showUploadDialog() {
-            let beforeOpen = () => {
-                console.log('Opening...')
-            };
-            let beforeClose = (event) => {
-                console.log('Closing...', event, event.params)
-                // What a gamble... 50% chance to cancel closing
-                // if (event.params.confirm) {
-                //     // TODO
-                //     console.log('confirm')
-                // } else {
-                //     console.log('cancel')
-                //     // TODO clear pick state
-                // }
-            };
-            let closed = (event) => {
-                console.log('Close...', event)
-            };
-            this.$modal.show(
-                UploadRecordView,
-                {}, {
-                    name: 'upload-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: true,
-                }, {
-                    'before-open': beforeOpen,
-                    'before-close': beforeClose,
-                    'closed': closed,
-                })
         },
 
         closeUserCard() {
