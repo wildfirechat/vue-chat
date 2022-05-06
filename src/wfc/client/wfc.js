@@ -871,6 +871,43 @@ export class WfcManager {
     }
 
     /**
+     * 获取密聊信息
+     * @param {string} targetId
+     * @returns {SecretChatInfo}
+     */
+    getSecretChatInfo(targetId) {
+        return impl.getSecretChatInfo(targetId);
+    }
+
+    destroySecretChat(targetId, successCB, failCB) {
+        impl.destroySecretChat(targetId, successCB, failCB);
+    }
+
+    encodeSecretChatMediaData(targetId, mediaDataBuffer) {
+        return impl.encodeSecretChatMediaData(targetId, mediaDataBuffer);
+    }
+
+    decodeSecretChatMediaData(targetId, mediaDataBuffer) {
+        return impl.decodeSecretChatMediaData(targetId, mediaDataBuffer);
+    }
+
+    setSecretChatBurnTime(targetId, ms) {
+        impl.setSecretChatBurnTime(targetId, ms);
+    }
+
+    isEnableSecretChat() {
+        return impl.isEnableSecretChat();
+    }
+
+    isUserEnableSecretChat() {
+        return impl.isUserEnableSecretChat();
+    }
+
+    setUserEnableSecretChat(enable, successCB, failCB) {
+        impl.setUserEnableSecretChat(enable, successCB, failCB);
+    }
+
+    /**
      * 修改频道信息
      * @param {string} channelId 频道id
      * @param {number} type 修改什么，可选值参考{@link ModifyChannelInfoType}

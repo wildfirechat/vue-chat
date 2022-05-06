@@ -57,6 +57,7 @@ import MarkUnreadMessageContent from "../messages/markUnreadMessageContent";
 import LinkMessageContent from "../messages/linkMessageContent";
 import FriendAddedNotification from "../messages/notification/friendAddedNotification";
 import FriendGreetingNotification from "../messages/notification/friendGreetingNotification";
+import StartSecretChatNotification from "../messages/notification/startSecretChatNotification";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -410,6 +411,12 @@ export default class MessageConfig {
             flag: PersistFlag.No_Persist,
             type: MessageContentType.Mark_Unread_Sync,
             contentClazz: MarkUnreadMessageContent,
-        }
+        },
+        {
+            name: 'startSecretChat',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.StartSecretChat_Notification,
+            contentClazz: StartSecretChatNotification,
+        },
     ];
 }

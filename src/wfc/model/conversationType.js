@@ -7,4 +7,5 @@ export default class ConversationType {
     static Group = 1;
     static ChatRoom = 2;
     static Channel = 3;
+    static SecretChat = 5;
 }

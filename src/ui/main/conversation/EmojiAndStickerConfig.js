@@ -4,10 +4,13 @@ import {Category, Emoji, emojisDefault} from "@imndx/v-emoji-picker";
 /*
  1. 构造一个表情```new Emoji('data', 'category', ['alias1', 'alias2'])```
      1. 约定```category```以```Sticker```开头的为动态表情，其他的为普通表情
-     2. 动态表情时，```data```为动态表情的 url
- 2. 构造一个类别```new Category('name', 'icon');
+     2. 动态表情时，```data```为动态表情的```url```
+ 2. 修改下面的```customStickers``` 数组，添加动态表情
+ 3. 构造一个类别```new Category('name', 'icon');
     1. ```Category.name``` 和 ```Emoji.category```是对应的，一个类别下，有一系列的表情
-    2. ```icon```是该类别的 uri
+    2. ```icon```是该类别的icon 的```uri```
+ 4. 修改下面的```icons```数据，为类别添加一个```icon```
+ 5. 修改下面的```customCategories```数组，添加类别
 */
 export function config() {
     // 动态表情的category约定以Sticker-开头
@@ -155,14 +158,13 @@ export function config() {
 
           `,
     };
-    // 只显示类别为 Peoples 的表情
-    // let customCategories = [
-    //     new Category("Peoples", icons["peoples"]),
-    // ];
+    // 需要显示那些类别的表情
     let customCategories = [
-        // 默认表情里面，类别为 Peoples 的表情
+        // 默认表情里面，类别为 Peoples 的表情，就是表情盘第一页显示那些 emoji 表情
         new Category("Peoples", icons["peoples"]),
+        // 上面自定义的动态表情， 类别是 Sticker-b
         new Category("Sticker-b", icons["sticker_b"]),
+        // 上面自定义的动态表情， 类别是 Sticker-p
         new Category("Sticker-p", icons["sticker_p"])
     ];
 

@@ -81,6 +81,16 @@ export default class CallSessionCallback {
 
     }
 
+
+    /**
+     * 本地视频流旋转回调
+     * @param {MediaStream} stream
+     * @param {boolean} screenSharing
+     */
+    didRotateLocalVideoTrack(stream, screenSharing) {
+
+    }
+
     /**
      * 创建本地音视频流失败 回调，可能原因可能是没有摄像头、或者没有麦克风
      * @param {Error} e
@@ -189,5 +199,85 @@ export default class CallSessionCallback {
      */
     onRequestChangeMode(userId, audience) {
 
+    }
+
+    /**
+     * 旋转视频流的具体实现方法，由{@link CallSession#rotate} 触发
+     * @param {MediaStream} stream 待旋转的视频流
+     * @param {number} ang 旋转角度，可选0，90，180，270
+     * @param {Object} scaleTo 可选，小流时有效， 值 固定为{width: 200, height: 200}
+     * @return MediaStream 返回旋转之后的视频流
+     */
+    onRotateStream(stream, ang, scaleTo = null){
+        console.log('xxx', stream.getVideoTracks()[0].getConstraints());
+        const canvas = document.createElement("canvas");
+        Object.assign(canvas, { width: 0, height: 0 });
+        const ctx = canvas.getContext("2d");
+        const track = stream.getVideoTracks()[0];
+        const drawOnCanvas = (image, width, height) => {
+            // MediaStream's video size may change over time
+            if (canvas.width !== width || canvas.height !== height) {
+                switch (ang){
+                    case 90:
+                        canvas.width = height;
+                        canvas.height = width;
+                        // ctx.setTransform(0, 1, -1, 0, ctx.canvas.width, 0);
+                        ctx.translate(canvas.width, 0);
+                        ctx.rotate(90 * Math.PI / 180)
+                        break;
+                    case 270:
+                        canvas.width = height;
+                        canvas.height = width;
+                        //ctx.setTransform(0, -1, 1, 0, 0, ctx.canvas.height)
+                        ctx.translate(0, canvas.height);
+                        ctx.rotate(270 * Math.PI / 180)
+                        break;
+                    case 0:
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.setTransform(1, 0, 0, 1, 0, 0);
+                        break;
+                    case 180:
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.setTransform(-1, 0, 0, -1, ctx.canvas.width, ctx.canvas.height)
+                        break;
+                    default:
+                        break
+                }
+            }
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(image, 0, 0);
+        };
+        // the MediaStreamTrackProcessor API is available, we use it
+        if (window.MediaStreamTrackProcessor) {
+            const processor = new MediaStreamTrackProcessor(track);
+            const reader = processor.readable.getReader();
+            reader.read().then(function readChunk({ done, value }) {
+                const { displayWidth, displayHeight } = value;
+                drawOnCanvas(value, displayWidth, displayHeight);
+                value.close(); // close the VideoFrame when we're done with it
+                if (!done) {
+                    reader.read().then(readChunk);
+                }
+            });
+        } else {
+            const vid = document.createElement("video");
+            vid.srcObject = stream;
+            // in case requestVideoFrameCallback is available, we use it
+            // otherwise we fallback on rAF
+            const scheduler = vid.requestVideoFrameCallback ?
+                (cb) => vid.requestVideoFrameCallback(cb) : requestAnimationFrame;
+            const draw = () => {
+                const { videoWidth, videoHeight } = vid;
+                drawOnCanvas(vid, videoWidth, videoHeight);
+                scheduler(draw);
+            };
+            vid.play().then(draw);
+        }
+        if (scaleTo && scaleTo.width > 0 && scaleTo.height > 0){
+            ctx.scale(scaleTo.width / canvas.width, scaleTo.height / canvas.height);
+        }
+        return canvas.captureStream();
     }
 }

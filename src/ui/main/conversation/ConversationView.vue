@@ -82,6 +82,13 @@
                     class="conversation-info-container"
                 />
 
+                <SecretConversationInfoView
+                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 5"
+                    v-click-outside="hideConversationInfo"
+                    :conversation-info="sharedConversationState.currentConversationInfo"
+                    v-bind:class="{ active: showConversationInfo }"
+                    class="conversation-info-container"
+                />
                 <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true" v-on:close="onMenuClose">
                     <!--          更多menu item-->
                     <li v-if="isCopyable(message)">
@@ -128,6 +135,7 @@
 
 <script>
 import SingleConversationInfoView from "@/ui/main/conversation/SingleConversationInfoView";
+import SecretConversationInfoView from "@/ui/main/conversation/SecretConversationInfoView";
 import GroupConversationInfoView from "@/ui/main/conversation/GroupConversationInfoView";
 import MessageInputView from "@/ui/main/conversation/MessageInputView";
 import ClickOutside from 'vue-click-outside'
@@ -176,6 +184,7 @@ export default {
         MessageInputView,
         GroupConversationInfoView,
         SingleConversationInfoView,
+        SecretConversationInfoView,
         InfiniteLoading,
         ScaleLoader,
     },

@@ -22,6 +22,7 @@ export default class MessageContentType {
 
     static Mark_Unread_Sync = 31;
 
+    static StartSecretChat_Notification = 40;
     // 提醒消息
     static RecallMessage_Notification = 80;
     static DeleteMessage_Notification = 81; //不存储的

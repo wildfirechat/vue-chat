@@ -255,6 +255,7 @@ export default {
             showParticipantList: false,
             sharedMiscState: store.state.misc,
             videoInputDeviceIndex: 0,
+            degree:90,
             refreshUserInfoInternal: 0,
         }
     },
@@ -274,6 +275,7 @@ export default {
 
             sessionCallback.didChangeState = (state) => {
                 this.status = state;
+                console.log('didChangeState', state)
                 if (state === CallState.STATUS_CONNECTED) {
                     if (this.startTimestamp === 0) {
                         this.startTimestamp = new Date().getTime();
@@ -314,6 +316,9 @@ export default {
                 this.selfUserInfo._stream = stream;
             };
 
+            sessionCallback.didRotateLocalVideoTrack = (stream) => {
+                this.selfUserInfo._stream = stream;
+            };
             sessionCallback.didCreateLocalVideoTrackError = () => {
                 // TODO
                 // 没有摄像头或者麦克风，加入会议时，会回调到此处，自己断会显示自己的头像，其他端会显示黑屏
@@ -344,7 +349,7 @@ export default {
                     userInfo._volume = 0;
                     userInfo._isScreenSharing = screenSharing;
                     this.participantUserInfos.push(userInfo);
-                    console.log('joined', this.participantUserInfos.length);
+                    console.log('joined', userId, this.participantUserInfos.length);
                 })
             }
 
@@ -468,19 +473,23 @@ export default {
             }
             // The order is significant - the default capture devices will be listed first.
             // navigator.mediaDevices.enumerateDevices()
-            navigator.mediaDevices.enumerateDevices().then(devices => {
-                devices = devices.filter(d => d.kind === 'videoinput');
-                if (devices.length < 2) {
-                    console.log('switchCamera error, no more video input device')
-                    return;
-                }
-                this.videoInputDeviceIndex++;
-                if (this.videoInputDeviceIndex >= devices.length) {
-                    this.videoInputDeviceIndex = 0;
-                }
-                this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
-                console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
-            })
+            // navigator.mediaDevices.enumerateDevices().then(devices => {
+            //     devices = devices.filter(d => d.kind === 'videoinput');
+            //     if (devices.length < 2) {
+            //         console.log('switchCamera error, no more video input device')
+            //         return;
+            //     }
+            //     this.videoInputDeviceIndex++;
+            //     if (this.videoInputDeviceIndex >= devices.length) {
+            //         this.videoInputDeviceIndex = 0;
+            //     }
+            //     this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
+            //     console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
+            // })
+
+            this.session.rotate(this.degree);
+            this.degree += 90;
+            this.degree = this.degree > 270 ? 0 : this.degree;
         },
         mute() {
             let enable = this.session.audioMuted ? true : false;
