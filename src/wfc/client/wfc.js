@@ -960,13 +960,26 @@ export class WfcManager {
         return impl.getMyChannels();
     }
 
+
     /**
+     * @deprecated 已废弃，请使用{@link getRemoteListenedChannels}
      * 获取所收听的频道id列表
      * @returns {[string]}
      */
     getListenedChannels() {
         return impl.getListenedChannels();
     }
+
+    /**
+     * 从服务端获取所收听的频道id列表
+     * @param {function([String])} successCB
+     * @param {function(number)} failCB
+     *
+     */
+    getRemoteListenedChannels(successCB, failCB) {
+        return impl.getRemoteListenedChannels(successCB, failCB);
+    }
+
 
     /**
      * 销毁频道
