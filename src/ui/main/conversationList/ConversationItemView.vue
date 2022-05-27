@@ -102,7 +102,7 @@ export default {
             if (info.conversation.type === ConversationType.Single) {
                 return info.conversation._target._displayName;
             } else if (info.conversation.type === ConversationType.SecretChat) {
-                return 'sc-' + info.conversation._target._displayName;
+                return info.conversation._target._displayName;
             } else {
                 return info.conversation._target.name;
             }

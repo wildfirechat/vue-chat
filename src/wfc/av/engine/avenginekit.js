@@ -22,6 +22,13 @@ export default class WfcAVEngineKit {
     getCurrentSession() {
 
     }
+    /**
+     * 请参考{@link Conference.vue} 实现重新加入会议
+     * @param args
+     */
+    joinConference(args){
+
+    }
     static MAX_AUDIO_PARTICIPANT_COUNT = 16;
     static MAX_VIDEO_PARTICIPANT_COUNT = 9;
 

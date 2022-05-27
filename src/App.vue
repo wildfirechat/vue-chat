@@ -152,7 +152,6 @@ export default {
 }
 
 #app {
-    background-color: red;
     position: relative;
 }
 

@@ -38,6 +38,11 @@ const routers = [
                 component: FavPage,
             },
             {
+                name: 'workspace',
+                path: 'workspace',
+                component: WorkspacePage,
+            },
+            {
                 path: 'setting',
                 name: 'setting',
                 component: SettingPage,

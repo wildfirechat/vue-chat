@@ -16,6 +16,10 @@
     <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
     <StickerMessageContentView :message="message"
                                v-else-if="message.messageContent.type === 7"/>
+    <LinkMessageContentView :message="message"
+                            v-else-if="message.messageContent.type === 8"
+                            :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
+                            v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     <CompositeMessageContentView :message="message"
                                  v-else-if="message.messageContent.type === 11"/>
     <CallStartMessageContentView :message="message"
@@ -52,6 +56,7 @@ import CompositeMessageContentView from "@/ui/main/conversation/message/content/
 import UserCardMessageContentView from "./content/UserCardMessageContentView";
 import ConferenceInviteMessageContentView from "./content/ConferenceInviteMessageContentView";
 import UnknownMessageContentView from "./content/UnknownMessageContentView";
+import LinkMessageContentView from "./content/LinkMessageContentView";
 
 export default {
     name: "MessageContentContainerView",
@@ -62,6 +67,7 @@ export default {
         }
     },
     components: {
+        LinkMessageContentView,
         UnknownMessageContentView,
         ConferenceInviteMessageContentView,
         CompositeMessageContentView,

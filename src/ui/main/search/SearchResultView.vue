@@ -46,7 +46,7 @@
                         <li v-for="(group, index) in toShowGroupList" :key="index">
                             <div class="search-result-item group" @click="chatToGroup(group)">
                                 <img :src="group.portrait">
-                                <span>{{ group.name }}</span>
+                                <span>{{ group.remark ? group.remark : group.name }}</span>
                             </div>
                         </li>
                     </ul>

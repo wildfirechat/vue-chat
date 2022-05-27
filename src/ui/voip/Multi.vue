@@ -122,6 +122,7 @@ import CallState from "@/wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import IpcSub from "../../ipc/ipcSub";
+import MultiCallOngoingMessageContent from "../../wfc/av/messages/multiCallOngoingMessageContent";
 
 export default {
     name: 'Multi',
@@ -138,6 +139,7 @@ export default {
             startTimestamp: 0,
             currentTimestamp: 0,
             videoInputDeviceIndex: 0,
+            broadcastMultiCallOngoingTimer: 0,
         }
     },
     methods: {
@@ -176,6 +178,9 @@ export default {
                 participantUserInfos.forEach(p => this.$set(p, "_stream", null))
                 groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
 
+                if (selfUserInfo.uid === initiatorUserInfo.uid){
+                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 1000)
+                }
             };
 
             sessionCallback.didChangeMode = (audioOnly) => {
@@ -249,6 +254,14 @@ export default {
                     }
                 }
             };
+            sessionCallback.didChangeInitiator = (initiator) => {
+                IpcSub.getUserInfos([initiator], null, (userInfos) => {
+                    this.initiatorUserInfo = userInfos[0];
+                })
+                if (!this.broadcastMultiCallOngoingTimer){
+                    setInterval(this.broadcastMultiCallOngoing, 200)
+                }
+            }
             avenginekit.sessionCallback = sessionCallback;
         },
 
@@ -386,6 +399,13 @@ export default {
             let sec = ~~((timestamp % 60));
             str += (sec < 10 ? "0" : "") + sec
             return str;
+        },
+
+        broadcastMultiCallOngoing(){
+            let participants = this.participantUserInfos.map(pu => pu.uid).filter(uid => uid !== this.selfUserInfo.uid)
+            let ongoing = new MultiCallOngoingMessageContent(this.session.callId, this.session.initiatorId, this.session.audioOnly, participants);
+            console.log('broadcast ongoing', ongoing);
+            IpcSub.sendMessage(this.session.conversation, ongoing);
         }
     },
 
@@ -408,6 +428,9 @@ export default {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
+        if (this.broadcastMultiCallOngoingTimer){
+            clearInterval(this.broadcastMultiCallOngoingTimer);
+        }
     }
 }
 </script>

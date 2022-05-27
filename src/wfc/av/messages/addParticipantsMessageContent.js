@@ -5,6 +5,7 @@
 import NotificationMessageContent from "../../messages/notification/notificationMessageContent";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc"
+import {de, me} from "../../../vendor/pinyin/data/dict-zi-web";
 
 class ParticipantStatus {
     userId;
@@ -20,9 +21,11 @@ export default class AddParticipantsMessageContent extends NotificationMessageCo
     participants;
     existParticipants;
     audioOnly;
+    autoAnswer;
+    clientId;
 
-    constructor(mentionedType = 0, mentionedTargets = []) {
-        super(MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT, mentionedType, mentionedTargets);
+    constructor() {
+        super(MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT);
     }
 
     formatNotification(message) {
@@ -40,6 +43,8 @@ export default class AddParticipantsMessageContent extends NotificationMessageCo
             pin: this.pin,
             participants: this.participants,
             existParticipants: this.existParticipants,
+            autoAnswer: this.autoAnswer,
+            clientId: this.clientId,
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
 
@@ -64,5 +69,7 @@ export default class AddParticipantsMessageContent extends NotificationMessageCo
         this.pin = obj.pin;
         this.participants = obj.participants;
         this.existParticipants = obj.existParticipants;
+        this.autoAnswer = obj.autoAnswer;
+        this.clientId = obj.clientId;
     }
 }

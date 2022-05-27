@@ -14,6 +14,9 @@
             <ScreenShareControlView v-if="session && session.isScreenSharing()" type="conference"/>
             <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
         </div>
+        <div v-if="endReason !== undefined && endReason === 4" @click="rejoinConference" class="rejoin-container">
+            会议断开，点击重新加入
+        </div>
         <div v-if="session" class="conference-container"
              v-bind:style="{display: session.isScreenSharing() && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="conference-main-content-container">
@@ -255,8 +258,9 @@ export default {
             showParticipantList: false,
             sharedMiscState: store.state.misc,
             videoInputDeviceIndex: 0,
-            degree:90,
+
             refreshUserInfoInternal: 0,
+            endReason: undefined,
         }
     },
     components: {ScreenShareControlView, UserCardView, ElectronWindowsControlButtonView},
@@ -275,7 +279,7 @@ export default {
 
             sessionCallback.didChangeState = (state) => {
                 this.status = state;
-                console.log('didChangeState', state)
+
                 if (state === CallState.STATUS_CONNECTED) {
                     if (this.startTimestamp === 0) {
                         this.startTimestamp = new Date().getTime();
@@ -317,6 +321,7 @@ export default {
             };
 
             sessionCallback.didRotateLocalVideoTrack = (stream) => {
+                console.log('didRotateLocalVideoTrack', stream.getAudioTracks())
                 this.selfUserInfo._stream = stream;
             };
             sessionCallback.didCreateLocalVideoTrackError = () => {
@@ -349,7 +354,7 @@ export default {
                     userInfo._volume = 0;
                     userInfo._isScreenSharing = screenSharing;
                     this.participantUserInfos.push(userInfo);
-                    console.log('joined', userId, this.participantUserInfos.length);
+                    console.log('joined', this.participantUserInfos.length);
                 })
             }
 
@@ -366,6 +371,10 @@ export default {
                 console.log('callEndWithReason', reason)
                 // 可以根据reason，进行一些提示
                 // alert('会议已结束');
+                this.endReason = reason;
+                if (reason === CallEndReason.REASON_MediaError || reason === CallEndReason.REASON_SignalError) {
+                    return;
+                }
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
                     let obj = {reason: reason, session: this.session};
@@ -473,23 +482,19 @@ export default {
             }
             // The order is significant - the default capture devices will be listed first.
             // navigator.mediaDevices.enumerateDevices()
-            // navigator.mediaDevices.enumerateDevices().then(devices => {
-            //     devices = devices.filter(d => d.kind === 'videoinput');
-            //     if (devices.length < 2) {
-            //         console.log('switchCamera error, no more video input device')
-            //         return;
-            //     }
-            //     this.videoInputDeviceIndex++;
-            //     if (this.videoInputDeviceIndex >= devices.length) {
-            //         this.videoInputDeviceIndex = 0;
-            //     }
-            //     this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
-            //     console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
-            // })
-
-            this.session.rotate(this.degree);
-            this.degree += 90;
-            this.degree = this.degree > 270 ? 0 : this.degree;
+            navigator.mediaDevices.enumerateDevices().then(devices => {
+                devices = devices.filter(d => d.kind === 'videoinput');
+                if (devices.length < 2) {
+                    console.log('switchCamera error, no more video input device')
+                    return;
+                }
+                this.videoInputDeviceIndex++;
+                if (this.videoInputDeviceIndex >= devices.length) {
+                    this.videoInputDeviceIndex = 0;
+                }
+                this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
+                console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
+            })
         },
         mute() {
             let enable = this.session.audioMuted ? true : false;
@@ -711,6 +716,25 @@ export default {
                     })
                 })
             }
+        },
+
+        rejoinConference() {
+            avenginekit.joinConference({
+                callId: this.session.callId,
+                pin: this.session.pin,
+                host: this.session.host,
+                tile: this.session.title,
+                desc: this.session.desc,
+                audioOnly: this.session.audioOnly,
+                audience: this.session.audience,
+                advance: this.session.audience,
+                muteVideo: this.session.videoMuted,
+                muteAudio: this.session.audioMuted,
+                extra: this.session.extra,
+                callExtra: this.session.callExtra,
+                selfUserInfo: this.selfUserInfo,
+            });
+            this.endReason = undefined;
         }
     },
 
@@ -840,6 +864,7 @@ export default {
     --participant-video-item-height: 100%;
     --conference-container-margin-top: 30px;
     background: #00000000 !important;
+    position: relative;
 }
 
 .conference-container {
@@ -1142,5 +1167,16 @@ footer {
 .video.me {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
+}
+.rejoin-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #e0e0e0e0;
+    text-align: center;
+    justify-content: center;
+    color: red;
 }
 </style>

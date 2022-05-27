@@ -187,7 +187,7 @@ let store = {
                 this.enableAutoLogin = false;
                 this.isElectron = isElectron();
                 this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
-                this.isMainWindow = false;
+                // this.isMainWindow = false;
                 this.linuxUpdateTitleInterval = 0;
                 this.wfc = wfc;
                 this.config = Config;
@@ -513,6 +513,7 @@ let store = {
             	this._loadDefaultData();
         	}
         }
+        miscState.connectionStatus = wfc.getConnectionStatus();
 
         miscState.isMainWindow = isMainWindow;
         window.__wfc = wfc;
@@ -808,7 +809,7 @@ let store = {
     async sendFile(conversation, file) {
         console.log('send file', file)
         if (file.size && file.size > 100 * 1024 * 1024) {
-            if (!wfc.isSupportBigFilesUpload()) {
+            if (!wfc.isSupportBigFilesUpload() || conversation.type === ConversationType.SecretChat) {
                 console.log('file too big, and not support upload big file')
             	return true;
         	}
@@ -1088,7 +1089,7 @@ let store = {
         } else if (info.conversation.type === ConversationType.Group) {
             info.conversation._target = wfc.getGroupInfo(info.conversation.target, false);
             info.conversation._target._isFav = wfc.isFavGroup(info.conversation.target);
-            info.conversation._target._displayName = info.conversation._target.name;
+            info.conversation._target._displayName = info.conversation._target.remark ? info.conversation._target.remark : info.conversation._target.name;
         } else if (info.conversation.type === ConversationType.Channel) {
             info.conversation._target = wfc.getChannelInfo(info.conversation.target, false);
             info.conversation._target._displayName = info.conversation._target.name;
@@ -1731,4 +1732,5 @@ function _reset() {
 }
 
 window.__store = store;
+window.stringValue = stringValue;
 export default store

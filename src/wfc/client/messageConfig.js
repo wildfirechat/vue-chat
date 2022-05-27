@@ -58,6 +58,9 @@ import LinkMessageContent from "../messages/linkMessageContent";
 import FriendAddedNotification from "../messages/notification/friendAddedNotification";
 import FriendGreetingNotification from "../messages/notification/friendGreetingNotification";
 import StartSecretChatNotification from "../messages/notification/startSecretChatNotification";
+import MultiCallOngoingMessageContent from "../av/messages/multiCallOngoingMessageContent";
+import JoinCallRequestMessageContent from "../av/messages/joinCallRequestMessageContent";
+import RichNotificationMessageContent from "../messages/notification/richNotificationMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -407,6 +410,18 @@ export default class MessageConfig {
             contentClazz:ConferenceKickoffMemberMessageContent,
         },
         {
+            name: 'multiCallOngoing',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.VOIP_Multi_Call_Ongoing,
+            contentClazz: MultiCallOngoingMessageContent,
+        },
+        {
+            name: 'joinCallRequest',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.VOIP_Join_Call_Request,
+            contentClazz: JoinCallRequestMessageContent,
+        },
+        {
             name: 'markUnreadMessage',
             flag: PersistFlag.No_Persist,
             type: MessageContentType.Mark_Unread_Sync,
@@ -417,6 +432,12 @@ export default class MessageConfig {
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.StartSecretChat_Notification,
             contentClazz: StartSecretChatNotification,
+        },
+        {
+            name: 'richNotification',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Rich_Notification,
+            contentClazz: RichNotificationMessageContent,
         },
     ];
 }

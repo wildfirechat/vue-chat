@@ -73,6 +73,9 @@ export default class Config {
      */
     static RECALL_REEDIT_TIME_LIMIT = 60;
 
+    // 允许主动加入多人音视频通话
+    static ENABLE_MULTI_CALL_AUTO_JOIN = false;
+
     static getWFCPlatform() {
         if (isElectron()) {
             if (window.process && window.process.platform === 'darwin') {

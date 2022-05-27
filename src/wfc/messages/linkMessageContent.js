@@ -35,4 +35,8 @@ export default class LinkMessageContent extends MessageContent {
         this.url = obj.u;
         this.thumbnail = obj.t;
     }
+    digest(message) {
+        let tmp = this.contentDigest ? this.contentDigest.trim() : null;
+        return tmp ? tmp : this.url;
+    }
 }

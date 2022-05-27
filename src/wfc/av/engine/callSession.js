@@ -48,9 +48,10 @@ export default class CallSession {
 
     /**
      * 多人音视频通话中，邀请新成员
-     * @param newParticipantIds
+     * @param {[string]} newParticipantIds
+     * @param {boolean}  autoAnswer 是否自动接听，默认 false
      */
-    inviteNewParticipants (newParticipantIds) {
+    inviteNewParticipants (newParticipantIds, autoAnswer) {
     }
 
     /**

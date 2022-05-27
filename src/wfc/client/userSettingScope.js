@@ -31,6 +31,9 @@ export default class UserSettingScope {
     static VoipSilent = 21;
     static PttReserved = 22;
     static CustomState = 23;
+    static DisableSecretChat = 24;
+    static PttSilent = 25;
+    static GroupRemark = 26;
 
     // 用户自定义的scope需从1000开始，以防冲突
     static kUserSettingCustomBegin = 1000;

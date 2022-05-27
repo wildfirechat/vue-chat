@@ -5,7 +5,7 @@
                 <div class="group-item"
                      v-bind:class="{active: sharedContactState.currentGroup && sharedContactState.currentGroup.target === group.target}">
                     <img class="avatar" :src="group.portrait">
-                    <span class="single-line">{{ group.name }}</span>
+                    <span class="single-line">{{ group.remark ? group.remark : group.name }}</span>
                 </div>
             </li>
         </ul>

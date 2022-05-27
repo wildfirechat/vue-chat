@@ -157,22 +157,23 @@ export default {
             } else {
                 text = await navigator.clipboard.readText();
             }
-            if (text && text.trim()) {
-                document.execCommand('insertText', false, text);
-                // Safari 浏览器 execCommand 失效，可以采用下面这种方式处理粘贴
-                // this.$refs.input.innerText += text;
-                return;
-            }
             if (isElectron()) {
                 let args = ipcRenderer.sendSync('file-paste');
                 if (args.hasImage) {
                     document.execCommand('insertText', false, ' ');
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
+                    return;
                 }else if (args.hasFile){
                     args.files.forEach(file => {
                         store.sendFile(this.conversationInfo.conversation, file)
                     })
+                    return;
                 }
+            }
+            if (text && text.trim()) {
+                document.execCommand('insertText', false, text);
+                // Safari 浏览器 execCommand 失效，可以采用下面这种方式处理粘贴
+                // this.$refs.input.innerText += text;
             }
         },
         mention(groupId, memberId){

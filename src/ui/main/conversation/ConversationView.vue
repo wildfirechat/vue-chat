@@ -24,6 +24,12 @@
                  @drop="dragEvent($event, 'drop')"
                  :dummy_just_for_reactive="currentVoiceMessage"
             >
+                <div v-if="ongoingCalls && ongoingCalls.length > 0" class="ongoing-call-container">
+                    <div v-for="(value, index) in ongoingCalls" :key="index" class="ongoing-call-item">
+                        <p>{{ value.messageContent.digest(value) }}</p>
+                        <button @click="joinMultiCall(value)">加入</button>
+                    </div>
+                </div>
                 <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
                     <div class="drag-drop">
                         <p>{{ $t('conversation.drag_to_send_to', [conversationTitle]) }}</p>
@@ -45,6 +51,7 @@
 
                             <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
                             <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
+                            <RichNotificationMessageContentView :message="message" v-if="isRichNotificationMessage(message)"/>
                             <NormalOutMessageContentView
                                 @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
                                 :message="message"
@@ -172,10 +179,16 @@ import {stringValue} from "../../../wfc/util/longUtil";
 import ConversationType from "../../../wfc/model/conversationType";
 import GroupMemberType from "../../../wfc/model/groupMemberType";
 import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
+import EventType from "../../../wfc/client/wfcEvent";
+import MultiCallOngoingMessageContent from "../../../wfc/av/messages/multiCallOngoingMessageContent";
+import JoinCallRequestMessageContent from "../../../wfc/av/messages/joinCallRequestMessageContent";
+import RichNotificationMessageContent from "../../../wfc/messages/notification/richNotificationMessageContent";
+import RichNotificationMessageContentView from "./message/RichNotificationMessageContentView";
 
 var amr;
 export default {
     components: {
+        RichNotificationMessageContentView,
         MultiSelectActionView,
         NotificationMessageContentView,
         RecallNotificationMessageContentView,
@@ -205,6 +218,8 @@ export default {
             dragAndDropEnterCount: 0,
             // FIXME 选中一个会话，然后切换到其他page，比如联系人，这时该会话收到新消息或发送消息，会导致新收到/发送的消息的界面错乱，尚不知道原因，但这么做能解决。
             fixTippy: false,
+            ongoingCalls: null,
+            ongoingCallTimer: 0,
         };
     },
 
@@ -295,7 +310,13 @@ export default {
         },
 
         isNotificationMessage(message) {
-            return message && message.messageContent instanceof NotificationMessageContent && message.messageContent.type !== MessageContentType.RecallMessage_Notification;
+            return message && message.messageContent instanceof NotificationMessageContent
+                && message.messageContent.type !== MessageContentType.RecallMessage_Notification
+                && message.messageContent.type !== MessageContentType.Rich_Notification;
+        },
+
+        isRichNotificationMessage(message) {
+            return message && message.messageContent instanceof RichNotificationMessageContent;
         },
 
         isRecallNotificationMessage(message) {
@@ -674,6 +695,39 @@ export default {
 
         mentionMessageSender(message) {
             this.$refs.messageInputView.mention(message.conversation.target, message.from);
+        },
+
+        onReceiveMessage(message, hasMore) {
+            if (this.conversationInfo && this.conversationInfo.conversation.equal(message.conversation) && message.messageContent instanceof MultiCallOngoingMessageContent) {
+                if (!this.ongoingCalls) {
+                    this.ongoingCalls = [];
+                    this.ongoingCallTimer = setInterval(() => {
+                        this.ongoingCalls = this.ongoingCalls.filter(call => {
+                            return new Date().getTime() - (numberValue(call.timestamp) - numberValue(wfc.getServerDeltaTime())) < 3 * 1000;
+                        })
+                        if (this.ongoingCalls.length === 0) {
+                            clearInterval(this.ongoingCallTimer);
+                            this.ongoingCallTimer = 0;
+        }
+                        console.log('ongoing calls', this.ongoingCalls.length);
+                    }, 1000)
+                }
+                // 自己是不是已经在通话中
+                if (message.messageContent.targets.indexOf(wfc.getUserId()) >= 0) {
+                    return;
+                }
+                let index = this.ongoingCalls.findIndex(call => call.messageContent.callId === message.messageContent.callId);
+                if (index > -1) {
+                    this.ongoingCalls[index] = message;
+                } else {
+                    this.ongoingCalls.push(message);
+                }
+            }
+        },
+
+        joinMultiCall(message) {
+            let request = new JoinCallRequestMessageContent(message.messageContent.callId, wfc.getClientId());
+            wfc.sendConversationMessage(this.conversationInfo.conversation, request);
         }
     },
 
@@ -719,6 +773,7 @@ export default {
                     ev.reply('inviteConferenceParticipantCancel')
                 });
         });
+        wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
     },
 
     beforeDestroy() {
@@ -726,6 +781,7 @@ export default {
         document.removeEventListener('mousemove', this.drag);
         this.$eventBus.$off('send-file')
         this.$eventBus.$off('forward-fav')
+        wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
     updated() {
@@ -735,7 +791,7 @@ export default {
 
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
-        console.log('conversationView updated', this.sharedConversationState.shouldAutoScrollToBottom)
+        console.log('conversationView updated', this.conversationInfo, this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom)
         if (this.sharedConversationState.shouldAutoScrollToBottom) {
             let messageListElement = this.$refs['conversationMessageList'];
             messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
@@ -751,8 +807,14 @@ export default {
             }
         }
 
+        // 切换到新的会话
         if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
             this.showConversationInfo = false;
+            this.ongoingCalls = null;
+            if (this.ongoingCallTimer) {
+                clearInterval(this.ongoingCallTimer);
+                this.ongoingCallTimer = 0;
+            }
         }
         this.conversationInfo = this.sharedConversationState.currentConversationInfo;
     },
@@ -784,6 +846,11 @@ export default {
             return null;
         }
     },
+    // watch: {
+    //     conversationInfo() {
+    //         console.log('conversationInfo changed', this.conversationInfo);
+    //     }
+    // },
 
     directives: {
         ClickOutside
@@ -892,6 +959,33 @@ export default {
 
 .conversation-content-container .drag-drop p {
     padding-bottom: 100px;
+}
+
+.conversation-content-container .ongoing-call-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+.ongoing-call-item {
+    padding: 10px 20px;
+    display: flex;
+    border-bottom: 1px solid lightgrey;
+}
+
+.ongoing-call-item p {
+    flex: 1;
+}
+
+.ongoing-call-item button {
+    padding: 5px 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.ongoing-call-item button:active {
+    border: 1px solid #4168e0;
 }
 
 .conversation-message-list {

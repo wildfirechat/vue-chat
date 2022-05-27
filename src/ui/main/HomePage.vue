@@ -176,17 +176,11 @@ export default {
             console.log('show-file-window', url)
         },
         go2Workspace() {
-            let hash = window.location.hash;
-            let url = window.location.origin;
-            if (hash) {
-                url = window.location.href.replace(hash, '#/workspace');
-            } else {
-                url += "/workspace"
+            if (this.$router.currentRoute.path === '/home/workspace') {
+                return;
             }
-            ipcRenderer.send('show-workspace-window', {
-                url: url,
-            });
-            console.log('show-workspace-window', url)
+            this.$router.replace("/home/workspace");
+            this.isSetting = false;
         },
         go2Setting() {
             if (this.$router.currentRoute.path === '/home/setting') {
