@@ -45,6 +45,12 @@ export default {
                 url += '?url=' + this.message.messageContent.exUrl;
 
                 ipcRenderer.send('open-h5-app-window', {hostUrl: location.href, url: url})
+            } else {
+                this.$notify({
+                    title: '不支持打开该类型的消息',
+                    text: '请使用手机或者 PC 端打开',
+                    type: 'warn'
+                });
             }
         }
     },
