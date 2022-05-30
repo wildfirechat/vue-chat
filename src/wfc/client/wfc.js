@@ -673,6 +673,25 @@ export class WfcManager {
     }
 
     /**
+     * 设置群备注
+     * @param {string} groupId 群id
+     * @param {string} remark 群备注
+     * @param successCB
+     * @param failCB
+     */
+    async setGroupRemark(groupId, remark, successCB, failCB) {
+        impl.setGroupRemark(groupId, remark, successCB, failCB);
+    }
+
+    /**
+     *  获取群备注
+     * @param {string} groupId 群id
+     * @return 群备注
+     */
+    getGroupRemark(groupId) {
+        return impl.setGroupRemark(groupId);
+    }
+    /**
      * 获取保存到通讯录的群id列表
      * @returns {[string]}
      */
@@ -977,7 +996,7 @@ export class WfcManager {
      *
      */
     getRemoteListenedChannels(successCB, failCB) {
-        return impl.getRemoteListenedChannels(successCB, failCB);
+        impl.getRemoteListenedChannels(successCB, failCB);
     }
 
 
@@ -1462,6 +1481,17 @@ export class WfcManager {
         impl.sendMessageEx(message, toUsers, preparedCB, progressCB, successCB, failCB);
     }
 
+    /**
+     * 发送已经保存的消息，参考{@link sendMessage}
+     * @param message
+     * @param expireDuration
+     * @param successCB
+     * @param failCB
+     * @returns {Promise<void>}
+     */
+    async sendSavedMessage(message, expireDuration, successCB, failCB) {
+        impl.sendSavedMessage(message, expireDuration, successCB, failCB);
+    }
     // 更新了原始消息的内容
     /**
      * 撤回消息
