@@ -7,8 +7,11 @@
             <p class="file-name">{{ this.message.messageContent.name }}</p>
             <p class="file-size single-line">{{ size }}</p>
         </div>
-        <div v-if="message.direction === 1 && downloadStats " style="height:5px; background: #4168e0a0; position: absolute; left: 0; bottom: 0"
-             v-bind:style="{width: downloadStats.receivedBytes / downloadStats.totalBytes * 100 + '%'}">
+        <div v-if="downloadStats" style="height:5px; background: #4168e0a0; position: absolute; left: 0; bottom: 0"
+             v-bind:style="{width: downloadStats.progress / downloadStats.total * 100 + '%'}">
+        </div>
+        <div v-if="sendStats" style="height:5px; background: #4168e0a0; position: absolute; left: 0; bottom: 0"
+             v-bind:style="{width: sendStats.progress / sendStats.total * 100 + '%'}">
         </div>
     </div>
 </template>
@@ -44,8 +47,11 @@ export default {
                         downloadFile(this.message)
                         store.addDownloadingMessage(this.message.messageId)
                     } else {
-                        // TODO toast 下载中
-                        console.log('file isDownloading')
+                        this.$notify({
+                            title: '下载中',
+                            text: '文件下载中，请稍后',
+                            type: 'warn'
+                        });
                     }
                 }
             } else {
@@ -80,6 +86,10 @@ export default {
         downloadStats() {
             let dm = store.getDownloadingMessageStatus(this.message.messageId);
             return dm;
+        },
+        sendStats() {
+            let sm = store.getSendingStatus(this.message.messageId);
+            return sm;
         }
     }
 }

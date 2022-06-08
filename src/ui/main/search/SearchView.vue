@@ -14,7 +14,6 @@
 
 <script>
 import store from "@/store";
-import PickerUserView from "@/ui/main/pick/PickUserView";
 import Config from "../../../config";
 
 export default {
@@ -41,44 +40,19 @@ export default {
         },
 
         showCreateConversationModal() {
-            let beforeOpen = () => {
-                console.log('Opening...')
-            };
-            let beforeClose = (event) => {
-                console.log('Closing...', event, event.params)
-                // What a gamble... 50% chance to cancel closing
-                if (event.params.confirm) {
-                    let users = event.params.users;
+            let successCB = users => {
                     store.createConversation(users);
 
-                    console.log('confirm')
-                } else {
-                    console.log('cancel')
-                    // TODO clear pick state
-                }
-            };
-            let closed = (event) => {
-                console.log('Close...', event)
-            };
+
+            }
             let users = this.sharedContactState.favContactList.concat(this.sharedContactState.friendList);
             users = users.filter(u => {
                return u.uid !== Config.FILE_HELPER_ID
             });
-            this.$modal.show(
-                PickerUserView,
-                {
-                    users: users,
-                    confirmTitle: this.$t('common.create'),
-                }, {
-                    name: 'pick-user-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: false,
-                }, {
-                    'before-open': beforeOpen,
-                    'before-close': beforeClose,
-                    'closed': closed,
-                })
+            this.$pickContact({
+                users,
+                successCB,
+            });
         },
         cancel() {
             store.toggleSearchView(false);

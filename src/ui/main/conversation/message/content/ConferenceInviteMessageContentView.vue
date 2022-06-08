@@ -33,11 +33,15 @@ export default {
 
     methods: {
         joinConference() {
-            if (avenginekit.joinConference) {
+            if (avenginekit.sendConferenceRequest) {
                 let cmc = this.message.messageContent;
                 avenginekitproxy.joinConference(cmc.callId, cmc.audioOnly, cmc.pin, cmc.host, cmc.title, cmc.desc, cmc.audience, cmc.advanced, false, false)
             } else {
-                console.log('not support conference')
+                this.$notify({
+                    title: '不支持会议功能',
+                    text: '请使用会议版engine文件',
+                    type: 'warn'
+                });
             }
         }
     },

@@ -18,6 +18,8 @@ import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'
 import Alert from "./ui/common/Alert.js";
+import Picker from "./ui/common/Picker";
+import Forward from "./ui/common/Forward";
 
 Vue.config.productionTip = false
 
@@ -77,6 +79,8 @@ Vue.use(visibility);
 
 Vue.use(VueI18n)
 Vue.use(Alert)
+Vue.use(Picker)
+Vue.use(Forward)
 
 const i18n = new VueI18n({
     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态

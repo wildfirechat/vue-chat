@@ -57,6 +57,7 @@ export default class RecallMessageNotification extends NotificationMessageConten
 
     setExtra(extra) {
         if (extra) {
+            extra = extra.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
             let obj = JSON.parse(extra);
             this.originalSender = obj["s"];
             this.originalContentType = obj["t"];

@@ -71,7 +71,10 @@ let store = {
             enableMessageMultiSelection: false,
             quotedMessage: null,
 
+            // 为什么不用 map？
+            // map 里面的元素并不是 reactive 的
             downloadingMessages: [],
+            sendingMessages: [],
             currentVoiceMessage: null,
             _reset() {
                 this.currentConversationInfo = null;
@@ -90,6 +93,7 @@ let store = {
                 this.enableMessageMultiSelection = false;
                 this.quotedMessage = null;
                 this.downloadingMessages = [];
+                this.sendingMessages = [];
                 this.currentVoiceMessage = null;
             }
         },
@@ -491,8 +495,8 @@ let store = {
                 let totalBytes = args.totalBytes;
                 let dm = conversationState.downloadingMessages.find(dm => dm.messageId === messageId);
                 if (dm) {
-                    dm.receivedBytes = receivedBytes;
-                    dm.totalBytes = totalBytes;
+                    dm.progress = receivedBytes;
+                    dm.total = totalBytes;
                 }
                 // console.log('file download progress', messageId, receivedBytes, totalBytes);
             });
@@ -870,19 +874,29 @@ let store = {
         msg.messageContent = messageContent;
         wfc.sendMessage(msg,
             (messageId) => {
+                msg.messageId = messageId;
                 console.log('sf, pr', messageId)
 
             },
             (progress, total) => {
-                // console.log('sf p', Math.ceil(progress / total * 100))
+                // console.log('sf p', msg.messageId, Math.ceil(progress / total * 100))
+                let sm = conversationState.sendingMessages.find(e => e.messageId === msg.messageId);
+                if (sm) {
+                    sm.progress = progress;
+                    sm.total = total;
+                } else {
+                    conversationState.sendingMessages.push({messageId: msg.messageId, progress, total});
+                }
             },
             (messageUid) => {
                 console.log('sf s', messageUid)
 
+                conversationState.sendingMessages = conversationState.sendingMessages.filter(e => e.messageId !== msg.messageId);
             },
             (error) => {
                 console.log('sf e', error)
 
+                conversationState.sendingMessages = conversationState.sendingMessages.filter(e => e.messageId !== msg.messageId);
             }
         );
     },
@@ -1133,8 +1147,8 @@ let store = {
     addDownloadingMessage(messageId) {
         conversationState.downloadingMessages.push({
             messageId: messageId,
-            receivedBytes: 0,
-            totalBytes: Number.MAX_SAFE_INTEGER,
+            progress: 0,
+            total: Number.MAX_SAFE_INTEGER,
         });
         console.log('add downloading')
     },
@@ -1147,10 +1161,17 @@ let store = {
         return conversationState.downloadingMessages.findIndex(dm => dm.messageId === messageId) >= 0;
     },
 
+    isSendingMessage(messageId) {
+        return conversationState.sendingMessages.has(messageId);
+    },
+
     getDownloadingMessageStatus(messageId) {
         return conversationState.downloadingMessages.find(dm => dm.messageId === messageId);
     },
 
+    getSendingStatus(messageId) {
+        return conversationState.sendingMessages.find(e => e.messageId === messageId);
+    },
     // contact actions
 
     _loadSelfUserInfo() {

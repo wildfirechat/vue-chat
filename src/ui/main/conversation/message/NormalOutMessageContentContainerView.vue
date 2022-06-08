@@ -11,7 +11,7 @@
                 <div class="message-avatar-content-container">
                     <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
                     <!--          <button>progress...</button>-->
-                    <LoadingView v-if="message.status === 0 || isDownloading"/>
+                    <LoadingView v-if="message.status === 0 && message.messageContent.type !== 5"/>
                     <i v-if="message.status === 2" class="icon-ion-close-circled" style="color: red" @click="resend"/>
                     <div class="flex-column flex-align-end">
                         <MessageContentContainerView :message="message"

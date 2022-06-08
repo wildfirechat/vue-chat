@@ -42,9 +42,10 @@ export default {
                     url += "/workspace"
                 }
 
-                url += '?url=' + this.message.messageContent.exUrl;
+                url += '?url=' + encodeURIComponent(this.message.messageContent.exUrl);
 
-                ipcRenderer.send('open-h5-app-window', {hostUrl: location.href, url: url})
+
+                ipcRenderer.send('open-h5-app-window', {hostUrl: location.href, url: encodeURI(url)})
             } else {
                 this.$notify({
                     title: '不支持打开该类型的消息',

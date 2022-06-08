@@ -64,13 +64,19 @@ export default {
 
         forwardOneByOne() {
             let messages = [...this.sharedPickState.messages];
-            this.$parent.pickConversationAndForwardMessage(ForwardType.ONE_BY_ONE, messages);
+            this.$forwardMessage({
+                forwardType:ForwardType.ONE_BY_ONE,
+                messages,
+            });
             store.toggleMessageMultiSelection();
         },
 
         forwardComposite() {
             let messages = [...this.sharedPickState.messages];
-            this.$parent.pickConversationAndForwardMessage(ForwardType.COMPOSITE, messages);
+            this.$forwardMessage({
+                forwardType:ForwardType.COMPOSITE,
+                messages,
+            });
             store.toggleMessageMultiSelection();
         },
 

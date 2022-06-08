@@ -117,7 +117,6 @@
 <script>
 import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
-import PickUserView from "@/ui/main/pick/PickUserView";
 import CallState from "@/wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
@@ -351,29 +350,18 @@ export default {
         },
 
         invite() {
-            let beforeClose = (event) => {
-                let users = event.params.users;
+            let successCB = users => {
                 let userIds = users.map(u => u.uid);
                 this.session.inviteNewParticipants(userIds);
-            };
-            this.$modal.show(
-                PickUserView,
-                {
+            }
+            this.$pickContact({
+                successCB,
                     users: this.session.groupMemberUserInfos,
                     initialCheckedUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
                     uncheckableUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
                     showCategoryLabel: false,
                     confirmTitle: '确定',
-                }, {
-                    name: 'pick-user-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: false,
-                }, {
-                    // 'before-open': this.beforeOpen,
-                    'before-close': beforeClose,
-                    'closed': this.closed,
-                })
+            });
         },
 
         userName(user) {
