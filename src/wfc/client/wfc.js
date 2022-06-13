@@ -53,6 +53,12 @@ export class WfcManager {
         return impl.getClientId();
     }
 
+    /**
+    * 获取协议栈版本号
+    */
+    getProtoRevision() {
+        return impl.getProtoRevision();
+    }
     /*
      * 启用国密加密。注意需要服务器端同步开启国密配置
      */
@@ -1491,6 +1497,14 @@ export class WfcManager {
      */
     async sendSavedMessage(message, expireDuration, successCB, failCB) {
         impl.sendSavedMessage(message, expireDuration, successCB, failCB);
+    }
+    /**
+    * 取消发送消息，仅媒体类消息可以取消
+    * @param messageId 消息ID
+    * @returns 是否取消成功
+    */
+    cancelSendingMessage(messageId) {
+        return impl.cancelSendingMessage(messageId);
     }
     // 更新了原始消息的内容
     /**

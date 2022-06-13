@@ -48,6 +48,7 @@
             </div>
         </div>
         <footer>
+            <p class="proto-version-info">{{ protoRevision() }}</p>
             <a class="button" target="_blank" @click="logout">
                 {{ $t('setting.exit_switch_user') }}
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
@@ -153,6 +154,17 @@ export default {
                 clearTimeout(this.openPcChatTimeoutHandler);
                 this.openPcChatTimeoutHandler = 0;
             }
+        },
+
+        protoRevision() {
+            let version = '';
+            try {
+                version = wfc.getProtoRevision();
+            } catch (e) {
+                version = 'unknown proto version'
+                console.log(e)
+            }
+            return version;
         }
 
     },
@@ -216,6 +228,13 @@ export default {
     align-items: center;
     justify-content: flex-end;
     border-top: 1px solid #d9d9d9;
+}
+
+.proto-version-info {
+    justify-self: flex-start;
+    margin-right: auto;
+    padding-left: 10px;
+    color: lightgrey;
 }
 
 .setting-container .button {

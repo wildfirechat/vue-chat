@@ -145,6 +145,7 @@
         "quote": "quote",
         "multi_select": "Multiselect",
         "recall": "Recall",
+        "cancel_send": "Cancel Send",
         "open": "Open",
         "open_dir": "Open Directory",
         "draft": "Draft",

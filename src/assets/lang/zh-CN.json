@@ -146,6 +146,7 @@
         "quote": "引用",
         "multi_select": "多选",
         "recall": "撤回",
+        "cancel_send": "取消发送",
         "open": "打开",
         "open_dir": "打开目录",
         "draft": "草稿",

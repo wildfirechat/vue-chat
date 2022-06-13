@@ -122,6 +122,9 @@
                     <li v-if="isRecallable(message)">
                         <a @click.prevent="recallMessage(message)">{{ $t('common.recall') }}</a>
                     </li>
+                    <li v-if="isCancelable(message)">
+                        <a @click.prevent="cancelMessage(message)">{{ $t('common.cancel_send') }}</a>
+                    </li>
                     <li v-if="isLocalFile(message)">
                         <a @click.prevent="openFile(message)">{{ $t('common.open') }}</a>
                     </li>
@@ -182,6 +185,8 @@ import MultiCallOngoingMessageContent from "../../../wfc/av/messages/multiCallOn
 import JoinCallRequestMessageContent from "../../../wfc/av/messages/joinCallRequestMessageContent";
 import RichNotificationMessageContent from "../../../wfc/messages/notification/richNotificationMessageContent";
 import RichNotificationMessageContentView from "./message/RichNotificationMessageContentView";
+import MessageStatus from "../../../wfc/messages/messageStatus";
+import MediaMessageContent from "../../../wfc/messages/mediaMessageContent";
 
 var amr;
 export default {
@@ -321,6 +326,9 @@ export default {
             return message && message.messageContent.type === MessageContentType.RecallMessage_Notification;
         },
 
+        isCancelable(message) {
+            return message && message.messageContent instanceof MediaMessageContent && message.status === MessageStatus.Sending;
+        },
         reedit(message){
             this.$refs.messageInputView.insertText(message.messageContent.originalSearchableContent);
         },
@@ -492,6 +500,15 @@ export default {
 
         recallMessage(message) {
             wfc.recallMessage(message.messageUid, null, null);
+        },
+        cancelMessage(message){
+            let canceled = wfc.cancelSendingMessage(message.messageId);
+            if (!canceled){
+                this.$notify({
+                    text: '取消失败',
+                    type: 'warn',
+                });
+            }
         },
 
         delMessage(message) {
