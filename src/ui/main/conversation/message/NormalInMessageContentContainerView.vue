@@ -37,7 +37,6 @@
                                                          v-bind:class="{highlight:highLight}"
                                                          :message="message"
                                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
-<!--                            <LoadingView v-if="isDownloading"/>-->
                         </div>
                         <QuoteMessageView style="padding: 5px 0; max-width: 80%"
                                           v-if="quotedMessage"
@@ -58,7 +57,6 @@
 import UserCardView from "@/ui/main/user/UserCardView";
 import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
-import LoadingView from "@/ui/common/LoadingView";
 import store from "@/store";
 import wfc from "../../../../wfc/client/wfc";
 
@@ -90,11 +88,12 @@ export default {
         openMessageSenderContextMenu(event, message) {
             this.$parent.$emit('openMessageSenderContextMenu', event, message)
         },
+        onContextMenuClosed(){
+            this.highLight = false;
+        }
     },
     mounted() {
-        this.$parent.$on('contextMenuClosed', () => {
-            this.highLight = false;
-        });
+        this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
             if (this.message.messageContent.quoteInfo) {
                 let messageUid = this.message.messageContent.quoteInfo.messageUid;
             let msg = store.getMessageByUid(messageUid);
@@ -110,6 +109,9 @@ export default {
             }
         }
     },
+    beforeDestroy() {
+        this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
+    },
     computed: {
         isDownloading() {
             return store.isDownloadingMessage(this.message.messageId);
@@ -119,7 +121,6 @@ export default {
         MessageContentContainerView,
         UserCardView,
         QuoteMessageView,
-        LoadingView
     },
 }
 </script>

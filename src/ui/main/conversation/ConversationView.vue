@@ -713,8 +713,10 @@ export default {
     beforeDestroy() {
         document.removeEventListener('mouseup', this.dragEnd);
         document.removeEventListener('mousemove', this.drag);
-        this.$eventBus.$off('send-file')
-        this.$eventBus.$off('forward-fav')
+        this.$eventBus.$off('send-file');
+        this.$eventBus.$off('forward-fav');
+        this.$off('openMessageContextMenu')
+        this.$off('openMessageSenderContextMenu')
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 

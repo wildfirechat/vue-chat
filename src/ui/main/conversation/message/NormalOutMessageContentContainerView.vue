@@ -93,9 +93,7 @@ export default {
 
     },
     mounted() {
-        this.$parent.$on('contextMenuClosed', () => {
-            this.highLight = false;
-        });
+        this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
 
         if (this.message.messageContent.quoteInfo) {
             let messageUid = this.message.messageContent.quoteInfo.messageUid;
@@ -112,7 +110,13 @@ export default {
             }
         }
     },
+    beforeDestroy() {
+        this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
+    },
     methods: {
+        onContextMenuClosed() {
+            this.highLight = false;
+        },
         onClickUserPortrait(userId) {
             wfc.getUserInfo(userId, true);
         },
