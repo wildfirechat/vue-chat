@@ -10,13 +10,13 @@ export default class MuteGroupMemberNotification extends GroupNotificationConten
     groupId
     operator
     // 操作类型，1禁言，0取消禁言
-    type
+    muteType
     memberIds
 
-    constructor(operator, type, memberIds) {
+    constructor(operator, muteType, memberIds) {
         super(MessageContentType.MuteGroupMember_Notification)
         this.operator = operator
-        this.type = type
+        this.muteType = muteType
         this.memberIds = memberIds
     }
 
@@ -36,7 +36,7 @@ export default class MuteGroupMemberNotification extends GroupNotificationConten
                     memberId)
             })
         }
-        if (this.type === 1) {
+        if (this.muteType === 1) {
             notifyStr += '设置了禁言'
         } else {
             notifyStr += '取消了禁言'
@@ -49,7 +49,7 @@ export default class MuteGroupMemberNotification extends GroupNotificationConten
         let obj = {
             g: this.groupId,
             o: this.operator,
-            n: this.type + '',
+            n: this.muteType + '',
             ms: this.memberIds,
         }
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj))
@@ -63,7 +63,7 @@ export default class MuteGroupMemberNotification extends GroupNotificationConten
         let obj = JSON.parse(json)
         this.groupId = obj.g
         this.operator = obj.o
-        this.type = parseInt(obj.n)
+        this.muteType = parseInt(obj.n)
         this.memberIds = obj.ms
     }
 }

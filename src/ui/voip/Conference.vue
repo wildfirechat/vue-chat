@@ -241,6 +241,7 @@ import store from "../../store";
 import wfc from "../../wfc/client/wfc";
 import ForwardType from "../main/conversation/message/forward/ForwardType";
 import Message from "../../wfc/messages/message";
+import VideoType from "../../wfc/av/engine/videoType";
 
 export default {
     name: 'Conference',
@@ -275,6 +276,16 @@ export default {
             let subscriber = this.session.getSubscriber(userId, screenSharing);
             if (subscriber) {
                 subscriber.setUseMainVideo(!subscriber.useMainVideo);
+                let currentVideoType = subscriber.currentVideoType;
+                let videoType = VideoType.NONE;
+                if (currentVideoType === VideoType.NONE){
+                    videoType = VideoType.BIG_STREAM;
+                }else if (currentVideoType === VideoType.BIG_STREAM){
+                    videoType = VideoType.SMALL_STREAM;
+                }else if (videoType === VideoType.SMALL_STREAM){
+                    videoType = VideoType.NONE;
+                }
+                this.session.setParticipantVideoType(userId, screenSharing, videoType);
             }
         },
         setupSessionCallback() {
@@ -375,7 +386,7 @@ export default {
                 // 可以根据reason，进行一些提示
                 // alert('会议已结束');
                 this.endReason = reason;
-                if (reason === CallEndReason.REASON_MediaError || reason === CallEndReason.REASON_SignalError) {
+                if (reason === CallEndReason.REASON_MediaError) {
                     return;
                 }
                 if (reason === CallEndReason.RoomNotExist) {

@@ -60,6 +60,7 @@ import axios from "axios";
 import GroupMemberType from "@/wfc/model/groupMemberType";
 import GroupType from "@/wfc/model/groupType";
 import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
+import EventType from "../../../wfc/client/wfcEvent";
 
 export default {
     name: "GroupConversationInfoView",
@@ -79,16 +80,27 @@ export default {
             newGroupAnnouncement: '',
         }
     },
+    mounted() {
+        wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
+
+    },
+
+    beforeDestroy() {
+        wfc.eventEmitter.removeListener(EventType.UserInfosUpdate, this.onUserInfosUpdate);
+    },
     components: {UserListVue},
     methods: {
+        onUserInfosUpdate(){
+            this.groupMemberUserInfos = store.getConversationMemberUsrInfos(this.conversationInfo.conversation);
+        },
         showCreateConversationModal() {
 
             let successCB = users => {
                 let ids = users.map(u => u.uid);
                     wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, null, [0])
                 }
-
             let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
+
             this.$pickContact({
                 successCB,
                     initialCheckedUsers: groupMemberUserInfos,

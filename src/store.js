@@ -35,6 +35,7 @@ import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffG
 import QuitGroupNotification from "./wfc/messages/notification/quitGroupNotification";
 import avenginekitproxy from "./wfc/av/engine/avenginekitproxy";
 import MediaMessageContent from "./wfc/messages/mediaMessageContent";
+import UnreadCount from "./wfc/model/unreadCount";
 
 /**
  * 一些说明
@@ -266,6 +267,9 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
+            if (miscState.connectionStatus === ConnectionStatus.ConnectionStatusReceiveing){
+                return;
+            }
             if (!hasMore) {
                 this._loadDefaultConversationList();
             }
@@ -317,8 +321,6 @@ let store = {
                 }
                 this._patchMessage(msg, lastTimestamp);
                 conversationState.currentConversationMessageList.push(msg);
-                conversationState.currentConversationOldestMessageId = conversationState.currentConversationMessageList[0].messageId;
-                conversationState.currentConversationOldestMessageUid = conversationState.currentConversationMessageList[0].messageUid;
             }
 
             if (msg.conversation.type !== 2 && miscState.isPageHidden && (miscState.enableNotification || msg.status === MessageStatus.AllMentioned || msg.status === MessageStatus.Mentioned)) {
@@ -949,7 +951,12 @@ let store = {
         conversationState.currentConversationMessageList = msgs;
         if (msgs.length) {
             conversationState.currentConversationOldestMessageId = msgs[0].messageId;
+       }
+        for (let i = 0; i < msgs.length; i++) {
+            if (gt(msgs[i].messageUid, 0)){
             conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
+                break;
+            }
         }
     },
 
@@ -959,24 +966,19 @@ let store = {
             return false;
         }
         let loadNewMsg = false;
-        if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
-            let lastTimestamp = 0;
-            let newMsgs = [];
-            conversationState.currentConversationOldestMessageUid = messages[0].messageUid;
-            messages.forEach(m => {
-                let index = conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid))
-                if (index === -1) {
-                    this._patchMessage(m, lastTimestamp);
-                    lastTimestamp = m.timestamp;
-                    newMsgs.push(m);
-                    loadNewMsg = true;
-                }
-            });
-            conversationState.currentConversationMessageList = newMsgs.concat(conversationState.currentConversationMessageList);
-            if (newMsgs.length) {
-                conversationState.currentConversationOldestMessageId = newMsgs[0].messageId;
+
+        let lastTimestamp = 0;
+        let newMsgs = [];
+        messages.forEach(m => {
+            let index = conversationState.currentConversationMessageList.findIndex(cm => cm.messageId === m.messageId)
+            if (index === -1) {
+                this._patchMessage(m, lastTimestamp);
+                lastTimestamp = m.timestamp;
+                newMsgs.push(m);
+                loadNewMsg = true;
             }
-        }
+        });
+        conversationState.currentConversationMessageList = newMsgs.concat(conversationState.currentConversationMessageList);
         return loadNewMsg;
     },
 
@@ -988,6 +990,10 @@ let store = {
         console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let lmsgs = wfc.getMessages(conversation, conversationState.currentConversationOldestMessageId, true, 20);
         if (lmsgs.length > 0) {
+            conversationState.currentConversationOldestMessageId = lmsgs[0].messageId;
+            if (gt(lmsgs[0].messageUid, 0)){
+                conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
+            }
             let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
             if (!loadNewMsg) {
                 setTimeout(() => completeCB(), 200)
@@ -1000,8 +1006,12 @@ let store = {
                     if (msgs.length === 0) {
                         completeCB();
                     } else {
-                        msgs = msgs.filter(m => m.messageId !== 0);
-                        this._onloadConversationMessages(conversation, msgs);
+                        // 可能拉回来的时候，本地已经切换会话了
+                        if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                            conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
+                            msgs = msgs.filter(m => m.messageId !== 0);
+                            this._onloadConversationMessages(conversation, msgs);
+                        }
                         this._loadDefaultConversationList();
                         loadedCB();
                     }
@@ -1113,7 +1123,7 @@ let store = {
                 let userId = secretChatInfo.userId;
                 let userInfo = wfc.getUserInfo(userId, false);
                 info.conversation._target = userInfo;
-                info.conversation._target._displayName = 'sc ' + wfc.getUserDisplayNameEx(userInfo);
+                info.conversation._target._displayName = wfc.getUserDisplayNameEx(userInfo);
             } else {
                 info.conversation._target = {};
             }
@@ -1274,6 +1284,8 @@ let store = {
             contactState.favContactList.forEach(u => {
                 u._category = '☆ 星标朋友';
             })
+        } else {
+            contactState.favContactList = [];
         }
     },
 
@@ -1325,7 +1337,7 @@ let store = {
             searchState.conversationSearchResult = this.filterConversation(query);
             // searchState.messageSearchResult = this.searchMessage(query);
             // 默认不搜索新用户
-            // this.searchUser(query);
+            this.searchUser(query);
 
         } else {
             searchState.contactSearchResult = [];
@@ -1650,6 +1662,13 @@ let store = {
         }
     },
 
+    clearAllUnreadStatus() {
+        wfc.clearAllUnreadStatus();
+        conversationState.conversationInfoList.forEach(info => {
+            info.unreadCount = new UnreadCount();
+        });
+        this.updateTray();
+    },
     notify(msg) {
         let content = msg.messageContent;
         let icon = require('@/assets/images/icon.png');

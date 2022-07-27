@@ -3,7 +3,11 @@
  */
 
 // 运行在新的voip window
+import VideoType from './videoType'
+
 export default class CallSession {
+    conversation;
+    initiatorId;
     audioMuted = false
     videoMuted = false
     screenSharing = false
@@ -31,6 +35,11 @@ export default class CallSession {
     extra;
 
     /**
+     * 默认成员的视频流类型
+     */
+    defaultVideoType = VideoType.BIG_STREAM;
+
+    /**
      * 播放来电响铃
      */
     playIncomingRing () {
@@ -51,7 +60,7 @@ export default class CallSession {
      * @param {[string]} newParticipantIds
      * @param {boolean}  autoAnswer 是否自动接听，默认 false
      */
-    inviteNewParticipants (newParticipantIds, autoAnswer) {
+    inviteNewParticipants (newParticipantIds, targetClientId, autoAnswer) {
     }
 
     /**
@@ -254,4 +263,23 @@ export default class CallSession {
 
     }
 
+    /**
+     * 旋转自己发布的视频角度
+     * 请在callState变为connected之后，调用
+     * @param {number} ang 旋转角度，可选值为 0，90，180，270
+     */
+    rotate(ang){
+
+    }
+
+    /**
+     *  仅会议版有效
+     * 设置参与者的 videoType
+     * @param {string} userId 用户 id
+     * @param {boolean} isScreenSharing 是否是屏幕共享
+     * @param {VideoType} videoType 视频流类型
+     */
+    setParticipantVideoType(userId, isScreenSharing, videoType){
+
+    }
 }

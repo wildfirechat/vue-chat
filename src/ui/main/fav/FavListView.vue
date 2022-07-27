@@ -251,7 +251,7 @@ export default {
             let mediaItems = [];
             favItems = favItems.filter(favItem => (favItem.url || favItem.thumbUrl || (favItem.data && favItem.data.thumb)))
             favItems.forEach(favItem => {
-                let thumb = favItem.thumbUrl ? favItem.thumbUrl : (favItem.data && favItem.data.thumb ? favItem.data.thumb : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
+                let thumb = favItem.thumbUrl ? favItem.thumbUrl : (favItem.data && favItem.data.thumb ? 'data:image/png;base64,' + favItem.data.thumb : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
                 mediaItems.push({
                     src: favItem.url,
                     thumb: thumb,

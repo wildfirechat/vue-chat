@@ -1,4 +1,5 @@
 import {ipcRenderer, isElectron} from "@/platform";
+import {remote} from "./platform";
 
 export function downloadFile(message) {
     let file = message.messageContent;
@@ -6,7 +7,8 @@ export function downloadFile(message) {
         ipcRenderer.send('file-download', {
             messageId: message.messageId,
             remotePath: file.remotePath,
-            fileName: file.name
+            fileName: file.name,
+            windowId: remote.getCurrentWindow().getMediaSourceId(),
         });
     } else {
         let fileHref = file.remotePath;
