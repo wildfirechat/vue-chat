@@ -52,6 +52,7 @@
                     </div>
                     <div class="remote-media-container">
                         <video v-if="status ===4"
+                               @click="switchVideoType()"
                                ref="remoteVideo"
                                class="video"
                                :srcObject.prop="remoteStream"
@@ -119,6 +120,7 @@ import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
+import VideoType from "../../wfc/av/engine/videoType";
 
 export default {
     name: 'Single',
@@ -126,6 +128,7 @@ export default {
         return {
             session: null,
             audioOnly: false,
+            participantUserInfos: [],
             muted: false,
             status: 4,
             startTimestamp: 0,
@@ -136,6 +139,26 @@ export default {
         }
     },
     methods: {
+        switchVideoType() {
+            if (!this.session) {
+                return
+            }
+            let userId = this.session.getParticipantIds()[0];
+            let subscriber = this.session.getSubscriber(userId, false);
+            if (subscriber) {
+                let currentVideoType = subscriber.currentVideoType;
+                let videoType = VideoType.NONE;
+                if (currentVideoType === VideoType.NONE){
+                    videoType = VideoType.BIG_STREAM;
+                }else if (currentVideoType === VideoType.BIG_STREAM){
+                    videoType = VideoType.SMALL_STREAM;
+                }else if (videoType === VideoType.SMALL_STREAM){
+                    videoType = VideoType.NONE;
+                }
+                console.log('xxx setParticipantVideoType', userId, videoType);
+                this.session.setParticipantVideoType(userId, false, videoType);
+            }
+        },
         setupSessionCallback() {
             let sessionCallback = new CallSessionCallback();
 
@@ -161,6 +184,7 @@ export default {
             sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos) => {
                 this.session = session;
                 this.audioOnly = session.audioOnly;
+                this.participantUserInfos = [...participantUserInfos];
             };
 
             sessionCallback.didChangeMode = (audioOnly) => {

@@ -99,13 +99,7 @@ export default {
     computed: {
         conversationTitle() {
             let info = this.conversationInfo;
-            if (info.conversation.type === ConversationType.Single) {
-                return info.conversation._target._displayName;
-            } else if (info.conversation.type === ConversationType.SecretChat) {
-                return info.conversation._target._displayName;
-            } else {
-                return info.conversation._target.name;
-            }
+            return info.conversation._target._displayName;
         },
 
         shouldShowDraft() {

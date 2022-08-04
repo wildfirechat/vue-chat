@@ -48,6 +48,7 @@
                         </div>
                         <video v-else
                                class="video"
+                               @click="switchVideoType(participant.uid, participant._isScreenSharing)"
                                :srcObject.prop="participant._stream"
                                playsInline
                                autoPlay/>
@@ -122,6 +123,7 @@ import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import IpcSub from "../../ipc/ipcSub";
 import MultiCallOngoingMessageContent from "../../wfc/av/messages/multiCallOngoingMessageContent";
+import VideoType from "../../wfc/av/engine/videoType";
 
 export default {
     name: 'Multi',
@@ -142,6 +144,24 @@ export default {
         }
     },
     methods: {
+        switchVideoType(userId, screenSharing) {
+            if (!this.session) {
+                return
+            }
+            let subscriber = this.session.getSubscriber(userId, screenSharing);
+            if (subscriber) {
+                let currentVideoType = subscriber.currentVideoType;
+                let videoType = VideoType.NONE;
+                if (currentVideoType === VideoType.NONE){
+                    videoType = VideoType.BIG_STREAM;
+                }else if (currentVideoType === VideoType.BIG_STREAM){
+                    videoType = VideoType.SMALL_STREAM;
+                }else if (videoType === VideoType.SMALL_STREAM){
+                    videoType = VideoType.NONE;
+                }
+                this.session.setParticipantVideoType(userId, screenSharing, videoType);
+            }
+        },
         setupSessionCallback() {
             let sessionCallback = new CallSessionCallback();
 

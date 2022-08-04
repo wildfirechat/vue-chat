@@ -131,7 +131,6 @@ export default {
         enableAutoLogin(enable) {
             store.setEnableAutoLogin(enable);
         },
-
         setLang(lang) {
             setItem('lang', lang.lang)
             // this.$router.go();

@@ -57,7 +57,7 @@
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
                             <video v-if="!participant._isVideoMuted"
-                                   @click="setUseMainVideo(participant.uid, participant._isScreenSharing)"
+                                   @click="switchVideoType(participant.uid, participant._isScreenSharing)"
                                    class="video"
                                    v-bind:style="{objectFit:participant._isScreenSharing ? 'contain' : 'fit'}"
                                    :srcObject.prop="participant._stream"
@@ -71,7 +71,7 @@
                                 <img class="avatar" :src="participant.portrait" :alt="participant">
                             </div>
                             <div v-if="!participant._isVideoMuted" class="video-stream-tip-container">
-                                <p>点击视频，切换清晰度</p>
+                                <p>点击视频，切换视频流类型</p>
                             </div>
                             <div class="info-container">
                                 <i v-if="participant._isHost" class="icon-ion-person"></i>
@@ -269,13 +269,12 @@ export default {
     },
     components: {ScreenShareControlView, UserCardView, ElectronWindowsControlButtonView},
     methods: {
-        setUseMainVideo(userId, screenSharing) {
+        switchVideoType(userId, screenSharing) {
             if (!this.session) {
                 return
             }
             let subscriber = this.session.getSubscriber(userId, screenSharing);
             if (subscriber) {
-                subscriber.setUseMainVideo(!subscriber.useMainVideo);
                 let currentVideoType = subscriber.currentVideoType;
                 let videoType = VideoType.NONE;
                 if (currentVideoType === VideoType.NONE){

@@ -14,7 +14,7 @@ export default class ConversationSearchResult {
 
     static fromProtoConversationSearchResult(obj) {
         let conversationSearchResult = new ConversationSearchResult();
-        conversationSearchResult.conversation = new Conversation(obj.conversationType, obj.target, obj.line)
+        conversationSearchResult.conversation = new Conversation(obj.conversation.conversationType !== undefined ? obj.conversation.conversationType : obj.conversation.type, obj.conversation.target, obj.conversation.line);
         conversationSearchResult.matchCount = obj.marchedCount;
         if (obj.marchedCount === 1) {
             conversationSearchResult.matchMessage = Message.fromProtoMessage(obj.marchedMessage);
