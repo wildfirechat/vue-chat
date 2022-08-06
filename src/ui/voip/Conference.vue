@@ -52,7 +52,7 @@
 
                         <!--participants-->
                         <div v-for="(participant) in participantUserInfos.filter(u => !u._isAudience)"
-                             :key="participant.uid + participant._isScreenSharing"
+                             :key="participant.uid + '-' + participant._isScreenSharing"
                              class="participant-video-item"
                              v-bind:class="{highlight: participant._volume > 0}"
                         >
@@ -309,6 +309,7 @@ export default {
 
             sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo) => {
                 this.session = session;
+                //this.session.rotateAng = 90;
 
                 this.audioOnly = session.audioOnly;
                 this.selfUserInfo = selfUserInfo;
@@ -367,7 +368,7 @@ export default {
                     userInfo._volume = 0;
                     userInfo._isScreenSharing = screenSharing;
                     this.participantUserInfos.push(userInfo);
-                    console.log('joined', this.participantUserInfos.length);
+                    console.log('joined', subscriber.audience, this.participantUserInfos.length);
                 })
             }
 

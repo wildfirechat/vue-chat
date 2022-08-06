@@ -209,9 +209,9 @@ export default class CallSessionCallback {
      * @return MediaStream 返回旋转之后的视频流
      */
     onRotateStream(stream, ang, scaleTo = null){
-        console.log('xxx', stream.getVideoTracks()[0].getConstraints());
+        console.log('onRotateStream capabilities', stream.getVideoTracks()[0].getCapabilities());
         const canvas = document.createElement("canvas");
-        Object.assign(canvas, { width: 0, height: 0 });
+        Object.assign(canvas, { width: 200, height: 200 });
         const ctx = canvas.getContext("2d");
         const track = stream.getVideoTracks()[0];
         const drawOnCanvas = (image, width, height) => {
