@@ -212,6 +212,7 @@ let store = {
                 this.updateTray();
             } else if (status === ConnectionStatus.ConnectionStatusLogout) {
                 _reset();
+                this.updateTray();
             }
         });
 

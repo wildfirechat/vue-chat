@@ -3,14 +3,17 @@
         <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                           :maximizable="false"
                                           v-if="sharedMiscState.isElectronWindowsOrLinux"/>
-        <div class="qr-container">
-            <img v-if="qrCode" v-bind:src="qrCode" alt="">
-            <p v-else>{{ $t('misc.gen_qr_code') }}</p>
-            <ClipLoader v-if="loginStatus === 4" class="loading" :color="'white'"  :height="'80px'" :width="'80px'"/>
+        <div class="switch-login-type-container" @click="switchLoginType( loginType === 0 ? 1 : 0)">
+            <i class="icon-ion-qr-scanner" style="color: gray"></i>
         </div>
         <div class="drag-area"/>
-
-        <div class="login-action-container">
+        <div v-if="loginType === 0" class="qrcode-login-container">
+   
+            <div class="qr-container">
+                <img v-if="qrCode" v-bind:src="qrCode" alt="">
+                <p v-else>{{ $t('misc.gen_qr_code') }}</p>
+                <ClipLoader v-if="loginStatus === 4" class="loading" :color="'white'" :height="'80px'" :width="'80px'"/>
+            </div>
             <!--    等待扫码-->
             <div v-if="loginStatus === 0" class="pending-scan">
                 <p>{{ $t('login.desc') }}</p>
@@ -46,6 +49,31 @@
                 <p>数据同步中...</p>
             </div>
         </div>
+        <div v-else-if="loginType === 1" class="login-form-container">
+            <!--            密码登录-->
+            <p class="title">密码登录</p>
+            <div class="item">
+                <input v-model="mobile" class="text-input" type="number" placeholder="请输入手机号">
+            </div>
+            <div class="item">
+                <input v-model="password" class="text-input" type="text" placeholder="请输入密码">
+            </div>
+            <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
+            <button class="login-button" :disabled="mobile.trim() === '' || password.trim() === ''" @click="loginWithPassword">登录</button>
+        </div>
+        <div v-else class="login-form-container">
+            <!--            验证码登录-->
+            <p class="title">验证码登录</p>
+            <div class="item">
+                <input v-model="mobile" class="text-input" type="number" placeholder="请输入手机号">
+            </div>
+            <div class="item">
+                <input v-model="authCode" class="text-input" type="number" placeholder="验证码">
+                <button :disabled="mobile.trim().length !== 11" class="request-auth-code-button" @click="requestAuthCode">获取验证码</button>
+            </div>
+            <p class="tip" @click="switchLoginType(1)">使用密码登录</p>
+            <button class="login-button" :disabled="mobile.trim() === '' || authCode.trim() === ''" @click="loginWithAuthCode">登录</button>
+        </div>
     </div>
 </template>
 
@@ -74,14 +102,16 @@ export default {
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
+            loginType: 0, // 0 扫码登录，1 密码登录，2 验证码登录
             enableAutoLogin: false,
+            mobile: '',
+            password: '',
+            authCode: '',
         }
     },
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
-        axios.defaults.baseURL = Config.APP_SERVER;
 
-        axios.defaults.headers.common['authToken'] = getItem('authToken');
         let userId = getItem('userId');
         let token = getItem('token');
         if (userId) {
@@ -105,6 +135,102 @@ export default {
     },
 
     methods: {
+        switchLoginType(type) {
+            this.loginType = type;
+        },
+
+        async requestAuthCode() {
+            let response = await axios.post('/send_code/', {
+                mobile: this.mobile,
+            }, {withCredentials: true});
+            if (response.data) {
+                if (response.data.code === 0) {
+                    this.$notify({
+                        text: '发送验证码成功',
+                        type: 'info'
+                    });
+                } else {
+                    this.$notify({
+                        title: '发送验证码失败',
+                        text: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } else {
+                this.mobile = '';
+                this.$notify({
+                    // title: '收藏成功',
+                    text: '发送验证码失败',
+                    type: 'error'
+                });
+            }
+        },
+
+        async loginWithPassword() {
+            let response = await axios.post('/login_pwd/', {
+                mobile: this.mobile,
+                password: this.password,
+                platform: Config.getWFCPlatform(),
+                clientId: wfc.getClientId(),
+            }, {withCredentials: true});
+            if (response.data) {
+                if (response.data.code === 0) {
+                    const {userId, token} = response.data.result;
+                    wfc.connect(userId, token);
+                    let appAuthToken = response.headers['authtoken'];
+                    if (!appAuthToken) {
+                        appAuthToken = response.headers['authToken'];
+                    }
+
+                    if (appAuthToken) {
+                        setItem('authToken', appAuthToken);
+                        axios.defaults.headers.common['authToken'] = appAuthToken;
+                    }
+                } else {
+                    this.password = '';
+                    this.$notify({
+                        title: '登录失败',
+                        text: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } else {
+                console.error('loginWithPassword error', response);
+            }
+        },
+
+        async loginWithAuthCode() {
+            let response = await axios.post('/login/', {
+                mobile: this.mobile,
+                code: this.authCode,
+                platform: Config.getWFCPlatform(),
+                clientId: wfc.getClientId(),
+            }, {withCredentials: true});
+            if (response.data) {
+                if (response.data.code === 0) {
+                    const {userId, token} = response.data.result;
+                    wfc.connect(userId, token);
+                    let appAuthToken = response.headers['authtoken'];
+                    if (!appAuthToken) {
+                        appAuthToken = response.headers['authToken'];
+                    }
+
+                    if (appAuthToken) {
+                        setItem('authToken', appAuthToken);
+                        axios.defaults.headers.common['authToken'] = appAuthToken;
+                    }
+                } else {
+                    this.authCode = '';
+                    this.$notify({
+                        title: '登录失败',
+                        text: response.data.message,
+                        type: 'error'
+                    });
+                }
+            } else {
+                console.error('loginWithAuthCode error', response)
+            }
+        },
         async createPCLoginSession(userId) {
             let response = await axios.post('/pc_session', {
                 flag: 1,
@@ -298,19 +424,22 @@ export default {
     line-height: 25px;
 }
 
-.login-action-container {
+.qrcode-login-container {
     margin-top: 20px;
-    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.login-action-container label {
+.qrcode-login-container label {
     margin-top: 5px;
     padding: 5px;
     font-size: 14px;
     color: gray;
 }
 
-.login-action-container button {
+.qrcode-login-container button {
     outline: none;
     font-size: 14px;
     border: none;
@@ -355,6 +484,84 @@ export default {
     height: 60px;
     z-index: -1;
     -webkit-app-region: drag;
+}
+.switch-login-type-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+
+.login-form-container {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form-container .title {
+    align-self: flex-start;
+    font-size: 18px;
+}
+
+.login-form-container .tip {
+    align-self: flex-start;
+    font-size: 12px;
+    color: #4168e0;
+    margin-top: 10px;
+}
+
+.login-form-container .item {
+    width: 100%;
+    font-size: 13px;
+    margin-top: 20px;
+    position: relative;
+}
+
+.login-form-container .text-input {
+    height: 40px;
+    width: 100%;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    outline: none;
+    padding: 0 5px;
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.login-form-container .text-input:active {
+    border: 1px solid #4168e0;
+}
+
+.login-form-container .text-input:focus {
+    border: 1px solid #4168e0;
+}
+
+.login-form-container .login-button {
+    height: 40px;
+    width: 100%;
+    margin-top: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.login-form-container .login-button:active {
+    border: 1px solid #4168e0;
+}
+
+.login-form-container .request-auth-code-button {
+    position: absolute;
+    font-size: 12px;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    margin: 0 5px;
 }
 
 </style>

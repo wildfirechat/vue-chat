@@ -420,6 +420,8 @@ export default {
                 this.participantUserInfos.forEach(u => {
                     if (u.uid === userId && u._isScreenSharing === screenSharing) {
                         u._isAudience = audience;
+                        u._isAudioMuted = false;
+                        u._isVideoMuted = false;
                     }
                 })
             };

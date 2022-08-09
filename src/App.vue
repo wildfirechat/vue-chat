@@ -48,6 +48,9 @@ import './twemoji'
 import IpcMain from "./ipc/ipcMain";
 import {currentWindow} from "./platform";
 import wfc from "./wfc/client/wfc";
+import axios from "axios";
+import Config from "./config";
+import {getItem} from "./ui/util/storageHelper";
 
 export default {
     name: 'App',
@@ -90,6 +93,9 @@ export default {
         if (isElectron()){
             currentWindow.minimizable = this.sharedMiscState.enableMinimize;
         }
+        axios.defaults.baseURL = Config.APP_SERVER;
+
+        axios.defaults.headers.common['authToken'] = getItem('authToken');
     },
 
     mounted() {

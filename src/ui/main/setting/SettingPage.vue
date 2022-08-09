@@ -49,6 +49,18 @@
         </div>
         <footer>
             <p class="proto-version-info">{{ protoRevision() }}</p>
+            <a class="button" target="_blank" @click.prevent.stop="showChangePasswordContextMenu">
+                修改密码
+                <!--        <i class="icon-ion-ios-email-outline"/>-->
+            </a>
+            <vue-context ref="changePasswordContextMenu" :close-on-scroll="false" v-on:close="onChangePasswordContextMenuClose">
+                <li>
+                    <a @click.prevent="showChangePasswordDialog()">密码验证</a>
+                </li>
+                <li>
+                    <a @click.prevent="showResetPasswordDialog()">短信验证码验证</a>
+                </li>
+            </vue-context>
             <a class="button" target="_blank" @click="logout">
                 {{ $t('setting.exit_switch_user') }}
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
@@ -76,6 +88,7 @@
                 关于野火
                 <i class="icon-ion-home"/>
             </a>
+
             <a
                 v-if="!sharedMiscState.isElectron"
                 class="button"
@@ -95,7 +108,11 @@ import store from "@/store";
 import dropdown from 'vue-dropdowns';
 import {clear} from "@/ui/util/storageHelper";
 import {ipcRenderer, isElectron} from "@/platform";
-import {getItem, setItem} from "../util/storageHelper";
+import {getItem, setItem} from "../../util/storageHelper";
+import axios from "axios";
+import CreateConferenceView from "../../voip/CreateConferenceView";
+import ChangePasswordView from "./ChangePasswordView";
+import ResetPasswordView from "./ResetPasswordView";
 
 export default {
     name: "SettingPage",
@@ -107,6 +124,63 @@ export default {
         }
     },
     methods: {
+
+        showChangePasswordContextMenu(event) {
+            this.$refs.changePasswordContextMenu.open(event);
+        },
+
+        onChangePasswordContextMenuClose() {
+            console.log('yyyyyy')
+        },
+
+        showChangePasswordDialog() {
+            let beforeOpen = () => {
+                console.log('Opening...')
+            };
+            let beforeClose = (event) => {
+                console.log('Closing...', event, event.params)
+            };
+            let closed = (event) => {
+                console.log('Close...', event)
+            };
+            this.$modal.show(
+                ChangePasswordView,
+                {}, {
+                    name: 'change-password-modal',
+                    width: 320,
+                    height: 400,
+                    clickToClose: true,
+                }, {
+                    'before-open': beforeOpen,
+                    'before-close': beforeClose,
+                    'closed': closed,
+                })
+        },
+
+        showResetPasswordDialog() {
+            let beforeOpen = () => {
+                console.log('Opening...')
+            };
+            let beforeClose = (event) => {
+                console.log('Closing...', event, event.params)
+            };
+            let closed = (event) => {
+                console.log('Close...', event)
+            };
+            this.$modal.show(
+                ResetPasswordView,
+                {}, {
+                    name: 'rest-password-modal',
+                    width: 320,
+                    height: 400,
+                    clickToClose: true,
+                }, {
+                    'before-open': beforeOpen,
+                    'before-close': beforeClose,
+                    'closed': closed,
+                })
+        },
+
         logout() {
             clear();
             wfc.disconnect();
@@ -131,6 +205,7 @@ export default {
         enableAutoLogin(enable) {
             store.setEnableAutoLogin(enable);
         },
+
         setLang(lang) {
             setItem('lang', lang.lang)
             // this.$router.go();
@@ -166,14 +241,17 @@ export default {
             return version;
         }
 
-    },
+    }
+    ,
 
     mounted() {
         window.addEventListener('blur', this.blurListener)
-    },
+    }
+    ,
     beforeDestroy() {
         window.removeEventListener('blur', this.blurListener)
-    },
+    }
+    ,
     computed: {
         currentLang() {
             let lang = getItem('lang')
@@ -182,10 +260,13 @@ export default {
             index = index >= 0 ? index : 0;
             return this.langs[index];
         }
-    },
+    }
+    ,
     components: {
-        'dropdown': dropdown,
-    },
+        'dropdown':
+        dropdown,
+    }
+    ,
 }
 </script>
 
