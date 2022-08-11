@@ -707,6 +707,13 @@ export default {
             this.forward(message);
         });
 
+        localStorageEmitter.on('inviteConferenceParticipant', (ev, args) => {
+            let payload = args.messagePayload;
+            let messageContent = Message.messageContentFromMessagePayload(payload, wfc.getUserId());
+            let message = new Message(null, messageContent);
+            this.forward(message);
+        });
+
         wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
     },
 

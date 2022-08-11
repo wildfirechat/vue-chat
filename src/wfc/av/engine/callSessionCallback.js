@@ -254,10 +254,10 @@ export default class CallSessionCallback {
             const processor = new MediaStreamTrackProcessor(track);
             const reader = processor.readable.getReader();
             reader.read().then(function readChunk({ done, value }) {
-                const { displayWidth, displayHeight } = value;
-                drawOnCanvas(value, displayWidth, displayHeight);
-                value.close(); // close the VideoFrame when we're done with it
                 if (!done) {
+                    const { displayWidth, displayHeight } = value;
+                    drawOnCanvas(value, displayWidth, displayHeight);
+                    value.close(); // close the VideoFrame when we're done with it
                     reader.read().then(readChunk);
                 }
             });
