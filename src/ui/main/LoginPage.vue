@@ -3,12 +3,10 @@
         <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                           :maximizable="false"
                                           v-if="sharedMiscState.isElectronWindowsOrLinux"/>
-        <div class="switch-login-type-container" @click="switchLoginType( loginType === 0 ? 1 : 0)">
-            <i class="icon-ion-qr-scanner" style="color: gray"></i>
-        </div>
+ 
         <div class="drag-area"/>
         <div v-if="loginType === 0" class="qrcode-login-container">
-   
+
             <div class="qr-container">
                 <img v-if="qrCode" v-bind:src="qrCode" alt="">
                 <p v-else>{{ $t('misc.gen_qr_code') }}</p>
@@ -56,7 +54,7 @@
                 <input v-model="mobile" class="text-input" type="number" placeholder="请输入手机号">
             </div>
             <div class="item">
-                <input v-model="password" class="text-input" type="text" placeholder="请输入密码">
+                <input v-model="password" class="text-input" @keydown.enter="loginWithPassword" type="text" placeholder="请输入密码">
             </div>
             <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
             <button class="login-button" :disabled="mobile.trim() === '' || password.trim() === ''" @click="loginWithPassword">登录</button>
@@ -69,10 +67,13 @@
             </div>
             <div class="item">
                 <input v-model="authCode" class="text-input" type="number" placeholder="验证码">
-                <button :disabled="mobile.trim().length !== 11" class="request-auth-code-button" @click="requestAuthCode">获取验证码</button>
+                <button :disabled="mobile.trim().length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
             </div>
             <p class="tip" @click="switchLoginType(1)">使用密码登录</p>
             <button class="login-button" :disabled="mobile.trim() === '' || authCode.trim() === ''" @click="loginWithAuthCode">登录</button>
+        </div>
+        <div class="switch-login-type-container">
+            <p class="tip" @click="switchLoginType( loginType === 0 ? 1 : 0)">{{ loginType === 0 ? '使用密码/验证码登录' : '扫码登录' }}</p>
         </div>
     </div>
 </template>
@@ -167,6 +168,9 @@ export default {
         },
 
         async loginWithPassword() {
+            if(!this.mobile || !this.password){
+                return;
+            }
             let response = await axios.post('/login_pwd/', {
                 mobile: this.mobile,
                 password: this.password,
@@ -177,6 +181,8 @@ export default {
                 if (response.data.code === 0) {
                     const {userId, token} = response.data.result;
                     wfc.connect(userId, token);
+                    setItem('userId', userId);
+                    setItem('token', token);
                     let appAuthToken = response.headers['authtoken'];
                     if (!appAuthToken) {
                         appAuthToken = response.headers['authToken'];
@@ -200,6 +206,9 @@ export default {
         },
 
         async loginWithAuthCode() {
+            if (!this.mobile || !this.authCode){
+                return;
+            }
             let response = await axios.post('/login/', {
                 mobile: this.mobile,
                 code: this.authCode,
@@ -210,6 +219,8 @@ export default {
                 if (response.data.code === 0) {
                     const {userId, token} = response.data.result;
                     wfc.connect(userId, token);
+                    setItem('userId', userId);
+                    setItem('token', token);
                     let appAuthToken = response.headers['authtoken'];
                     if (!appAuthToken) {
                         appAuthToken = response.headers['authToken'];
@@ -418,6 +429,7 @@ export default {
 .pending-quick-login,
 .quick-logining {
     display: flex;
+    margin-top: 20px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -486,10 +498,9 @@ export default {
     -webkit-app-region: drag;
 }
 .switch-login-type-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 20px;
+    padding-top: 10px;
+    font-size: 14px;
+    color: #4168e0;
 }
 
 .login-form-container {
@@ -503,13 +514,6 @@ export default {
 .login-form-container .title {
     align-self: flex-start;
     font-size: 18px;
-}
-
-.login-form-container .tip {
-    align-self: flex-start;
-    font-size: 12px;
-    color: #4168e0;
-    margin-top: 10px;
 }
 
 .login-form-container .item {
@@ -562,6 +566,12 @@ input::-webkit-inner-spin-button {
     right: 0;
     transform: translateY(-50%);
     margin: 0 5px;
+}
+.tip {
+    align-self: flex-start;
+    font-size: 12px;
+    color: #4168e0;
+    margin-top: 10px;
 }
 
 </style>
