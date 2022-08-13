@@ -77,6 +77,8 @@ import {stringValue} from "../../wfc/util/longUtil";
 import wfc from "../../wfc/client/wfc";
 import FavItem from "../../wfc/model/favItem";
 import Conversation from "../../wfc/model/conversation";
+import axios from "axios";
+import {isElectron} from "../../platform";
 
 export default {
     name: "CompositeMessagePage",
@@ -97,6 +99,7 @@ export default {
     mounted() {
         if (this.message) {
             this.compositeMessage = this.message;
+            this.loadMediaCompositeMessage(this.compositeMessage);
             return;
         }
         let hash = window.location.hash;
@@ -113,14 +116,35 @@ export default {
         }
         store._patchMessage(this.compositeMessage, 0);
         document.title = this.compositeMessage.messageContent.title;
+        this.loadMediaCompositeMessage(this.compositeMessage);
     },
 
     methods: {
         hideCompositeMessagePage() {
             this.$modal.hide('show-composite-message-modal' + '-' + stringValue(this.message.messageUid))
         },
-        previewCompositeMessage(messageUid){
-            store.previewCompositeMessage(this.compositeMessage, messageUid);
+        loadMediaCompositeMessage(msg){
+            let content = msg.messageContent;
+            if (content.remotePath ) {
+                if (isElectron()) {
+                    if (content.localPath && require('fs').existsSync(content.localPath)){
+                        return;
+                    }
+                } else {
+                    // web 每次加载
+                    // do nothing
+                }
+                axios.get(content.remotePath, {responseType: 'blob'}).then(value => {
+                    let fileReader = new FileReader();
+                    fileReader.onloadend = (ev => {
+                        content._decodeMessages(ev.target.result);
+                        store._patchMessage(this.compositeMessage, 0);
+                        content.loaded = true;
+                    });
+                    fileReader.readAsBinaryString(value.data);
+                })
+            }
+
         }
     },
 
