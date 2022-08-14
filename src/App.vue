@@ -20,7 +20,7 @@
         </div>
         <!--用来实现视频缩略图-->
         <div id="styled_video_container" class="styled_video_container">
-            <video id="bgvid" playsinline autoplay muted loop>
+            <video id="bgvid" playsinline autoplay muted loop crossorigin="anonymous">
                 <!-- <source src="http://thenewcode.com/assets/videos/polina.webm" type="video/webm">
                 <source src="http://thenewcode.com/assets/videos/polina.mp4" type="video/mp4"> -->
             </video>
