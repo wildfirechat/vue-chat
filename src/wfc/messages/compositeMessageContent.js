@@ -184,7 +184,7 @@ export default class CompositeMessageContent extends MediaMessageContent {
             msg.messageContent = Message.messageContentFromMessagePayload(payload, msg.from);
             this.messages.push(msg);
         });
-        console.log('xxx ms', this.messages)
+        console.log('cp ms', this.messages)
     }
 
 }
