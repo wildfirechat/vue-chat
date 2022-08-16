@@ -1,7 +1,5 @@
 // 平台相关代码，目前主要用来处理electron 和 浏览器之间不同
 
-import wfc from './wfc/client/wfc'
-
 export function isElectron() {
     // Renderer process
     if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
@@ -19,10 +17,6 @@ export function isElectron() {
     }
 
     return false;
-}
-
-export function connect(userId, token) {
-    wfc.connect(userId, token);
 }
 
 // pc
