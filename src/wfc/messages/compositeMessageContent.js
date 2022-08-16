@@ -129,13 +129,15 @@ export default class CompositeMessageContent extends MediaMessageContent {
 
         } else if (this.localPath) {
             // electron
-            const fs = require("fs");
-            if (fs.existsSync(this.localPath)) {
-                const buffer = fs.readFileSync(this.localPath);
-                str = buffer.toString();
-                this._decodeMessages(str);
-            } else {
-                console.log('media composite message not downloaded', this.remotePath);
+            if (isElectron()){
+                const fs = require("fs");
+                if (fs.existsSync(this.localPath)) {
+                    const buffer = fs.readFileSync(this.localPath);
+                    str = buffer.toString();
+                    this._decodeMessages(str);
+                } else {
+                    console.log('media composite message not downloaded', this.remotePath);
+                }
             }
         }
 

@@ -4,7 +4,6 @@
 import NotificationMessageContent from "../../messages/notification/notificationMessageContent";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc"
-import {de, me} from "../../../vendor/pinyin/data/dict-zi-web";
 
 class ParticipantStatus {
     userId;
