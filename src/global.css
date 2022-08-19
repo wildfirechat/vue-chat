@@ -19,6 +19,10 @@
     border-right: 8px solid white !important;
 }
 
+.tippy-popper[x-placement^=top] .tippy-arrow{
+    border-top: 8px solid white !important;
+    border-right: 8px solid transparent !important;
+}
 .vue-notification-group {
     margin: var(--main-margin-top) var(--main-margin-right) 0 0;
 }

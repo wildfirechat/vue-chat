@@ -70,6 +70,7 @@ let store = {
             previewMediaIndex: null,
 
             enableMessageMultiSelection: false,
+            showChannelMenu: false,
             quotedMessage: null,
 
             // 为什么不用 map？
@@ -92,6 +93,7 @@ let store = {
                 this.previewMediaItems = [];
                 this.previewMediaIndex = null;
                 this.enableMessageMultiSelection = false;
+                this.showChannelMenu = false;
                 this.quotedMessage = null;
                 this.downloadingMessages = [];
                 this.sendingMessages = [];
@@ -603,6 +605,7 @@ let store = {
             conversationState.currentConversationDeliveries = null;
             conversationState.currentConversationRead = null;
             conversationState.enableMessageMultiSelection = false;
+            conversationState.showChannelMenu = false;
             return;
         }
 
@@ -632,6 +635,16 @@ let store = {
         conversationState.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
 
         conversationState.enableMessageMultiSelection = false;
+        if (conversation.type === ConversationType.Channel) {
+            let channelInfo = wfc.getChannelInfo(conversation.target, false);
+            if (channelInfo.menus && channelInfo.menus.length > 0) {
+                conversationState.showChannelMenu = true;
+            } else {
+                conversationState.showChannelMenu = false;
+            }
+        } else {
+            conversationState.showChannelMenu = false;
+        }
         conversationState.quotedMessage = null;
         conversationState.currentVoiceMessage = null;
 
@@ -657,6 +670,9 @@ let store = {
         }
     },
 
+    toggleChannelMenu(toggle) {
+        conversationState.showChannelMenu = toggle;
+    },
     selectOrDeselectMessage(message) {
         let index = pickState.messages.findIndex(m => m.messageId === message.messageId);
         if (index >= 0) {

@@ -12,4 +12,5 @@ export default class ChannelInfo {
     status;
     extra;
     updateDt;
+    menus;
 }

@@ -1,71 +1,75 @@
 <template>
-    <section class="message-input-container">
-        <section class="input-action-container">
-            <VEmojiPicker
-                id="emoji"
-                ref="emojiPicker"
-                v-show="showEmojiDialog"
-                labelSearch="Search"
-                lang="pt-BR"
-                v-click-outside="hideEmojiView"
-                :customEmojis="emojis"
-                :customCategories="emojiCategories"
-                @select="onSelectEmoji"
-            />
-            <ul>
-                <li><i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"></i></li>
-                <li><i @click="pickFile" class="icon-ion-android-attach"></i>
-                    <input ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
-                           style="display: none">
+    <div>
+        <section class="message-input-container" v-if="!sharedConversationState.showChannelMenu">
+            <section class="input-action-container">
+                <VEmojiPicker
+                    id="emoji"
+                    ref="emojiPicker"
+                    v-show="showEmojiDialog"
+                    labelSearch="Search"
+                    lang="pt-BR"
+                    v-click-outside="hideEmojiView"
+                    :customEmojis="emojis"
+                    :customCategories="emojiCategories"
+                    @select="onSelectEmoji"
+                />
+                <ul>
+                    <li><i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"></i></li>
+                    <li><i @click="pickFile" class="icon-ion-android-attach"></i>
+                        <input ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                               style="display: none">
+                    </li>
+                    <li v-if="sharedMiscState.isElectron"><i id="screenShot" @click="screenShot"
+                                                             class="icon-ion-scissors"></i></li>
+                    <li v-if="sharedMiscState.isElectron"><i id="messageHistory" @click="showMessageHistory"
+                                                             class="icon-ion-android-chat"></i></li>
+                </ul>
+                <ul v-if="sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
+                    <li><i @click="startAudioCall" class="icon-ion-ios-telephone"></i></li>
+                    <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
+                    <li v-if="conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length"><i @click="toggleChannelMenu" class="icon-ion-android-menu"></i></li>
+                </ul>
+            </section>
+            <div @keydown.13="send($event)"
+                 @keydown.229="()=>{}"
+                 ref="input" class="input"
+                 @paste="handlePaste"
+                 draggable="false"
+                 title="Enter发送，Ctrl+Enter换行"
+                 autofocus
+                 @contextmenu.prevent="$refs.menu.open($event)"
+                 onmouseover="this.setAttribute('org_title', this.title); this.title='';"
+                 onmouseout="this.title = this.getAttribute('org_title');"
+                 v-on:tribute-replaced="onTributeReplaced"
+                 contenteditable="true">
+            </div>
+            <vue-context ref="menu" :lazy="true">
+                <li>
+                    <a @click.prevent="handlePaste($event, 'menu')">
+                        {{ $t('common.paste') }}
+                    </a>
                 </li>
-                <li v-if="sharedMiscState.isElectron"><i id="screenShot" @click="screenShot"
-                                                         class="icon-ion-scissors"></i></li>
-                <li v-if="sharedMiscState.isElectron"><i id="messageHistory" @click="showMessageHistory"
-                                                         class="icon-ion-android-chat"></i></li>
-            </ul>
-            <ul v-if="sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
-                <li><i @click="startAudioCall" class="icon-ion-ios-telephone"></i></li>
-                <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
-            </ul>
+                <li v-show="hasInputTextOrImage">
+                    <a @click.prevent="copy">
+                        {{ $t('common.copy') }}
+                    </a>
+                </li>
+                <li>
+                    <a @click.prevent="cut">{{ $t('common.cut') }}</a>
+                </li>
+            </vue-context>
+            <QuoteMessageView
+                v-if="quotedMessage !== null"
+                style="padding: 10px 20px"
+                v-on:cancelQuoteMessage="cancelQuoteMessage"
+                :enable-message-preview="false"
+                :quoted-message="quotedMessage" :show-close-button="true"/>
+            <div v-if="muted" style="width: 100%; height: 100%; background: lightgrey; position: absolute; display: flex; justify-content: center; align-items: center">
+                <p style="color: white">群禁言或者你被禁言</p>
+            </div>
         </section>
-        <div @keydown.13="send($event)"
-             @keydown.229="()=>{}"
-             ref="input" class="input"
-             @paste="handlePaste"
-             draggable="false"
-             title="Enter发送，Ctrl+Enter换行"
-             autofocus
-             @contextmenu.prevent="$refs.menu.open($event)"
-             onmouseover="this.setAttribute('org_title', this.title); this.title='';"
-             onmouseout="this.title = this.getAttribute('org_title');"
-             v-on:tribute-replaced="onTributeReplaced"
-             contenteditable="true">
-        </div>
-        <vue-context ref="menu" :lazy="true">
-            <li>
-                <a @click.prevent="handlePaste($event, 'menu')">
-                    {{ $t('common.paste') }}
-                </a>
-            </li>
-            <li v-show="hasInputTextOrImage">
-                <a @click.prevent="copy">
-                    {{ $t('common.copy') }}
-                </a>
-            </li>
-            <li>
-                <a @click.prevent="cut">{{ $t('common.cut') }}</a>
-            </li>
-        </vue-context>
-        <QuoteMessageView
-            v-if="quotedMessage !== null"
-            style="padding: 10px 20px"
-            v-on:cancelQuoteMessage="cancelQuoteMessage"
-            :enable-message-preview="false"
-            :quoted-message="quotedMessage" :show-close-button="true"/>
-        <div v-if="muted" style="width: 100%; height: 100%; background: lightgrey; position: absolute; display: flex; justify-content: center; align-items: center">
-            <p style="color: white">群禁言或者你被禁言</p>
-        </div>
-    </section>
+        <ChannelMenuView v-else v-bind:menus="conversationInfo.conversation._target.menus"></ChannelMenuView>
+    </div>
 </template>
 
 <script>
@@ -93,6 +97,7 @@ import {ipcRenderer, isElectron} from "@/platform";
 import {copyText} from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
 import IPCRendererEventType from "../../../ipcRendererEventType";
+import ChannelMenuView from "./ChannelMenuView";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -123,7 +128,7 @@ export default {
         }
     },
     methods: {
-        onTributeReplaced(e){
+        onTributeReplaced(e) {
             // 正常下面这两行应当就生效了，不知道为啥不生效，所以采用了后面的 trick
             e.detail.event.preventDefault();
             e.detail.event.stopPropagation();
@@ -162,20 +167,22 @@ export default {
                     document.execCommand('insertText', false, ' ');
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
                     return;
-                }else if (args.hasFile){
+                } else if (args.hasFile) {
                     args.files.forEach(file => {
                         store.sendFile(this.conversationInfo.conversation, file)
                     })
                     return;
                 }
             }
+
             if (text && text.trim()) {
                 document.execCommand('insertText', false, text);
                 // Safari 浏览器 execCommand 失效，可以采用下面这种方式处理粘贴
                 // this.$refs.input.innerText += text;
             }
         },
-        mention(groupId, memberId){
+
+        mention(groupId, memberId) {
             let displayName = wfc.getGroupMemberDisplayName(groupId, memberId);
             this.mentions.push({
                 key: displayName,
@@ -183,22 +190,23 @@ export default {
             })
             let text = this.$refs.input.innerText;
             let mentionValue;
-            if (text.endsWith(' ')){
+            if (text.endsWith(' ')) {
                 mentionValue = '@' + displayName + ' ';
-            }else {
+            } else {
                 mentionValue = ' @' + displayName + ' ';
             }
             document.execCommand('insertText', false, mentionValue);
         },
 
-        insertText(text){
+        insertText(text) {
             // this.$refs['input'].innerText = text;
             this.$refs.input.focus();
             document.execCommand('insertText', false, text);
         },
+
         copy() {
             let text = this.$refs['input'].innerText;
-            if(text){
+            if (text) {
                 copyText(text)
             }
         },
@@ -242,7 +250,7 @@ export default {
                 // this.refs.input.innerHTML = this.refs.input.innerHTML+ "<div><br></div>";
                 let nextChar = window.getSelection().focusNode.textContent.charAt(window.getSelection().focusOffset)
                 if (!nextChar) {
-                document.execCommand('InsertHTML', true, '<br>');
+                    document.execCommand('InsertHTML', true, '<br>');
                 }
                 if (window.getSelection) {
                     let selection = window.getSelection(),
@@ -289,6 +297,7 @@ export default {
                 .replace(/<div>/g, '\n')
                 .replace(/<\/div>/g, '')
                 .replace(/&nbsp;/g, ' ');
+
             // TODO 可以在此对文本消息进行处理，比如过滤掉 script，iframe 等标签
 
             //  自行部署表情时，需要手动替换下面的正则
@@ -303,7 +312,6 @@ export default {
                     let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
                     textMessageContent.setQuoteInfo(quoteInfo);
                 }
-
                 wfc.sendConversationMessage(conversation, textMessageContent);
                 this.$refs['input'].innerHTML = '';
             }
@@ -393,7 +401,6 @@ export default {
         },
 
         startAudioCall() {
-            // TODO
             let conversation = this.conversationInfo.conversation;
             if (conversation.type === ConversationType.Single) {
                 avenginekitproxy.startCall(conversation, true, [conversation.target])
@@ -403,7 +410,6 @@ export default {
         },
 
         startVideoCall() {
-            // TODO
             let conversation = this.conversationInfo.conversation;
             if (conversation.type === ConversationType.Single) {
                 avenginekitproxy.startCall(conversation, false, [conversation.target])
@@ -412,17 +418,29 @@ export default {
             }
         },
 
+        toggleChannelMenu(toggle = true) {
+            if (toggle) {
+                this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
+                this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
+            } else {
+                if (this.$parent.messageInputViewResized) {
+                    this.$parent.$refs['conversationMessageList'].style.flexGrow = 0;
+                }
+            }
+            store.toggleChannelMenu(toggle);
+        },
+
         startGroupVoip(isAudioOnly) {
             let successCB = users => {
                 let participantIds = users.map(u => u.uid);
-                    avenginekitproxy.startCall(this.conversationInfo.conversation, isAudioOnly, participantIds)
+                avenginekitproxy.startCall(this.conversationInfo.conversation, isAudioOnly, participantIds)
             };
             this.$pickContact({
                 successCB,
-                    users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true, true),
-                    initialCheckedUsers: [this.sharedContactState.selfUserInfo],
-                    uncheckableUsers: [this.sharedContactState.selfUserInfo],
-                    confirmTitle: this.$t('common.confirm'),
+                users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true, true),
+                initialCheckedUsers: [this.sharedContactState.selfUserInfo],
+                uncheckableUsers: [this.sharedContactState.selfUserInfo],
+                confirmTitle: this.$t('common.confirm'),
             });
         },
 
@@ -464,10 +482,10 @@ export default {
             if (this.conversationInfo.conversation.type === ConversationType.SecretChat) {
                 this.emojiCategories = config.emojiCategories.filter(c => !c.name.startsWith('Sticker'));
                 this.emojis = config.emojis.filter(c => !c.category.startsWith('Sticker'));
-                this.$refs.emojiPicker.changeCategory({name:'Peoples'});
+                this.$refs.emojiPicker.changeCategory({name: 'Peoples'});
             } else {
-            	this.emojiCategories = config.emojiCategories;
-            	this.emojis = config.emojis;
+                this.emojiCategories = config.emojiCategories;
+                this.emojis = config.emojis;
             }
         },
 
@@ -480,7 +498,7 @@ export default {
             }
             let type = conversation.conversationType;
             if (type === ConversationType.Single
-                || type === ConversationType.ChatRoom) {
+                || type === ConversationType.ChatRoom || type === ConversationType.Channel) {
                 return
             }
 
@@ -551,8 +569,10 @@ export default {
 
         focusInput() {
             this.$nextTick(() => {
-                this.$refs['input'].focus();
-                console.log('focus end')
+                if (this.$refs['input']) {
+                    this.$refs['input'].focus();
+                    console.log('focus end')
+                }
             })
         },
 
@@ -575,13 +595,16 @@ export default {
         },
 
         storeDraft(conversationInfo, quotedMessage) {
+            if (!this.$refs['input']) {
+                return;
+            }
             let draftText = this.$refs['input'].innerHTML.trim();
             draftText = draftText
                 .replace(/<br>/g, '')
                 .replace(/<div>/g, '\n')
                 .replace(/<\/div>/g, '')
-                .replace(/<div><\/div>/g, '')
-                .replace(/&nbsp;/g, '')
+                .replace(/<div><\/div>/g, ' ')
+                .replace(/&nbsp;/g, ' ')
                 .replace(/<img class="emoji" draggable="false" alt="/g, '')
                 .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
                 .replace(/<img src="local-resource:.*">/g, '')
@@ -607,6 +630,7 @@ export default {
                     mentions.push(mention);
                 }
             });
+
             let mentionCount = this.mentions ? this.mentions.length : 0;
             if (mentionCount > 0
                 && draftText.endsWith('@' + this.mentions[mentionCount - 1].key + ' ')) {
@@ -635,9 +659,8 @@ export default {
                 && this.conversationInfo.conversation.type === ConversationType.Group
                 && this.conversationInfo.conversation.target === groupId) {
                 this.initMention(this.conversationInfo.conversation);
-
                 let groupMember = wfc.getGroupMember(groupId, wfc.getUserId());
-                if (groupMember && groupMember.type === GroupMemberType.Muted){
+                if (groupMember && groupMember.type === GroupMemberType.Muted) {
                     this.muted = true;
                 }
             }
@@ -645,30 +668,36 @@ export default {
     },
 
     activated() {
-        this.restoreDraft();
-        this.focusInput();
+        if (!this.sharedConversationState.showChannelMenu) {
+            this.restoreDraft();
+            this.focusInput();
+        }
     },
 
     deactivated() {
-        this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
-        this.$refs['input'].innerHTML = '';
+        if (!this.sharedConversationState.showChannelMenu) {
+            this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
+            this.$refs['input'].innerHTML = '';
+        }
     },
 
     mounted() {
-        if (this.conversationInfo) {
-            this.initMention(this.conversationInfo.conversation)
-            this.initEmojiPicker()
-            this.restoreDraft();
+        if (!this.sharedConversationState.showChannelMenu) {
+            if (this.conversationInfo) {
+                this.initMention(this.conversationInfo.conversation)
+                this.initEmojiPicker()
+                this.restoreDraft();
+            }
+            this.focusInput();
         }
         this.lastConversationInfo = this.conversationInfo;
-        this.focusInput();
 
         if (isElectron()) {
             ipcRenderer.on('screenshots-ok', (event, args) => {
                 console.log('screenshots-ok', args)
                 if (args.filePath) {
-                    setTimeout(()=> {
-                    document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
+                    setTimeout(() => {
+                        document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
                     }, 100)
                 }
             });
@@ -695,16 +724,27 @@ export default {
     watch: {
         conversationInfo() {
             if (this.lastConversationInfo && !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation)) {
-                this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
-            }
+                this.$nextTick(() => {
+                    if (this.sharedConversationState.showChannelMenu) {
+                        this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
+                        return
+                    }
+                    if (this.$parent.messageInputViewResized) {
+                        this.$parent.$refs['conversationMessageList'].style.flexGrow = 0;
+                    }
+                    if (this.lastConversationInfo && !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation)) {
+                        this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
+                    }
 
-            if (this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
-                this.restoreDraft();
-                this.initMention(this.conversationInfo.conversation)
+                    if (this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
+                        this.restoreDraft();
+                        this.initMention(this.conversationInfo.conversation)
+                    }
+                    this.lastConversationInfo = this.conversationInfo;
+                    this.focusInput();
+                    this.initEmojiPicker()
+                })
             }
-            this.lastConversationInfo = this.conversationInfo;
-            this.focusInput();
-            this.initEmojiPicker()
         },
     },
 
@@ -723,17 +763,18 @@ export default {
             if (target instanceof GroupInfo) {
                 let groupInfo = target;
                 let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
-                if (groupInfo.mute === 1){
+                if (groupInfo.mute === 1) {
                     return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) < 0;
-                }else {
+                } else {
                     return groupMember && groupMember.type === GroupMemberType.Muted;
-        		}
+                }
             }
             return false;
         },
     },
 
     components: {
+        ChannelMenuView,
         QuoteMessageView,
         VEmojiPicker
     },
@@ -746,7 +787,8 @@ export default {
 
 <style lang='css' scoped>
 .message-input-container {
-    height: 100%;
+    height: 200px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -779,7 +821,7 @@ export default {
     -webkit-user-select: text;
 }
 
-.input:empty:before{
+.input:empty:before {
     content: attr(title);
     color: gray;
     font-size: 13px;

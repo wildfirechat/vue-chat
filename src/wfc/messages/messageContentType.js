@@ -20,6 +20,7 @@ export default class MessageContentType {
     static UserCard = 10;
     static Composite_Message = 11;
     static Rich_Notification = 12;
+    static Articles = 13;
 
     static Mark_Unread_Sync = 31;
 

@@ -59,7 +59,6 @@ export default {
             console.log('Closing...', event, event.params)
             let burnMs = [0, 3000, 10000, 30000, 60000, 600000];
             if (event.params && event.params.position >= 0) {
-                console.log('xxx', burnMs[event.params.position])
                 wfc.setSecretChatBurnTime(this.conversationInfo.conversation.target, burnMs[event.params.position])
             }
         },

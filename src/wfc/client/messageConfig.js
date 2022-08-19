@@ -61,6 +61,7 @@ import StartSecretChatNotification from "../messages/notification/startSecretCha
 import MultiCallOngoingMessageContent from "../av/messages/multiCallOngoingMessageContent";
 import JoinCallRequestMessageContent from "../av/messages/joinCallRequestMessageContent";
 import RichNotificationMessageContent from "../messages/notification/richNotificationMessageContent";
+import ArticlesMessageContent from "../messages/articlesMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -439,5 +440,11 @@ export default class MessageConfig {
             type: MessageContentType.Rich_Notification,
             contentClazz: RichNotificationMessageContent,
         },
+        {
+            name: 'articlesMessageContent',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Articles,
+            contentClazz: ArticlesMessageContent,
+        }
     ];
 }
