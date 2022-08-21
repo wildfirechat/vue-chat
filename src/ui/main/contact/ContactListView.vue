@@ -20,6 +20,17 @@
                     </div>
                 </div>
                 <GroupListVue v-if="sharedContactState.expandGroup"/>
+            </li>
+            <li>
+                <div @click="showChannels" class="category-item-container">
+                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandChanel}"></i>
+                    <div class="category-item">
+                        <span class="title">{{ $t('contact.channel') }}</span>
+                        <span class="desc">{{ sharedContactState.channelList.length }}</span>
+                    </div>
+                </div>
+                <ChannelListView v-if="sharedContactState.expandChanel"/>
+            </li>
             <li>
                 <div @click="showContacts" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
@@ -42,10 +53,11 @@ import FriendRequestListView from "@/ui/main/contact/FriendRequestListView";
 import GroupListVue from "@/ui/main/contact/GroupListView";
 import store from "@/store";
 import UserListVue from "@/ui/main/user/UserListVue";
+import ChannelListView from "./ChannelListView";
 
 export default {
     name: "ContactListView",
-    components: {UserListVue, GroupListVue, NewFriendListView: FriendRequestListView},
+    components: {ChannelListView, UserListVue, GroupListVue, NewFriendListView: FriendRequestListView},
     data() {
         return {
             sharedContactState: store.state.contact,
@@ -60,6 +72,9 @@ export default {
         },
         showGroups() {
             store.toggleGroupList();
+        },
+        showChannels() {
+            store.toggleChannelList();
         },
         showContacts() {
             store.toggleFriendList();

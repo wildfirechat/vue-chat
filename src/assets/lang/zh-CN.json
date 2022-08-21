@@ -14,6 +14,7 @@
     "contact": {
         "new_friend": "新的朋友",
         "group": "群聊",
+        "channel": "频道",
         "contact": "联系人"
     },
     "friend_request": {
@@ -26,9 +27,14 @@
         "intro": "你好"
     },
     "group": {
-        "name": "群名称{0}",
+        "name": "群名称: {0}",
         "chat": "进入群聊",
         "fav": "保存到通讯录"
+    },
+    "channel": {
+      "name": " 频道名称: {0}",
+      "chat": "进入频道",
+      "subscribe": "订阅"
     },
     "message":{
         "send_message": "发消息",
@@ -61,6 +67,10 @@
         "not_support_send_folder": "不支持发送文件夹",
         "group_name": "群名",
         "group_announcement": "群公告",
+        "channel_name": "频道名称",
+        "channel_desc": "频道描述",
+        "unsubscribe_channel": "取消订阅",
+        "subscribe_channel": "订阅频道",
         "add_member": "添加成员",
         "remove_member": "移除成员",
         "quit_group": "退出群聊",

@@ -5,6 +5,10 @@
             v-if="sharedContactState.currentGroup"
             :group="sharedContactState.currentGroup"
             class="contact-detail-container"/>
+        <ChannelDetailView
+            v-else-if="sharedContactState.currentChannel"
+            :channel="sharedContactState.currentChannel"
+            class="contact-detail-container"/>
         <UserDetailView
             v-else-if="sharedContactState.currentFriend"
             :user="sharedContactState.currentFriend"
@@ -24,6 +28,8 @@ import GroupDetailView from "@/ui/main/contact/GroupDetailView";
 import store from "@/store";
 import UserDetailView from "@/ui/main/contact/UserDetailView";
 import FriendRequestDetailView from "@/ui/main/contact/FrienRequestDetailView";
+import ChannelListView from "./contact/ChannelListView";
+import ChannelDetailView from "./contact/ChannelDetailView";
 
 export default {
     name: 'ContactPage',
@@ -33,6 +39,8 @@ export default {
         }
     },
     components: {
+        ChannelDetailView,
+        ChannelListView,
         FriendRequestDetailView,
         UserDetailView,
         GroupDetailView,

@@ -52,7 +52,7 @@
                             <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
                             <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
                             <ContextableNotificationMessageContentContainerView
-                                v-else-if="isContextableNotificaitonMessage(message)"
+                                v-else-if="isContextableNotificationMessage(message)"
                                 @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
                                 :message="message"
                             />
@@ -94,6 +94,13 @@
 
                 <SecretConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 5"
+                    v-click-outside="hideConversationInfo"
+                    :conversation-info="sharedConversationState.currentConversationInfo"
+                    v-bind:class="{ active: showConversationInfo }"
+                    class="conversation-info-container"
+                />
+                <ChannelConversationInfoView
+                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 3"
                     v-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
@@ -187,19 +194,17 @@ import EventType from "../../../wfc/client/wfcEvent";
 import MultiCallOngoingMessageContent from "../../../wfc/av/messages/multiCallOngoingMessageContent";
 import JoinCallRequestMessageContent from "../../../wfc/av/messages/joinCallRequestMessageContent";
 import RichNotificationMessageContent from "../../../wfc/messages/notification/richNotificationMessageContent";
-import RichNotificationMessageContentView from "./message/RichNotificationMessageContentView";
 import MessageStatus from "../../../wfc/messages/messageStatus";
 import MediaMessageContent from "../../../wfc/messages/mediaMessageContent";
-import ArticlesMessageContentView from "./message/ArticlesMessageContentView";
 import ArticlesMessageContent from "../../../wfc/messages/articlesMessageContent";
 import ContextableNotificationMessageContentContainerView from "./message/ContextableNotificationMessageContentContainerView";
+import ChannelConversationInfoView from "./ChannelConversationInfoView";
 
 var amr;
 export default {
     components: {
+        ChannelConversationInfoView,
         ContextableNotificationMessageContentContainerView,
-        ArticlesMessageContentView,
-        RichNotificationMessageContentView,
         MultiSelectActionView,
         NotificationMessageContentView,
         RecallNotificationMessageContentView,
@@ -327,7 +332,7 @@ export default {
                 && message.messageContent.type !== MessageContentType.Rich_Notification;
         },
 
-        isContextableNotificaitonMessage(message) {
+        isContextableNotificationMessage(message) {
             return message && (message.messageContent instanceof RichNotificationMessageContent || message.messageContent instanceof ArticlesMessageContent);
         },
 

@@ -8,7 +8,7 @@
                        class="checkbox"
                        :value="message" placeholder="" v-model="sharedPickState.messages">
                 <RichNotificationMessageContentView :message="message"
-                                                    v-if="message.messageContent.type === 80"
+                                                    v-if="message.messageContent.type === 12"
                                                     @contextmenu.prevent.native="openMessageContextMenu($event, message)"
                 />
                 <ArticlesMessageContentView :message="message"

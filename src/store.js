@@ -104,32 +104,38 @@ let store = {
         contact: {
             currentFriendRequest: null,
             currentGroup: null,
+            currentChannel: null,
             currentFriend: null,
 
             expandFriendRequestList: false,
             expandFriendList: true,
             expandGroup: false,
+            expandChanel: false,
 
             unreadFriendRequestCount: 0,
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
+            channelList: [],
             favContactList: [],
 
             selfUserInfo: null,
             _reset() {
                 this.currentFriendRequest = null;
                 this.currentGroup = null;
+                this.currentChannel = null;
                 this.currentFriend = null;
 
                 this.expandFriendRequestList = false;
                 this.expandFriendList = true;
                 this.expandGroup = false;
+                this.expandChanel = false;
 
                 this.unreadFriendRequestCount = 0;
                 this.friendList = [];
                 this.friendRequestList = [];
                 this.favGroupList = [];
+                this.channelList = [];
                 this.favContactList = [];
 
                 this.selfUserInfo = null;
@@ -232,6 +238,7 @@ let store = {
             this._loadDefaultConversationList();
             this._loadFavContactList();
             this._loadFavGroupList();
+            this._loadChannelList();
             this.updateTray();
             // 清除远程消息时，WEB SDK会同时触发ConversationInfoUpdate 和 setting更新，但PC SDK不会，只会触发setting更新
             if (isElectron()) {
@@ -261,6 +268,7 @@ let store = {
 
         wfc.eventEmitter.on(EventType.ChannelInfosUpdate, (groupInfos) => {
             this._loadDefaultConversationList();
+            this._loadChannelList();
         });
         wfc.eventEmitter.on(EventType.ConversationInfoUpdate, (conversationInfo) => {
             this._loadDefaultConversationList();
@@ -530,6 +538,7 @@ let store = {
 
     _loadDefaultData() {
         this._loadFavGroupList();
+        this._loadChannelList();
         this._loadFriendList();
         this._loadFavContactList();
         this._loadFriendRequest();
@@ -659,6 +668,13 @@ let store = {
             this.setCurrentConversationInfo(null)
         }, (err) => {
             console.log('quit group error', err)
+        })
+    },
+    subscribeChannel(channelId, subscribe) {
+        wfc.listenChannel(channelId, subscribe, () => {
+            //this.setCurrentConversationInfo(null)
+        }, (err) => {
+            console.log('unsubscribe channel error', err)
         })
     },
 
@@ -1294,6 +1310,12 @@ let store = {
         contactState.favGroupList = wfc.getFavGroupList();
     },
 
+    _loadChannelList() {
+        let channelIds = wfc.getListenedChannels();
+        if (channelIds) {
+            contactState.channelList = channelIds.map(channleId => wfc.getChannelInfo(channleId, false));
+        }
+    },
     _loadFavContactList() {
         let favUserIds = wfc.getFavUsers();
         if (favUserIds.length > 0) {
@@ -1313,24 +1335,36 @@ let store = {
         contactState.currentFriendRequest = friendRequest;
         contactState.currentFriend = null;
         contactState.currentGroup = null;
+        contactState.currentChannel = null;
     },
 
     setCurrentFriend(friend) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = friend;
         contactState.currentGroup = null;
+        contactState.currentChannel = null;
     },
 
     setCurrentGroup(group) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
         contactState.currentGroup = group;
+        contactState.currentChannel = null;
     },
 
+    setCurrentChannel(channel) {
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = null;
+        contactState.currentGroup = null;
+        contactState.currentChannel = channel;
+    },
     toggleGroupList() {
         contactState.expandGroup = !contactState.expandGroup;
     },
 
+    toggleChannelList() {
+        contactState.expandChanel = !contactState.expandChanel;
+    },
     toggleFriendRequestList() {
         contactState.expandFriendRequestList = !contactState.expandFriendRequestList;
     },
