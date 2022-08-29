@@ -14,7 +14,7 @@
                 trigger="click"
                 arrow
             >
-                <div v-for="(sm, si) in menu.subMenus" :key="si" class="menu-item" @click="openChannelMenu($event, sm)">
+                <div v-for="(sm, si) in menu.subMenus" :key="si" class="sub-menu-item" @click="openChannelMenu($event, sm)">
                     {{ sm.name }}
                 </div>
             </tippy>
@@ -33,11 +33,19 @@
 
 <script>
 
+import ChannelMenuEventMessageContent from "../../../wfc/messages/channelMenuEventMessageContent";
+import wfc from "../../../wfc/client/wfc";
+import Conversation from "../../../wfc/model/conversation";
+
 export default {
     name: "ChannelMenuView",
     props: {
         menus: {
             type: Array,
+            required: true,
+        },
+        conversation: {
+            type: Conversation,
             required: true,
         }
     },
@@ -70,6 +78,10 @@ export default {
                         open(menu.url);
                     }
                     break;
+                case "click":
+                    let content = new ChannelMenuEventMessageContent(menu);
+                    wfc.sendConversationMessage(this.conversation, content)
+                    break;
                 case "miniprogram":
                     break;
                 default:
@@ -101,10 +113,31 @@ export default {
     justify-content: center;
     align-items: center;
     color: black;
+}
 
+.menu-item:not(:last-of-type) {
+    border-right: 1px solid #e5e5e5;
 }
 
 .menu-item:hover {
+    background: #e0e0e0e5;
+}
+
+.sub-menu-item {
+    flex: 1;
+    height: 30px;
+    padding: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+.sub-menu-item:not(:last-of-type) {
+    border-bottom: 1px solid #e0e0e0e5;
+}
+
+.sub-menu-item:hover {
     background: #e0e0e0e5;
 }
 

@@ -56,7 +56,10 @@
             <div class="item">
                 <input v-model="password" class="text-input" @keydown.enter="loginWithPassword" type="text" placeholder="请输入密码">
             </div>
-            <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
+            <div style="display: flex; justify-content: space-between; width: 100%; ">
+            	<p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
+                <p class="tip" @click="register">注册</p>
+            </div>
             <button class="login-button" :disabled="mobile.trim() === '' || password.trim() === ''" @click="loginWithPassword">登录</button>
         </div>
         <div v-else class="login-form-container">
@@ -136,6 +139,13 @@ export default {
     },
 
     methods: {
+        register(){
+            this.$notify({
+                text: '使用短信验证码登录，将会为您创建账户，请使用短信验证码登录',
+                type: 'info'
+            });
+            this.switchLoginType(2);
+        },
         switchLoginType(type) {
             this.loginType = type;
         },
@@ -179,10 +189,11 @@ export default {
             }, {withCredentials: true});
             if (response.data) {
                 if (response.data.code === 0) {
-                    const {userId, token} = response.data.result;
+                    const {userId, token, portrait} = response.data.result;
                     wfc.connect(userId, token);
                     setItem('userId', userId);
                     setItem('token', token);
+                    setItem("userPortrait", portrait);
                     let appAuthToken = response.headers['authtoken'];
                     if (!appAuthToken) {
                         appAuthToken = response.headers['authToken'];
@@ -217,10 +228,11 @@ export default {
             }, {withCredentials: true});
             if (response.data) {
                 if (response.data.code === 0) {
-                    const {userId, token} = response.data.result;
+                    const {userId, token, portrait} = response.data.result;
                     wfc.connect(userId, token);
                     setItem('userId', userId);
                     setItem('token', token);
+                    setItem("userPortrait", portrait);
                     let appAuthToken = response.headers['authtoken'];
                     if (!appAuthToken) {
                         appAuthToken = response.headers['authToken'];

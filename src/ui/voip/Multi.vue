@@ -278,7 +278,7 @@ export default {
                     this.initiatorUserInfo = userInfos[0];
                 })
                 if (!this.broadcastMultiCallOngoingTimer){
-                    setInterval(this.broadcastMultiCallOngoing, 200)
+                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 200)
                 }
             }
             avenginekit.sessionCallback = sessionCallback;

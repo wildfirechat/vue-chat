@@ -445,6 +445,24 @@ export default class MessageConfig {
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.Articles,
             contentClazz: ArticlesMessageContent,
+        },
+        {
+            name: 'channelMenuEventMessageContent',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.Channel_Menu_Event,
+            contentClazz: ArticlesMessageContent,
+        },
+        {
+            name: 'enterChannelChatMessageContent',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.Enter_Channel_Chat,
+            contentClazz: ArticlesMessageContent,
+        },
+        {
+            name: 'leaveChannelChatMessageContent',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.Leave_Channel_Chat,
+            contentClazz: ArticlesMessageContent,
         }
     ];
 }

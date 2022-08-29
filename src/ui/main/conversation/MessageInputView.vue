@@ -68,7 +68,7 @@
                 <p style="color: white">群禁言或者你被禁言</p>
             </div>
         </section>
-        <ChannelMenuView v-else v-bind:menus="conversationInfo.conversation._target.menus"></ChannelMenuView>
+        <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus" :conversation="conversationInfo.conversation"></ChannelMenuView>
     </div>
 </template>
 

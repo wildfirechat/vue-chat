@@ -83,10 +83,13 @@ export default {
     mounted() {
         wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
 
+        wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onUserInfosUpdate)
+        wfc.getGroupMembers(this.conversationInfo.conversation.target, true);
     },
 
     beforeDestroy() {
         wfc.eventEmitter.removeListener(EventType.UserInfosUpdate, this.onUserInfosUpdate);
+        wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onUserInfosUpdate);
     },
     components: {UserListVue},
     methods: {

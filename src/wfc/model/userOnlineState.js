@@ -39,7 +39,7 @@ export default class UserOnlineState {
             // //最后可见
             // lastSeen;
 
-            let ps = ['未知', 'iOS', 'Android', 'Windows', 'mac', 'Web', '小程序', 'Linux', 'iPad', 'Android-Pad'];
+            let ps = ['', 'iOS', 'Android', 'Windows', 'mac', 'Web', '小程序', 'Linux', 'iPad', 'Android-Pad'];
             if (s.state === 0) {
                 onlineClientDesc += ps[s.platform] + ' '
             } else if ([1, 2, 8, 9].indexOf(s.platform) >= 0) {
@@ -48,9 +48,9 @@ export default class UserOnlineState {
             }
         });
 
-        if (onlineClientDesc) {
+        if (onlineClientDesc.trim()) {
             return onlineClientDesc + '在线';
-        } else if (lastSeenDesc) {
+        } else if (lastSeenDesc.trim()) {
             return lastSeenDesc + '不久前在线';
         }
         //return '不在线';

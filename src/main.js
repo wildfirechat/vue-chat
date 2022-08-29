@@ -31,8 +31,7 @@ Vue.config.productionTip = false
     if (path === '/'/*login*/ || path === '/home' || href.indexOf('#') === -1) {
         console.log('init wfc')
         if (isElectron()) {
-            let sharedObj = remote.getGlobal('sharedObj');
-            wfc.init([sharedObj.proto])
+            wfc.init()
             // 双网环境配置
             //     // 设置网络策略
             //     wfc.setBackupAddressStrategy(0)
@@ -57,8 +56,7 @@ Vue.config.productionTip = false
     } else {
         console.log('not home window, not init wfc')
         if (isElectron()) {
-            let sharedObj = remote.getGlobal('sharedObj');
-            wfc.attach(sharedObj.proto)
+            wfc.attach()
         }
         store.init(false);
     }

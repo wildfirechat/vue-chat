@@ -61,9 +61,9 @@
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
                                @click="go2Files"></i>
                         </li>
-                        <li v-if="sharedMiscState.isElectron">
+                        <li v-if="sharedMiscState.isElectron && sharedMiscState.enableOpenWorkSpace">
                             <i class="icon-ion-code-working"
-                               v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
+                               v-bind:class="{active : this.$router.currentRoute.path === '/home/workspace'}"
                                @click="go2Workspace"></i>
                         </li>
                         <li v-if="supportConference">

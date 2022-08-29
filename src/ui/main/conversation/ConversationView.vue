@@ -75,7 +75,7 @@
                      class="divider-handler"></div>
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                                   v-show="!sharedConversationState.enableMessageMultiSelection"
-                                  ref="messageInputView" />
+                                  ref="messageInputView"/>
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
                 <SingleConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
@@ -99,6 +99,7 @@
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
                 />
+
                 <ChannelConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 3"
                     v-click-outside="hideConversationInfo"
@@ -106,6 +107,7 @@
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
                 />
+
                 <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true" v-on:close="onMenuClose">
                     <!--          更多menu item-->
                     <li v-if="isCopyable(message)">
@@ -180,7 +182,6 @@ import Message from "../../../wfc/messages/message";
 import {downloadFile} from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import {remote} from "../../../platform";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import MessageContentType from "../../../wfc/messages/messageContentType";
 import BenzAMRRecorder from "benz-amr-recorder";
@@ -247,6 +248,7 @@ export default {
     deactivated() {
         this.fixTippy = false;
     },
+
     methods: {
         dragEvent(e, v) {
             if (v === 'dragenter') {
@@ -273,6 +275,7 @@ export default {
                     });
                     return true;
                 }
+
                 let length = e.dataTransfer.files.length;
                 if (length > 0 && length < 5) {
                     for (let i = 0; i < length; i++) {
@@ -343,7 +346,8 @@ export default {
         isCancelable(message) {
             return message && message.messageContent instanceof MediaMessageContent && message.status === MessageStatus.Sending;
         },
-        reedit(message){
+
+        reedit(message) {
             this.$refs.messageInputView.insertText(message.messageContent.originalSearchableContent);
         },
 
@@ -480,6 +484,7 @@ export default {
                 MessageContentType.Articles,
                 MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
         },
+
         copy(message) {
             let content = message.messageContent;
             if (content instanceof TextMessageContent) {
@@ -493,7 +498,6 @@ export default {
                 copyImg(content.remotePath)
             }
         },
-
         download(message) {
             if (!store.isDownloadingMessage(message.messageId)) {
                 downloadFile(message)
@@ -517,9 +521,9 @@ export default {
         recallMessage(message) {
             wfc.recallMessage(message.messageUid, null, null);
         },
-        cancelMessage(message){
+        cancelMessage(message) {
             let canceled = wfc.cancelSendingMessage(message.messageId);
-            if (!canceled){
+            if (!canceled) {
                 this.$notify({
                     text: '取消失败',
                     type: 'warn',
@@ -537,7 +541,7 @@ export default {
                     wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
                 },
                 confirmCallback: () => {
-            wfc.deleteMessage(message.messageId);
+                    wfc.deleteMessage(message.messageId);
                 }
             })
         },
@@ -555,6 +559,7 @@ export default {
                 console.log('foward errro', reason)
             });
         },
+
         quoteMessage(message) {
             store.quoteMessage(message);
         },
@@ -578,6 +583,7 @@ export default {
             message.from = wfc.getUserId();
             this.favMessage(message);
         },
+
         favMessage(message) {
             let favItem = FavItem.fromMessage(message);
             axios.post('/fav/add', {
@@ -633,7 +639,6 @@ export default {
             });
         },
 
-
         playVoice(message) {
             if (amr) {
                 amr.stop();
@@ -650,7 +655,7 @@ export default {
             })
         },
         mentionMessageSenderTitle(message) {
-            if (!message){
+            if (!message) {
                 return ''
             }
             let displayName = wfc.getGroupMemberDisplayName(message.conversation.target, message.from);
@@ -672,7 +677,7 @@ export default {
                         if (this.ongoingCalls.length === 0) {
                             clearInterval(this.ongoingCallTimer);
                             this.ongoingCallTimer = 0;
-        }
+                        }
                         console.log('ongoing calls', this.ongoingCalls.length);
                     }, 1000)
                 }
@@ -693,6 +698,7 @@ export default {
             let request = new JoinCallRequestMessageContent(message.messageContent.callId, wfc.getClientId());
             wfc.sendConversationMessage(this.conversationInfo.conversation, request);
         }
+
     },
 
     mounted() {
@@ -723,7 +729,7 @@ export default {
             this.forward(message);
         });
 
-        if (!isElectron()){
+        if (!isElectron()) {
             localStorageEmitter.on('inviteConferenceParticipant', (ev, args) => {
                 let payload = args.messagePayload;
                 let messageContent = Message.messageContentFromMessagePayload(payload, wfc.getUserId());
@@ -731,7 +737,6 @@ export default {
                 this.forward(message);
             });
         }
-
         wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
     },
 
@@ -749,7 +754,6 @@ export default {
         if (!this.sharedConversationState.currentConversationInfo) {
             return;
         }
-
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
         console.log('conversationView updated', this.conversationInfo, this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom)
@@ -785,12 +789,10 @@ export default {
             let info = this.sharedConversationState.currentConversationInfo;
             return info.conversation._target._displayName;
         },
-
         targetUserOnlineStateDesc() {
             let info = this.sharedConversationState.currentConversationInfo;
             return info.conversation._targetOnlineStateDesc;
         },
-
         loadingIdentifier() {
             let conversation = this.sharedConversationState.currentConversationInfo.conversation;
             return conversation.type + '-' + conversation.target + '-' + conversation.line;
