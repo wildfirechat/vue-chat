@@ -100,7 +100,7 @@
                         <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                         <p>静音</p>
                     </div>
-                    <div v-if="!audioOnly" class="action">
+                    <div v-if="!audioOnly && false" class="action">
                         <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
                     </div>
                     <div v-if="!audioOnly" class="action">
