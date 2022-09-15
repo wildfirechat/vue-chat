@@ -299,7 +299,7 @@ let store = {
                 // 移动端，目前只有单聊会发送typing消息
                 if (msg.messageContent.type === MessageContentType.Typing) {
                     let groupId = msg.conversation.type === 1 ? msg.conversation.target : '';
-                    let userInfo = wfc.getUserInfo(msg.from, groupId)
+                    let userInfo = wfc.getUserInfo(msg.from, false, groupId)
                     userInfo = Object.assign({}, userInfo);
                     userInfo._displayName = wfc.getGroupMemberDisplayNameEx(userInfo);
                     conversationState.inputtingUser = userInfo;

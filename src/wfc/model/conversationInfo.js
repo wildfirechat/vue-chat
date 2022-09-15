@@ -5,7 +5,7 @@
 import Conversation from "./conversation";
 import Message from "../messages/message";
 import wfc from '../client/wfc'
-import {eq} from '../util/longUtil'
+import {eq, gt} from '../util/longUtil'
 
 import ConversationType from "./conversationType";
 
@@ -29,6 +29,9 @@ export default class ConversationInfo {
         	conversationInfo.conversation = new Conversation(obj.conversationType, obj.target, obj.line);
         }
         conversationInfo.lastMessage = Message.fromProtoMessage(obj.lastMessage);
+        if (conversationInfo.draft && conversationInfo.lastMessage && gt(conversationInfo.lastMessage.timestamp, 0)) {
+            conversationInfo.timestamp = conversationInfo.lastMessage.timestamp;
+        }
         return conversationInfo;
     }
 

@@ -791,7 +791,19 @@ export default {
         },
         targetUserOnlineStateDesc() {
             let info = this.sharedConversationState.currentConversationInfo;
-            return info.conversation._targetOnlineStateDesc;
+            if (info.conversation.type === ConversationType.Single) {
+                if (info.conversation._target.type === 0) {
+            		return info.conversation._targetOnlineStateDesc;
+                } else if (info.conversation._target.type === 1) {
+                    return 'bot';
+                }
+            } else if (info.conversation.type === ConversationType.Channel) {
+                return info.conversation._target.desc;
+            } else if (info.conversation.type === ConversationType.Group) {
+                return '群成员数：' + info.conversation._target.memberCount;
+            } else {
+                return '';
+            }
         },
         loadingIdentifier() {
             let conversation = this.sharedConversationState.currentConversationInfo.conversation;
