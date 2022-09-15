@@ -1060,7 +1060,7 @@ export class WfcManager {
     /**
      * 会话置顶或取消置顶
      * @param {Conversation} conversation 需要置顶或取消置顶的会话
-     * @param {boolean} top true，置顶；false，取消置顶
+     * @param {number} top > 0, 置顶，可以根据这个值进行置顶排序；0，取消置顶
      * @param {function ()} successCB
      * @param {function (number)} failCB
      */

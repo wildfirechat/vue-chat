@@ -6,7 +6,7 @@
                 v-for="conversationInfo in sharedConversationState.conversationInfoList"
                 :key="conversationInfoKey(conversationInfo)"
                 v-bind:class="{active: sharedConversationState.currentConversationInfo && sharedConversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation),
-                          top:conversationInfo.isTop,
+                          top:conversationInfo.top,
                           highlight:contextMenuConversationInfo && contextMenuConversationInfo.conversation.equal(conversationInfo.conversation) }"
                 @contextmenu.prevent="showConversationItemContextMenu($event, conversationInfo)"
             >
@@ -18,7 +18,7 @@
         <vue-context ref="menu" v-slot="{data:conversationInfo}" v-on:close="onConversationItemContextMenuClose">
             <li>
                 <a @click.prevent="setConversationTop(conversationInfo)">{{
-                        conversationInfo && conversationInfo.isTop ? $t('conversation.cancel_sticky_top') : $t('conversation.sticky_top')
+                        conversationInfo && conversationInfo.top ? $t('conversation.cancel_sticky_top') : $t('conversation.sticky_top')
                     }}</a>
             </li>
             <li>
@@ -66,7 +66,7 @@ export default {
         },
 
         setConversationTop(conversationInfo) {
-            store.setConversationTop(conversationInfo.conversation, !conversationInfo.isTop);
+            store.setConversationTop(conversationInfo.conversation, conversationInfo.top > 0 ? 0 : 1);
         },
 
         setConversationSilent(conversationInfo) {
