@@ -50,7 +50,7 @@
                             <!--                                                                v-else-if="message.messageContent.type === 408"/>-->
                             <UnsupportMessageContentView :message="message"
                                                          v-else-if="[2, 10, 400, 408].indexOf(message.messageContent.type) >= 0"/>
-                            <UnknowntMessageContentView :message="message"
+                            <UnknownMessageContentView :message="message"
                                                         v-else
                                                         v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
                         </div>
@@ -71,7 +71,7 @@ import ImageMessageContentView from "./conversation/message/content/ImageMessage
 import VideoMessageContentView from "./conversation/message/content/VideoMessageContentView";
 import FileMessageContentView from "./conversation/message/content/FileMessageContentView";
 import StickerMessageContentView from "./conversation/message/content/StickerMessageContentView";
-import UnknowntMessageContentView from "./conversation/message/content/UnknownMessageContentView";
+import UnknownMessageContentView from "./conversation/message/content/UnknownMessageContentView";
 import Message from "../../wfc/messages/message";
 import {stringValue} from "../../wfc/util/longUtil";
 import wfc from "../../wfc/client/wfc";
@@ -104,8 +104,8 @@ export default {
         }
         let hash = window.location.hash;
         if(hash.indexOf('messageUid=') >= 0){
-        let messageUid = hash.substring(hash.indexOf('=') + 1);
-        this.compositeMessage = store.getMessageByUid(messageUid);
+            let messageUid = hash.substring(hash.indexOf('=') + 1);
+            this.compositeMessage = store.getMessageByUid(messageUid);
         }else {
             let faveItemData = hash.substring(hash.indexOf('=') + 1);
             let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
@@ -149,7 +149,7 @@ export default {
     },
 
     components: {
-        UnknowntMessageContentView,
+        UnknownMessageContentView,
         // ConferenceInviteMessageContentView,
         CompositeMessageContentView,
         // AudioMessageContentView,
