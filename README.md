@@ -37,7 +37,7 @@
 2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
 3. 微信公众号
 
-<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
+<img src="https://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
 
 
 ## 体验
@@ -45,12 +45,15 @@
 [在线体验野火IM Web版](http://web.wildfirechat.cn)，请使用野火IM Andorid或iOS Demo扫码登录
 
 ## 截图
-![](https://static.wildfirechat.net/web-contact.png)
-![](https://static.wildfirechat.net/web-group-conversation-info.png)
-![](https://static.wildfirechat.net/web-home.png)
-![](https://static.wildfirechat.net/web-picker-user.png)
-![](https://static.wildfirechat.net/web-quote.png)
-![](https://static.wildfirechat.net/web-sticker.png)
+![](https://static.wildfirechat.cn/web-home.png)
+![](https://static.wildfirechat.cn/web-conversation.png)
+![](https://static.wildfirechat.cn/web-contact.png)
+![](https://static.wildfirechat.cn/web-channel.png)
+![](https://static.wildfirechat.cn/web-emoji.png)
+![](https://static.wildfirechat.cn/web-forward.png)
+![](https://static.wildfirechat.cn/web-setting.png)
+![](https://static.wildfirechat.cn/web-multi-video-call.png)
+![](https://static.wildfirechat.cn/web-multi-audio-call.png)
 ## 开发、打包依赖
 1. nodejs v10.16.3
 2. npm 6.9.0
