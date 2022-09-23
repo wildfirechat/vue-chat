@@ -24,6 +24,9 @@ export class AvEngineKitProxy {
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
     useIframe = false;
     iframe;
+    // 有的场景下，im 和音视频通话 是纯粹的单页应用，没有 iframe 也没有弹新的页面
+    singlePage = false;
+
     type;
 
     conference = false;
@@ -117,6 +120,9 @@ export class AvEngineKitProxy {
             this.conversation = null;
             this.queueEvents = [];
             this.callId = null;
+            if (this.singlePage){
+                this.callWin = null;
+            }
             this.inviteMessageUid = null;
             this.participants = [];
             // 仅仅为了通知proxy，其他端已经接听电话了，关闭窗口时，不应当发送挂断信令
@@ -222,13 +228,17 @@ export class AvEngineKitProxy {
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
                     if (!this.callWin) {
-                        setTimeout(() => {
-                            if (this.conversation) {
-                                this.showCallUI(msg.conversation);
-                            } else {
-                                console.log('call ended')
-                            }
-                        }, 200)
+                        if (this.singlePage){
+                            this.showCallUI(msg.conversation);
+                        }else {
+                            setTimeout(() => {
+                                if (this.conversation) {
+                                    this.showCallUI(msg.conversation);
+                                } else {
+                                    console.log('call ended')
+                                }
+                            }, 200)
+                        }
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
                     let participantIds = [...content.participants];
@@ -264,6 +274,9 @@ export class AvEngineKitProxy {
                     this.callId = null;
                     this.inviteMessageUid = null;
                     this.participants = [];
+                    if (this.singlePage){
+                        this.callWin = null;
+                    }
                 }
 
                 if (msg.conversation.type === ConversationType.Group
@@ -478,6 +491,10 @@ export class AvEngineKitProxy {
     }
 
     showCallUI(conversation, isConference) {
+        if (this.singlePage){
+            return;
+        }
+
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         this.type = type;
 
