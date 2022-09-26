@@ -113,6 +113,7 @@ import axios from "axios";
 import CreateConferenceView from "../../voip/CreateConferenceView";
 import ChangePasswordView from "./ChangePasswordView";
 import ResetPasswordView from "./ResetPasswordView";
+import avenginekit from "../../../wfc/av/internal/engine.min";
 
 export default {
     name: "SettingPage",
@@ -238,7 +239,8 @@ export default {
                 version = 'unknown proto version'
                 console.log(e)
             }
-            return version;
+            let supportConference = avenginekit.startConference !== undefined
+            return version + (supportConference ? ' av-conference' : ' av-multi');
         }
 
     }
