@@ -49,6 +49,10 @@
         </div>
         <footer>
             <p class="proto-version-info">{{ protoRevision() }}</p>
+            <a class="button" target="_blank" @click="webrtcTest">
+                音视频能力测试
+                <!--        <i class="icon-ion-ios-email-outline"/>-->
+            </a>
             <a class="button" target="_blank" @click.prevent.stop="showChangePasswordContextMenu">
                 修改密码
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
@@ -64,13 +68,6 @@
             <a class="button" target="_blank" @click="logout">
                 {{ $t('setting.exit_switch_user') }}
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
-            </a>
-            <a
-                class="button"
-                href="mailto:imndxx@gmail.com?Subject=WildfireChat%20Feedback"
-                target="_blank">
-                {{ $t('setting.feedback') }}
-                <i class="icon-ion-ios-email-outline"/>
             </a>
 
             <a
@@ -241,19 +238,33 @@ export default {
             }
             let supportConference = avenginekit.startConference !== undefined
             return version + (supportConference ? ' av-conference' : ' av-multi');
+        },
+        webrtcTest() {
+            if (!location.href.startsWith('https://') && !location.href.startsWith('http://localhost')) {
+                this.$notify({
+                    text: '只有通过https://，或者http://localhost 访问站点时，才支持音视频通话功能',
+                    type: 'warn'
+                });
+            } else {
+                this.$notify({
+                    title: '请稍后',
+                    text: '将进入新页面测试音视频能力',
+                    type: 'info'
+                });
+                setTimeout(() => {
+                    window.open('https://docs.wildfirechat.cn/webrtc/abilitytest/')
+                }, 2000)
+            }
         }
 
-    }
-    ,
+    },
 
     mounted() {
         window.addEventListener('blur', this.blurListener)
-    }
-    ,
+    },
     beforeDestroy() {
         window.removeEventListener('blur', this.blurListener)
-    }
-    ,
+    },
     computed: {
         currentLang() {
             let lang = getItem('lang')
@@ -262,13 +273,11 @@ export default {
             index = index >= 0 ? index : 0;
             return this.langs[index];
         }
-    }
-    ,
+    },
     components: {
         'dropdown':
         dropdown,
-    }
-    ,
+    },
 }
 </script>
 
