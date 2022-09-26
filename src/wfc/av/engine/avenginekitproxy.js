@@ -42,7 +42,8 @@ export class AvEngineKitProxy {
     /**
      * 无法正常弹出音视频通话窗口是的回调
      * 回到参数说明：-1，有音视频通话正在进行中；-2，设备不支持音视频通话，可能原因是不支持webrtc，没有摄像头或麦克风等
-     * @type {(Number) => {}}
+     * @param {(Number)} errorCode
+     * @param {(string)} reason
      */
     onVoipCallErrorCallback;
 
@@ -120,7 +121,7 @@ export class AvEngineKitProxy {
             this.conversation = null;
             this.queueEvents = [];
             this.callId = null;
-            if (this.singlePage){
+            if (this.singlePage) {
                 this.callWin = null;
             }
             this.inviteMessageUid = null;
@@ -183,7 +184,7 @@ export class AvEngineKitProxy {
                 }
             }
             if (!this.isSupportVoip || !this.hasMicrophone || !this.hasSpeaker || !this.hasWebcam) {
-                this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
+                this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
                 return;
             }
         }
@@ -228,9 +229,9 @@ export class AvEngineKitProxy {
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
                     if (!this.callWin) {
-                        if (this.singlePage){
+                        if (this.singlePage) {
                             this.showCallUI(msg.conversation);
-                        }else {
+                        } else {
                             setTimeout(() => {
                                 if (this.conversation) {
                                     this.showCallUI(msg.conversation);
@@ -274,7 +275,7 @@ export class AvEngineKitProxy {
                     this.callId = null;
                     this.inviteMessageUid = null;
                     this.participants = [];
-                    if (this.singlePage){
+                    if (this.singlePage) {
                         this.callWin = null;
                     }
                 }
@@ -362,7 +363,7 @@ export class AvEngineKitProxy {
         console.log(`speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
         if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
             return;
         }
 
@@ -413,7 +414,7 @@ export class AvEngineKitProxy {
         }
         if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || !this.hasWebcam) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
             return;
         }
 
@@ -463,7 +464,7 @@ export class AvEngineKitProxy {
         }
         if (!this.isSupportVoip) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
             return;
         }
 
@@ -491,7 +492,7 @@ export class AvEngineKitProxy {
     }
 
     showCallUI(conversation, isConference) {
-        if (this.singlePage){
+        if (this.singlePage) {
             return;
         }
 
@@ -720,6 +721,26 @@ export class AvEngineKitProxy {
     forceCloseVoipWindow() {
         if (this.callWin) {
             this.callWin.close();
+        }
+    }
+
+    buildNotSupportVoipReason() {
+        if (this.callWin) {
+            return '有通话正在进行中'
+        } else {
+            let reason = '';
+            if (!isElectron() && !location.href.startsWith('https://') && !location.href.startsWith('http://localhost')) {
+                reason = '只有通过 https:// 或 http://localhost 访问时，才支持音视频通话';
+            } else if (!this.isSupportVoip) {
+                reason = '系统或浏览器不支持WebRTC'
+            } else if (!this.hasSpeaker) {
+                reason = '没有检测到扬声器'
+            } else if (!this.hasWebcam) {
+                reason = '没有检测到摄像头，或没有摄像头权限'
+            } else if (!this.hasMicrophone) {
+                reason = '没有检测到麦克风，或没有麦克风权限'
+            }
+            return reason;
         }
     }
 }

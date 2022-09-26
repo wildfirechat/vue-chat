@@ -313,7 +313,7 @@ export default {
             this.draggableValue.handle = this.$refs['voip-dragger'];
             this.draggableValue.boundingElement = this.$refs['home-container']
         }
-        avenginekitproxy.onVoipCallErrorCallback = (errorCode) => {
+        avenginekitproxy.onVoipCallErrorCallback = (errorCode, reason) => {
             if (errorCode === -1) {
                 this.$notify({
                     title: '不能发起或接听新的音视频通话',
@@ -324,7 +324,7 @@ export default {
             } else if (errorCode === -2) {
                 this.$notify({
                     title: '不支持音视频通话',
-                    text: '请到手机上接听音视频通话',
+                    text: reason,
                     type: 'warn'
                 });
             }
