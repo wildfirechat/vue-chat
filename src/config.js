@@ -30,6 +30,29 @@ export default class Config {
 
     static MESSAGE_ROAMING = 1;
 
+
+    /**
+     * web/wx 端有效
+     * 配置是否开启漫游消息通知，即连接过程中，收到的漫游消息，也对上层进行消息通知
+     * 如果开启的话，需要注意一下问题：
+     * 1. 此时消息回执状态不对
+     * 2. 这时候，不应当刷新 UI，需等待连接状态切换为connected之后，再进行刷新
+     */
+    static ENABLE_ROAMING_MESSAGE_RECEIVING_NOTIFICATION = true;
+
+    /**
+     * web/wx 端有效
+     * 配置是否开启透传漫游消息通知
+     */
+    static ENABLE_ROAMING_TRANSPARENT_MESSAGE_RECEIVING_NOTIFICATION = true;
+
+    /**
+     * web/wx 端有效
+     * 配置收到透传消息时，是否生成对应的会话
+     */
+    static ENABLE_GENERATE_CONVERSATION_FOR_TRANSPARENT_MESSAGE = true;
+
+
     // 配置clientId的生成策略，可选0，1，2；默认0
     // 0 clientId存储于内存，每次刷新网页，都会随机生成新的clientId
     // 1 clientId存储于sessionStorage，每个session对应一个clientId，刷新网页时，clientId不会变化；但打开新的tab页面，或者重启浏览器等，会重新生成
