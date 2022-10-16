@@ -38,19 +38,19 @@ export default class Config {
      * 1. 此时消息回执状态不对
      * 2. 这时候，不应当刷新 UI，需等待连接状态切换为connected之后，再进行刷新
      */
-    static ENABLE_ROAMING_MESSAGE_RECEIVING_NOTIFICATION = true;
+    static ENABLE_ROAMING_MESSAGE_RECEIVING_NOTIFICATION = false;
 
     /**
      * web/wx 端有效
      * 配置是否开启透传漫游消息通知
      */
-    static ENABLE_ROAMING_TRANSPARENT_MESSAGE_RECEIVING_NOTIFICATION = true;
+    static ENABLE_ROAMING_TRANSPARENT_MESSAGE_RECEIVING_NOTIFICATION = false;
 
     /**
      * web/wx 端有效
      * 配置收到透传消息时，是否生成对应的会话
      */
-    static ENABLE_GENERATE_CONVERSATION_FOR_TRANSPARENT_MESSAGE = true;
+    static ENABLE_GENERATE_CONVERSATION_FOR_TRANSPARENT_MESSAGE = false;
 
 
     // 配置clientId的生成策略，可选0，1，2；默认0
