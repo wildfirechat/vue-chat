@@ -268,9 +268,10 @@ export class WfcManager {
     }
 
     /**
+     * web 端，只匹配群名称和群备注名
      * 本地搜索群组
      * @param keyword 搜索关键字
-     * @returns {[GroupInfo]}
+     * @returns {[GroupSearchResult]}
      */
     searchGroups(keyword) {
         return impl.searchGroups(keyword);
