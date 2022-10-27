@@ -41,7 +41,7 @@ const helper = {
                 break;
 
             case ['mp4', 'mkv', 'avi', 'flv'].includes(extension):
-                filename = 'audio';
+                filename = 'video';
                 break;
 
             case ['zip', 'rar', 'tar', 'tar.gz'].includes(extension):
