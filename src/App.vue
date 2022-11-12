@@ -93,9 +93,6 @@ export default {
         if (isElectron()){
             currentWindow.minimizable = this.sharedMiscState.enableMinimize;
         }
-        axios.defaults.baseURL = Config.APP_SERVER;
-
-        axios.defaults.headers.common['authToken'] = getItem('authToken');
     },
 
     mounted() {

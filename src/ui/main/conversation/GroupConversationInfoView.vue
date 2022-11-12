@@ -16,8 +16,15 @@
                        ref="groupAnnouncementInput"
                        :disabled="!enableEditGroupNameOrAnnouncement"
                        @keyup.enter='updateGroupAnnouncement'
-                       v-model="newGroupAnnouncement"
+                       v-model.trim="newGroupAnnouncement"
                        :placeholder="groupAnnouncement">
+            </label>
+            <label>
+                {{ $t('group.alias') }}
+                <input type="text"
+                       @keyup.enter='updateGroupAlias'
+                       v-model.trim="newGroupAlias"
+                       :placeholder="groupAlias">
             </label>
             <label class="switch">
                 保存到通讯录
@@ -61,6 +68,8 @@ import GroupMemberType from "@/wfc/model/groupMemberType";
 import GroupType from "@/wfc/model/groupType";
 import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
 import EventType from "../../../wfc/client/wfcEvent";
+import appServerApi from "../../../api/appServerApi";
+import AppServerError from "../../../api/appServerError";
 
 export default {
     name: "GroupConversationInfoView",
@@ -78,52 +87,54 @@ export default {
             groupAnnouncement: '',
             newGroupName: '',
             newGroupAnnouncement: '',
+            newGroupAlias: '',
+            groupAlias: '',
         }
     },
+
     mounted() {
         wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
-
         wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onUserInfosUpdate)
         wfc.getGroupMembers(this.conversationInfo.conversation.target, true);
+
+        this.groupAlias = wfc.getUserInfo(wfc.getUserId(), false, this.conversationInfo.conversation.target).groupAlias;
     },
 
     beforeDestroy() {
         wfc.eventEmitter.removeListener(EventType.UserInfosUpdate, this.onUserInfosUpdate);
         wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onUserInfosUpdate);
     },
+
     components: {UserListVue},
     methods: {
-        onUserInfosUpdate(){
+        onUserInfosUpdate() {
             this.groupMemberUserInfos = store.getConversationMemberUsrInfos(this.conversationInfo.conversation);
         },
         showCreateConversationModal() {
-
             let successCB = users => {
                 let ids = users.map(u => u.uid);
-                    wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, null, [0])
-                }
+                wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, null, [0])
+            }
             let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
 
             this.$pickContact({
                 successCB,
-                    initialCheckedUsers: groupMemberUserInfos,
-                    uncheckableUsers: groupMemberUserInfos,
-                    confirmTitle: this.$t('common.add'),
+                initialCheckedUsers: groupMemberUserInfos,
+                uncheckableUsers: groupMemberUserInfos,
+                confirmTitle: this.$t('common.add'),
             });
         },
 
         showRemoveGroupMemberModal() {
             let successCB = users => {
                 let ids = users.map(u => u.uid);
-                    wfc.kickoffGroupMembers(this.conversationInfo.conversation.target, ids, [0])
-                }
-
+                wfc.kickoffGroupMembers(this.conversationInfo.conversation.target, ids, [0])
+            }
             let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false, false);
             this.$pickContact({
                 successCB,
-                    users: groupMemberUserInfos,
+                users: groupMemberUserInfos,
             });
-
         },
 
         showUserInfo(user) {
@@ -131,16 +142,18 @@ export default {
         },
 
         async getGroupAnnouncement() {
-            let response = await axios.post('/get_group_announcement', {
-                groupId: this.conversationInfo.conversation.target,
-            }, {withCredentials: true});
-            if (response.data && response.data.result) {
-                this.groupAnnouncement = response.data.result.text;
-            } else {
-                if(this.enableEditGroupNameOrAnnouncement){
-                this.groupAnnouncement = this.$t('conversation.click_to_edit_group_announcement');
-            }
-            }
+            appServerApi.getGroupAnnouncement(this.conversationInfo.conversation.target)
+                .then(response => {
+                    if (response.text) {
+                        this.groupAnnouncement = response.text;
+                    }
+                })
+                .catch(err => {
+                    console.log('getGroupAnnouncement', err)
+                    if (this.enableEditGroupNameOrAnnouncement) {
+                        this.groupAnnouncement = this.$t('conversation.click_to_edit_group_announcement');
+                    }
+                })
         },
 
         updateGroupName() {
@@ -161,20 +174,23 @@ export default {
             if (!this.newGroupAnnouncement || this.newGroupAnnouncement === this.groupAnnouncement) {
                 return;
             }
-            let response = await axios.post('/put_group_announcement', {
-                author: wfc.getUserId(),
-                groupId: this.conversationInfo.conversation.target,
-                text: this.newGroupAnnouncement,
-            }, {withCredentials: true});
-            if (response.data && response.data.code === 0) {
-                this.groupAnnouncement = this.newGroupAnnouncement;
-                this.$refs.groupAnnouncementInput.blur();
+            await appServerApi.updateGroupAnnouncement(wfc.getUserId(), this.conversationInfo.conversation.target, this.newGroupAnnouncement)
+            this.groupAnnouncement = this.newGroupAnnouncement;
+            this.$refs.groupAnnouncementInput.blur();
+        },
+
+        updateGroupAlias() {
+            if (this.newGroupAlias && this.newGroupAlias !== this.groupAlias) {
+                wfc.modifyGroupAlias(this.conversationInfo.conversation.target, this.newGroupAlias, [0], null, () => {
+                    this.groupAlias = this.newGroupAlias;
+                }, null);
             }
         },
 
         quitGroup() {
             store.quitGroup(this.conversationInfo.conversation.target)
         },
+
         setFavGroup(groupId, fav) {
             wfc.setFavGroup(groupId, fav, () => {
                 this.conversationInfo.conversation._target._isFav = fav;
@@ -208,7 +224,7 @@ export default {
         enableRemoveGroupMember() {
             let selfUid = wfc.getUserId();
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
-            if (groupMember){
+            if (groupMember) {
                 return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
             }
             return false;
@@ -218,7 +234,7 @@ export default {
         enableEditGroupNameOrAnnouncement() {
             let selfUid = wfc.getUserId();
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
-            if (groupMember){
+            if (groupMember) {
                 return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
             }
             return false;

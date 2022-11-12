@@ -1042,7 +1042,7 @@ export class WfcManager {
      * @param {string} keyword 关键字
      * @param {[number]} types 从哪些类型的会话中进行搜索，可选值可参考{@link ConversationType}
      * @param {[number]} lines 从哪些会话线路进行搜索，默认传[0]即可
-     * @returns {[ConversationInfo]}
+     * @returns {[ConversationSearchResult]}
      */
     searchConversation(keyword, types = [0, 1, 2], lines = [0, 1, 2]) {
         return impl.searchConversation(keyword, types, lines);
@@ -1144,7 +1144,10 @@ export class WfcManager {
     }
 
     /**
-     * 清楚所有消息的未读状态
+     * 清除所有消息的未读状态
+     *
+     * 特别注意1：本方法只清除了底层数据库中的未读状态，并未清理 UI 层会话列表中的未读状态，UI 层会话列表中的未读状态，需要手动重置。
+     * 特别注意2：本方法不会触发{@link ConversationInfoUpdate} 事件
      */
     clearAllUnreadStatus() {
         impl.clearAllUnreadStatus();

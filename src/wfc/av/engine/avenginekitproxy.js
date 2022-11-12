@@ -13,6 +13,7 @@ import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
 import store from "../../../store";
+import IPCEventType from "../../../ipcEventType";
 
 
 // main window renderer process -> voip window renderer process
@@ -24,9 +25,6 @@ export class AvEngineKitProxy {
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
     useIframe = false;
     iframe;
-    // 有的场景下，im 和音视频通话 是纯粹的单页应用，没有 iframe 也没有弹新的页面
-    singlePage = false;
-
     type;
 
     conference = false;
@@ -42,8 +40,7 @@ export class AvEngineKitProxy {
     /**
      * 无法正常弹出音视频通话窗口是的回调
      * 回到参数说明：-1，有音视频通话正在进行中；-2，设备不支持音视频通话，可能原因是不支持webrtc，没有摄像头或麦克风等
-     * @param {(Number)} errorCode
-     * @param {(string)} reason
+     * @type {(Number) => {}}
      */
     onVoipCallErrorCallback;
 
@@ -121,9 +118,6 @@ export class AvEngineKitProxy {
             this.conversation = null;
             this.queueEvents = [];
             this.callId = null;
-            if (this.singlePage) {
-                this.callWin = null;
-            }
             this.inviteMessageUid = null;
             this.participants = [];
             // 仅仅为了通知proxy，其他端已经接听电话了，关闭窗口时，不应当发送挂断信令
@@ -184,12 +178,12 @@ export class AvEngineKitProxy {
                 }
             }
             if (!this.isSupportVoip || !this.hasMicrophone || !this.hasSpeaker || !this.hasWebcam) {
-                this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
+                this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
                 return;
             }
         }
 
-        if ((msg.conversation.type === ConversationType.Single || msg.conversation.type === ConversationType.Group)) {
+        if ((msg.conversation.type === ConversationType.Single || msg.conversation.type === ConversationType.Group || (this.conference && msg.conversation.type === ConversationType.ChatRoom))) {
             if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_END
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_ACCEPT
@@ -201,6 +195,7 @@ export class AvEngineKitProxy {
                 || content.type === MessageContentType.VOIP_Join_Call_Request
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_CHANGE_MODE
+                || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND
             ) {
                 console.log("receive voip message", msg.messageContent.type, msg.messageUid.toString(), msg);
                 if (msg.direction === 0
@@ -229,17 +224,13 @@ export class AvEngineKitProxy {
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
                     if (!this.callWin) {
-                        if (this.singlePage) {
-                            this.showCallUI(msg.conversation);
-                        } else {
-                            setTimeout(() => {
-                                if (this.conversation) {
-                                    this.showCallUI(msg.conversation);
-                                } else {
-                                    console.log('call ended')
-                                }
-                            }, 200)
-                        }
+                        setTimeout(() => {
+                            if (this.conversation) {
+                                this.showCallUI(msg.conversation);
+                            } else {
+                                console.log('call ended')
+                            }
+                        }, 200)
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
                     let participantIds = [...content.participants];
@@ -275,9 +266,6 @@ export class AvEngineKitProxy {
                     this.callId = null;
                     this.inviteMessageUid = null;
                     this.participants = [];
-                    if (this.singlePage) {
-                        this.callWin = null;
-                    }
                 }
 
                 if (msg.conversation.type === ConversationType.Group
@@ -363,7 +351,7 @@ export class AvEngineKitProxy {
         console.log(`speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
         if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || (!audioOnly && !this.hasWebcam)) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
         }
 
@@ -404,9 +392,9 @@ export class AvEngineKitProxy {
      * @param {boolean} advance 是否为高级会议，当预计参与人员很多的时候，开需要开启超级会议
      * @param {boolean} record 是否开启服务端录制
      * @param {Object} extra 一些额外信息，主要用于将信息传到音视频通话窗口，会议的其他参与者，无法看到该附加信息
-     * @param {string} callExtra  通话附件信息，会议的所有参与者都能看到该附加信息
+     * @param {Object} callExtra  通话附件信息，会议的所有参与者都能看到该附加信息
      */
-    startConference(callId, audioOnly, pin, host, title, desc, audience, advance, record = false, extra, callExtra) {
+    startConference(callId, audioOnly, pin, host, title, desc, audience, advance, record = false, extra = null, callExtra = null) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
@@ -414,7 +402,7 @@ export class AvEngineKitProxy {
         }
         if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone || !this.hasWebcam) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
         }
 
@@ -422,6 +410,12 @@ export class AvEngineKitProxy {
         this.callId = callId;
         this.conversation = null;
         this.conference = true;
+
+        wfc.joinChatroom(callId, () => {
+            console.log('join conference chatRoom success')
+        }, (err) => {
+            console.error('join conference chatRoom fail', err);
+        });
 
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         this.showCallUI(null, true);
@@ -454,9 +448,9 @@ export class AvEngineKitProxy {
      * @param {boolean} muteAudio 是否是静音加入会议
      * @param {boolean} muteVideo 是否是关闭摄像头加入会议
      * @param {Object} extra 一些额外信息，主要用于将信息传到音视频通话窗口
-     * @param {string} callExtra 通话附加信息，会议的所有参与者都能看到该附加信息
+     * @param {Object} callExtra 通话附加信息，会议的所有参与者都能看到该附加信息
      */
-    joinConference(callId, audioOnly, pin, host, title, desc, audience, advance, muteAudio, muteVideo, extra, callExtra) {
+    joinConference(callId, audioOnly, pin, host, title, desc, audience, advance, muteAudio, muteVideo, extra = null, callExtra = null) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
@@ -464,7 +458,7 @@ export class AvEngineKitProxy {
         }
         if (!this.isSupportVoip) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2, this.buildNotSupportVoipReason());
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
         }
 
@@ -472,6 +466,11 @@ export class AvEngineKitProxy {
         this.conference = true;
         this.callId = callId;
 
+        wfc.joinChatroom(callId, () => {
+            console.log('join conference chatRoom success')
+        }, (err) => {
+            console.error('join conference chatRoom fail', err);
+        });
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         this.showCallUI(null, true);
         this.emitToVoip('joinConference', {
@@ -492,10 +491,6 @@ export class AvEngineKitProxy {
     }
 
     showCallUI(conversation, isConference) {
-        if (this.singlePage) {
-            return;
-        }
-
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         this.type = type;
 
@@ -629,6 +624,10 @@ export class AvEngineKitProxy {
             store.updateVoipStatus(this.conversation, false)
             this.conversation = null;
             this.queueEvents = [];
+            if (this.conference) {
+                wfc.quitChatroom(this.callId);
+                this.conference = false;
+            }
             this.callId = null;
             this.participants = [];
             this.queueEvents = [];
@@ -657,7 +656,7 @@ export class AvEngineKitProxy {
             ipcRenderer.on('voip-message', this.sendVoipListener);
             ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
             ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
-            ipcRenderer.on('start-screen-share', (event, args) => {
+            ipcRenderer.on(IPCEventType.START_SCREEN_SHARE, (event, args) => {
                 if (this.callWin) {
                     let screenWidth = args.width;
                     this.callWin.resizable = true;
@@ -670,7 +669,7 @@ export class AvEngineKitProxy {
                     this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
                 }
             });
-            ipcRenderer.on('stop-screen-share', (event, args) => {
+            ipcRenderer.on(IPCEventType.STOP_SCREEN_SHARE, (event, args) => {
                 if (this.callWin) {
                     let type = args.type;
                     let width = 360;
@@ -721,26 +720,6 @@ export class AvEngineKitProxy {
     forceCloseVoipWindow() {
         if (this.callWin) {
             this.callWin.close();
-        }
-    }
-
-    buildNotSupportVoipReason() {
-        if (this.callWin) {
-            return '有通话正在进行中'
-        } else {
-            let reason = '';
-            if (!isElectron() && !location.href.startsWith('https://') && !location.href.startsWith('http://localhost')) {
-                reason = '只有通过 https:// 或 http://localhost 访问时，才支持音视频通话';
-            } else if (!this.isSupportVoip) {
-                reason = '系统或浏览器不支持WebRTC'
-            } else if (!this.hasSpeaker) {
-                reason = '没有检测到扬声器'
-            } else if (!this.hasWebcam) {
-                reason = '没有检测到摄像头，或没有摄像头权限'
-            } else if (!this.hasMicrophone) {
-                reason = '没有检测到麦克风，或没有麦克风权限'
-            }
-            return reason;
         }
     }
 }

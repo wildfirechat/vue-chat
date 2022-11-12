@@ -14,7 +14,8 @@
                     animation="fade"
                     trigger="click"
                 >
-                    <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+                    <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target"/>
+                    <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from"/>
                 </tippy>
                 <div class="avatar-container">
                     <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
@@ -26,11 +27,11 @@
                          @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
                          class="avatar"
                          draggable="false"
-                         :src="message._from.portrait">
+                         :src="messageSenderPortrait">
                 </div>
                 <!--消息内容 根据情况，if-else-->
                 <div class="message-name-content-container">
-                    <p class="name">{{ message._from._displayName }}</p>
+                    <p v-if="message.conversation.type !== 3" class="name">{{ message._from._displayName }}</p>
                     <div class="flex-column flex-align-start">
                         <div class="flex-row">
                             <MessageContentContainerView class="message-content-container"
@@ -59,6 +60,8 @@ import MessageContentContainerView from "@/ui/main/conversation/message/MessageC
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
 import store from "@/store";
 import wfc from "../../../../wfc/client/wfc";
+import ConversationType from "../../../../wfc/model/conversationType";
+import ChannelCardView from "../../contact/ChannelCardView";
 
 export default {
     name: "NormalInMessageContentView",
@@ -75,7 +78,11 @@ export default {
     },
     methods: {
         onClickUserPortrait(userId) {
-            wfc.getUserInfo(userId, true);
+            if (this.message.conversation.type === ConversationType.Channel) {
+                wfc.getChannelInfo(this.message.conversation.target, true);
+            } else {
+                wfc.getUserInfo(userId, true);
+            }
         },
         closeUserCard() {
             console.log('closeUserCard')
@@ -88,14 +95,16 @@ export default {
         openMessageSenderContextMenu(event, message) {
             this.$parent.$emit('openMessageSenderContextMenu', event, message)
         },
-        onContextMenuClosed(){
+
+        onContextMenuClosed() {
             this.highLight = false;
         }
     },
     mounted() {
         this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
-            if (this.message.messageContent.quoteInfo) {
-                let messageUid = this.message.messageContent.quoteInfo.messageUid;
+
+        if (this.message.messageContent.quoteInfo) {
+            let messageUid = this.message.messageContent.quoteInfo.messageUid;
             let msg = store.getMessageByUid(messageUid);
             if (!msg) {
                 wfc.loadRemoteMessage(messageUid, (ms) => {
@@ -109,15 +118,27 @@ export default {
             }
         }
     },
+
     beforeDestroy() {
         this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
     },
+
     computed: {
         isDownloading() {
             return store.isDownloadingMessage(this.message.messageId);
+        },
+
+        messageSenderPortrait() {
+            if (this.message.conversation.type === 3) {
+                let channelInfo = wfc.getChannelInfo(this.message.conversation.target, false);
+                return channelInfo.portrait;
+            } else {
+                return this.message._from.portrait;
+            }
         }
     },
     components: {
+        ChannelCardView,
         MessageContentContainerView,
         UserCardView,
         QuoteMessageView,

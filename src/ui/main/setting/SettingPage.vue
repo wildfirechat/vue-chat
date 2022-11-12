@@ -106,10 +106,9 @@ import dropdown from 'vue-dropdowns';
 import {clear} from "@/ui/util/storageHelper";
 import {ipcRenderer, isElectron} from "@/platform";
 import {getItem, setItem} from "../../util/storageHelper";
-import axios from "axios";
-import CreateConferenceView from "../../voip/CreateConferenceView";
 import ChangePasswordView from "./ChangePasswordView";
 import ResetPasswordView from "./ResetPasswordView";
+import IpcEventType from "../../../ipcEventType";
 import avenginekit from "../../../wfc/av/internal/engine.min";
 
 export default {
@@ -128,7 +127,7 @@ export default {
         },
 
         onChangePasswordContextMenuClose() {
-            console.log('yyyyyy')
+
         },
 
         showChangePasswordDialog() {
@@ -183,7 +182,7 @@ export default {
             clear();
             wfc.disconnect();
             if (isElectron()) {
-                ipcRenderer.send('logouted');
+                ipcRenderer.send(IpcEventType.LOGOUT);
             }
         },
 

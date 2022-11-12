@@ -110,6 +110,7 @@ import store from "@/store";
 import InfiniteLoading from "vue-infinite-loading";
 import {ipcRenderer, isElectron} from "@/platform";
 import UserListVue from "@/ui/main/user/UserListVue";
+import IpcEventType from "../../ipcEventType";
 
 export default {
     name: "FileRecordPage",
@@ -258,7 +259,7 @@ export default {
 
         clickFile(fileRecord) {
             if (isElectron()) {
-                ipcRenderer.send('file-download', {
+                ipcRenderer.send(IpcEventType.DOWNLOAD_FILE, {
                     // TODO -1时，不通知进度
                     messageId: -1,
                     remotePath: fileRecord.url,

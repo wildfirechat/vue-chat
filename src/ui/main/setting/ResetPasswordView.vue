@@ -19,6 +19,7 @@
 <script>
 
 import axios from "axios";
+import appServerApi from "../../../api/appServerApi";
 
 export default {
     name: "CreateConferenceView",
@@ -33,50 +34,40 @@ export default {
     methods: {
         async requestResetAuthCode() {
             this.$modal.hide('reset-password-modal')
-            let response = await axios.post('/send_reset_code', {
-            }, {withCredentials: true});
-            if (response.data) {
-                if (response.data.code === 0) {
+            appServerApi.requestResetPasswordAuthCode()
+                .then(response => {
                     this.$notify({
                         text: '发送重置验证码成功',
                         type: 'info'
                     });
-                } else {
+                })
+                .catch(err => {
                     this.mobile = '';
                     this.$notify({
                         title: '发送重置验证码失败',
-                        text: response.data.message,
+                        text: err.message,
                         type: 'error'
                     });
-                }
-            } else {
-                console.error('requestResetAuthCode error', response)
-            }
+                })
         },
 
         async resetPassword() {
-            let response = await axios.post('/reset_pwd/', {
-                resetCode: this.resetAuthCode,
-                newPassword: this.newPassword,
-            }, {withCredentials: true});
-            if (response.data) {
-                if (response.data.code === 0) {
+            appServerApi.resetPassword(this.resetAuthCode, this.newPassword)
+                .then(response => {
                     this.$notify({
                         text: '重置密码成功',
                         type: 'info'
                     });
-                } else {
+                })
+                .catch(err => {
+
                     this.mobile = '';
                     this.$notify({
                         title: '重置密码失败',
-                        text: response.data.message,
+                        text: err.message,
                         type: 'error'
                     });
-                }
-            } else {
-                console.error('resetPassword error', response)
-            }
-
+                })
         },
     },
 }

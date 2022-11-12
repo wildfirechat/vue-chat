@@ -25,10 +25,12 @@ export default class MessageContentType {
     static Mark_Unread_Sync = 31;
 
     static StartSecretChat_Notification = 40;
+
     //频道进出消息
     static Enter_Channel_Chat = 71;
     static Leave_Channel_Chat = 72;
     static Channel_Menu_Event = 73
+
     // 提醒消息
     static RecallMessage_Notification = 80;
     static DeleteMessage_Notification = 81; //不存储的
@@ -84,6 +86,8 @@ export default class MessageContentType {
     static CONFERENCE_CONTENT_TYPE_INVITE = 408;
     static CONFERENCE_CONTENT_TYPE_CHANGE_MODE = 410;
     static CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER = 411;
+    static CONFERENCE_CONTENT_TYPE_COMMAND = 412;
+
     static VOIP_Multi_Call_Ongoing = 416;
     static VOIP_Join_Call_Request = 417;
 

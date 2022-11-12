@@ -15,6 +15,7 @@ import wfc from "@/wfc/client/wfc";
 import ConversationType from "@/wfc/model/conversationType";
 import {ipcRenderer, isElectron} from "../../../../../platform";
 import {stringValue} from "../../../../../wfc/util/longUtil";
+import IpcEventType from "../../../../../ipcEventType";
 
 export default {
     name: "CompositeMessageContentView",
@@ -54,7 +55,7 @@ export default {
                 } else {
                     url += "/composite"
                 }
-                ipcRenderer.send('show-composite-message-window', {
+                ipcRenderer.send(IpcEventType.SHOW_COMPOSITE_MESSAGE_WINDOW, {
                     messageUid: stringValue(this.message.messageUid),
                     url: url,
                 });

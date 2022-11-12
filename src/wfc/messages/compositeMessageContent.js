@@ -7,6 +7,7 @@ import Conversation from "../model/conversation";
 import Long from "long";
 import MessagePayload from "../messages/messagePayload";
 import {isElectron} from "../../platform";
+import ArticlesMessageContent from "./articlesMessageContent";
 
 export default class CompositeMessageContent extends MediaMessageContent {
     title = '';
@@ -19,7 +20,19 @@ export default class CompositeMessageContent extends MediaMessageContent {
     }
 
     setMessages(msgs) {
-        this.messages = msgs;
+        this.messages = [];
+        msgs.forEach(m => {
+            if (m.messageContent instanceof ArticlesMessageContent) {
+                let linkMessageContents = m.messageContent.toLinkMessageContent();
+                linkMessageContents.forEach(lm => {
+                    let msg = Object.assign(new Message(), m);
+                    msg.messageContent = lm;
+                    this.messages.push(msg);
+                })
+            } else {
+                this.messages.push(m)
+            }
+        })
     }
 
     digest(message) {
@@ -129,7 +142,7 @@ export default class CompositeMessageContent extends MediaMessageContent {
 
         } else if (this.localPath) {
             // electron
-            if (isElectron()){
+            if (isElectron()) {
                 const fs = require("fs");
                 if (fs.existsSync(this.localPath)) {
                     const buffer = fs.readFileSync(this.localPath);
@@ -148,7 +161,7 @@ export default class CompositeMessageContent extends MediaMessageContent {
     }
 
     _decodeMessages(str) {
-        if (this.loaded){
+        if (this.loaded) {
             return;
         }
         // FIXME node 环境，decodeURIComponent 方法，有时候会在最后添加上@字符，目前尚未找到原因，先规避

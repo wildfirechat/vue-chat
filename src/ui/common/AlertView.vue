@@ -1,6 +1,6 @@
 <template>
     <section class="alert-content-container">
-        <div class="portrait-container">
+        <div v-if="showIcon" class="portrait-container">
             <img :src="require(`@/assets/images/icon.png`)" alt="">
         </div>
         <h2 v-if="title" class="title">{{ this.title }}</h2>
@@ -71,6 +71,7 @@ export default {
     height: 100%;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .portrait-container {
@@ -92,16 +93,16 @@ export default {
 
 .content {
     font-size: 14px;
-    padding: 10px 0;
+    padding: 10px;
     flex: 1;
 }
 
 .action-container {
     display: flex;
     width: 100%;
-    height: 60px;
+    height: 40px;
+    padding-bottom: 5px;
     flex-direction: row-reverse;
-    margin-bottom: 10px;
     justify-content: space-around;
     align-items: center;
 }
@@ -118,6 +119,7 @@ export default {
     background: #4168e0ef;
     color: white;
 }
+
 .action-container .cancel {
     color: black;
     background: white;

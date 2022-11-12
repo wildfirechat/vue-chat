@@ -1,6 +1,6 @@
 <template>
     <div class="conference-invite-message-container"
-         @click="joinConference"
+         @click="showConferenceInfo"
          v-bind:class="{out:message.direction === 0}">
         <div class="flex-row flex-align-center">
             <img class="avatar" alt="host" :src="portrait">
@@ -19,6 +19,8 @@ import avenginekitproxy from "../../../../../wfc/av/engine/avenginekitproxy";
 import avenginekit from "../../../../../wfc/av/internal/engine.min";
 import store from "../../../../../store";
 import ConversationType from "../../../../../wfc/model/conversationType";
+import ConferenceInfoView from "../../../../voip/conference/ConferenceInfoView";
+import conferenceApi from "../../../../../api/conferenceApi";
 
 export default {
     name: "ConferenceInviteMessageContentView",
@@ -43,7 +45,51 @@ export default {
                     type: 'warn'
                 });
             }
-        }
+        },
+        showConferenceInfo() {
+            if (avenginekit.sendConferenceRequest) {
+                let cmc = this.message.messageContent;
+                conferenceApi.queryConferenceInfo(cmc.callId, cmc.pin)
+                    .then(info => {
+                        this.showConferenceInfoDialog(info);
+                    })
+                    .catch(err => {
+                        console.error('query conference info error', err);
+                    });
+            } else {
+                this.$notify({
+                    title: '不支持会议功能',
+                    text: '请使用会议版engine文件',
+                    type: 'warn'
+                });
+            }
+        },
+        showConferenceInfoDialog(info) {
+            let beforeOpen = () => {
+                console.log('Opening...')
+            };
+            let beforeClose = (event) => {
+                console.log('Closing...', event, event.params)
+            };
+            let closed = (event) => {
+                console.log('Close...', event)
+            };
+            this.$modal.show(
+                ConferenceInfoView,
+                {
+                    conferenceInfo: info,
+                }, {
+                    name: 'conference-info-modal',
+                    width: 320,
+                    height: 600,
+                    clickToClose: true,
+                }, {
+                    'before-open': beforeOpen,
+                    'before-close': beforeClose,
+                    'closed': closed,
+                })
+
+        },
     },
 
     computed: {

@@ -26,11 +26,6 @@ export default {
     },
 
     methods: {
-        showConversation(conversation) {
-            this.currentConversation = conversation;
-            console.log("show conversation", conversation);
-            // TODO
-        },
     },
     components: {
         SearchResultView,

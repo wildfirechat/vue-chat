@@ -50,6 +50,7 @@ import wfc from "@/wfc/client/wfc";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
 import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
 import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";
+import IpcSub from "../../../ipc/ipcSub";
 
 export default {
     name: "UserCardView",
@@ -66,6 +67,7 @@ export default {
     data() {
         return {
             friendAlias: this.userInfo.friendAlias,
+            sharedMiscState: store.state.misc,
         }
     },
     methods: {
@@ -75,10 +77,13 @@ export default {
         },
         chat() {
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
-            store.setCurrentConversation(conversation)
+            if (store.isConversationInCurrentWindow(conversation)) {
+                store.setCurrentConversation(conversation)
+            } else {
+                IpcSub.startConversation(conversation);
+            }
             this.close();
         },
-
         addFriend() {
             this.close();
             this.$modal.show(
@@ -132,6 +137,7 @@ export default {
                 console.log('progress', p, t)
             })
         },
+
     },
 
     computed: {

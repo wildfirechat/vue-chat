@@ -254,15 +254,15 @@ function mergeImages(sources = [], options = {}) {
 
 let groupPortraitMap = new Map();
 
-async function getConversationPortrait(conversation) {
+async function getConversationPortrait(conversation, userInfoMap, groupInfoMap) {
     let portrait = '';
     switch (conversation.type) {
         case ConversationType.Single:
-            let u = wfc.getUserInfo(conversation.target, false);
+            let u = userInfoMap ? userInfoMap.get(conversation.target) : wfc.getUserInfo(conversation.target, false);
             portrait = u.portrait;
             break;
         case ConversationType.Group:
-            portrait = await getGroupPortrait(conversation.target);
+            portrait = await getGroupPortrait(conversation.target, groupInfoMap);
             break;
         case ConversationType.Channel:
             break;
@@ -288,8 +288,8 @@ async function getConversationPortrait(conversation) {
     return portrait;
 }
 
-async function getGroupPortrait(groupId) {
-    let groupInfo = wfc.getGroupInfo(groupId, false);
+async function getGroupPortrait(groupId, groupInfoMap) {
+    let groupInfo = groupInfoMap ? groupInfoMap.get(groupId) : wfc.getGroupInfo(groupId, false);
     if (groupInfo.portrait) {
         return groupInfo.portrait;
     }
@@ -312,6 +312,14 @@ async function getGroupPortrait(groupId) {
     } else {
         return portrait.uri;
     }
+}
+
+async function genGroupPortrait(groupMemberUsers) {
+    let groupMemberPortraits = [];
+    for (let i = 0; i < Math.min(9, groupMemberUsers.length); i++) {
+        groupMemberPortraits.push(groupMemberUsers[i].portrait)
+    }
+    return await mergeImages(groupMemberPortraits);
 }
 
 // return data uri
@@ -450,4 +458,4 @@ function fileFromDataUri(dataUri, fileName) {
 }
 
 
-export {mergeImages, getConversationPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri};
+export {mergeImages, getConversationPortrait, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri};

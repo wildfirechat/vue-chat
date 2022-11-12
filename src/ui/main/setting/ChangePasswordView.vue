@@ -18,6 +18,7 @@
 <script>
 
 import axios from "axios";
+import appServerApi from "../../../api/appServerApi";
 
 export default {
     name: "CreateConferenceView",
@@ -32,26 +33,20 @@ export default {
     methods: {
         async changePassword() {
             this.$modal.hide('change-password-modal')
-            let response = await axios.post('/change_pwd', {
-                oldPassword: this.oldPassword,
-                newPassword: this.newPassword,
-            }, {withCredentials: true});
-            if (response.data) {
-                if (response.data.code === 0) {
+            appServerApi.changePassword(this.oldPassword, this.newPassword)
+                .then(response => {
                     this.$notify({
                         text: '修改密码成功',
                         type: 'info'
                     });
-                } else {
+                })
+                .catch(err => {
                     this.$notify({
                         title: '修改密码失败',
-                        text: response.data.message,
+                        text: err.message,
                         type: 'error'
                     });
-                }
-            } else {
-                console.error('changePassword error', response)
-            }
+                })
         },
     },
 }

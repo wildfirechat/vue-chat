@@ -19,7 +19,7 @@
     },
     "friend_request": {
         "request": "好友请求",
-        "send_request_tip": "向{0}发送好球请求",
+        "send_request_tip": "向{0}发送好友请求",
         "accepted": "已添加",
         "sent": "已发送",
         "denied": "已拒绝",
@@ -29,7 +29,8 @@
     "group": {
         "name": "群名称: {0}",
         "chat": "进入群聊",
-        "fav": "保存到通讯录"
+        "fav": "保存到通讯录",
+        "alias": "我在本群的昵称"
     },
     "channel": {
       "name": " 频道名称: {0}",
@@ -81,7 +82,8 @@
         "enable_notification": "允许通知",
         "disable_notification": "消息免打扰",
         "mark_as_unread": "标记为未读",
-        "mark_as_read": "标记为已读"
+        "mark_as_read": "标记为已读",
+        "show_in_float_window": "在独立窗口打开"
     },
     "fav": {
         "fav": "收藏",

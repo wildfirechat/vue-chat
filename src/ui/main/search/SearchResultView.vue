@@ -11,7 +11,7 @@
                     <label>{{ $t('search.new_user') }}</label>
                     <ul>
                         <li v-for="(user, index) in toShowUserList" :key="index">
-                            <div class="search-result-item contact">
+                            <div class="search-result-item contact" @click.stop="chatToContact(user)">
                                 <img :src="user.portrait">
                                 <span>{{ user.displayName }}</span>
                                 <button @click.stop="addFriend(user)">{{ $t('common.add') }}</button>
@@ -73,8 +73,9 @@ import store from "@/store";
 import Conversation from "@/wfc/model/conversation";
 import ConversationType from "@/wfc/model/conversationType";
 import FriendRequestView from "@/ui/main/contact/FriendRequestView";
-import IPCRendererEventType from "../../../ipcRendererEventType";
+import IpcEventType from "../../../ipcEventType";
 import {ipcRenderer} from "../../../platform";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "SearchResultView",
@@ -111,6 +112,9 @@ export default {
     },
 
     methods: {
+        isFriend(userId){
+            return wfc.isMyFriend(userId);
+        },
         addFriend(user) {
             this.$modal.show(
                 FriendRequestView,
@@ -167,10 +171,10 @@ export default {
             } else {
                 url += "/message-history"
             }
-            ipcRenderer.send(IPCRendererEventType.showMessageHistoryPage, {
+            ipcRenderer.send(IpcEventType.showMessageHistoryPage, {
                 url: url,
             });
-            console.log(IPCRendererEventType.showMessageHistoryPage, url)
+            console.log(IpcEventType.showMessageHistoryPage, url)
         }
 
     },

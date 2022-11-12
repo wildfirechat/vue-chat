@@ -20,9 +20,11 @@ export default {
             let closed = (event) => {
                 console.log('Close...', event)
             };
+            let showIcon = options.showIcon !== undefined;
             this.$modal.show(
                 AlertView,
                 {
+                    showIcon: showIcon,
                     title: options.title,
                     content: options.content,
                     cancelText: options.cancelText,
@@ -33,7 +35,7 @@ export default {
                     clickToClose: true,
                     adaptive: true,
                     width: 260,
-                    height: 200,
+                    height: showIcon ? 200 : 100,
                     borderRadius: 10,
                 }, {
                     'before-open': beforeOpen,

@@ -1,6 +1,7 @@
 import MessageContent from "./messageContent";
 import MessageContentType from "./messageContentType";
 import wfc from "../client/wfc";
+import LinkMessageContent from "./linkMessageContent";
 
 export default class ArticlesMessageContent extends MessageContent {
     topArticle;
@@ -11,7 +12,7 @@ export default class ArticlesMessageContent extends MessageContent {
     }
 
     digest(message) {
-        return super.digest(message);
+        return this.topArticle.title;
     }
 
     encode() {
@@ -34,12 +35,23 @@ export default class ArticlesMessageContent extends MessageContent {
         this.topArticle.fromJson(obj.top);
         if (obj.subArticles) {
             this.subArticles = [];
-            this.topArticle.forEach(article => {
+            obj.subArticles.forEach(article => {
                 let tmp = new Article();
                 tmp.fromJson(article);
                 this.subArticles.push(tmp);
             })
         }
+    }
+
+    toLinkMessageContent() {
+        let contents = [];
+        contents.push(this.topArticle.toLinkMessageContent())
+        if (this.subArticles) {
+            this.subArticles.forEach(article => {
+                contents.push(article.toLinkMessageContent())
+            })
+        }
+        return contents;
     }
 }
 
@@ -47,6 +59,7 @@ class Article {
     articleId;
     cover;
     title;
+    digest;
     url;
     readReport;
 
@@ -56,6 +69,7 @@ class Article {
             cover: this.cover,
             title: this.title,
             url: this.url,
+            digest: this.digest,
             rr: this.readReport
         }
         return obj;
@@ -65,8 +79,19 @@ class Article {
         this.articleId = obj.id;
         this.cover = obj.cover;
         this.title = obj.title;
+        this.digest = obj.digest;
         this.url = obj.url;
         this.readReport = obj.rr;
+    }
+
+    toLinkMessageContent() {
+        let content = new LinkMessageContent();
+        content.url = this.url;
+        content.title = this.title;
+        content.contentDigest = this.digest;
+        content.thumbnail = this.cover;
+
+        return content;
     }
 
 }

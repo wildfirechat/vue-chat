@@ -1,6 +1,7 @@
 // ie11 not support browser-md5-file
 // import MD5 from 'browser-md5-file';
 import {numberValue} from '@/wfc/util/longUtil'
+import IPCEventType from "../../ipcEventType";
 
 
 const helper = {
@@ -41,7 +42,7 @@ const helper = {
                 break;
 
             case ['mp4', 'mkv', 'avi', 'flv'].includes(extension):
-                filename = 'video';
+                filename = 'audio';
                 break;
 
             case ['zip', 'rar', 'tar', 'tar.gz'].includes(extension):
@@ -131,7 +132,7 @@ const helper = {
     isOsx: window.process && window.process.platform === 'darwin',
 
     isSuspend: () => {
-        return ipcRenderer.sendSync('is-suspend');
+        return ipcRenderer.sendSync(IPCEventType.IS_SUSPEND);
     },
 
     // md5: (file) => {

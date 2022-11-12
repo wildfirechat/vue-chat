@@ -73,9 +73,8 @@ export default class Message {
         if (!obj.conversation.target) {
             return null;
         }
-
         // iOS，Android，Windows，OSX
-        if ([1, 2, 3, 4].indexOf(Config.getWFCPlatform()) >= 0) {
+        if ([1, 2, 3, 4, 8, 9].indexOf(Config.getWFCPlatform()) >= 0) {
             let msg = Object.assign(new Message(), obj);
             // big integer to number
             msg.messageId = Number(msg.messageId);
@@ -124,7 +123,6 @@ export default class Message {
             msg.from = obj.fromUser;
             msg.content = obj.content;
             msg.messageUid = obj.messageId;
-
             msg.localExtra = obj.localExtra;
             msg.timestamp = obj.serverTimestamp;
             let contentClazz = MessageConfig.getMessageContentClazz(obj.content.type);
@@ -211,7 +209,6 @@ export default class Message {
     }
 
     static toMessagePayload(message) {
-
         return message.messageContent.encode();
     }
 }

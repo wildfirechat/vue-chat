@@ -20,6 +20,7 @@
 
 import Message from "@/wfc/messages/message";
 import {ipcRenderer, isElectron} from "../../../../platform";
+import IpcEventType from "../../../../ipcEventType";
 
 export default {
     name: "RichNotificationMessageContentView",
@@ -45,7 +46,7 @@ export default {
                 url += '?url=' + encodeURIComponent(this.message.messageContent.exUrl);
 
 
-                ipcRenderer.send('open-h5-app-window', {hostUrl: location.href, url: encodeURI(url)})
+                ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, {hostUrl: location.href, url: encodeURI(url)})
             } else {
                 this.$notify({
                     title: '不支持打开该类型的消息',

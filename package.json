@@ -41,7 +41,9 @@
     "vue-router": "^3.4.9",
     "vue-spinner": "^1.0.4",
     "vue-tippy": "^4.7.2",
-    "vue-visibility-change": "^1.2.1"
+    "vue-virtual-scroll-list": "^2.3.4",
+    "vue-visibility-change": "^1.2.1",
+    "xss": "^1.0.14"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

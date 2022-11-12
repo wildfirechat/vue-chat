@@ -1,10 +1,11 @@
 import {ipcRenderer, isElectron} from "@/platform";
 import {remote} from "./platform";
+import IPCEventType from "./ipcEventType";
 
 export function downloadFile(message) {
     let file = message.messageContent;
     if (isElectron()) {
-        ipcRenderer.send('file-download', {
+        ipcRenderer.send(IPCEventType.DOWNLOAD_FILE, {
             messageId: message.messageId,
             remotePath: file.remotePath,
             fileName: file.name,

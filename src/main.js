@@ -20,6 +20,8 @@ import Notifications from 'vue-notification'
 import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
 import Forward from "./ui/common/Forward";
+import VirtualList from "vue-virtual-scroll-list/src";
+import xss from "xss";
 
 Vue.config.productionTip = false
 
@@ -28,7 +30,7 @@ Vue.config.productionTip = false
     let href = window.location.href;
     let path = href.substring(href.indexOf('#') + 1)
     console.log('init', href, path)
-    if (path === '/'/*login*/ || path === '/home' || href.indexOf('#') === -1) {
+    if (path === '/'/*login*/ || path.startsWith('/home') || href.indexOf('#') === -1) {
         console.log('init wfc')
         if (isElectron()) {
             wfc.init()
@@ -52,13 +54,13 @@ Vue.config.productionTip = false
             //     wfc.setBackupAddress('192.168.10.11', 80)
             // }
         }
-        store.init(true);
+        store.init(true, false);
     } else {
         console.log('not home window, not init wfc')
         if (isElectron()) {
             wfc.attach()
         }
-        store.init(false);
+        store.init(false, false);
     }
 }
 // init end
@@ -70,6 +72,7 @@ Vue.component("tippy", TippyComponent);
 
 Vue.use(VueContext);
 Vue.component("vue-context", VueContext)
+Vue.component('virtual-list', VirtualList);
 
 Vue.use(VModal);
 
@@ -96,6 +99,7 @@ const router = new VueRouter({
     routes: routers,
 })
 Vue.prototype.$eventBus = new Vue();
+Vue.prototype.xss = xss;
 
 var vm = new Vue({
     el: '#app',

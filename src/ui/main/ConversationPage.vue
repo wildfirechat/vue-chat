@@ -15,12 +15,7 @@ export default {
         console.log('conversation page destroyed')
     },
 
-    methods: {
-        showConversation(conversation) {
-            this.currentConversation = conversation;
-            console.log("show conversation", conversation);
-        },
-    },
+    methods: {},
     components: {
         ConversationListPanel,
         ConversationView,

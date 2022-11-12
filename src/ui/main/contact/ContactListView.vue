@@ -5,7 +5,7 @@
                 <div @click="showNewFriends" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
                     <div class="category-item">
-                    <span class="title">{{ $t('contact.new_friend') }}</span>
+                        <span class="title">{{ $t('contact.new_friend') }}</span>
                         <span class="desc" v-if="sharedContactState.unreadFriendRequestCount > 0">{{ sharedContactState.unreadFriendRequestCount }}</span>
                     </div>
                 </div>
@@ -39,11 +39,18 @@
                         <span class="desc">{{ sharedContactState.friendList.length }}</span>
                     </div>
                 </div>
-                <UserListVue :enable-pick="false"
-                             :users="sharedContactState.favContactList.concat(sharedContactState.friendList)"
-                             :click-user-item-func="setCurrentUser"
-                             :padding-left="'30px'"
-                             v-if="sharedContactState.expandFriendList"/>
+                <UserListVue
+                    v-if="sharedContactState.expandFriendList && users.length < 200"
+                    :enable-pick="false"
+                    :users="users"
+                    :click-user-item-func="setCurrentUser"
+                    :padding-left="'30px'"
+                />
+                <virtual-list
+                    v-else-if="sharedContactState.expandFriendList"
+                    :data-component="contactItemView" :data-sources="groupedContacts" :data-key="'uid'"
+                    :estimate-size="30"
+                    style="max-height: 600px; overflow-y: auto"/>
             </li>
         </ul>
     </section>
@@ -54,13 +61,21 @@ import GroupListVue from "@/ui/main/contact/GroupListView";
 import store from "@/store";
 import UserListVue from "@/ui/main/user/UserListVue";
 import ChannelListView from "./ChannelListView";
+import ContactItemView from "./ContactItemView";
 
 export default {
     name: "ContactListView",
-    components: {ChannelListView, UserListVue, GroupListVue, NewFriendListView: FriendRequestListView},
+    components: {
+        ChannelListView,
+        UserListVue,
+        GroupListVue,
+        NewFriendListView: FriendRequestListView
+    },
     data() {
         return {
             sharedContactState: store.state.contact,
+            contactItemView: ContactItemView,
+            users: store.state.contact.favContactList.concat(store.state.contact.friendList)
         }
     },
     methods: {
@@ -80,6 +95,28 @@ export default {
             store.toggleFriendList();
         },
 
+    },
+    computed: {
+        groupedContacts() {
+            let groupedUsers = [];
+            let currentCategory = {};
+            let lastCategory = null;
+            this.users.forEach((user) => {
+                if (!lastCategory || lastCategory !== user._category) {
+                    lastCategory = user._category;
+                    currentCategory = {
+                        type: 'category',
+                        category: user._category,
+                        uid: user._category,
+                    };
+                    groupedUsers.push(currentCategory);
+                    groupedUsers.push(user);
+                } else {
+                    groupedUsers.push(user);
+                }
+            });
+            return groupedUsers;
+        },
     }
 }
 </script>

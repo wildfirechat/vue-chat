@@ -11,7 +11,7 @@
                 <input id="searchInput"
                        ref="input"
                        autocomplete="off"
-                       v-model="query"
+                       v-model.trim="query"
                        @keydown.esc="cancel"
                        type="text" :placeholder="$t('common.search')"/>
                 <i class="icon-ion-ios-search"></i>
@@ -30,14 +30,17 @@
                      @click="setCurrentCategory('link')">链接
                 </div>
             </div>
+            <div v-if="currentMessage" class="desc-action-container">
+                <i class="icon-ion-ios-arrow-back" @click="currentMessage = null">&nbsp;返回</i>
+            </div>
             <div ref="conversationMessageList" class="message-list-container" infinite-wrapper>
-                <infinite-loading v-if="category==='all' && !this.query" identifier="historyMessageLoader"
+                <infinite-loading ref="infiniteLoader" :identifier="'historyMessageLoader-' + category"
                                   force-use-infinite-wrapper
                                   direction="top"
                                   @infinite="infiniteHandler">
                     <!--            <template slot="spinner">加载中...</template>-->
-                    <template slot="no-more">{{ $t('fav.no_more') }}</template>
-                    <template slot="no-results">{{ $t('fav.all_fav_load') }}</template>
+                    <template slot="no-more">{{ $t('conversation.no_more_message') }}</template>
+                    <template slot="no-results">{{ $t('conversation.no_more_message') }}</template>
                 </infinite-loading>
                 <ul>
                     <li v-for="(message, index) in filteredMessages"
@@ -56,12 +59,22 @@
                                 <div class="content">
                                     <MessageContentContainerView :message="message"
                                                                  @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+                                    <a v-if="!currentMessage" class="single-line action"
+                                       @click="showContextMessages(message)">查看上下文</a>
                                 </div>
                             </div>
 
                         </div>
                     </li>
                 </ul>
+                <infinite-loading v-if="currentMessage" identifier="newMessageLoader"
+                                  force-use-infinite-wrapper
+                                  direction="bottom"
+                                  @infinite="infiniteHandlerBottom">
+                    <!--            <template slot="spinner">加载中...</template>-->
+                    <template slot="no-more">{{ $t('fav.no_more') }}</template>
+                    <template slot="no-results">{{ $t('fav.all_fav_load') }}</template>
+                </infinite-loading>
             </div>
         </div>
         <div class="drag-area"/>
@@ -83,10 +96,15 @@ export default {
         return {
             query: '',
             messages: [],
+            filesMessages: [],
+            mediaMessages: [],
+            linkMessages: [],
             searchResults: [],
             conversationInfo: null,
             autoScrollToBottom: true,
             category: 'all',
+            currentMessage: null,
+            contextMessages: [],
         }
     },
 
@@ -108,44 +126,137 @@ export default {
 
     methods: {
         infiniteHandler($state) {
-            let firstMessageId = this.messages.length > 0 ? this.messages[0].messageId: 0;
-            console.log('to load', stringValue(firstMessageId))
-            store.getMessages(this.conversationInfo.conversation, firstMessageId, true, '', (msgs) => {
-                if (msgs && msgs.length > 0) {
-                    this.messages = msgs.concat(this.messages);
+            if (this.currentMessage) {
+                let firstMsg = this.contextMessages[0];
+                let conversation = this.conversationInfo.conversation;
+                store.getMessages(conversation, firstMsg.messageId, true, '', msgs => {
+                    if (msgs.length > 0) {
+                        this.contextMessages = msgs.concat(this.contextMessages);
+                        $state.loaded();
+                    } else {
+                        $state.complete();
+                    }
+                });
+                return;
+            }
+            if (this.query) {
+                let contentTypes = this.categoryContentTypes();
+                let tmp = store.searchMessageInTypes(this.conversationInfo.conversation, contentTypes, this.query, this.searchResults.length);
+                console.log('to search', this.category, this.query, this.searchResults.length, tmp.length);
+                if (tmp.length === 0) {
+                    $state.complete();
+                } else {
+                    this.searchResults.push(...tmp);
+                    $state.loaded();
+                }
+            } else {
+                console.log('to load conversation message', this.category)
+                let timestamp;
+                let targetMsgs;
+                let contentTypes = [];
+                switch (this.category) {
+                    case 'all':
+                        targetMsgs = this.messages;
+                        break;
+                    case 'file':
+                        targetMsgs = this.filesMessages;
+                        contentTypes = [MessageContentType.File];
+                        break;
+                    case 'media':
+                        targetMsgs = this.mediaMessages;
+                        contentTypes = [MessageContentType.Image, MessageContentType.Video];
+                        break;
+                    case 'link':
+                        targetMsgs = this.linkMessages;
+                        contentTypes = [MessageContentType.Link];
+                        break;
+                    default:
+                        break
+                }
+                timestamp = targetMsgs.length > 0 ? targetMsgs[0].timestamp : 0;
+                store.getMessageInTypes(this.conversationInfo.conversation, contentTypes, timestamp, true, '', (msgs) => {
+                    if (msgs && msgs.length > 0) {
+                        targetMsgs.unshift(...msgs)
+                        $state.loaded();
+                    } else {
+                        $state.complete();
+                    }
+                })
+            }
+        },
+
+        infiniteHandlerBottom($state) {
+            let lastMsg = this.contextMessages[this.contextMessages.length - 1];
+            let conversation = this.conversationInfo.conversation;
+            store.getMessages(conversation, lastMsg.messageId, false, '', msgs => {
+                if (msgs.length > 0) {
+                    this.contextMessages = this.contextMessages.concat(msgs);
                     $state.loaded();
                 } else {
                     $state.complete();
                 }
-            })
+            });
         },
         setCurrentCategory(category) {
             this.category = category;
             this.autoScrollToBottom = true;
+            this.currentMessage = null;
+            this.contextMessages = [];
         },
         cancel() {
             this.query = '';
         },
         openMessageContextMenu(event, msg) {
             // TODO
-        }
+        },
+
+        categoryContentTypes() {
+            let contentTypes = [];
+            switch (this.category) {
+                case 'file':
+                    contentTypes = [MessageContentType.File];
+                    break;
+                case 'media':
+                    contentTypes = [MessageContentType.Video, MessageContentType.Image];
+                    break;
+                case 'link':
+                    contentTypes = [MessageContentType.Link];
+                    break;
+                default:
+                    break;
+            }
+            return contentTypes;
+        },
+
+        showContextMessages(message) {
+            this.currentMessage = message;
+            this.contextMessages = [message];
+            this.autoScrollToBottom = false;
+        },
     },
 
     computed: {
         filteredMessages() {
-            let msgs = this.query ? this.searchResults : this.messages;
+            if (this.currentMessage) {
+                return this.contextMessages;
+            }
+
+            if (this.query && this.searchResults) {
+                return this.searchResults;
+            }
+            let msgs;
             switch (this.category) {
                 case 'file':
-                    msgs = msgs.filter(m => m.messageContent.type === MessageContentType.File);
+                    msgs = this.filesMessages;
                     break;
                 case 'media':
-                    msgs = msgs.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) >= 0);
+                    msgs = this.mediaMessages;
                     break;
                 case 'link':
-                    msgs = msgs.filter(m => m.messageContent.type === MessageContentType.Link);
+                    msgs = this.linkMessages;
                     break;
                 default:
-                    // do nothing
+                    msgs = this.messages;
                     break
 
             }
@@ -156,11 +267,19 @@ export default {
     watch: {
         query() {
             if (this.query) {
-                this.searchResults = store.searchMessage(this.conversationInfo.conversation, this.query);
+                this.$refs.infiniteLoader.stateChanger.reset();
+                let contentTypes = this.categoryContentTypes();
+                this.searchResults = store.searchMessageInTypes(this.conversationInfo.conversation, contentTypes, this.query, 0);
             } else {
                 this.searchResults = [];
             }
         },
+        category() {
+            if (this.query) {
+                let contentTypes = this.categoryContentTypes();
+                this.searchResults = store.searchMessageInTypes(this.conversationInfo.conversation, contentTypes, this.query, 0);
+            }
+        }
     },
 
     components: {
@@ -256,6 +375,8 @@ export default {
 }
 
 .message-list-container {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     padding: 0 40px 20px 40px;
     overflow: scroll;
@@ -263,13 +384,21 @@ export default {
 
 .message-list-container ul {
     width: 100%;
-    height: 100%;
+    flex: 1;
     list-style-position: inside;
 }
 
 .message-list-container ul li {
     position: relative;
     padding: 10px 0;
+}
+
+.desc-action-container {
+    width: 100%;
+    padding: 10px 40px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .message-list-container ul li:not(:last-child)::after {
@@ -306,6 +435,19 @@ export default {
     display: inline-block;
     margin-left: -20px;
     margin-right: 60px;
+}
+
+.name-time-content-container .content .action {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    font-size: 14px;
+    color: #637599;
+}
+
+.message-container:hover .action {
+    display: inline-block;
 }
 
 .portrait-container {

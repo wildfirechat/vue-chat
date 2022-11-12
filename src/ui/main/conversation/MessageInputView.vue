@@ -14,20 +14,31 @@
                     @select="onSelectEmoji"
                 />
                 <ul>
-                    <li><i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"></i></li>
-                    <li><i @click="pickFile" class="icon-ion-android-attach"></i>
+                    <li v-if="!inputOptions['disableEmoji']">
+                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"/>
+                    </li>
+                    <li v-if="!inputOptions['disableFile']">
+                        <i @click="pickFile" class="icon-ion-android-attach"/>
                         <input ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                                style="display: none">
                     </li>
-                    <li v-if="sharedMiscState.isElectron"><i id="screenShot" @click="screenShot"
-                                                             class="icon-ion-scissors"></i></li>
-                    <li v-if="sharedMiscState.isElectron"><i id="messageHistory" @click="showMessageHistory"
-                                                             class="icon-ion-android-chat"></i></li>
+                    <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
+                        <i id="screenShot" @click="screenShot" class="icon-ion-scissors"/>
+                    </li>
+                    <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
+                        <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
+                    </li>
                 </ul>
-                <ul v-if="sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
-                    <li><i @click="startAudioCall" class="icon-ion-ios-telephone"></i></li>
-                    <li><i @click="startVideoCall" class="icon-ion-ios-videocam"></i></li>
-                    <li v-if="conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length"><i @click="toggleChannelMenu" class="icon-ion-android-menu"></i></li>
+                <ul v-if="!inputOptions['disableVoip'] && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
+                    <li v-if="!inputOptions['disableAudioCall']">
+                        <i @click="startAudioCall" class="icon-ion-ios-telephone"/>
+                    </li>
+                    <li v-if="!inputOptions['disableVideoCall']">
+                        <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
+                    </li>
+                    <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
+                        <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
+                    </li>
                 </ul>
             </section>
             <div @keydown.13="send($event)"
@@ -96,8 +107,9 @@ import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfi
 import {ipcRenderer, isElectron} from "@/platform";
 import {copyText} from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
-import IPCRendererEventType from "../../../ipcRendererEventType";
+import IpcEventType from "../../../ipcEventType";
 import ChannelMenuView from "./ChannelMenuView";
+import IpcSub from "../../../ipc/ipcSub";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -111,6 +123,11 @@ export default {
             required: true,
             default: null,
         },
+        inputOptions: {
+            type: Object,
+            required: false,
+            default: () => ({}),
+        }
     },
     data() {
         return {
@@ -162,7 +179,7 @@ export default {
                 text = await navigator.clipboard.readText();
             }
             if (isElectron()) {
-                let args = ipcRenderer.sendSync('file-paste');
+                let args = ipcRenderer.sendSync(IpcEventType.FILE_PASTE);
                 if (args.hasImage) {
                     document.execCommand('insertText', false, ' ');
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
@@ -249,10 +266,10 @@ export default {
                 // e.preventDefault();
                 // this.refs.input.innerHTML = this.refs.input.innerHTML+ "<div><br></div>";
                 if (window.getSelection) {
-                	let nextChar = window.getSelection().focusNode.textContent.charAt(window.getSelection().focusOffset)
-                	if (!nextChar) {
-                    	document.execCommand('InsertHTML', true, '<br>');
-              	  	}
+                    let nextChar = window.getSelection().focusNode.textContent.charAt(window.getSelection().focusOffset)
+                    if (!nextChar) {
+                        document.execCommand('InsertHTML', true, '<br>');
+                    }
 
                     let selection = window.getSelection(),
                         range = selection.getRangeAt(0),
@@ -297,6 +314,8 @@ export default {
             message = message.replace(/<br>/g, '\n')
                 .replace(/<div>/g, '\n')
                 .replace(/<\/div>/g, '')
+                .replace(/<b>/g, '')
+                .replace(/<\/b>/g, '')
                 .replace(/&nbsp;/g, ' ');
 
             // TODO 可以在此对文本消息进行处理，比如过滤掉 script，iframe 等标签
@@ -329,7 +348,7 @@ export default {
         },
 
         screenShot() {
-            ipcRenderer.send('screenshots-start', {});
+            ipcRenderer.send(IpcEventType.START_SCREEN_SHOT, {});
         },
         showMessageHistory() {
             let hash = window.location.hash;
@@ -340,13 +359,13 @@ export default {
                 url += "/conversation-message-history"
             }
             let conversation = this.conversationInfo.conversation;
-            ipcRenderer.send(IPCRendererEventType.showConversationMessageHistoryPage, {
+            ipcRenderer.send(IpcEventType.showConversationMessageHistoryPage, {
                 url: url,
                 type: conversation.type,
                 target: conversation.target,
                 line: conversation.line,
             });
-            console.log(IPCRendererEventType.showConversationMessageHistoryPage, url)
+            console.log(IpcEventType.showConversationMessageHistoryPage, url)
         },
 
         hideEmojiView(e) {
@@ -402,20 +421,28 @@ export default {
         },
 
         startAudioCall() {
-            let conversation = this.conversationInfo.conversation;
-            if (conversation.type === ConversationType.Single) {
-                avenginekitproxy.startCall(conversation, true, [conversation.target])
+            if (this.sharedMiscState.isMainWindow) {
+                let conversation = this.conversationInfo.conversation;
+                if (conversation.type === ConversationType.Single) {
+                    avenginekitproxy.startCall(conversation, true, [conversation.target])
+                } else {
+                    this.startGroupVoip(true);
+                }
             } else {
-                this.startGroupVoip(true);
+                IpcSub.startCall(this.conversationInfo.conversation, true);
             }
         },
 
         startVideoCall() {
-            let conversation = this.conversationInfo.conversation;
-            if (conversation.type === ConversationType.Single) {
-                avenginekitproxy.startCall(conversation, false, [conversation.target])
+            if (this.sharedMiscState.isMainWindow) {
+                let conversation = this.conversationInfo.conversation;
+                if (conversation.type === ConversationType.Single) {
+                    avenginekitproxy.startCall(conversation, false, [conversation.target])
+                } else {
+                    this.startGroupVoip(false);
+                }
             } else {
-                this.startGroupVoip(false);
+                IpcSub.startCall(this.conversationInfo.conversation, false);
             }
         },
 
@@ -751,6 +778,8 @@ export default {
     computed: {
         quotedMessage() {
             lastQuotedMessage = this.sharedConversationState.quotedMessage;
+            // side affect
+            this.$refs.input && this.$refs.input.focus();
             return this.sharedConversationState.quotedMessage;
         },
 

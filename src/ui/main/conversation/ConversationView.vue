@@ -8,13 +8,27 @@
                 <div class="title-container">
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
-                        <p class="single-line user-online-status">{{ targetUserOnlineStateDesc }}</p>
+                        <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
                     </div>
-                    <a href="#"><i class="icon-ion-ios-settings-strong"
-                                   style="display: inline-block"
-                                   v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
-                                   ref="setting"
-                                   @click="toggleConversationInfo"/></a>
+                    <div
+                        v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
+                    >
+                        <a href="#">
+                            <i class="icon-ion-pin"
+                               style="display: inline-block"
+                               v-bind:class="{active : isWindowAlwaysTop}"
+                               @click="setWindowAlwaysTop"
+                            />
+                        </a>
+                        <a href="#">
+                            <i class="icon-ion-ios-settings-strong"
+                               style="display: inline-block"
+                               ref="setting"
+                               v-bind:class="{active : showConversationInfo}"
+                               @click="toggleConversationInfo"
+                            />
+                        </a>
+                    </div>
                 </div>
             </header>
             <div ref="conversationContentContainer" class="conversation-content-container"
@@ -71,10 +85,14 @@
                     <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>
                     <ScaleLoader :color="'#d2d2d2'" :height="'15px'" :width="'3px'"/>
                 </div>
+                <div v-if="unreadMessageCount > 0" class="unread-count-tip-container" @click="showUnreadMessage">
+                    {{ '' + this.unreadMessageCount + '条新消息' }}
+                </div>
                 <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu" v-on:mousedown="dragStart"
                      class="divider-handler"></div>
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                                   v-show="!sharedConversationState.enableMessageMultiSelection"
+                                  :input-options="inputOptions"
                                   ref="messageInputView"/>
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
                 <SingleConversationInfoView
@@ -200,6 +218,9 @@ import MediaMessageContent from "../../../wfc/messages/mediaMessageContent";
 import ArticlesMessageContent from "../../../wfc/messages/articlesMessageContent";
 import ContextableNotificationMessageContentContainerView from "./message/ContextableNotificationMessageContentContainerView";
 import ChannelConversationInfoView from "./ChannelConversationInfoView";
+import FriendRequestView from "../contact/FriendRequestView";
+import {currentWindow, ipcRenderer} from "../../../platform";
+import appServerApi from "../../../api/appServerApi";
 
 var amr;
 export default {
@@ -218,7 +239,16 @@ export default {
         InfiniteLoading,
         ScaleLoader,
     },
-    // props: ["conversation"],
+    props: {
+        inputOptions: {
+            type: Object,
+            required: false,
+        },
+        title: {
+            type: String,
+            required: false,
+        }
+    },
     data() {
         return {
             conversationInfo: null,
@@ -234,10 +264,12 @@ export default {
 
             dragAndDropEnterCount: 0,
             // FIXME 选中一个会话，然后切换到其他page，比如联系人，这时该会话收到新消息或发送消息，会导致新收到/发送的消息的界面错乱，尚不知道原因，但这么做能解决。
-            fixTippy: false,
+            fixTippy: true,
             ongoingCalls: null,
             ongoingCallTimer: 0,
             messageInputViewResized: false,
+            unreadMessageCount: 0,
+            isWindowAlwaysTop: currentWindow.isAlwaysOnTop(),
         };
     },
 
@@ -296,6 +328,27 @@ export default {
         },
         toggleConversationInfo() {
             this.showConversationInfo = !this.showConversationInfo;
+        },
+
+        setWindowAlwaysTop() {
+            this.isWindowAlwaysTop = !currentWindow.isAlwaysOnTop();
+            currentWindow.setAlwaysOnTop(this.isWindowAlwaysTop)
+        },
+
+        clickConversationDesc() {
+            if (this.conversationInfo.conversation.type === ConversationType.Single && !wfc.isMyFriend(this.conversationInfo.conversation.target)) {
+                this.$modal.show(
+                    FriendRequestView,
+                    {
+                        userInfo: this.conversationInfo.conversation._target,
+                    },
+                    {
+                        name: 'friend-request-modal',
+                        width: 600,
+                        height: 250,
+                        clickToClose: false,
+                    }, {})
+            }
         },
 
         toggleMessageMultiSelectionActionView(message) {
@@ -370,6 +423,7 @@ export default {
                 let info = this.sharedConversationState.currentConversationInfo;
                 if (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll > 0) {
                     store.clearConversationUnreadStatus(info.conversation);
+                    // this.unreadMessageCount = 0;
                 }
             }
         },
@@ -585,42 +639,21 @@ export default {
         },
 
         favMessage(message) {
-            let favItem = FavItem.fromMessage(message);
-            axios.post('/fav/add', {
-                messageUid: stringValue(favItem.messageUid),
-                type: favItem.favType,
-                convType: favItem.conversation.type,
-                convTarget: favItem.conversation.target,
-                convLine: favItem.conversation.line,
-                origin: favItem.origin,
-                sender: favItem.sender,
-                title: favItem.title,
-                url: favItem.url,
-                thumbUrl: favItem.thumbUrl,
-                data: favItem.data,
-            }, {withCredentials: true})
-                .then(response => {
-                    if (response && response.data && response.data.code === 0) {
-                        this.$notify({
-                            // title: '收藏成功',
-                            text: '收藏成功',
-                            type: 'info'
-                        });
-                    } else {
-                        this.$notify({
-                            // title: '收藏成功',
-                            text: '收藏失败',
-                            type: 'error'
-                        });
-                    }
+            appServerApi.favMessage(message)
+                .then(data => {
+                    this.$notify({
+                        // title: '收藏成功',
+                        text: '收藏成功',
+                        type: 'info'
+                    });
                 })
                 .catch(err => {
+                    console.log('fav error', err)
                     this.$notify({
                         // title: '收藏失败',
                         text: '收藏失败',
                         type: 'error'
                     });
-
                 })
         },
 
@@ -632,6 +665,7 @@ export default {
             console.log('to load more message');
             store.loadConversationHistoryMessages(() => {
                 console.log('loaded')
+                console.log('xxxx', this.fixTippy, this.sharedConversationState.currentConversationInfo, this.sharedConversationState.currentConversationMessageList)
                 $state.loaded();
             }, () => {
                 console.log('complete')
@@ -697,8 +731,12 @@ export default {
         joinMultiCall(message) {
             let request = new JoinCallRequestMessageContent(message.messageContent.callId, wfc.getClientId());
             wfc.sendConversationMessage(this.conversationInfo.conversation, request);
-        }
+        },
 
+        showUnreadMessage() {
+            let messageListElement = this.$refs['conversationMessageList'];
+            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+        }
     },
 
     mounted() {
@@ -756,19 +794,22 @@ export default {
         }
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
-        console.log('conversationView updated', this.conversationInfo, this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom)
-        if (this.sharedConversationState.shouldAutoScrollToBottom) {
+        console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
+        let lastMessagee = this.sharedConversationState.currentConversationInfo.lastMessage;
+        if ((this.sharedConversationState.shouldAutoScrollToBottom || (lastMessagee && lastMessagee.direction === 0)) && !this.sharedMiscState.isPageHidden) {
             let messageListElement = this.$refs['conversationMessageList'];
             messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
         }
         if (this.sharedConversationState.currentConversationInfo) {
-            if (!this.sharedMiscState.isPageHidden) {
-                let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
-                if (unreadCount.unread > 0) {
-                    store.clearConversationUnreadStatus(this.sharedConversationState.currentConversationInfo.conversation);
+            let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
+            if (unreadCount.unread > 0) {
+                if (this.sharedMiscState.isPageHidden) {
+                    this.unreadMessageCount = unreadCount.unread;
                 }
+            } else {
+                this.unreadMessageCount = 0;
             }
         }
 
@@ -786,21 +827,33 @@ export default {
 
     computed: {
         conversationTitle() {
+            if (this.title){
+                return  this.title;
+            }
             let info = this.sharedConversationState.currentConversationInfo;
-            return info.conversation._target._displayName;
+            if (info.conversation._target) {
+                if (info.conversation.type === ConversationType.Group) {
+                    return info.conversation._target._displayName + " (" + info.conversation._target.memberCount + ")";
+                } else {
+                    return info.conversation._target._displayName;
+                }
+            } else {
+                return '会话';
+            }
         },
         targetUserOnlineStateDesc() {
             let info = this.sharedConversationState.currentConversationInfo;
             if (info.conversation.type === ConversationType.Single) {
+                if (!wfc.isMyFriend(info.conversation.target)) {
+                    return '你们还不是好友，点击添加好友';
+                }
                 if (info.conversation._target.type === 0) {
-            		return info.conversation._targetOnlineStateDesc;
+                    return info.conversation._targetOnlineStateDesc;
                 } else if (info.conversation._target.type === 1) {
                     return 'bot';
                 }
             } else if (info.conversation.type === ConversationType.Channel) {
                 return info.conversation._target.desc;
-            } else if (info.conversation.type === ConversationType.Group) {
-                return '群成员数：' + info.conversation._target.memberCount;
             } else {
                 return '';
             }
@@ -972,6 +1025,15 @@ export default {
     list-style: none;
 }
 
+.unread-count-tip-container {
+    margin-left: auto;
+    padding: 4px 8px;
+    background: white;
+    width: auto;
+    color: #4168e0;
+    border-radius: 4px;
+}
+
 /*.handler {*/
 /*  height: 1px;*/
 /*  background-color: #e2e2e2;*/
@@ -1019,5 +1081,13 @@ export default {
 
 .conversation-info-container.active {
     display: flex;
+}
+
+i:hover {
+    color: deepskyblue;
+}
+
+i.active {
+    color: #34b7f1;
 }
 </style>

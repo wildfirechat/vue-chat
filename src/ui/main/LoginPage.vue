@@ -3,10 +3,9 @@
         <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                           :maximizable="false"
                                           v-if="sharedMiscState.isElectronWindowsOrLinux"/>
- 
+
         <div class="drag-area"/>
         <div v-if="loginType === 0" class="qrcode-login-container">
-
             <div class="qr-container">
                 <img v-if="qrCode" v-bind:src="qrCode" alt="">
                 <p v-else>{{ $t('misc.gen_qr_code') }}</p>
@@ -17,7 +16,7 @@
                 <p>{{ $t('login.desc') }}</p>
                 <p>{{ $t('login.tip') }}</p>
                 <p>{{ $t('login.warning') }}</p>
-                <a  target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
+                <a target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
             </div>
             <!--    已经扫码-->
             <div v-else-if="loginStatus === 1" class="scanned">
@@ -54,13 +53,14 @@
                 <input v-model="mobile" class="text-input" type="number" placeholder="请输入手机号">
             </div>
             <div class="item">
-                <input v-model="password" class="text-input" @keydown.enter="loginWithPassword" type="text" placeholder="请输入密码">
+                <input v-model="password" class="text-input" @keydown.enter="loginWithPassword" type="password" placeholder="请输入密码">
             </div>
-            <div style="display: flex; justify-content: space-between; width: 100%; ">
-            	<p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
+            <div v-if="loginStatus === 0" style="display: flex; justify-content: space-between; width: 100%; ">
+                <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
                 <p class="tip" @click="register">注册</p>
             </div>
-            <button class="login-button" :disabled="mobile.trim() === '' || password.trim() === ''" @click="loginWithPassword">登录</button>
+            <button class="login-button" :disabled="mobile.trim() === '' || password.trim() === ''" ref="loginWithPasswordButton" @click="loginWithPassword">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
+            <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'" :width="'80px'"/>
         </div>
         <div v-else class="login-form-container">
             <!--            验证码登录-->
@@ -72,10 +72,11 @@
                 <input v-model="authCode" class="text-input" type="number" placeholder="验证码">
                 <button :disabled="mobile.trim().length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
             </div>
-            <p class="tip" @click="switchLoginType(1)">使用密码登录</p>
-            <button class="login-button" :disabled="mobile.trim() === '' || authCode.trim() === ''" @click="loginWithAuthCode">登录</button>
+            <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
+            <button class="login-button" :disabled="mobile.trim() === '' || authCode.trim() === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
+            <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'"/>
         </div>
-        <div class="switch-login-type-container">
+        <div v-if="loginStatus === 0" class="switch-login-type-container">
             <p class="tip" @click="switchLoginType( loginType === 0 ? 1 : 0)">{{ loginType === 0 ? '使用密码/验证码登录' : '扫码登录' }}</p>
         </div>
     </div>
@@ -94,6 +95,9 @@ import {clear, getItem, setItem} from "@/ui/util/storageHelper";
 import {ipcRenderer, isElectron} from "@/platform";
 import store from "@/store";
 import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
+import ConversationType from "../../wfc/model/conversationType";
+import IpcEventType from "../../ipcEventType";
+import appServerApi from "../../api/appServerApi";
 
 export default {
     name: 'App',
@@ -102,7 +106,7 @@ export default {
             sharedMiscState: store.state.misc,
             qrCode: '',
             userName: '',
-            loginStatus: 0, //0 等待扫码； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求 4 调试时，自动登录
+            loginStatus: 0, //0 等待扫码，密码登录或验证码登录时，表示等待登录； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求，密码登录或验证码登录时，表示登录中 4 调试时，自动登录
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
@@ -111,6 +115,7 @@ export default {
             mobile: '',
             password: '',
             authCode: '',
+            firstTimeConnect: false,
         }
     },
     created() {
@@ -124,7 +129,7 @@ export default {
 
             let autoLogin = getItem(userId + '-' + 'autoLogin') === '1'
             if (autoLogin && token) {
-                wfc.connect(userId, token);
+                this.firstTimeConnect = wfc.connect(userId, token);
                 this.loginStatus = 4;
             } else {
                 this.loginStatus = 2;
@@ -139,7 +144,7 @@ export default {
     },
 
     methods: {
-        register(){
+        register() {
             this.$notify({
                 text: '使用短信验证码登录，将会为您创建账户，请使用短信验证码登录',
                 type: 'info'
@@ -151,127 +156,89 @@ export default {
         },
 
         async requestAuthCode() {
-            let response = await axios.post('/send_code/', {
-                mobile: this.mobile,
-            }, {withCredentials: true});
-            if (response.data) {
-                if (response.data.code === 0) {
+            appServerApi.requestAuthCode(this.mobile)
+                .then(response => {
                     this.$notify({
                         text: '发送验证码成功',
                         type: 'info'
                     });
-                } else {
+                })
+                .catch(err => {
                     this.$notify({
                         title: '发送验证码失败',
-                        text: response.data.message,
+                        text: err.message,
                         type: 'error'
                     });
-                }
-            } else {
-                this.mobile = '';
-                this.$notify({
-                    // title: '收藏成功',
-                    text: '发送验证码失败',
-                    type: 'error'
-                });
-            }
+                })
         },
 
         async loginWithPassword() {
-            if(!this.mobile || !this.password){
+            if (!this.mobile || !this.password) {
                 return;
             }
-            let response = await axios.post('/login_pwd/', {
-                mobile: this.mobile,
-                password: this.password,
-                platform: Config.getWFCPlatform(),
-                clientId: wfc.getClientId(),
-            }, {withCredentials: true});
-            if (response.data) {
-                if (response.data.code === 0) {
-                    const {userId, token, portrait} = response.data.result;
-                    wfc.connect(userId, token);
+
+            this.$refs.loginWithPasswordButton.disabled = true;
+            this.loginStatus = 3;
+            appServerApi.loinWithPassword(this.mobile, this.password)
+                .then(res => {
+                    const {userId, token, portrait} = res
+                    this.firstTimeConnect = wfc.connect(userId, token);
                     setItem('userId', userId);
                     setItem('token', token);
                     setItem("userPortrait", portrait);
-                    let appAuthToken = response.headers['authtoken'];
-                    if (!appAuthToken) {
-                        appAuthToken = response.headers['authToken'];
-                    }
-
-                    if (appAuthToken) {
-                        setItem('authToken', appAuthToken);
-                        axios.defaults.headers.common['authToken'] = appAuthToken;
-                    }
-                } else {
+                })
+                .catch(err => {
+                    console.log('loginWithPassword err', err)
                     this.password = '';
+                    this.loginStatus = 0;
                     this.$notify({
                         title: '登录失败',
-                        text: response.data.message,
+                        text: err.message,
                         type: 'error'
                     });
-                }
-            } else {
-                console.error('loginWithPassword error', response);
-            }
+                })
         },
 
         async loginWithAuthCode() {
-            if (!this.mobile || !this.authCode){
+            if (!this.mobile || !this.authCode) {
                 return;
             }
-            let response = await axios.post('/login/', {
-                mobile: this.mobile,
-                code: this.authCode,
-                platform: Config.getWFCPlatform(),
-                clientId: wfc.getClientId(),
-            }, {withCredentials: true});
-            if (response.data) {
-                if (response.data.code === 0) {
-                    const {userId, token, portrait} = response.data.result;
-                    wfc.connect(userId, token);
+
+            this.$refs.loginWithAuthCodeButton.disabled = true;
+            this.loginStatus = 3;
+            appServerApi.loginWithAuthCode(this.mobile, this.authCode)
+                .then(res => {
+                    const {userId, token, portrait} = res;
+                    this.firstTimeConnect = wfc.connect(userId, token);
                     setItem('userId', userId);
                     setItem('token', token);
                     setItem("userPortrait", portrait);
-                    let appAuthToken = response.headers['authtoken'];
-                    if (!appAuthToken) {
-                        appAuthToken = response.headers['authToken'];
-                    }
-
-                    if (appAuthToken) {
-                        setItem('authToken', appAuthToken);
-                        axios.defaults.headers.common['authToken'] = appAuthToken;
-                    }
-                } else {
+                })
+                .catch(err => {
                     this.authCode = '';
+                    this.loginStatus = 0;
                     this.$notify({
                         title: '登录失败',
-                        text: response.data.message,
+                        text: err.message,
                         type: 'error'
                     });
-                }
-            } else {
-                console.error('loginWithAuthCode error', response)
-            }
+                })
         },
+
         async createPCLoginSession(userId) {
-            let response = await axios.post('/pc_session', {
-                flag: 1,
-                device_name: 'web',
-                userId: userId,
-                clientId: wfc.getClientId(),
-                platform: Config.getWFCPlatform()
-            }, {withCredentials: true});
-            console.log('----------- createPCLoginSession', response.data);
-            if (response.data) {
-                let session = Object.assign(new PCSession(), response.data.result);
-                this.appToken = session.token;
-                if (!userId || session.status === 0/*服务端pc login session不存在*/) {
-                    this.qrCode = jrQRCode.getQrBase64(Config.QR_CODE_PREFIX_PC_SESSION + session.token);
-                    this.refreshQrCode();
+            appServerApi.createPCSession(userId)
+                .then(response => {
+                    let session = Object.assign(new PCSession(), response);
+                    this.appToken = session.token;
+                    if (!userId || session.status === 0/*服务端pc login session不存在*/) {
+                        this.qrCode = jrQRCode.getQrBase64(Config.QR_CODE_PREFIX_PC_SESSION + session.token);
+                        this.refreshQrCode();
                     }
-                this.login();
-            }
+                    this.login();
+                })
+                .catch(err => {
+                    console.log('createPCSession error', err);
+                })
         },
 
         async refreshQrCode() {
@@ -286,58 +253,58 @@ export default {
 
         async login() {
             this.lastAppToken = this.appToken;
-            let response = await axios.post('/session_login/' + this.appToken, "", {withCredentials: true});
-            console.log('---------- login', response.data);
-            if (this.lastAppToken !== this.appToken) {
-                return;
-            }
-            if (response.data) {
-                switch (response.data.code) {
-                    case 0:
-                        if (this.loginStatus === 1 || this.loginStatus === 3) {
-                            let userId = response.data.result.userId;
-                            let imToken = response.data.result.token;
-                            wfc.connect(userId, imToken);
-                            this.loginStatus = 4;
-                            setItem('userId', userId);
-                            setItem('token', imToken);
-                            let appAuthToken = response.headers['authtoken'];
-                            if (!appAuthToken) {
-                                appAuthToken = response.headers['authToken'];
-                            }
+            appServerApi.loginWithPCSession(this.appToken)
+                .then(response => {
+                    if (response.data) {
+                        switch (response.data.code) {
+                            case 0:
+                                if (this.loginStatus === 1 || this.loginStatus === 3) {
+                                    let userId = response.data.result.userId;
+                                    let imToken = response.data.result.token;
+                                    wfc.connect(userId, imToken);
+                                    this.loginStatus = 4;
+                                    setItem('userId', userId);
+                                    setItem('token', imToken);
+                                    let appAuthToken = response.headers['authtoken'];
+                                    if (!appAuthToken) {
+                                        appAuthToken = response.headers['authToken'];
+                                    }
 
-                            if (appAuthToken) {
-                                setItem('authToken', appAuthToken);
-                                axios.defaults.headers.common['authToken'] = appAuthToken;
-                            }
-                        }
-                        break;
-                    case 9:
-                        if (response.data.result.portrait) {
-                        this.qrCode = response.data.result.portrait;
-                        } else {
-                            this.qrCode = Config.DEFAULT_PORTRAIT_URL;
-                        }
-                        setItem("userName", response.data.result.userName);
-                        setItem("userPortrait", response.data.result.portrait);
+                                    if (appAuthToken) {
+                                        setItem('authToken', appAuthToken);
+                                        axios.defaults.headers.common['authToken'] = appAuthToken;
+                                    }
+                                }
+                                break;
+                            case 9:
+                                if (response.data.result.portrait) {
+                                    this.qrCode = response.data.result.portrait;
+                                } else {
+                                    this.qrCode = Config.DEFAULT_PORTRAIT_URL;
+                                }
+                                setItem("userName", response.data.result.userName);
+                                setItem("userPortrait", response.data.result.portrait);
 
-                        if (this.loginStatus === 0) {
-                            this.loginStatus = 1;
-                        } else {
-                            this.loginStatus = 3;
+                                if (this.loginStatus === 0) {
+                                    this.loginStatus = 1;
+                                } else {
+                                    this.loginStatus = 3;
+                                }
+                                this.login();
+                                break;
+                            case 18:
+                                //session is canceled, need clear last time login status
+                                this.cancel();
+                                break;
+                            default:
+                                this.lastAppToken = '';
+                                console.log(response.data);
+                                break
                         }
-                        this.login();
-                        break;
-                    case 18:
-                        //session is canceled, need clear last time login status
-                        this.cancel();
-                        break;
-                    default:
-                        this.lastAppToken = '';
-                        console.log(response.data);
-                        break
-                }
-            }
+                    }
+                })
+                .catch(err => {
+                });
         },
 
         sendQuickLoginRequest() {
@@ -366,9 +333,28 @@ export default {
                 this.cancel();
             }
             if (status === ConnectionStatus.ConnectionStatusConnected) {
-                this.$router.replace({path: "/home"});
+                // pc 端首次登录时，等待同步数据
+                // TODO 添加同步中动画
+                if (isElectron() && this.firstTimeConnect) {
+                    if (this.$refs.loginWithAuthCodeButton) {
+                        this.$refs.loginWithAuthCodeButton.textContent = '数据同步中...';
+                    }
+                    if (this.$refs.loginWithPasswordButton) {
+                        this.$refs.loginWithPasswordButton.textContent = '数据同步中...';
+                    }
+                    // 先等待加载数据
+                    setTimeout(() => {
+                        isElectron() && ipcRenderer.send('logined', {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
+                        this.$router.replace({path: "/home"});
+                    }, 5 * 1000)
+                } else {
+                    if (isElectron()) {
+                        ipcRenderer.send('logined', {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
+                    }
+                    this.$router.replace({path: "/home"});
+                }
                 if (isElectron() || (Config.CLIENT_ID_STRATEGY === 1 || Config.CLIENT_ID_STRATEGY === 2)) {
-                    isElectron() && ipcRenderer.send('logined', {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
+                    isElectron() && ipcRenderer.send(IpcEventType.LOGINED, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                     if (this.enableAutoLogin) {
                         store.setEnableAutoLogin(this.enableAutoLogin)
                     }
@@ -436,6 +422,7 @@ export default {
     position: absolute;
     border-width: 4px;
 }
+
 .pending-scan,
 .scanned,
 .pending-quick-login,
@@ -509,6 +496,7 @@ export default {
     z-index: -1;
     -webkit-app-region: drag;
 }
+
 .switch-login-type-container {
     padding-top: 10px;
     font-size: 14px;
@@ -521,6 +509,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .login-form-container .title {
@@ -579,11 +568,19 @@ input::-webkit-inner-spin-button {
     transform: translateY(-50%);
     margin: 0 5px;
 }
+
+.login-form-container .syncing{
+    position: absolute;
+    bottom: 0;
+    color: #4168e0;
+}
+
 .tip {
     align-self: flex-start;
     font-size: 12px;
     color: #4168e0;
     margin-top: 10px;
 }
+
 
 </style>
