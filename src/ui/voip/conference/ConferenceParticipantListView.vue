@@ -250,20 +250,23 @@ export default {
                 }
             }
             if (selfUid === conferenceManager.conferenceInfo.owner) {
-                if (participant._isAudience) {
-                    items.push({
-                        title: '邀请发言',
-                        handler: () => {
-                            conferenceManager.requestMemberMute(participant.uid, false)
-                        },
-                    })
-                } else {
-                    items.push({
-                        title: '取消发言',
-                        handler: () => {
-                            conferenceManager.requestMemberMute(participant.uid, true)
-                        },
-                    })
+                if (participant.uid !== selfUid) {
+
+                    if (participant._isAudience) {
+                        items.push({
+                            title: '邀请发言',
+                            handler: () => {
+                                conferenceManager.requestMemberMute(participant.uid, false)
+                            },
+                        })
+                    } else {
+                        items.push({
+                            title: '取消发言',
+                            handler: () => {
+                                conferenceManager.requestMemberMute(participant.uid, true)
+                            },
+                        })
+                    }
                 }
                 if (participant.uid !== selfUid) {
                     items.push({

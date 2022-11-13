@@ -325,6 +325,7 @@ export default {
                 this.selfUserInfo = selfUserInfo;
                 this.participantUserInfos = [selfUserInfo];
 
+                console.log('oninitial', selfUserInfo._isAudience)
                 // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null);
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
@@ -532,7 +533,7 @@ export default {
 
         muteAudio() {
             let enable = this.session.audioMuted ? true : false;
-            if (enable && !conferenceManager.conferenceInfo.allowSwitchMode) {
+            if (enable && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
                 this.requestUnmute(true);
                 return;
             }
@@ -561,7 +562,7 @@ export default {
         },
         muteVideo() {
             let enable = this.session.videoMuted ? true : false;
-            if (enable && !conferenceManager.conferenceInfo.allowSwitchMode) {
+            if (enable && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
                 this.requestUnmute(false);
                 return;
             }

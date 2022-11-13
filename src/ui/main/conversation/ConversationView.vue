@@ -269,7 +269,7 @@ export default {
             ongoingCallTimer: 0,
             messageInputViewResized: false,
             unreadMessageCount: 0,
-            isWindowAlwaysTop: currentWindow.isAlwaysOnTop(),
+            isWindowAlwaysTop: currentWindow && currentWindow.isAlwaysOnTop(),
         };
     },
 

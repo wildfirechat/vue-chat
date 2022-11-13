@@ -103,7 +103,8 @@ export default {
         joinConference() {
             let info = this.conferenceInfo;
             console.log('joinConference', info);
-            avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', info.audience, info.advance, !this.enableAudio, !this.enableVideo);
+            let audience = info.audience || (!this.enableVideo && !this.enableAudio)
+            avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', audience, info.advance, !this.enableAudio, !this.enableVideo);
             this.$modal.hide('conference-info-modal');
         },
     },

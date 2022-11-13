@@ -412,9 +412,9 @@ export class AvEngineKitProxy {
         this.conference = true;
 
         wfc.joinChatroom(callId, () => {
-            console.log('join conference chatRoom success')
+            console.log('join conference chatRoom success', callId)
         }, (err) => {
-            console.error('join conference chatRoom fail', err);
+            console.error('join conference chatRoom fail', callId, err);
         });
 
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
@@ -443,7 +443,7 @@ export class AvEngineKitProxy {
      * @param {string} host 会议主持人
      * @param {string} title 会议标题
      * @param {string} desc 会议描述
-     * @param {string} audience 是否是以观众角色入会
+     * @param {boolean} audience 是否是以观众角色入会
      * @param {string} advance 是否是高级会议
      * @param {boolean} muteAudio 是否是静音加入会议
      * @param {boolean} muteVideo 是否是关闭摄像头加入会议
@@ -467,9 +467,9 @@ export class AvEngineKitProxy {
         this.callId = callId;
 
         wfc.joinChatroom(callId, () => {
-            console.log('join conference chatRoom success')
+            console.log('join conference chatRoom success', callId)
         }, (err) => {
-            console.error('join conference chatRoom fail', err);
+            console.error('join conference chatRoom fail', callId, err);
         });
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         this.showCallUI(null, true);

@@ -43,7 +43,7 @@ export default {
     },
     created() {
         let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
-        console.log('xxx setCurrentConversation ', conversation)
+        console.log('setCurrentConversation ', conversation)
         store.setCurrentConversation(conversation);
         this.filterInternal = setInterval(() => {
             this.filterMessage();
@@ -56,7 +56,7 @@ export default {
     },
 
     destroyed() {
-        console.log('xxx setCurrentConversation null')
+        console.log('setCurrentConversation null')
         store.setCurrentConversation(null);
         clearInterval(this.filterInternal)
     },
@@ -64,7 +64,7 @@ export default {
     methods: {
         sendMessage() {
             let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
-            IpcSub.sendConversationMessage(conversation, new TextMessageContent(this.text))
+            IpcSub.sendMessage(conversation, new TextMessageContent(this.text))
             this.text = '';
         },
 

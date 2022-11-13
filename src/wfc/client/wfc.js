@@ -465,6 +465,15 @@ export class WfcManager {
     }
 
     /**
+     * 批量获取群信息
+     * @param {[string]} groupIds 群id
+     * @param {boolean} refresh 是否刷新，如果刷新，且有更新的话，会通过{@link eventEmitter}通知
+     * @returns {[GroupInfo]}
+     */
+    getGroupInfos(groupIds, refresh = false) {
+        return impl.getGroupInfos(groupIds, refresh);
+    }
+    /**
      * 获取群信息
      * @param {string} groupId 群id
      * @param {boolean} refresh 是否刷新，如果刷新，且有更新的话，会通过{@link eventEmitter}通知

@@ -490,7 +490,7 @@ let store = {
             let msg = conversationState.currentConversationMessageList[index];
             Object.assign(msg, message)
 
-            if (conversationState.currentConversationInfo.lastMessage.messageId === message.messageId) {
+            if (conversationState.currentConversationInfo.lastMessage && conversationState.currentConversationInfo.lastMessage.messageId === message.messageId) {
                 Object.assign(conversationState.currentConversationInfo.lastMessage, message);
 
             }
@@ -778,8 +778,7 @@ let store = {
             info = convs[0];
         } else {
             wfc.setConversationTimestamp(conversation, new Date().getTime());
-            this._reloadConversation(conversation);
-            info = conversationState.conversationInfoList.filter(info => info.conversation.equal(conversation))[0];
+            info = this._reloadConversation(conversation);
         }
         this.setCurrentConversationInfo(info);
     },
