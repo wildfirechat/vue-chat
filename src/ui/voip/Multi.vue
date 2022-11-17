@@ -198,7 +198,7 @@ export default {
                 groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
 
                 if (selfUserInfo.uid === initiatorUserInfo.uid){
-                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 1000)
+                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 5000)
                 }
             };
 
@@ -412,7 +412,6 @@ export default {
         broadcastMultiCallOngoing(){
             let participants = this.participantUserInfos.map(pu => pu.uid).filter(uid => uid !== this.selfUserInfo.uid)
             let ongoing = new MultiCallOngoingMessageContent(this.session.callId, this.session.initiatorId, this.session.audioOnly, participants);
-            console.log('broadcast ongoing', ongoing);
             IpcSub.sendMessage(this.session.conversation, ongoing);
         }
     },
