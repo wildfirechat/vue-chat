@@ -12,7 +12,6 @@ import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
-import store from "../../../store";
 import IPCEventType from "../../../ipcEventType";
 
 
@@ -621,7 +620,8 @@ export class AvEngineKitProxy {
                 // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
                 return;
             }
-            store.updateVoipStatus(this.conversation, false)
+            let store = require('../../../store')
+            store && store.default && store.default.updateVoipStatus(this.conversation, false)
             this.conversation = null;
             this.queueEvents = [];
             if (this.conference) {
@@ -639,7 +639,8 @@ export class AvEngineKitProxy {
     onVoipWindowReady(win) {
         this.callWin = win;
         console.log('onVoipWindowReady')
-        store.updateVoipStatus(this.conversation, true)
+        let store = require('../../../store')
+        store && store.default && store.default.updateVoipStatus(this.conversation, true)
         if (!isElectron()) {
             if (!this.events) {
                 this.events = new PostMessageEventEmitter(win, window.location.origin)
