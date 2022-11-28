@@ -37,7 +37,7 @@ export default class CallSession {
     /**
      * 默认成员的视频流类型
      */
-    defaultVideoType = VideoType.NONE;
+    defaultVideoType = VideoType.BIG_STREAM;
 
     /**
      * 播放来电响铃

@@ -155,7 +155,7 @@ export default {
                 }else if (videoType === VideoType.SMALL_STREAM){
                     videoType = VideoType.NONE;
                 }
-                console.log('xxx setParticipantVideoType', userId, videoType);
+                console.log('setParticipantVideoType', userId, videoType);
                 this.session.setParticipantVideoType(userId, false, videoType);
             }
         },
