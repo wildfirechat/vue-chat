@@ -221,6 +221,7 @@ import ChannelConversationInfoView from "./ChannelConversationInfoView";
 import FriendRequestView from "../contact/FriendRequestView";
 import {currentWindow, ipcRenderer} from "../../../platform";
 import appServerApi from "../../../api/appServerApi";
+import Config from "../../../config";
 
 var amr;
 export default {
@@ -265,7 +266,7 @@ export default {
             dragAndDropEnterCount: 0,
             // FIXME 选中一个会话，然后切换到其他page，比如联系人，这时该会话收到新消息或发送消息，会导致新收到/发送的消息的界面错乱，尚不知道原因，但这么做能解决。
             fixTippy: true,
-            ongoingCalls: null,
+            ongoingCalls: [],
             ongoingCallTimer: 0,
             messageInputViewResized: false,
             unreadMessageCount: 0,
@@ -290,22 +291,23 @@ export default {
             } else if (v === 'drop') {
                 this.dragAndDropEnterCount--;
                 let isFile;
-                if (e.dataTransfer.items) {
-                    if (typeof (e.dataTransfer.items[0].webkitGetAsEntry) == "function") {
-                        isFile = e.dataTransfer.items[0].webkitGetAsEntry().isFile;
-                    } else if (typeof (e.dataTransfer.items[0].getAsEntry) == "function") {
-                        isFile = e.dataTransfer.items[0].getAsEntry().isFile;
+                if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+                    if (e.dataTransfer.items[0].kind === 'file') {
+                        if (typeof (e.dataTransfer.items[0].webkitGetAsEntry) == "function") {
+                            isFile = e.dataTransfer.items[0].webkitGetAsEntry().isFile;
+                        } else if (typeof (e.dataTransfer.items[0].getAsEntry) == "function") {
+                            isFile = e.dataTransfer.items[0].getAsEntry().isFile;
+                        }
+
+                        if (!isFile) {
+                            this.$notify({
+                                // title: '不支持',
+                                text: this.$t('conversation.not_support_send_folder'),
+                                type: 'warn'
+                            });
+                            return true;
+                        }
                     }
-                } else {
-                    return true;
-                }
-                if (!isFile) {
-                    this.$notify({
-                        // title: '不支持',
-                        text: this.$t('conversation.not_support_send_folder'),
-                        type: 'warn'
-                    });
-                    return true;
                 }
 
                 let length = e.dataTransfer.files.length;
@@ -314,13 +316,26 @@ export default {
                         this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i])
                         store.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
                     }
-                } else {
+                } else if (length > 5) {
                     this.$notify({
                         // title: '大文件提示',
                         text: this.$t('conversation.drag_to_send_limit_tip'),
                         type: 'warn'
                     });
                 }
+
+                let dragUrl = e.dataTransfer.getData('URL');
+                if (dragUrl) {
+                    // 根据后缀判断类型
+                    if (dragUrl.endsWith('.png') || dragUrl.endsWith('.jpg') || dragUrl.endsWith('jpeg')) {
+                        //constructor(fileOrLocalPath, remotePath, thumbnail) {
+                        let content = new ImageMessageContent(null, dragUrl, null);
+                        wfc.sendConversationMessage(this.conversationInfo.conversation, content);
+                    } else {
+                        // TODO
+                    }
+                }
+                console.log('drag Url', dragUrl);
             } else if (v === 'dragover') {
                 // If not st as 'copy', electron will open the drop file
                 e.dataTransfer.dropEffect = 'copy';
@@ -420,11 +435,7 @@ export default {
                 store.setShouldAutoScrollToBottom(false)
             } else {
                 store.setShouldAutoScrollToBottom(true)
-                let info = this.sharedConversationState.currentConversationInfo;
-                if (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll > 0) {
-                    store.clearConversationUnreadStatus(info.conversation);
-                    // this.unreadMessageCount = 0;
-                }
+                this.clearConversationUnreadStatus();
             }
         },
 
@@ -665,7 +676,6 @@ export default {
             console.log('to load more message');
             store.loadConversationHistoryMessages(() => {
                 console.log('loaded')
-                console.log('xxxx', this.fixTippy, this.sharedConversationState.currentConversationInfo, this.sharedConversationState.currentConversationMessageList)
                 $state.loaded();
             }, () => {
                 console.log('complete')
@@ -702,20 +712,8 @@ export default {
 
         onReceiveMessage(message, hasMore) {
             if (this.conversationInfo && this.conversationInfo.conversation.equal(message.conversation) && message.messageContent instanceof MultiCallOngoingMessageContent) {
-                if (!this.ongoingCalls) {
-                    this.ongoingCalls = [];
-                    this.ongoingCallTimer = setInterval(() => {
-                        this.ongoingCalls = this.ongoingCalls.filter(call => {
-                            return new Date().getTime() - (numberValue(call.timestamp) - numberValue(wfc.getServerDeltaTime())) < 3 * 1000;
-                        })
-                        if (this.ongoingCalls.length === 0) {
-                            clearInterval(this.ongoingCallTimer);
-                            this.ongoingCallTimer = 0;
-                        }
-                        console.log('ongoing calls', this.ongoingCalls.length);
-                    }, 1000)
-                }
                 // 自己是不是已经在通话中
+                console.log('MultiCallOngoingMessageContent', message.messageContent)
                 if (message.messageContent.targets.indexOf(wfc.getUserId()) >= 0) {
                     return;
                 }
@@ -724,6 +722,18 @@ export default {
                     this.ongoingCalls[index] = message;
                 } else {
                     this.ongoingCalls.push(message);
+                }
+                if (!this.ongoingCallTimer) {
+                    this.ongoingCallTimer = setInterval(() => {
+                        this.ongoingCalls = this.ongoingCalls.filter(call => {
+                            return (new Date().getTime() - (numberValue(call.timestamp) - numberValue(wfc.getServerDeltaTime()))) < 3 * 1000;
+                        })
+                        if (this.ongoingCalls.length === 0) {
+                            clearInterval(this.ongoingCallTimer);
+                            this.ongoingCallTimer = 0;
+                        }
+                        console.log('ongoing calls', this.ongoingCalls.length);
+                    }, 1000)
                 }
             }
         },
@@ -736,6 +746,14 @@ export default {
         showUnreadMessage() {
             let messageListElement = this.$refs['conversationMessageList'];
             messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+        },
+
+        clearConversationUnreadStatus() {
+            let info = this.sharedConversationState.currentConversationInfo;
+            if (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll > 0) {
+                store.clearConversationUnreadStatus(info.conversation);
+                // this.unreadMessageCount = 0;
+            }
         }
     },
 
@@ -799,6 +817,7 @@ export default {
         if ((this.sharedConversationState.shouldAutoScrollToBottom || (lastMessagee && lastMessagee.direction === 0)) && !this.sharedMiscState.isPageHidden) {
             let messageListElement = this.$refs['conversationMessageList'];
             messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            this.clearConversationUnreadStatus();
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
         }
@@ -827,8 +846,8 @@ export default {
 
     computed: {
         conversationTitle() {
-            if (this.title){
-                return  this.title;
+            if (this.title) {
+                return this.title;
             }
             let info = this.sharedConversationState.currentConversationInfo;
             if (info.conversation._target) {
@@ -843,7 +862,7 @@ export default {
         },
         targetUserOnlineStateDesc() {
             let info = this.sharedConversationState.currentConversationInfo;
-            if (info.conversation.type === ConversationType.Single) {
+            if (info.conversation.type === ConversationType.Single && info.conversation.target !== Config.FILE_HELPER_ID) {
                 if (!wfc.isMyFriend(info.conversation.target)) {
                     return '你们还不是好友，点击添加好友';
                 }

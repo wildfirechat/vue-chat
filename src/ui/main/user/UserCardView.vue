@@ -18,7 +18,7 @@
                     <label>{{ $t('common.alias') }}</label>
                     <div class="alias">
                         <input @click.stop="" type="text"
-                               v-model="friendAlias"
+                               v-model.trim="friendAlias"
                                @keyup.enter="updateFriendAlias"
                                placeholder="备注名"/>
                     </div>
@@ -66,7 +66,7 @@ export default {
     },
     data() {
         return {
-            friendAlias: this.userInfo.friendAlias,
+            friendAlias: this.userInfo.uid === wfc.getUserId() ? this.userInfo.displayName : this.userInfo.friendAlias,
             sharedMiscState: store.state.misc,
         }
     },
@@ -99,15 +99,25 @@ export default {
                 }, {})
         },
         updateFriendAlias() {
-            if (this.friendAlias !== this.userInfo.friendAlias) {
-                wfc.setFriendAlias(this.userInfo.uid, this.friendAlias,
-                    () => {
-                        // do nothing
-                    },
-                    (error) => {
-                        // do nothing
-                    })
+            if (this.userInfo.uid === wfc.getUserId()) {
+                if (this.friendAlias !== this.userInfo.displayName) {
+                    let entry = new ModifyMyInfoEntry();
+                    entry.type = ModifyMyInfoType.Modify_DisplayName;
+                    entry.value = this.friendAlias;
+                    wfc.modifyMyInfo([entry]);
+                }
+            } else {
+                if (this.friendAlias !== this.userInfo.friendAlias) {
+                    wfc.setFriendAlias(this.userInfo.uid, this.friendAlias,
+                        () => {
+                            // do nothing
+                        },
+                        (error) => {
+                            // do nothing
+                        })
+                }
             }
+            this.close();
         },
         close() {
             this.$emit('close');

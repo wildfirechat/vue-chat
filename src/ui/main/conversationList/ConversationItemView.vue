@@ -67,6 +67,7 @@ export default {
         if (!info.conversation._target.portrait || info.conversation._target.portrait === Config.DEFAULT_PORTRAIT_URL) {
             getConversationPortrait(info.conversation).then((portrait => {
                 info.conversation._target.portrait = portrait;
+                store.setGroupPortrait(info.conversation.target, portrait);
             }))
         }
     },
@@ -111,6 +112,7 @@ export default {
 
         showConversation() {
             store.setCurrentConversationInfo(this.source);
+            wfc.clearConversationUnreadStatus(this.source.conversation);
         },
         showConversationInfoContextMenu(event) {
             this.$eventBus.$emit('showConversationContextMenu', event, this.source);

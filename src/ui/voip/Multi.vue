@@ -198,7 +198,7 @@ export default {
                 groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
 
                 if (selfUserInfo.uid === initiatorUserInfo.uid){
-                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 5000)
+                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 1000)
                 }
             };
 

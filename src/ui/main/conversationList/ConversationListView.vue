@@ -87,6 +87,9 @@ export default {
         },
 
         showConversationItemContextMenu(event, conversationInfo) {
+            if (!this.$refs.menu){
+                return;
+            }
             this.sharedConversationState.contextMenuConversationInfo = conversationInfo;
             this.$refs.menu.open(event, conversationInfo)
         },

@@ -18,7 +18,7 @@ export default class Conversation {
     target = '';
     line = 0;
 
-    constructor(type, target, line) {
+    constructor(type, target, line = 0) {
         this.type = type;
         this.conversationType = type;
         this.target = target;
