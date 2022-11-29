@@ -86,6 +86,7 @@
                                        v-bind:style="{objectFit:computedFocusVideoParticipant._isScreenSharing ? 'contain' : 'fit'}"
                                        style="width: 100%; height: 100%"
                                        :srcObject.prop="computedFocusVideoParticipant._stream"
+                                       :muted="computedFocusVideoParticipant.uid === selfUserInfo.uid"
                                        playsInline
                                        autoPlay/>
                                 <div @click="toggleParticipantListVideoView" style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px">
