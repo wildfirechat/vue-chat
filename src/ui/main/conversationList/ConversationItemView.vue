@@ -66,7 +66,9 @@ export default {
         let info = this.source;
         if (!info.conversation._target.portrait || info.conversation._target.portrait === Config.DEFAULT_PORTRAIT_URL) {
             getConversationPortrait(info.conversation).then((portrait => {
-                info.conversation._target.portrait = portrait;
+                if (info.conversation.equal(this.source.conversation)){
+                    this.source.conversation._target.portrait = portrait;
+                }
                 store.setGroupPortrait(info.conversation.target, portrait);
             }))
         }

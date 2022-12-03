@@ -103,7 +103,7 @@ export default {
         joinConference() {
             let info = this.conferenceInfo;
             console.log('joinConference', info);
-            let audience = info.audience || (!this.enableVideo && !this.enableAudio)
+            let audience = !this.enableVideo && !this.enableAudio
             avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', audience, info.advance, !this.enableAudio, !this.enableVideo);
             this.$modal.hide('conference-info-modal');
         },
@@ -122,7 +122,7 @@ export default {
             return date.toString();
         },
         audience() {
-            return this.conferenceInfo.audience && this.conferenceInfo.owner !== conferenceManager.selfUserId;
+            return !(this.conferenceInfo.owner === conferenceManager.selfUserId || !this.conferenceInfo.audience || this.conferenceInfo.allowSwitchMode);
         },
         enableDestroy() {
             return this.conferenceInfo.owner === conferenceManager.selfUserId && new Date().getTime() < this.conferenceInfo.startTime * 1000;

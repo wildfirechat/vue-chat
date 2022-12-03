@@ -696,12 +696,12 @@ export default {
             //     return;
             // }
 
-            if (this.session.audience) {
-                await this.session.switchAudience(false);
-            }
-
             if (this.session.isScreenSharing()) {
                 this.session.stopScreenShare();
+                console.log('stopScreenShare', this.session.videoMuted, this.session.audioMuted);
+                if (this.session.videoMuted && this.session.audioMuted) {
+                    this.session.switchAudience(true);
+                }
                 // currentWindow.setIgnoreMouseEvents(false)
             } else {
                 if (isElectron()) {
@@ -720,7 +720,17 @@ export default {
                                 maxHeight: 720
                             }
 
-                            this.session.startScreenShare(desktopShareOptions);
+                            if (this.session.audience) {
+                                this.session.switchAudience(false)
+                                    .then(() => {
+                                        this.session.startScreenShare(desktopShareOptions);
+                                    })
+                                    .catch(err => {
+                                        console.error(err)
+                                    });
+                            } else {
+                                this.session.startScreenShare(desktopShareOptions);
+                            }
                             avenginekitproxy.emitToMain(IpcEventType.START_SCREEN_SHARE, {})
                         }
                     };
@@ -737,6 +747,10 @@ export default {
                             // 'closed': closed,
                         })
                 } else {
+
+                    if (this.session.audience) {
+                        await this.session.switchAudience(false);
+                    }
                     this.session.startScreenShare();
                 }
             }

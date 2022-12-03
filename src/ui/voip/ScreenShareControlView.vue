@@ -88,6 +88,10 @@ export default {
         stopScreenShare() {
             console.log('stopScreenShare', this.session);
             this.session.stopScreenShare();
+            console.log('stopScreenShare', this.session.videoMuted, this.session.audioMuted);
+            if (this.session.videoMuted && this.session.audioMuted) {
+                this.session.switchAudience(true);
+            }
             AvEngineKitProxy.emitToMain('stop-screen-share', {type: this.type})
             // 不太明白session明显变动了，但父组件没有去刷新，所以强制刷新下
             // 奇怪：直接用音视频SDK源码调试的时候，会正常刷新，但有编译出的SDK时，就不会刷新

@@ -337,6 +337,8 @@ export default {
                 }
                 console.log('drag Url', dragUrl);
             } else if (v === 'dragover') {
+                // TODO 可以判断一些，不支持的，dropEffect 置为 none
+                // 支持那些类型的数据 drop，参考上面 drop 部分的处理
                 // If not st as 'copy', electron will open the drop file
                 e.dataTransfer.dropEffect = 'copy';
             }

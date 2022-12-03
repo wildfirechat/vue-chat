@@ -55,6 +55,11 @@ export default {
                     })
                     .catch(err => {
                         console.error('query conference info error', err);
+                        this.$notify({
+                            title: '加载会议信息失败',
+                            text: err.message,
+                            type: 'warn'
+                        });
                     });
             } else {
                 this.$notify({
