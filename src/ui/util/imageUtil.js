@@ -253,6 +253,7 @@ function mergeImages(sources = [], options = {}) {
 
 
 let groupPortraitMap = new Map();
+window.__groupPortraitMap = groupPortraitMap;
 
 async function getConversationPortrait(conversation, userInfoMap, groupInfoMap) {
     let portrait = '';
@@ -296,10 +297,11 @@ async function getGroupPortrait(groupId, groupInfoMap) {
 
     let portrait = groupPortraitMap.get(groupId);
     let now = new Date().getTime();
-    if (!portrait || now - portrait.timestamp > 10 * 1000) {
+    if (!portrait || now - portrait.timestamp > 30 * 1000) {
         let groupMembers = wfc.getGroupMembers(groupId, false);
         if (!groupMembers || groupMembers.length === 0) {
-            return Config.DEFAULT_PORTRAIT_URL;
+            console.error('gen group portrait, members empty')
+            return Config.DEFAULT_GROUP_PORTRAIT_URL;
         }
         groupMembers = groupMembers.filter(m => m.type !== GroupMemberType.Removed);
         let groupMemberPortraits = [];

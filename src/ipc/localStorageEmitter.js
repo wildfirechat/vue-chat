@@ -26,6 +26,9 @@ class LocalStorageEmitter {
         window.__lse = this;
         window.addEventListener('storage', ev => {
             let key = ev.key;
+            if (!key) {
+                return;
+            }
             if (!key.startsWith(this.namespace + '$') || !key.endsWith('$')) {
                 return;
             }

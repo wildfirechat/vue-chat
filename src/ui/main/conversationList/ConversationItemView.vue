@@ -14,7 +14,7 @@
          @contextmenu.prevent="showConversationInfoContextMenu">
         <div class="conversation-item">
             <div class="header">
-                <img class="avatar" draggable="false" :src="source.conversation._target.portrait" alt=""
+                <img class="avatar" draggable="false" :src="portrait" alt=""
                      @error="imgUrlAlt"/>
                 <em v-if="unread > 0" class="badge" v-bind:class="{silent:source.isSilent}">{{ unread }}</em>
             </div>
@@ -47,6 +47,7 @@ import wfc from "@/wfc/client/wfc";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import Config from "../../../config";
 import {getConversationPortrait} from "../../util/imageUtil";
+import ConversationType from "../../../wfc/model/conversationType";
 
 export default {
     name: "ConversationItemView",
@@ -60,18 +61,11 @@ export default {
         return {
             dragAndDropEnterCount: 0,
             shareConversationState: store.state.conversation,
+            groupPortrait: Config.DEFAULT_GROUP_PORTRAIT_URL,
         };
     },
     mounted() {
-        let info = this.source;
-        if (!info.conversation._target.portrait || info.conversation._target.portrait === Config.DEFAULT_PORTRAIT_URL) {
-            getConversationPortrait(info.conversation).then((portrait => {
-                if (info.conversation.equal(this.source.conversation)){
-                    this.source.conversation._target.portrait = portrait;
-                }
-                store.setGroupPortrait(info.conversation.target, portrait);
-            }))
-        }
+        this.refreshGroupPortrait();
     },
     methods: {
         dragEvent(e, v) {
@@ -109,15 +103,35 @@ export default {
             }
         },
         imgUrlAlt(e) {
-            e.target.src = Config.DEFAULT_PORTRAIT_URL;
+            if (this.source.conversation.type === ConversationType.Group) {
+                e.target.src = Config.DEFAULT_GROUP_PORTRAIT_URL;
+            } else {
+            	e.target.src = Config.DEFAULT_PORTRAIT_URL;
+            }
         },
 
         showConversation() {
             store.setCurrentConversationInfo(this.source);
             wfc.clearConversationUnreadStatus(this.source.conversation);
+            this.refreshGroupPortrait();
         },
         showConversationInfoContextMenu(event) {
             this.$eventBus.$emit('showConversationContextMenu', event, this.source);
+        },
+
+        refreshGroupPortrait() {
+            let info = this.source;
+            if (info.conversation.type !== ConversationType.Group) {
+                return;
+            }
+            if (!info.conversation._target.portrait || info.conversation._target.portrait === Config.DEFAULT_GROUP_PORTRAIT_URL) {
+                getConversationPortrait(info.conversation).then((portrait => {
+                    if (info.conversation.equal(this.source.conversation)) {
+                        console.log('update portrait', this.source.conversation.target)
+                        this.groupPortrait = portrait;
+                    }
+                }))
+            }
         }
     },
     computed: {
@@ -194,6 +208,18 @@ export default {
             return unreadCount ? (unreadCount.unreadMention + unreadCount.unreadMentionAll) : 0;
         },
 
+        portrait() {
+            let info = this.source;
+            if (info.conversation.type === ConversationType.Group) {
+                if (info.conversation._target.portrait) {
+                    return info.conversation._target.portrait;
+                } else {
+                    return this.groupPortrait;
+                }
+            } else {
+                return info.conversation._target.portrait;
+            }
+        }
     },
 };
 </script>
