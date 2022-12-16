@@ -97,7 +97,7 @@ export default {
     methods: {
         invite() {
             let callSession = this.session;
-            let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, callSession.host, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin)
+            let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin)
             console.log('invite', inviteMessageContent);
             if (isElectron()) {
                 let message = new Message(null, inviteMessageContent);

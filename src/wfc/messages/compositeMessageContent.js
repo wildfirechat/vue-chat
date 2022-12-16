@@ -107,6 +107,9 @@ export default class CompositeMessageContent extends MediaMessageContent {
                 payload.localMediaPath = this.localPath;
                 payload.mediaType = MessageContentType.File;
             }
+            obj = {
+                ms: binArr,
+            }
         } else {
             if (binArr) {
                 obj = {

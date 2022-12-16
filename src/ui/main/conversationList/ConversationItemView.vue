@@ -112,7 +112,9 @@ export default {
 
         showConversation() {
             store.setCurrentConversationInfo(this.source);
-            wfc.clearConversationUnreadStatus(this.source.conversation);
+            if (this.unread > 0) {
+            	wfc.clearConversationUnreadStatus(this.source.conversation);
+            }
             this.refreshGroupPortrait();
         },
         showConversationInfoContextMenu(event) {
@@ -124,10 +126,12 @@ export default {
             if (info.conversation.type !== ConversationType.Group) {
                 return;
             }
+            console.log('refreshGroupPortrait', !info.conversation._target.portrait, info.conversation._target.portrait === Config.DEFAULT_GROUP_PORTRAIT_URL);
             if (!info.conversation._target.portrait || info.conversation._target.portrait === Config.DEFAULT_GROUP_PORTRAIT_URL) {
                 getConversationPortrait(info.conversation).then((portrait => {
                     if (info.conversation.equal(this.source.conversation)) {
                         console.log('update portrait', this.source.conversation.target)
+                        info.conversation._target.portrait = portrait;
                         this.groupPortrait = portrait;
                     }
                 }))

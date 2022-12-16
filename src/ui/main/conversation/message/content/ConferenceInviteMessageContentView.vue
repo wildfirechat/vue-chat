@@ -21,6 +21,7 @@ import store from "../../../../../store";
 import ConversationType from "../../../../../wfc/model/conversationType";
 import ConferenceInfoView from "../../../../voip/conference/ConferenceInfoView";
 import conferenceApi from "../../../../../api/conferenceApi";
+import Config from "../../../../../config";
 
 export default {
     name: "ConferenceInviteMessageContentView",
@@ -105,6 +106,9 @@ export default {
 
         portrait() {
             let content = this.message.messageContent;
+            if (!content.host) {
+                return Config.DEFAULT_PORTRAIT_URL;
+            }
             let groupId = this.message.conversation.type === ConversationType.Group ? this.message.conversation.target : '';
             let userInfos = store.getUserInfos([content.host], groupId)
             return userInfos[0].portrait;

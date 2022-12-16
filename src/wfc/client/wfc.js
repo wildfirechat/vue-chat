@@ -440,12 +440,12 @@ export class WfcManager {
     }
 
     /**
-     * 设置全管理员
+     * 设置群管理员
      * @param {string} groupId 群id
      * @param {boolean} isSet true，设置；false，取消设置
      * @param {[string]} memberIds 将被设置为管理或取消管理远的群成员的用户id
      * @param {[number]} lines 默认传[0]即可
-     * @param {TODO } notifyContent 默认传null即可
+     * @param {Object} notifyContent 默认传null即可
      * @param {function ()} successCB
      * @param {function (number)} failCB
      * @returns {Promise<void>}

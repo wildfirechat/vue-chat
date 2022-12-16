@@ -338,7 +338,6 @@ let store = {
                     userInfo = Object.assign({}, userInfo);
                     userInfo._displayName = wfc.getGroupMemberDisplayNameEx(userInfo);
                     conversationState.inputtingUser = userInfo;
-                    console.log('typingingl.....')
 
                     if (!conversationState.inputClearHandler) {
                         conversationState.inputClearHandler = () => {
@@ -356,7 +355,7 @@ let store = {
                     return;
                 }
                 let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
-                    return m.messageId === msg.messageId;
+                    return m.messageId === msg.messageId || eq(m.messageUid, msg.messageUid);
                 });
                 if (msgIndex > -1) {
                     console.log('msg duplicate')

@@ -305,6 +305,7 @@ export default {
                         file = fileFromDataUri(src, new Date().getTime() + '.png');
                     }
                     this.$eventBus.$emit('uploadFile', file)
+                    store.setShouldAutoScrollToBottom(true);
                     store.sendFile(this.conversationInfo.conversation, file)
                     // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
                     img.parentNode.removeChild(img);
@@ -332,6 +333,7 @@ export default {
                     let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
                     textMessageContent.setQuoteInfo(quoteInfo);
                 }
+                store.setShouldAutoScrollToBottom(true);
                 wfc.sendConversationMessage(conversation, textMessageContent);
                 this.$refs['input'].innerHTML = '';
             }

@@ -208,6 +208,7 @@ export default {
                 || status === ConnectionStatus.ConnectionStatusLogout
                 || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
                 || status === ConnectionStatus.ConnectionStatusTokenIncorrect
+                || status === ConnectionStatus.kConnectionStatusKickedOff
                 // TODO 断网时，显示网络断开状态
                 // || status === ConnectionStatus.ConnectionStatusUnconnected
                 || wfc.getUserId() === '') {
@@ -218,6 +219,7 @@ export default {
                 if (status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
                     || status === ConnectionStatus.ConnectionStatusLogout
                     || status === ConnectionStatus.ConnectionStatusTokenIncorrect
+                    || status === ConnectionStatus.kConnectionStatusKickedOff
                     || status === ConnectionStatus.ConnectionStatusRejected) {
                     removeItem("userId");
                     removeItem('token')
