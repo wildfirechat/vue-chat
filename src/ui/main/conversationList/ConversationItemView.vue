@@ -131,7 +131,9 @@ export default {
                 getConversationPortrait(info.conversation).then((portrait => {
                     if (info.conversation.equal(this.source.conversation)) {
                         console.log('update portrait', this.source.conversation.target)
-                        info.conversation._target.portrait = portrait;
+                        if (portrait !== Config.DEFAULT_GROUP_PORTRAIT_URL){
+                            info.conversation._target.portrait = portrait;
+                        }
                         this.groupPortrait = portrait;
                     }
                 }))
