@@ -9,6 +9,7 @@ import Long from 'long';
 import impl from '../proto/proto.min';
 import Config from "../../config";
 import avenginekit from "../av/engine/avenginekitproxy";
+import pttClient from "../ptt/client/pttClient";
 
 
 export class WfcManager {
@@ -32,6 +33,9 @@ export class WfcManager {
     init(args = []) {
         impl.init(args);
         avenginekit.setup(self);
+        if (Config.ENABLE_PTT){
+            pttClient.init();
+        }
     }
     /**
      * 注册新的自定义消息
@@ -1879,11 +1883,18 @@ export class WfcManager {
         impl.setMyCustomState(customState, customText, successCB, failCB)
     }
 
+
+    requireLock(lockId, duration, successCB, failCB){
+        impl.requireLock(lockId, duration, successCB, failCB);
+    }
+
+    releaseLock(lockId, successCB, failCB){
+        impl.releaseLock(lockId, successCB, failCB);
+    }
+
     _getStore() {
         return impl._getStore();
     }
-
-
 
 
     /**
@@ -1904,6 +1915,19 @@ export class WfcManager {
         return decodeURIComponent(escape(atob(str)));
     }
 
+    b64_to_arrayBuffer(str) {
+        let binary_string = atob(str);
+        let len = binary_string.length;
+        let bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
+    arrayBuffer_to_b64(data){
+        return Buffer.from(data).toString('base64');
+    }
     unescape (str) {
         return (str + '==='.slice((str.length + 3) % 4))
             .replace(/-/g, '+')
