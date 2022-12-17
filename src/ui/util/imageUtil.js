@@ -300,7 +300,7 @@ async function getGroupPortrait(groupId, groupInfoMap) {
     if (!portrait || now - portrait.timestamp > 30 * 1000) {
         let groupMembers = wfc.getGroupMembers(groupId, false);
         if (!groupMembers || groupMembers.length === 0) {
-            console.error('gen group portrait, members empty')
+            console.error('gen group portrait, members empty', groupId)
             return Config.DEFAULT_GROUP_PORTRAIT_URL;
         }
         groupMembers = groupMembers.filter(m => m.type !== GroupMemberType.Removed);
