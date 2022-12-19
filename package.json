@@ -23,7 +23,6 @@
     "jr-qrcode": "^1.1.4",
     "js-base64": "^3.4.5",
     "long": "^4.0.0",
-    "pinyin": "^2.9.1",
     "push.js": "^1.0.12",
     "qrcode.vue": "^1.7.0",
     "resize-image": "^0.1.0",
