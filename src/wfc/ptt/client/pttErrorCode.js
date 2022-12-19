@@ -7,4 +7,6 @@ export default class PttErrorCode{
     static TALKING = -6;
     static NOT_IN_GROUP = -7;
     static PTT_DISABLED = -8;
+    // 没有录音权限等，会触发
+    static RECORDER_ERROR = -9;
 }
