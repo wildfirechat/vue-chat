@@ -105,7 +105,7 @@ export default class Config {
     // 允许主动加入多人音视频通话
     static ENABLE_MULTI_CALL_AUTO_JOIN = false;
 
-    // 是否打开语音对讲功能，和对讲机类似的功能，不是发送语音消息
+    // 需要专业版 im-server 才支持，是否打开语音对讲功能，和对讲机类似的功能，不是发送语音消息
     static ENABLE_PTT = true;
 
     static getWFCPlatform() {

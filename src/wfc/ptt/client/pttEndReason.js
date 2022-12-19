@@ -2,7 +2,7 @@ export default class PttEndReason{
     //用户主动释放
     static User_Release = 0;
     //讲话超时
-    static Tiemout = 1;
+    static Timeout = 1;
     //被抢占
     static Take_Over = 2;
     //网络错误
