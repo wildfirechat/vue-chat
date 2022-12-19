@@ -28,6 +28,9 @@
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
                     </li>
+                    <li v-if="enablePtt">
+                        <i id="ptt" @mousedown="requestTalk(true)" @mouseup="requestTalk(false)" class="icon-ion-record"/>
+                    </li>
                 </ul>
                 <ul v-if="!inputOptions['disableVoip'] && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
                     <li v-if="!inputOptions['disableAudioCall']">
@@ -110,6 +113,9 @@ import EventType from "../../../wfc/client/wfcEvent";
 import IpcEventType from "../../../ipcEventType";
 import ChannelMenuView from "./ChannelMenuView";
 import IpcSub from "../../../ipc/ipcSub";
+import pttClient from "../../../wfc/ptt/client/pttClient";
+import TalkingCallback from "../../../wfc/ptt/client/talkingCallback";
+import Config from "../../../config";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -142,6 +148,7 @@ export default {
             lastConversationInfo: null,
             storeDraftIntervalId: 0,
             tributeReplaced: false,
+            enablePtt: Config.ENABLE_PTT,
         }
     },
     methods: {
@@ -692,6 +699,14 @@ export default {
                 if (groupMember && groupMember.type === GroupMemberType.Muted) {
                     this.muted = true;
                 }
+            }
+        },
+
+        requestTalk(request) {
+            if (request) {
+                pttClient.requestTalk(this.conversationInfo.conversation, new TalkingCallback())
+            } else {
+                pttClient.releaseTalk(this.conversationInfo.conversation);
             }
         }
     },

@@ -5,6 +5,8 @@
                             v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     <AudioMessageContentView :message="message"
                              v-else-if="message.messageContent.type === 2"/>
+    <AudioMessageContentView :message="message"
+                             v-else-if="message.messageContent.type === 23"/>
     <ImageMessageContentView :message="message"
                              v-else-if="message.messageContent.type === 3"/>
     <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
