@@ -1,4 +1,4 @@
-sed -i '' 's/ENABLE_PTT = false/ENABLE_PTT = true' src/config.js
+sed -i '' 's/ENABLE_PTT = false/ENABLE_PTT = true/' src/config.js
 cp src/wfc/av/internal/engine-conference.min.js src/wfc/av/internal/engine.min.js
 npm run build
 git checkout -- src/wfc/av/internal/engine.min.js
