@@ -78,7 +78,7 @@ export default class MessageConfig {
                 }
             }
         }
-        console.log(`message type ${type} is unknown`);
+        console.error(`message type ${type} is unknown`);
         return UnknownMessageContent;
     }
 

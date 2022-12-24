@@ -1379,7 +1379,7 @@ let store = {
                 info.conversation._target = {};
             }
         } else if (info.conversation.type === ConversationType.ChatRoom) {
-            wfc.getChatroomInfo(info.conversation.target, new Date().getTime(), (chatRoomInfo) => {
+            wfc.getChatroomInfo(info.conversation.target, 0, (chatRoomInfo) => {
                 info.conversation._target = chatRoomInfo;
             }, err => {
                 console.log('get chatRoomInfo error', err);
