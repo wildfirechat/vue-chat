@@ -9,6 +9,7 @@ export default class ErrorCode {
     static kEcServerServerError = 4;
     static kEcServerNotModified = 5;
     static kEcServerTokenIncorrect = 6;
+    static kConnectionStatusKickedOff = 7;
     static kEcServerUserForbidden = 8;
     static kEcServerNotInGroup = 9;
     static kEcServerInvalidMessage = 10;
