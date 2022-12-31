@@ -84,7 +84,6 @@ export class PttClient {
         }
         this.pttClientImpl.end();
         this.pttClientImpl = null;
-        wfc.eventEmitter.off(EventType.ReceiveMessage, this._onReceiveMessageListener)
     }
 
     /**

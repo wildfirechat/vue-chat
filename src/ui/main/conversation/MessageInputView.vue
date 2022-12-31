@@ -29,10 +29,12 @@
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
                     </li>
                     <li v-if="enablePtt">
-                        <i id="ptt" @mousedown="requestPttTalk(true)" @mouseup="requestPttTalk(false)" class="icon-ion-android-radio-button-on"/>
+                        <i id="ptt" @mousedown="requestPttTalk(true)" @mouseup="requestPttTalk(false)"
+                           class="icon-ion-android-radio-button-on"/>
                     </li>
                     <li>
-                        <i id="voice" @mousedown="recordAudio(true)" @mouseup="recordAudio(false)" class="icon-ion-android-microphone"/>
+                        <i id="voice" @mousedown="recordAudio(true)" @mouseup="recordAudio(false)"
+                           class="icon-ion-android-microphone"/>
                     </li>
                 </ul>
                 <ul v-if="!inputOptions['disableVoip'] && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
@@ -81,11 +83,13 @@
                 v-on:cancelQuoteMessage="cancelQuoteMessage"
                 :enable-message-preview="false"
                 :quoted-message="quotedMessage" :show-close-button="true"/>
-            <div v-if="muted" style="width: 100%; height: 100%; background: lightgrey; position: absolute; display: flex; justify-content: center; align-items: center">
+            <div v-if="muted"
+                 style="width: 100%; height: 100%; background: lightgrey; position: absolute; display: flex; justify-content: center; align-items: center">
                 <p style="color: white">群禁言或者你被禁言</p>
             </div>
         </section>
-        <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus" :conversation="conversationInfo.conversation"></ChannelMenuView>
+        <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus"
+                         :conversation="conversationInfo.conversation"></ChannelMenuView>
     </div>
 </template>
 
@@ -717,6 +721,12 @@ export default {
                         text: '请开始说话',
                         type: 'info'
                     });
+                };
+                talkingCallback.onRequestFail = (conversation, reason) => {
+                    this.$notify({
+                        text: '对讲请求失败: ' + reason,
+                        type: 'error'
+                    });
                 }
                 pttClient.requestTalk(this.conversationInfo.conversation, talkingCallback)
             } else {
@@ -730,6 +740,12 @@ export default {
                     this.amrRecorder = new BenzAMRRecorder();
                     this.amrRecorder.initWithRecord().then(() => {
                         this.amrRecorder.startRecord();
+                    }).catch((e) => {
+                        this.$notify({
+                            text: '录音失败',
+                            type: 'error'
+                        });
+                        console.log('录音失败', e);
                     });
         }
             } else {

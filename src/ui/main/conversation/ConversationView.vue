@@ -13,7 +13,7 @@
                     <div
                         v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
                     >
-                        <a href="#">
+                        <a v-if="sharedMiscState.isElectron" href="#">
                             <i class="icon-ion-pin"
                                style="display: inline-block"
                                v-bind:class="{active : isWindowAlwaysTop}"
