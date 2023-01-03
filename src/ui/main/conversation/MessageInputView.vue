@@ -195,6 +195,7 @@ export default {
             } else {
                 text = await navigator.clipboard.readText();
             }
+            console.log('handlePaste', e, source);
             if (isElectron()) {
                 let args = ipcRenderer.sendSync(IpcEventType.FILE_PASTE);
                 if (args.hasImage) {
@@ -207,6 +208,19 @@ export default {
                     })
                     return;
                 }
+            } else {
+                const dT = e.clipboardData || window.clipboardData;
+                const file = dT.files[0];
+                if (file) {
+                    if (file.type.indexOf('image') !== -1) {
+                        // image
+                        document.execCommand('insertImage', false, URL.createObjectURL(file));
+                    } else {
+                        // file
+                        store.sendFile(this.conversationInfo.conversation, file)
+                    }
+                }
+                console.log('handle paste file', file);
             }
 
             if (text && text.trim()) {
@@ -250,7 +264,7 @@ export default {
             this.$refs['input'].innerHTML = '';
         },
 
-        send(e) {
+        async send(e) {
             if (this.tribute && this.tribute.isActive) {
                 this.tributeReplaced = false;
                 return;
@@ -309,24 +323,30 @@ export default {
 
             let imgs = [...input.getElementsByTagName('img')];
             if (imgs) {
-                imgs.forEach(img => {
+                for (const img of imgs) {
                     if (img.className.indexOf('emoji') >= 0) {
-                        return;
+                        continue;
                     }
                     let src = img.src;
                     let file;
+                    console.log('oooo file', img.src);
                     if (isElectron()) {
                         // 'local-resource://' + 绝对路径
                         file = decodeURI(src.substring(17, src.length));
                     } else {
-                        file = fileFromDataUri(src, new Date().getTime() + '.png');
+                        if (src.startsWith('blob:')) {
+                            let blob = await fetch(src).then(r => r.blob());
+                            file = new File([blob], new Date().getTime() + '.png');
+                        } else {
+                            file = fileFromDataUri(src, new Date().getTime() + '.png');
+                        }
                     }
                     this.$eventBus.$emit('uploadFile', file)
                     store.setShouldAutoScrollToBottom(true);
                     store.sendFile(this.conversationInfo.conversation, file)
                     // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
                     img.parentNode.removeChild(img);
-                });
+                }
             }
             message = input.innerHTML.trim();
             message = message.replace(/<br>/g, '\n')
@@ -751,7 +771,7 @@ export default {
                         });
                         console.log('录音失败', e);
                     });
-        }
+                }
             } else {
                 if (this.amrRecorder) {
                     this.amrRecorder.finishRecord().then(() => {
