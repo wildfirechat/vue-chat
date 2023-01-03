@@ -154,7 +154,7 @@ i {
 }
 
 i:hover {
-    color: #34b7f1;
+    color: #3f64e4;
 }
 
 </style>

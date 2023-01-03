@@ -59,7 +59,7 @@ export default {
 
 .contact-list-panel {
     background-color: #fafafa;
-    width: 250px;
+    width: 261px;
     height: 100%;
 }
 

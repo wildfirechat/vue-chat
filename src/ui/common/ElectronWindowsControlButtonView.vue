@@ -274,8 +274,8 @@ export default {
 
 .titlebar .title {
     position: absolute;
-    left: 62px;
-    width: calc(100% - 62px);
+    left: 60px;
+    width: calc(100% - 60px);
     padding: 5px 0;
     display: flex;
     align-content: center;
@@ -284,7 +284,7 @@ export default {
 }
 
 .titlebar .title p {
-    margin-left: -62px;
+    margin-left: -60px;
 }
 
 /*windows or linux*/

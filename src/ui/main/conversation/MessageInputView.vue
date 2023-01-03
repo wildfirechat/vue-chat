@@ -740,6 +740,10 @@ export default {
                     this.amrRecorder = new BenzAMRRecorder();
                     this.amrRecorder.initWithRecord().then(() => {
                         this.amrRecorder.startRecord();
+                        this.$notify({
+                            text: '请开始说话',
+                            type: 'info'
+                        });
                     }).catch((e) => {
                         this.$notify({
                             text: '录音失败',
@@ -943,12 +947,12 @@ export default {
 
 i {
     font-size: 24px;
-    color: #000;
+    color: #000b;
     cursor: pointer;
 }
 
 i:hover {
-    color: #34b7f1;
+    color: #3f64e4;
 }
 
 </style>

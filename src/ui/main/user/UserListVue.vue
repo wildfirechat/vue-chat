@@ -100,7 +100,7 @@ export default {
 
         tippyStyleFix() {
             let root = document.documentElement;
-            root.style.setProperty('--tippy-right', '250px');
+            root.style.setProperty('--tippy-right', '261px');
         },
 
         tippyStyleReset() {

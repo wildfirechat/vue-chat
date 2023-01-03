@@ -1213,11 +1213,11 @@ a {
 }
 
 i:hover {
-    color: deepskyblue;
+    color: #1f64e4;
 }
 
 i.active {
-    color: #34b7f1;
+    color: #3f64e4;
 }
 
 .main-slider-container {

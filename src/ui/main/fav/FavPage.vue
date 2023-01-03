@@ -123,7 +123,7 @@ export default {
 }
 
 .fav-category-list-panel-container {
-    width: 250px;
+    width: 261px;
     height: 100%;
     display: flex;
     flex-direction: column;

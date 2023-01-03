@@ -31,7 +31,7 @@ export default {
 }
 
 .conversation-list-panel {
-    width: 250px;
+    width: 261px;
     height: 100%;
 }
 
