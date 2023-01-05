@@ -331,6 +331,7 @@ export default {
                 || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
                 || status === ConnectionStatus.kConnectionStatusKickedOff
                 || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
+                console.error('连接失败', status, ConnectionStatus.desc(status));
                 this.cancel();
             }
             if (status === ConnectionStatus.ConnectionStatusConnected) {

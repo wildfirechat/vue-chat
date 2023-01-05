@@ -329,7 +329,6 @@ export default {
                     }
                     let src = img.src;
                     let file;
-                    console.log('oooo file', img.src);
                     if (isElectron()) {
                         // 'local-resource://' + 绝对路径
                         file = decodeURI(src.substring(17, src.length));
@@ -655,6 +654,10 @@ export default {
 
         restoreDraft() {
             let draft = Draft.getConversationDraftEx(this.conversationInfo);
+            if (!draft){
+                return;
+            }
+            console.log('restore draft', this.conversationInfo, draft);
             store.quoteMessage(draft.quotedMessage);
             let input = this.$refs['input'];
             input.innerHTML = draft.text.replace(/ /g, '&nbsp').replace(/\n/g, '<br>');
@@ -871,6 +874,9 @@ export default {
                     this.focusInput();
                     this.initEmojiPicker()
                 })
+            } else {
+                // 其他端更新了草稿
+                this.restoreDraft();
             }
         },
     },

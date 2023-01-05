@@ -50,11 +50,9 @@
 </template>
 
 <script>
-import wfc from "../../../wfc/client/wfc";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import conferenceApi from "../../../api/conferenceApi";
 import ConferenceInfo from "../../../wfc/av/model/conferenceInfo";
-import IpcSub from "../../../ipc/ipcSub";
 import conferenceManager from "./conferenceManager";
 
 export default {

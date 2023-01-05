@@ -238,11 +238,16 @@ let store = {
                     this._loadDefaultData();
 
                     this.updateTray();
-                } else if (status === ConnectionStatus.ConnectionStatusLogout) {
+                } else if (status === ConnectionStatus.ConnectionStatusLogout
+                    || status === ConnectionStatus.ConnectionStatusRejected
+                    || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
+                    || status === ConnectionStatus.kConnectionStatusKickedOff
+                    || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
                     _reset();
                     this.updateTray();
                 }
             } catch (e) {
+                // do nothing
             }
         });
 
@@ -295,7 +300,7 @@ let store = {
             // TODO optimize
             console.log('store GroupMembersUpdate', groupId)
             this._reloadGroupConversationIfExist([new NullGroupInfo(groupId)]);
-        //     this._loadFavGroupList();
+            //     this._loadFavGroupList();
             // TODO 其他相关逻辑
         });
 
@@ -2029,6 +2034,7 @@ let store = {
             return;
         }
         let count = 0;
+  
         conversationState.conversationInfoList.forEach(info => {
             if (info.isSilent) {
                 return;

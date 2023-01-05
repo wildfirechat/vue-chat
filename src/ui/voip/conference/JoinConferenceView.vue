@@ -3,14 +3,14 @@
         <h2>加入会议</h2>
         <div class="conf-item">
             <p>会议号</p>
-            <input class="conf-item input" v-model="callId" type="text" placeholder="请输入会议号">
+            <input class="conf-item input" v-model="conferenceId" type="text" placeholder="请输入会议号">
         </div>
         <div class="conf-item">
             <p>会议密码</p>
-            <input class="conf-item input" v-model="pin" type="text" placeholder="请输入会议密码，如果没有，忽略">
+            <input class="conf-item input" v-model="password" type="text" placeholder="请输入会议密码，如果没有，忽略">
         </div>
         <div class="action-container">
-            <button class="join" :disabled="callId.trim() === '' " @click="joinConference">
+            <button class="join" :disabled="conferenceId.trim() === '' " @click="joinConference">
                 加入会议
             </button>
             <button @click="cancel">
@@ -21,24 +21,43 @@
 </template>
 
 <script>
-import wfc from "../../../wfc/client/wfc";
-import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
+import conferenceApi from "../../../api/conferenceApi";
+import ConferenceInfoView from "./ConferenceInfoView.vue";
 
 export default {
     name: "CreateConferenceView",
     data() {
         return {
-            callId: '',
-            pin: '',
+            conferenceId: '',
+            password: '',
         }
     },
 
     methods: {
         joinConference() {
-            // TODO getConferenceInfo and then join
-            // let userId = wfc.getUserId();
-            // avenginekitproxy.startConference(null, !this.audioOnly, '', userId, this.title, this.desc, !this.audience, this.advance);
-            // this.$modal.hide('join-conference-modal')
+            conferenceApi.queryConferenceInfo(this.conferenceId, this.password)
+                .then(info => {
+                    console.log('conferenceInfo', info);
+                    this.$modal.show(
+                        ConferenceInfoView,
+                        {
+                            conferenceInfo: info,
+                        }, {
+                            name: 'conference-info-modal',
+                            width: 320,
+                            height: 580,
+                            clickToClose: true,
+                        }, {})
+                    this.$modal.hide('join-conference-modal')
+                })
+                .catch(reason => {
+                    console.log('queryConferenceInfo failed', reason);
+                    this.$modal.hide('join-conference-modal')
+                    this.$notify({
+                        text: '获取会议信息失败',
+                        type: 'warn'
+                    });
+                })
         },
         cancel() {
             this.$modal.hide('join-conference-modal')
