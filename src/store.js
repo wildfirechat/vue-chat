@@ -1241,20 +1241,10 @@ let store = {
         let conversation = conversationState.currentConversationInfo.conversation;
         console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let lmsgs = wfc.getMessages(conversation, conversationState.currentConversationOldestMessageId, true, 20);
-        if (lmsgs.length > 0) {
-            conversationState.currentConversationOldestMessageId = lmsgs[0].messageId;
-            if (gt(lmsgs[0].messageUid, 0)) {
-                conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
-            }
-            let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
-            if (!loadNewMsg) {
-                setTimeout(() => completeCB(), 200)
-            } else {
-                setTimeout(() => loadedCB(), 200)
-            }
-        } else {
+        let loadRemoteHistoryMessageFunc = () => {
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
+                console.log('loadRemoteConversationMessages response', msgs.length);
                     if (msgs.length === 0) {
                         completeCB();
                     } else {
@@ -1271,6 +1261,20 @@ let store = {
                 (error) => {
                     completeCB();
                 });
+        }
+        if (lmsgs.length > 0) {
+            conversationState.currentConversationOldestMessageId = lmsgs[0].messageId;
+            if (gt(lmsgs[0].messageUid, 0)) {
+                conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
+            }
+            let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
+            if (!loadNewMsg) {
+                loadRemoteHistoryMessageFunc();
+            } else {
+                setTimeout(() => loadedCB(), 200)
+            }
+        } else {
+            loadRemoteHistoryMessageFunc();
         }
     },
 
