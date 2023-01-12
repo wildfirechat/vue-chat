@@ -210,17 +210,19 @@ export default {
                 }
             } else {
                 const dT = e.clipboardData || window.clipboardData;
-                const file = dT.files[0];
-                if (file) {
-                    if (file.type.indexOf('image') !== -1) {
-                        // image
-                        document.execCommand('insertImage', false, URL.createObjectURL(file));
-                    } else {
-                        // file
-                        store.sendFile(this.conversationInfo.conversation, file)
+                if (dT) {
+                    const file = dT.files[0];
+                    if (file) {
+                        if (file.type.indexOf('image') !== -1) {
+                            // image
+                            document.execCommand('insertImage', false, URL.createObjectURL(file));
+                        } else {
+                            // file
+                            store.sendFile(this.conversationInfo.conversation, file)
+                        }
                     }
+                    console.log('handle paste file', file);
                 }
-                console.log('handle paste file', file);
             }
 
             if (text && text.trim()) {
@@ -654,7 +656,7 @@ export default {
 
         restoreDraft() {
             let draft = Draft.getConversationDraftEx(this.conversationInfo);
-            if (!draft){
+            if (!draft) {
                 return;
             }
             console.log('restore draft', this.conversationInfo, draft);
