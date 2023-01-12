@@ -1087,7 +1087,7 @@ let store = {
         let messageContent;
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
-                let iThumbnail;
+                let iThumbnail = '';
                 if (file.size > 15 * 1024){
                     iThumbnail = await imageThumbnail(file);
                     iThumbnail = iThumbnail ? iThumbnail : '';
