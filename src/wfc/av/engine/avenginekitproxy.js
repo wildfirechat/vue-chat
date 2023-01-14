@@ -24,6 +24,9 @@ export class AvEngineKitProxy {
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
     useIframe = false;
     iframe;
+    // 将音视频页面渲染在当前页面，而不是单独的 window 或者 iframe
+    useSPA = true;
+
     type;
 
     conference = false;
@@ -328,7 +331,7 @@ export class AvEngineKitProxy {
             ipcRenderer.on(event, listener);
         } else {
             if (!this.events) {
-                this.events = new PostMessageEventEmitter(this.useIframe ? window.parent : window.opener, window.location.origin);
+                this.events = new PostMessageEventEmitter(this.useIframe || this.useSPA ? window.parent : window.opener, window.location.origin);
             }
             this.events.on(event, listener);
         }
@@ -368,6 +371,7 @@ export class AvEngineKitProxy {
             groupMemberUserInfos = wfc.getUserInfos(memberIds, conversation.target);
         }
         this.showCallUI(conversation, false);
+        console.log('startcALL')
         this.emitToVoip('startCall', {
             conversation: conversation,
             audioOnly: audioOnly,
@@ -496,6 +500,11 @@ export class AvEngineKitProxy {
     showCallUI(conversation, isConference) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         this.type = type;
+
+        if (this.useSPA){
+            this.onVoipWindowReady(window)
+            return;
+        }
 
         let width = 360;
         let height = 640;
@@ -634,9 +643,10 @@ export class AvEngineKitProxy {
             }
             this.callId = null;
             this.participants = [];
-            this.queueEvents = [];
             this.callWin = null;
-            this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
+            if (!this.useSPA){
+                this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
+            }
         }, 2000);
     }
 
@@ -645,6 +655,10 @@ export class AvEngineKitProxy {
         console.log('onVoipWindowReady')
         let store = require('../../../store')
         store && store.default && store.default.updateVoipStatus(this.conversation, true)
+        if (this.useSPA && this.events){
+            return;
+        }
+
         if (!isElectron()) {
             if (!this.events) {
                 this.events = new PostMessageEventEmitter(win, window.location.origin)
@@ -723,6 +737,9 @@ export class AvEngineKitProxy {
     }
 
     forceCloseVoipWindow() {
+        if (this.useSPA){
+            return;
+        }
         if (this.callWin) {
             this.callWin.close();
         }

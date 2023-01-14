@@ -14,6 +14,7 @@ import MessageHistoryPage from "./ui/main/MessageHistoryPage";
 import ConversationMessageHistoryPage from "./ui/main/ConversationMessageHistoryPage";
 import ConversationFloatPage from "./ui/main/ConversationFloatPage";
 import ConferencePortalPage from "./ui/voip/conference/ConferencePortalPage";
+import SingleSPA from "./ui/voip/SingleSPA.vue";
 
 const routers = [
     {
@@ -53,6 +54,11 @@ const routers = [
                 path: 'conference',
                 name: 'conference',
                 component: ConferencePortalPage,
+            },
+            {
+                path: 'spaVideo',
+                name: 'spaVideo',
+                component: SingleSPA,
             },
         ]
     },

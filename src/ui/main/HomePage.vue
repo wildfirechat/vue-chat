@@ -71,6 +71,12 @@
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/conference'}"
                                @click="go2Conference"></i>
                         </li>
+
+                        <li v-if="testSingleSPA">
+                            <i class="icon-ion-speakerphone"
+                               v-bind:class="{active : this.$router.currentRoute.path === '/home/spaVideo'}"
+                               @click="go2SpaVideoTestPage"></i>
+                        </li>
                         <li>
                             <i class="icon-ion-android-settings"
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
@@ -118,6 +124,8 @@ import CallEndReason from "../../wfc/av/engine/callEndReason";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
+import Conversation from "../../wfc/model/conversation";
+import ConversationType from "../../wfc/model/conversationType";
 
 export default {
     data() {
@@ -126,6 +134,7 @@ export default {
             sharedMiscState: store.state.misc,
             shareConversationState: store.state.conversation,
             supportConference: avenginekit.startConference !== undefined,
+            testSingleSPA: !!avenginekitproxy.useSPA,
             isSetting: false,
             fileWindow: null,
             voipProxy: avenginekitproxy,
@@ -189,6 +198,17 @@ export default {
             }
             this.$router.replace({path: "/home/conference"});
             this.isSetting = true;
+        },
+        go2SpaVideoTestPage() {
+            if (this.$router.currentRoute.path === '/home/spaVideo') {
+                return;
+            }
+            this.$router.replace({path: "/home/spaVideo"});
+            this.isSetting = true;
+
+
+            let conv = new Conversation(ConversationType.Single, "GNMtGtZZ", 0);
+            avenginekitproxy.startCall(conv, false,[conv.target], '');
         },
         go2Setting() {
             if (this.$router.currentRoute.path === '/home/setting') {
