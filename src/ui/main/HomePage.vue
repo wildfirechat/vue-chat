@@ -77,6 +77,11 @@
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/spaVideo'}"
                                @click="go2SpaVideoTestPage"></i>
                         </li>
+                        <li v-if="testSingleSPA">
+                            <i class="icon-ion-speakerphone"
+                               v-bind:class="{active : this.$router.currentRoute.path === '/home/spaVideo'}"
+                               @click="go2SpaConferenceTestPage"></i>
+                        </li>
                         <li>
                             <i class="icon-ion-android-settings"
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
@@ -209,6 +214,18 @@ export default {
 
             let conv = new Conversation(ConversationType.Single, "GNMtGtZZ", 0);
             avenginekitproxy.startCall(conv, false,[conv.target], '');
+        },
+        go2SpaConferenceTestPage() {
+            if (this.$router.currentRoute.path === '/home/spaConference') {
+                return;
+            }
+            this.$router.replace({path: "/home/spaConference"});
+            this.isSetting = true;
+
+            avenginekitproxy.joinConference("3297108153", false, "095-9", "GNMtGtZZ", "x64的会议", '', false, false, false, false);
+
+            // let conv = new Conversation(ConversationType.Single, "GNMtGtZZ", 0);
+            // avenginekitproxy.startCall(conv, false,[conv.target], '');
         },
         go2Setting() {
             if (this.$router.currentRoute.path === '/home/setting') {
