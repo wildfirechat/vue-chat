@@ -24,7 +24,7 @@
             <div class="content">
                 <div class="picked-user-container" v-for="(user, index) in sharedPickState.users" :key="index">
                     <div class="picked-user">
-                        <img class="avatar" :src="user.portrait" :alt="user + index">
+                        <img class="avatar" :src="user.portrait" alt="">
                         <button @click="unpick(user)" class="unpick-button">x</button>
                     </div>
                     <span class="name single-line">{{ user.displayName }}</span>

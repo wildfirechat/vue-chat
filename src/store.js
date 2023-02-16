@@ -119,18 +119,21 @@ let store = {
             currentGroup: null,
             currentChannel: null,
             currentFriend: null,
+            currentOrganization: null,
             currentUser: null,
 
             expandFriendRequestList: false,
             expandFriendList: true,
             expandGroup: false,
             expandChanel: false,
+            expandOrganization: false,
 
             unreadFriendRequestCount: 0,
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
             channelList: [],
+            organizationList: [],
             favContactList: [],
 
             selfUserInfo: null,
@@ -139,6 +142,7 @@ let store = {
                 this.currentGroup = null;
                 this.currentChannel = null;
                 this.currentFriend = null;
+                this.currentOrganization = null;
                 this.currentUser = null;
 
                 this.expandFriendRequestList = false;
@@ -151,6 +155,7 @@ let store = {
                 this.friendRequestList = [];
                 this.favGroupList = [];
                 this.channelList = [];
+                this.organizationList = [];
                 this.favContactList = [];
 
                 this.selfUserInfo = null;
@@ -180,11 +185,13 @@ let store = {
 
         pick: {
             users: [],
+            organizations: [],
             conversations: [],
             messages: [],
 
             _reset() {
                 this.users = [];
+                this.organizations = [];
                 this.conversations = [];
                 this.messages = [];
 
@@ -453,6 +460,10 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.SendMessage, (message) => {
+            // 删除频道，或者从频道会话切到其他会话时，会发送一条离开频道的消息
+            if (message.messageContent instanceof LeaveChannelChatMessageContent) {
+                return;
+            }
             this._reloadConversation(message.conversation);
             if (!this._isDisplayMessage(message)) {
                 return;
@@ -1597,6 +1608,7 @@ let store = {
     setCurrentFriendRequest(friendRequest) {
         contactState.currentFriendRequest = friendRequest;
         contactState.currentFriend = null;
+        contactState.currentOrganization = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
     },
@@ -1604,6 +1616,7 @@ let store = {
     setCurrentFriend(friend) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = friend;
+        contactState.currentOrganization = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
     },
@@ -1611,6 +1624,7 @@ let store = {
     setCurrentGroup(group) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
+        contactState.currentOrganization = null;
         contactState.currentGroup = group;
         contactState.currentChannel = null;
     },
@@ -1618,8 +1632,16 @@ let store = {
     setCurrentChannel(channel) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
+        contactState.currentOrganization = null;
         contactState.currentGroup = null;
         contactState.currentChannel = channel;
+    },
+    setCurrentOrganization(organization) {
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = null;
+        contactState.currentGroup = null;
+        contactState.currentChannel = null;
+        contactState.currentOrganization = organization;
     },
     toggleGroupList() {
         contactState.expandGroup = !contactState.expandGroup;
@@ -1635,6 +1657,18 @@ let store = {
 
     toggleFriendList() {
         contactState.expandFriendList = !contactState.expandFriendList;
+    },
+
+    toggleOrganizationList() {
+        // TEST DATA
+        contactState.organizationList = [
+            {
+                name: '测试公司',
+                portrait: Config.DEFAULT_ORGANIZATION_PORTRAIT_URL,
+
+            }
+        ]
+        contactState.expandOrganization = !contactState.expandOrganization;
     },
 
     // search actions
@@ -1784,6 +1818,21 @@ let store = {
 
     isUserPicked(user) {
         let index = pickState.users.findIndex(u => u.uid === user.uid);
+        return index >= 0;
+    },
+
+    // pick actions
+    pickOrUnpickOrganization(org) {
+        let index = pickState.organizations.findIndex(o => o.id === org.id);
+        if (index >= 0) {
+            pickState.organizations = pickState.organizations.filter(o => o.id !== org.id)
+        } else {
+            pickState.organizations.push(org);
+        }
+    },
+
+    isOrganizationPicked(org) {
+        let index = pickState.organizations.findIndex(o => o.id === org.id);
         return index >= 0;
     },
 

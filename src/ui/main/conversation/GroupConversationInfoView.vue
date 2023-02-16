@@ -52,7 +52,7 @@
                          :padding-left="'20px'"
             />
         </div>
-        <div @click="quitGroup" class="quit-group-item">
+        <div v-if="enableQuitGroup" @click="quitGroup" class="quit-group-item">
             {{ $t('conversation.quit_group') }}
         </div>
     </div>
@@ -206,9 +206,19 @@ export default {
     },
 
     computed: {
+        enableQuitGroup() {
+            let groupInfo = this.conversationInfo.conversation._target;
+            if (groupInfo.type === GroupType.Organization) {
+                return false;
+            }
+            return true;
+        },
         enableAddGroupMember() {
             let selfUid = wfc.getUserId();
             let groupInfo = this.conversationInfo.conversation._target;
+            if (groupInfo.type === GroupType.Organization) {
+                return false;
+            }
             //在group type为Restricted时，0 开放加入权限（群成员可以拉人，用户也可以主动加入）；1 只能群成员拉人入群；2 只能群管理拉人入群
             if (groupInfo.type === GroupType.Restricted) {
                 if (groupInfo.joinType === 0 || groupInfo.joinType === 1) {
@@ -222,6 +232,10 @@ export default {
         },
 
         enableRemoveGroupMember() {
+            let groupInfo = this.conversationInfo.conversation._target;
+            if (groupInfo.type === GroupType.Organization) {
+                return false;
+            }
             let selfUid = wfc.getUserId();
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
             if (groupMember) {
@@ -232,6 +246,10 @@ export default {
         },
 
         enableEditGroupNameOrAnnouncement() {
+            let groupInfo = this.conversationInfo.conversation._target;
+            if (groupInfo.type === GroupType.Organization) {
+                return false;
+            }
             let selfUid = wfc.getUserId();
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
             if (groupMember) {

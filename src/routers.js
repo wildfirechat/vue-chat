@@ -14,6 +14,7 @@ import MessageHistoryPage from "./ui/main/MessageHistoryPage";
 import ConversationMessageHistoryPage from "./ui/main/ConversationMessageHistoryPage";
 import ConversationFloatPage from "./ui/main/ConversationFloatPage";
 import ConferencePortalPage from "./ui/voip/conference/ConferencePortalPage";
+import MessagePage from "./ui/main/MessagePage.vue";
 
 const routers = [
     {
@@ -87,6 +88,11 @@ const routers = [
         component: CompositeMessagePage,
     },
     {
+        name: 'message',
+        path: '/message',
+        component: MessagePage,
+    },
+    {
         name: 'message-history',
         path: '/message-history',
         component: MessageHistoryPage,
@@ -100,7 +106,7 @@ const routers = [
         name: 'conversation-window',
         path: '/conversation-window',
         component: ConversationFloatPage,
-    }
 
+    }
 ]
 export default routers

@@ -8,10 +8,6 @@ import wfc from "../wfc/client/wfc";
 
 export class AppServerApi {
     constructor() {
-        axios.defaults.baseURL = Config.APP_SERVER;
-
-        axios.defaults.headers.common['authToken'] = getItem('authToken');
-        axios.defaults.withCredentials = true;
     }
 
     requestAuthCode(mobile) {
@@ -123,8 +119,7 @@ export class AppServerApi {
                     }
 
                     if (appAuthToken) {
-                        setItem('authToken', appAuthToken);
-                        axios.defaults.headers.common['authToken'] = appAuthToken;
+                        setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
                     }
                     resolve(response.data.result);
                 } else {
@@ -147,7 +142,14 @@ export class AppServerApi {
      */
     async _post(path, data = null, rawResponse = false, rawResponseData = false) {
         let response;
-        response = await axios.post(path, data, {transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse})
+        path = Config.APP_SERVER + path;
+        response = await axios.post(path, data, {
+            transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
+            headers: {
+                'authToken': getItem('authToken-' + new URL(path).host),
+            },
+            withCredentials: true,
+        })
         if (rawResponse) {
             return response;
         }

@@ -94,8 +94,8 @@ export default {
 
 .multi-selection-action-container {
     width: 100%;
-    height: 203px;
-    min-height: 204px;
+    height: 184px;
+    min-height: 184px;
     text-align: center;
     display: flex;
     justify-content: center;

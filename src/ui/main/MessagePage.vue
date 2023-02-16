@@ -3,17 +3,14 @@
         <div v-if="!sharedMiscState.isElectron" class="close-button-container" @click="hideCompositeMessagePage">
             <i class="icon-ion-close"></i>
         </div>
-        <div v-if="!compositeMessage">
-            {{ 'Null CompositeMessagePage' }}
+        <div v-if="!previewMessage">
+            {{ 'Null MessagePage' }}
         </div>
         <ul v-else>
-            <li v-for="(message, index) in compositeMessage.messageContent.messages"
-                :key="message.uid">
+            <li v-for="(message, index) in [previewMessage]" :key="message.uid">
                 <div class="message-container">
                     <div class="portrait-container">
-                        <img
-                            v-if="index === 0 || message.from !== compositeMessage.messageContent.messages[index -1].from"
-                            alt="" :src="message._from.portrait">
+                        <img v-if="index === 0" alt="" :src="message._from.portrait">
                     </div>
                     <div class="name-time-content-container">
                         <div class="name-time-container">
@@ -50,9 +47,9 @@
                             <!--                                                                v-else-if="message.messageContent.type === 408"/>-->
                             <UnsupportMessageContentView :message="message"
                                                          v-else-if="[2, 10, 400, 408].indexOf(message.messageContent.type) >= 0"/>
-                            <UnknowntMessageContentView :message="message"
-                                                        v-else
-                                                        v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+                            <UnknownMessageContentView :message="message"
+                                                       v-else
+                                                       v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
                         </div>
                     </div>
                 </div>
@@ -71,14 +68,12 @@ import ImageMessageContentView from "./conversation/message/content/ImageMessage
 import VideoMessageContentView from "./conversation/message/content/VideoMessageContentView";
 import FileMessageContentView from "./conversation/message/content/FileMessageContentView";
 import StickerMessageContentView from "./conversation/message/content/StickerMessageContentView";
-import UnknowntMessageContentView from "./conversation/message/content/UnknownMessageContentView";
+import UnknownMessageContentView from "./conversation/message/content/UnknownMessageContentView";
 import Message from "../../wfc/messages/message";
 import {stringValue} from "../../wfc/util/longUtil";
 import wfc from "../../wfc/client/wfc";
 import FavItem from "../../wfc/model/favItem";
 import Conversation from "../../wfc/model/conversation";
-import axios from "axios";
-import {isElectron} from "../../platform";
 
 export default {
     name: "CompositeMessagePage",
@@ -91,61 +86,40 @@ export default {
     },
     data() {
         return {
-            compositeMessage: null,
+            previewMessage: null,
             sharedMiscState: store.state.misc,
         }
     },
 
     mounted() {
         if (this.message) {
-            this.compositeMessage = this.message;
-            this.loadMediaCompositeMessage(this.compositeMessage);
+            this.previewMessage = this.message;
             return;
         }
         let hash = window.location.hash;
-        if(hash.indexOf('messageUid=') >= 0){
-        let messageUid = hash.substring(hash.indexOf('=') + 1);
-        this.compositeMessage = store.getMessageByUid(messageUid);
-        }else {
+        if (hash.indexOf('messageUid=') >= 0) {
+            let messageUid = hash.substring(hash.indexOf('=') + 1);
+            this.previewMessage = store.getMessageByUid(messageUid);
+        } else {
             let faveItemData = hash.substring(hash.indexOf('=') + 1);
             let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
             let favItem = Object.assign(new FavItem(), favItemRaw);
             favItem.conversation = new Conversation(favItem.convType, favItem.convTarget, favItem.convLine);
             favItem.favType = favItem.type;
-            this.compositeMessage = favItem.toMessage();
+            this.previewMessage = favItem.toMessage();
         }
-        store._patchMessage(this.compositeMessage, 0);
-        document.title = this.compositeMessage.messageContent.title;
-        this.loadMediaCompositeMessage(this.compositeMessage);
+        store._patchMessage(this.previewMessage, 0);
+        // document.title = this.previewMessage.messageContent.title;
     },
 
     methods: {
         hideCompositeMessagePage() {
             this.$modal.hide('show-composite-message-modal' + '-' + stringValue(this.message.messageUid))
         },
-        loadMediaCompositeMessage(msg){
-            let content = msg.messageContent;
-            if (content.remotePath ) {
-                if (isElectron()) {
-                    if (content.localPath && require('fs').existsSync(content.localPath)){
-                        return;
-                    }
-                } else {
-                    // web 每次加载
-                    // do nothing
-                }
-                axios.get(content.remotePath, {responseType: 'arraybuffer'}).then(value => {
-                    content._decodeMessages(new TextDecoder('utf-8').decode(value.data));
-                    store._patchMessage(this.compositeMessage, 0);
-                    content.loaded = true;
-                })
-            }
-
-        }
     },
 
     components: {
-        UnknowntMessageContentView,
+        UnknownMessageContentView,
         // ConferenceInviteMessageContentView,
         CompositeMessageContentView,
         // AudioMessageContentView,

@@ -32,6 +32,16 @@
                 <ChannelListView v-if="sharedContactState.expandChanel"/>
             </li>
             <li>
+                <div @click="showOrganization" class="category-item-container">
+                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
+                    <div class="category-item">
+                        <span class="title">组织结构</span>
+                        <span class="desc"></span>
+                    </div>
+                </div>
+                <OrganizationListView v-if="sharedContactState.expandOrganization"/>
+            </li>
+            <li>
                 <div @click="showContacts" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
                     <div class="category-item">
@@ -62,10 +72,13 @@ import store from "@/store";
 import UserListVue from "@/ui/main/user/UserListVue";
 import ChannelListView from "./ChannelListView";
 import ContactItemView from "./ContactItemView";
+import OrganizationListView from "./OrganizationListView.vue";
+import organizationServerApi from "../../../api/organizationServerApi";
 
 export default {
     name: "ContactListView",
     components: {
+        OrganizationListView,
         ChannelListView,
         UserListVue,
         GroupListVue,
@@ -75,7 +88,8 @@ export default {
         return {
             sharedContactState: store.state.contact,
             contactItemView: ContactItemView,
-            users: store.state.contact.favContactList.concat(store.state.contact.friendList)
+            users: store.state.contact.favContactList.concat(store.state.contact.friendList),
+            rootOrganizations: [],
         }
     },
     methods: {
@@ -95,6 +109,9 @@ export default {
             store.toggleFriendList();
         },
 
+        showOrganization() {
+            store.toggleOrganizationList();
+        }
     },
     computed: {
         groupedContacts() {

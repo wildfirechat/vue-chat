@@ -5,7 +5,38 @@
                 <input type="text" :placeholder="$t('common.search')" v-model="filterQuery">
                 <i class="icon-ion-ios-search"></i>
             </div>
-            <div class="friend-list-container">
+            <div class="pick-source-container">
+                <div v-if="pickSource" class="pick-source-nav">
+                    <ul>
+                        <li @click="pickSource = null">
+                            <a href="#">联系人</a>
+                        </li>
+                        <li v-if="pickSource === 'friend'">
+                            <a href="#">好友</a>
+                        </li>
+                        <li v-for="org in organizationPathList" :key="org.id">
+                            <a href="#" @click="loadAndShowOrganization(org)">{{ org.name }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="pick-source-list">
+                    <ul v-if="!pickSource">
+                        <li @click="pickSource = 'friend'; organizationPathList = []">
+                            <a href="#">
+                                <i class="icon-ion-android-contacts"/>
+                                选择好友
+                            </a>
+                        </li>
+                        <li @click="pickSource = 'organization'">
+                            <a href="#">
+                                <i class="icon-ion-android-document"/>
+                                选择组织联系人
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div v-if="pickSource === 'friend'" class="friend-list-container">
                 <CheckableUserListView :enable-pick="true"
                                        :users="filterUsers"
                                        :initial-checked-users="initialCheckedUsers"
@@ -14,25 +45,39 @@
                                        :padding-left="'20px'"
                                        enable-category-label-sticky/>
             </div>
+            <CheckableOrganizationTreeView
+                ref="checkableOrganizationTreeView"
+                v-if="pickSource === 'organization'"
+                @organization-path-update="onOrganizationPathUpdate"/>
         </section>
         <section class="checked-contact-list-container">
             <header>
                 <h2>{{ $t('pick.pick_contact') }}</h2>
-                <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
-                <span v-else>{{ $t('pick.picked_contact') + this.checkedUsers.length }}</span>
+                <div style="display: flex; justify-content: flex-end">
+                    <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
+                    <span v-else>{{ $t('pick.picked_contact') + ':' + this.checkedUsers.length }}</span>
+                    <span v-if="sharedPickState.organizations.length">{{ '组织: ' + sharedPickState.organizations.length }}</span>
+                </div>
             </header>
             <div class="content">
-                <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="index">
+                <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="user.uid">
                     <div class="picked-user">
                         <img class="avatar" :src="user.portrait" alt="">
-                        <button @click="unpick(user)" class="unpick-button">X</button>
+                        <button @click="unpickUser(user)" class="unpick-button">X</button>
                     </div>
                     <span class="name single-line">{{ user.displayName }}</span>
+                </div>
+                <div class="picked-user-container" v-for="(org, index) in sharedPickState.organizations" :key="org.id">
+                    <div class="picked-user">
+                        <img class="avatar" :src="org.portrait ? org.portrait : defaultOrganizationPortraitUrl" alt="">
+                        <button @click="unpickOrganization(org)" class="unpick-button">X</button>
+                    </div>
+                    <span class="name single-line">{{ org.name }}</span>
                 </div>
             </div>
             <footer>
                 <button @click="cancel" class="cancel">{{ $t('common.cancel') }}</button>
-                <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0}">
+                <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0  && sharedPickState.organizations.length === 0}">
                     {{ confirmTitle }}
                 </button>
             </footer>
@@ -43,6 +88,10 @@
 <script>
 import store from "@/store";
 import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
+import CheckableOrganizationTreeView from "./CheckableOrganizationTreeView.vue";
+import Config from "../../../config";
+import organizationServerApi from "../../../api/organizationServerApi";
+import UserInfo from "../../../wfc/model/userInfo";
 
 export default {
     name: "PickUserView",
@@ -82,22 +131,38 @@ export default {
         return {
             sharedPickState: store.state.pick,
             filterQuery: '',
+            pickSource: null,
+            organizationPathList: [],
+            defaultOrganizationPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
         }
     },
     methods: {
-        unpick(user) {
+        unpickUser(user) {
             if (this.isUserUncheckable(user)) {
                 return;
             }
             store.pickOrUnpickUser(user);
         },
 
+        unpickOrganization(organization) {
+            store.pickOrUnpickOrganization(organization);
+        },
+
         isUserUncheckable(user) {
             return this.uncheckableUsers && this.uncheckableUsers.findIndex(u => u.uid === user.uid) >= 0;
         },
 
+        onOrganizationPathUpdate(orgPathList) {
+            this.organizationPathList = orgPathList;
+        },
+
+        loadAndShowOrganization(org) {
+            this.$refs.checkableOrganizationTreeView.loadAndShowOrganization(org);
+        },
+
         cancel() {
             this.sharedPickState.users.length = 0
+            this.sharedPickState.organizations.length = 0;
             this.$modal.hide('pick-user-modal', {confirm: false})
         },
 
@@ -113,7 +178,22 @@ export default {
             }
             let users = [...pickedUsers];
             this.sharedPickState.users.length = 0
-            this.$modal.hide('pick-user-modal', {confirm: true, users: users})
+
+            if (this.sharedPickState.organizations.length) {
+                let orgIds = this.sharedPickState.organizations.map(o => o.id);
+                organizationServerApi.getOrganizationEmployees(orgIds)
+                    .then(employeeIds => {
+                        this.sharedPickState.organizations.length = 0;
+                        for (const employeeId of employeeIds) {
+                            let userInfo = new UserInfo();
+                            userInfo.uid = employeeId;
+                            users.push(userInfo);
+                        }
+                        this.$modal.hide('pick-user-modal', {confirm: true, users: users})
+                    })
+            } else {
+                this.$modal.hide('pick-user-modal', {confirm: true, users: users})
+            }
         },
     },
 
@@ -136,7 +216,7 @@ export default {
         }
     },
 
-    components: {CheckableUserListView},
+    components: {CheckableOrganizationTreeView, CheckableUserListView},
 }
 </script>
 
@@ -185,6 +265,79 @@ export default {
     position: absolute;
     top: 20px;
     left: 20px;
+}
+
+.pick-source-container {
+    width: 100%;
+}
+
+.pick-source-nav {
+    padding: 10px 0 0 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pick-source-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pick-source-nav a {
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.pick-source-nav li:not(:last-child)::after {
+    display: inline-block;
+    margin: 0 10px;
+    color: #8f959f;
+    content: ">";
+}
+
+.pick-source-nav li:not(:last-child) a {
+    color: #4168e0;
+}
+
+.pick-source-nav li:last-child a {
+    color: #8f959f;
+    pointer-events: none;
+}
+
+.pick-source-list {
+    padding: 5px 10px;
+}
+
+.pick-source-list ul li {
+    padding: 0 10px;
+    height: 40px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pick-source-list ul li:hover {
+    background: #d6d6d6;
+    border-radius: 5px;
+}
+
+.pick-source-list ul li a {
+    width: 100%;
+}
+
+.pick-source-list ul li::after {
+    display: inline-block;
+    color: #8f959f;
+    content: ">";
+}
+
+.pick-source-list a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
 }
 
 .contact-list-container .friend-list-container {
@@ -287,9 +440,10 @@ footer button {
 }
 
 footer button.confirm {
-    background-color: #20bf64;
+    background-color: #4168e0;
     margin-left: 20px;
     margin-right: 20px;
+    color: white;
 }
 
 footer button.confirm.disable {

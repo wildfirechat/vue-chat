@@ -85,6 +85,17 @@ export default {
     height: 30px;
     width: 100%;
     padding: 0 5px;
+    outline: none;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.info-action-container input:active {
+    border: 1px solid #4168e0;
+}
+
+.info-action-container input:focus {
+    border: 1px solid #4168e0;
 }
 
 .info-container {
@@ -125,13 +136,13 @@ export default {
 }
 
 .info-action-container .action-container .confirm {
-    background-color: #20bf64;
+    background-color: #4168e0;
     color: white;
     border: 1px solid white;
 }
 
 .info-action-container .action-container .confirm:active {
-    background-color: #209f64;
+    background-color: #3168e0;
 }
 
 </style>

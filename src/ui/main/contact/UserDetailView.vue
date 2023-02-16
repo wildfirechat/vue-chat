@@ -114,7 +114,7 @@ export default {
 .header .avatar {
     width: 80px;
     height: 80px;
-    border-radius: 2px;
+    border-radius: 5px;
 }
 
 .header h2 {
@@ -151,7 +151,16 @@ export default {
 .content ul li .alias > input {
     width: 100%;
     border: none;
-    height: 20px;
+    border-radius: 3px;
+    outline: none;
+    padding: 5px;
+}
+.content ul li .alias > input:active {
+    border: 1px solid #4168e0;
+}
+
+.content ul li .alias input:focus {
+    border: 1px solid #4168e0;
 }
 
 .content ul li > div {
@@ -168,7 +177,7 @@ export default {
     margin-top: 30px;
     color: white;
     padding: 10px 40px;
-    background-color: #3497f1;
+    background-color: #3861e0;
     border-radius: 5px;
     border: 1px solid transparent;
 }

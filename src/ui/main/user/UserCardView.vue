@@ -34,8 +34,8 @@
             </ul>
         </div>
         <div class="action">
-            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>
-            <a v-if="isFriend" href="#"><i class="icon-ion-ios-chatboxes" @click="chat"></i></a>
+            <!--            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>-->
+            <a href="#"><i class="icon-ion-ios-chatboxes" @click="chat"></i></a>
             <a v-if="!isFriend" href="#"><i class="icon-ion-person-add" @click="addFriend"></i></a>
         </div>
     </section>
@@ -83,6 +83,8 @@ export default {
                 IpcSub.startConversation(conversation);
             }
             this.close();
+            // 跳转到会话列表页
+            this.$router.replace('/home');
         },
         addFriend() {
             this.close();
@@ -124,6 +126,9 @@ export default {
         },
 
         pickFile() {
+            if (!this.enableUpdatePortrait) {
+                return;
+            }
             this.$refs['fileInput'].click();
         },
         onPickFile(event) {
@@ -221,6 +226,18 @@ export default {
 
 .content ul li .alias > input {
     width: 100%;
+    outline: none;
+    border: none;
+    background-color: #fcfcfc;
+    padding: 2px 5px;
+}
+
+.content ul li .alias > input:focus {
+    border: 1px solid #4168e0;
+}
+
+.content ul li .alias > input:active {
+    border: 1px solid #4168e0;
 }
 
 .content ul li > div {

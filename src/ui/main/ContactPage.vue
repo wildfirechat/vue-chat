@@ -9,6 +9,9 @@
             v-else-if="sharedContactState.currentChannel"
             :channel="sharedContactState.currentChannel"
             class="contact-detail-container"/>
+        <OrganizationDetailView
+            v-else-if="sharedContactState.currentOrganization"
+            class="contact-detail-container"/>
         <UserDetailView
             v-else-if="sharedContactState.currentFriend"
             :user="sharedContactState.currentFriend"
@@ -30,6 +33,7 @@ import UserDetailView from "@/ui/main/contact/UserDetailView";
 import FriendRequestDetailView from "@/ui/main/contact/FrienRequestDetailView";
 import ChannelListView from "./contact/ChannelListView";
 import ChannelDetailView from "./contact/ChannelDetailView";
+import OrganizationDetailView from "./contact/OrganizationTreeView.vue";
 
 export default {
     name: 'ContactPage',
@@ -45,6 +49,7 @@ export default {
         UserDetailView,
         GroupDetailView,
         ContactListPanel,
+        OrganizationDetailView,
     },
 };
 </script>

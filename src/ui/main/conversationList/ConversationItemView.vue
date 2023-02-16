@@ -21,8 +21,12 @@
             <div class="content-container">
                 <div class="title-time-container">
                     <i v-if="source.conversation.type === 5" class="icon-ion-android-lock" style="padding-right: 5px"></i>
+                    <div v-if="isOrganizationGroupConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
                     <h2 class="title single-line">{{ conversationTitle }}</h2>
-                    <p class="time">{{ source._timeStr }}</p>
+                        <p class="single-line" style="background: #3f64e4; border-radius: 2px; color: white; padding: 1px 2px; font-size: 9px">官方</p>
+                    </div>
+                    <h2 v-else class="title single-line">{{ conversationTitle }}</h2>
+                    <p class="time single-line">{{ source._timeStr }}</p>
                 </div>
                 <div class="content">
                     <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
@@ -48,6 +52,7 @@ import NotificationMessageContent from "@/wfc/messages/notification/notification
 import Config from "../../../config";
 import {getConversationPortrait} from "../../util/imageUtil";
 import ConversationType from "../../../wfc/model/conversationType";
+import GroupType from "../../../wfc/model/groupType";
 
 export default {
     name: "ConversationItemView",
@@ -149,6 +154,13 @@ export default {
             return '';
         },
 
+        isOrganizationGroupConversation() {
+            let info = this.source;
+            if (info.conversation.type === ConversationType.Group && info.conversation._target && info.conversation._target.type === GroupType.Organization) {
+                return true;
+            }
+            return false;
+        },
         shouldShowDraft() {
             if (this.shareConversationState.currentConversationInfo && this.shareConversationState.currentConversationInfo.conversation.equal(this.source.conversation)) {
                 return false;
@@ -319,6 +331,7 @@ export default {
 .content-container .title-time-container {
     display: flex;
     width: 100%;
+    max-width: 100%;
     align-content: center;
     justify-content: space-between;
 }
@@ -358,7 +371,7 @@ export default {
 
 .content .last-message-desc {
     color: #b8b8b8;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .content .last-message-desc i {

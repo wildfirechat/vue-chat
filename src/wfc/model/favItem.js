@@ -113,6 +113,12 @@ export default class FavItem {
     }
 
     toMessage() {
+        if (this.messageUid){
+            let msg = wfc.getMessageByUid(this.messageUid);
+            if (msg){
+                return msg;
+            }
+        }
         let content;
         try {
         switch (this.favType) {

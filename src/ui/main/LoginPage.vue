@@ -95,9 +95,9 @@ import {clear, getItem, setItem} from "@/ui/util/storageHelper";
 import {ipcRenderer, isElectron} from "@/platform";
 import store from "@/store";
 import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
-import ConversationType from "../../wfc/model/conversationType";
 import IpcEventType from "../../ipcEventType";
 import appServerApi from "../../api/appServerApi";
+import organizationServerApi from "../../api/organizationServerApi";
 
 export default {
     name: 'App',
@@ -265,15 +265,6 @@ export default {
                                     this.loginStatus = 4;
                                     setItem('userId', userId);
                                     setItem('token', imToken);
-                                    let appAuthToken = response.headers['authtoken'];
-                                    if (!appAuthToken) {
-                                        appAuthToken = response.headers['authToken'];
-                                    }
-
-                                    if (appAuthToken) {
-                                        setItem('authToken', appAuthToken);
-                                        axios.defaults.headers.common['authToken'] = appAuthToken;
-                                    }
                                 }
                                 break;
                             case 9:
@@ -361,6 +352,7 @@ export default {
                         store.setEnableAutoLogin(this.enableAutoLogin)
                     }
                 }
+                organizationServerApi.login();
             }
         },
     },
