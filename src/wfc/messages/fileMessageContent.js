@@ -13,7 +13,7 @@ export default class FileMessageContent extends MediaMessageContent {
     constructor(fileOrLocalPath, remotePath, name, size) {
         super(MessageContentType.File, MessageContentMediaType.File, fileOrLocalPath, remotePath);
         if (fileOrLocalPath && fileOrLocalPath.name) {
-            this.name = encodeURIComponent(fileOrLocalPath.name);
+            this.name = fileOrLocalPath.name;
             this.size = fileOrLocalPath.size;
         } else if (remotePath) {
             this.name = name ? name : remotePath.substring(remotePath.lastIndexOf('/') + 1)
@@ -35,7 +35,7 @@ export default class FileMessageContent extends MediaMessageContent {
     decode(payload) {
         super.decode(payload);
         if (payload.searchableContent) {
-            this.name = decodeURIComponent(payload.searchableContent);
+            this.name = payload.searchableContent;
             this.size = Number(payload.content);
         }
     }
