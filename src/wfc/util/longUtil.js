@@ -28,7 +28,7 @@ export function compare(a, b) {
  * @return {boolean} 相等返回true；否则返回false
  */
 export function eq(a, b) {
-    if (!a || !b){
+    if (!_isLong(a) || !_isLong(b)) {
         return false;
     }
     return compare(a, b) === 0
@@ -41,7 +41,7 @@ export function eq(a, b) {
  * @return {boolean} a大于b返回true；否则返回false
  */
 export function gt(a, b) {
-    if (!a || !b){
+    if (!_isLong(a) || !_isLong(b)) {
         return false;
     }
     return compare(a, b) === 1
@@ -54,7 +54,7 @@ export function gt(a, b) {
  * @return {boolean} a大于或等于b返回true；否则返回false
  */
 export function gte(a, b) {
-    if (!a || !b){
+    if (!_isLong(a) || !_isLong(b)) {
         return false;
     }
     return compare(a, b) >= 0
@@ -67,7 +67,7 @@ export function gte(a, b) {
  * @return {boolean} a小于b返回true；否则返回false
  */
 export function lt(a, b) {
-    if (!a || !b){
+    if (!_isLong(a) || !_isLong(b)) {
         return false;
     }
     return compare(a, b) === -1
@@ -80,7 +80,7 @@ export function lt(a, b) {
  * @return {boolean} a小于或者等于b返回true；否则返回false
  */
 export function lte(a, b) {
-    if (!a || !b){
+    if (!_isLong(a) || !_isLong(b)) {
         return false;
     }
     return compare(a, b) <= 0
@@ -144,5 +144,14 @@ export function _reverseToJsLongString(jsonStr, key) {
     }
     let reg = new RegExp(`"${key}":([0-9]+)`, 'g')
     return jsonStr.replace(reg, `\"${key}\":\"$1\"`);
+}
+
+function _isLong(val) {
+    try {
+        Long.fromValue(val);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
