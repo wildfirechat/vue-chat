@@ -19,7 +19,6 @@ export class OrganizationServerApi {
             //        int ApplicationType_Robot = 0;
 //        int ApplicationType_Channel = 1;
 //        int ApplicationType_Admin = 2;
-            console.log('organizationServer login' )
             if (!Config.ORGANIZATION_SERVER) {
                 return Promise.reject(this.serviceUnavailbelError);
             }

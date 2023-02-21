@@ -5,7 +5,7 @@
                 <input type="text" :placeholder="$t('common.search')" v-model="filterQuery">
                 <i class="icon-ion-ios-search"></i>
             </div>
-            <div class="pick-source-container">
+            <div v-if="showOrganization" class="pick-source-container">
                 <div v-if="pickSource" class="pick-source-nav">
                     <ul>
                         <li @click="pickSource = null">
@@ -36,7 +36,7 @@
                     </ul>
                 </div>
             </div>
-            <div v-if="pickSource === 'friend'" class="friend-list-container">
+            <div v-if="!showOrganization || pickSource === 'friend'" class="friend-list-container">
                 <CheckableUserListView :enable-pick="true"
                                        :users="filterUsers"
                                        :initial-checked-users="initialCheckedUsers"
@@ -124,6 +124,11 @@ export default {
             type: Boolean,
             required: false,
             default: true,
+        },
+        showOrganization: {
+            type: Boolean,
+            required: false,
+            default: false,
         }
 
     },

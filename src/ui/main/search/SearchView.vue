@@ -52,6 +52,7 @@ export default {
             this.$pickContact({
                 users,
                 successCB,
+                showOrganization: true,
             });
         },
         cancel() {

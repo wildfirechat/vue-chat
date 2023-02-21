@@ -19,6 +19,7 @@ export default {
                     initialCheckedUsers: options.initialCheckedUsers,
                     uncheckableUsers: options.uncheckableUsers,
                     showCategoryLabel: options.showCategoryLabel !== false,
+                    showOrganization: !!options.showOrganization,
                     confirmTitle: options.confirmTitle ? options.confirmTitle : '确定',
                 }, {
                     name: 'pick-user-modal',
