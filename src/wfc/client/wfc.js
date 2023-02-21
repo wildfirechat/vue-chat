@@ -740,6 +740,18 @@ export class WfcManager {
         impl.setFavGroup(groupId, fav, successCB, failCB);
     }
 
+
+    /**
+     * 获取当前用户所有群组ID，此方法消耗资源较大，不建议高频使用。
+     *
+     * @param {function ([string])} successCB
+     * @param {function (number)} failCB
+     */
+    async getMyGroups(successCB, failCB){
+        impl.getMyGroups(successCB, failCB);
+    }
+
+
     /**
      * 获取用户设置，保存格式可以理解为：scope + key => value
      * @param {number} scope 命名空间，可选值参考{@link UserSettingScope}
