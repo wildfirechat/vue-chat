@@ -190,6 +190,7 @@ export default {
         async handlePaste(e, source) {
             let text;
             e.preventDefault();
+
             if ((e.originalEvent || e).clipboardData) {
                 text = (e.originalEvent || e).clipboardData.getData('text/plain');
             } else {
@@ -222,6 +223,15 @@ export default {
                         }
                     }
                     console.log('handle paste file', file);
+                } else {
+                    const clipboardContents = await navigator.clipboard.read();
+                    for (const item of clipboardContents) {
+                        console.log('clipboard item', item.types, item)
+                        if (item.types.includes("image/png")) {
+                            const blob = await item.getType("image/png");
+                            document.execCommand('insertImage', false, URL.createObjectURL(blob));
+                        }
+                    }
                 }
             }
 
@@ -665,8 +675,8 @@ export default {
             if (input.innerHTML.trim() === draft.text) {
                 console.log('draft is same as current input, ignore', draft.text)
             } else {
-            	input.innerHTML = draft.text.replace(/ /g, '&nbsp').replace(/\n/g, '<br>');
-            	this.moveCursorToEnd(input);
+                input.innerHTML = draft.text.replace(/ /g, '&nbsp').replace(/\n/g, '<br>');
+                this.moveCursorToEnd(input);
             }
         },
 
