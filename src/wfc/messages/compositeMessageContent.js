@@ -5,6 +5,7 @@ import {stringValue} from "../util/longUtil";
 import Message from "../messages/message";
 import Conversation from "../model/conversation";
 import Long from "long";
+import {compare} from "../../wfc/util/longUtil";
 import MessagePayload from "../messages/messagePayload";
 import {isElectron} from "../../platform";
 import ArticlesMessageContent from "./articlesMessageContent";
@@ -32,6 +33,9 @@ export default class CompositeMessageContent extends MediaMessageContent {
             } else {
                 this.messages.push(m)
             }
+        })
+        this.messages = this.messages.sort((m1, m2) => {
+            return compare(m1.messageUid, m2.messageUid);
         })
     }
 
