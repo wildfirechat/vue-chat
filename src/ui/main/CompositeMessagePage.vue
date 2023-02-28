@@ -103,10 +103,10 @@ export default {
             return;
         }
         let hash = window.location.hash;
-        if(hash.indexOf('messageUid=') >= 0){
-        let messageUid = hash.substring(hash.indexOf('=') + 1);
-        this.compositeMessage = store.getMessageByUid(messageUid);
-        }else {
+        if (hash.indexOf('messageUid=') >= 0) {
+            let messageUid = hash.substring(hash.indexOf('=') + 1);
+            this.compositeMessage = store.getMessageByUid(messageUid);
+        } else {
             let faveItemData = hash.substring(hash.indexOf('=') + 1);
             let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
             let favItem = Object.assign(new FavItem(), favItemRaw);
@@ -123,18 +123,18 @@ export default {
         hideCompositeMessagePage() {
             this.$modal.hide('show-composite-message-modal' + '-' + stringValue(this.message.messageUid))
         },
-        loadMediaCompositeMessage(msg){
+        loadMediaCompositeMessage(msg) {
             let content = msg.messageContent;
-            if (content.remotePath ) {
+            if (content.remotePath) {
                 if (isElectron()) {
-                    if (content.localPath && require('fs').existsSync(content.localPath)){
+                    if (content.localPath && require('fs').existsSync(content.localPath)) {
                         return;
                     }
                 } else {
                     // web 每次加载
                     // do nothing
                 }
-                axios.get(content.remotePath, {responseType: 'arraybuffer'}).then(value => {
+                axios.get(content.remotePath, {responseType: 'arraybuffer', headers: {Authorization: ""}}).then(value => {
                     content._decodeMessages(new TextDecoder('utf-8').decode(value.data));
                     store._patchMessage(this.compositeMessage, 0);
                     content.loaded = true;
