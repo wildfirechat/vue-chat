@@ -53,8 +53,5 @@ export default class WfcAVEngineKit {
      */
     static SMALL_STREAM_FPS = 8;
 
-    // 是否默认使用大流
-    static DEFAULT_USE_MAIN_VIDEO = true;
-
     static VIDEO_PROFILE = VideoProfile.VPDEFAULT;
 }
