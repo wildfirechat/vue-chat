@@ -646,6 +646,7 @@ let store = {
         let conversationList = wfc.getConversationList(conversationType, lines);
         let toLoadUserIdSet = new Set();
         let toLoadGroupIds = [];
+        console.log('xxx _loadConversationList',conversationList)
         conversationList.forEach(info => {
             if (info.conversation.type === ConversationType.Single) {
                 toLoadUserIdSet.add(info.conversation.target)
@@ -824,15 +825,17 @@ let store = {
             return;
         }
         let conversation = conversationInfo.conversation;
-        wfc.watchOnlineState(conversation.type, [conversation.target], 1000, (states) => {
-            states.forEach((e => {
-                miscState.userOnlineStateMap.set(e.userId, e);
-            }))
-            this._patchCurrentConversationOnlineStatus();
+        if (conversation.type === ConversationType.Group || (conversation.type === ConversationType.Single && !wfc.isMyFriend(conversation.target))) {
+		    wfc.watchOnlineState(conversation.type, [conversation.target], 1000, (states) => {
+		        states.forEach((e => {
+		            miscState.userOnlineStateMap.set(e.userId, e);
+		        }))
+		        this._patchCurrentConversationOnlineStatus();
 
-        }, (err) => {
-            console.log('watchOnlineState error', err);
-        })
+		    }, (err) => {
+		        console.log('watchOnlineState error', err);
+		    })
+		}
         if (conversation.type === ConversationType.Channel) {
             let content = new EnterChannelChatMessageContent();
             wfc.sendConversationMessage(conversation, content);
