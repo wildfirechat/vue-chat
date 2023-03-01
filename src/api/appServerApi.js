@@ -51,7 +51,34 @@ export class AppServerApi {
 
     // 扫码登录
     loginWithPCSession(appToken) {
-        return this._post('/session_login/' + appToken, '', true);
+        const _interceptPCSessionLoginResponse = (responsePromise, resolve, reject) => {
+            responsePromise
+                .then(response => {
+                    if (response.data.code === 0) {
+                        let appAuthToken = response.headers['authtoken'];
+                        if (!appAuthToken) {
+                            appAuthToken = response.headers['authToken'];
+                        }
+
+                        if (appAuthToken) {
+                            setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
+                        }
+                        resolve(response.data);
+                    } else if ([9, 18].indexOf(response.data.code) > -1) {
+                        resolve(response.data);
+                    } else {
+                        reject(new AppServerError(response.data.code, response.data.message));
+                    }
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        }
+
+        return new Promise((resolve, reject) => {
+            let responsePromise = this._post(`/session_login/${appToken}`, null, true);
+            _interceptPCSessionLoginResponse(responsePromise, resolve, reject)
+        })
     }
 
     changePassword(oldPassword, newPassword) {

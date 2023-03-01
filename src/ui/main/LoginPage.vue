@@ -254,13 +254,13 @@ export default {
         async login() {
             this.lastAppToken = this.appToken;
             appServerApi.loginWithPCSession(this.appToken)
-                .then(response => {
-                    if (response.data) {
-                        switch (response.data.code) {
+                .then(data => {
+                    if (data) {
+                        switch (data.code) {
                             case 0:
                                 if (this.loginStatus === 1 || this.loginStatus === 3) {
-                                    let userId = response.data.result.userId;
-                                    let imToken = response.data.result.token;
+                                    let userId = data.result.userId;
+                                    let imToken = data.result.token;
                                     wfc.connect(userId, imToken);
                                     this.loginStatus = 4;
                                     setItem('userId', userId);
@@ -268,13 +268,13 @@ export default {
                                 }
                                 break;
                             case 9:
-                                if (response.data.result.portrait) {
-                                    this.qrCode = response.data.result.portrait;
+                                if (data.result.portrait) {
+                                    this.qrCode = data.result.portrait;
                                 } else {
                                     this.qrCode = Config.DEFAULT_PORTRAIT_URL;
                                 }
-                                setItem("userName", response.data.result.userName);
-                                setItem("userPortrait", response.data.result.portrait);
+                                setItem("userName", data.result.userName);
+                                setItem("userPortrait", data.result.portrait);
 
                                 if (this.loginStatus === 0) {
                                     this.loginStatus = 1;
@@ -289,7 +289,7 @@ export default {
                                 break;
                             default:
                                 this.lastAppToken = '';
-                                console.log(response.data);
+                                console.log(data);
                                 break
                         }
                     }
