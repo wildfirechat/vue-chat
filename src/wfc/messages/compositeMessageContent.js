@@ -17,7 +17,7 @@ export default class CompositeMessageContent extends MediaMessageContent {
     loaded = false;
 
     constructor() {
-        super(MessageContentType.Composite_Message)
+        super(MessageContentType.Composite_Message, '', '')
     }
 
     setMessages(msgs) {
