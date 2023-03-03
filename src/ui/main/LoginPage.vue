@@ -83,7 +83,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import Config from "@/config";
 import wfc from '../../wfc/client/wfc'
 import PCSession from "@/wfc/model/pcsession";

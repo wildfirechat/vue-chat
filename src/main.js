@@ -30,6 +30,7 @@ Vue.config.productionTip = false
     let href = window.location.href;
     let path = href.substring(href.indexOf('#') + 1)
     console.log('init', href, path)
+    // 判断是否是主窗口，请根据实际情况进行调整
     if (path === '/'/*login*/ || path.startsWith('/home') || href.indexOf('#') === -1) {
         console.log('init wfc')
         if (isElectron()) {
@@ -56,7 +57,7 @@ Vue.config.productionTip = false
         }
         store.init(true, false);
     } else {
-        console.log('not home window, not init wfc')
+        console.error('not home window, not init wfc, 如果此窗口就是主窗口或者应用只有一个窗口，可能会导致功能不正常，请更新上面的主窗口判断逻辑')
         if (isElectron()) {
             wfc.attach()
         }
