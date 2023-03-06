@@ -920,6 +920,8 @@ let store = {
     },
 
     forwardMessage(forwardType, targetConversations, messages, extraMessageText) {
+        // web 端，避免撤回消息等操作，影响组合消息
+        messages = messages.map(m => Object.assign({}, m));
         targetConversations.forEach(conversation => {
             // let msg =new Message(conversation, message.messageContent)
             // wfc.sendMessage(msg)
