@@ -469,7 +469,7 @@ export default class MessageConfig {
             contentClazz: LeaveChannelChatMessageContent,
         },
         {
-            name: 'leaveChannelChatMessageContent',
+            name: 'conferenceCommandMessageContent',
             flag: PersistFlag.Transparent,
             type: MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND,
             contentClazz: ConferenceCommandMessageContent,
