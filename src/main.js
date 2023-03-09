@@ -21,7 +21,7 @@ import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
 import Forward from "./ui/common/Forward";
 import VirtualList from "vue-virtual-scroll-list/src";
-import xss from "xss";
+import xss, {getDefaultWhiteList} from "xss";
 
 Vue.config.productionTip = false
 
@@ -101,6 +101,16 @@ const router = new VueRouter({
 })
 Vue.prototype.$eventBus = new Vue();
 Vue.prototype.xss = xss;
+Vue.prototype.xssOptions = () => {
+    let whiteList = xss.getDefaultWhiteList();
+    window.__whiteList = whiteList;
+    //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
+    //这儿配置保留 img 标签的style、class、src、alt、id 属性
+    whiteList.img = ["style", "class", "src", "alt", "id"];
+    return {
+        whiteList
+    };
+};
 
 var vm = new Vue({
     el: '#app',
