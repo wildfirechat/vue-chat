@@ -11,6 +11,7 @@ const IpcEventType = {
     LOGINED: 'logined',
     LOGOUT: 'logouted',
     FILE_PASTE: 'file-paste',
+    FILE_COPY: 'file-copy',
     START_SCREEN_SHOT: "screenshots-start",
     OPEN_H5_APP_WINDOW: 'open-h5-app-window',
     SHOW_COMPOSITE_MESSAGE_WINDOW: 'show-composite-message-window',

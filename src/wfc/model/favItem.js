@@ -126,13 +126,13 @@ export default class FavItem {
                 content = new TextMessageContent(this.title);
                 break;
             case MessageContentType.Image:
-                content = new ImageMessageContent(null, this.url);
+                    content = new ImageMessageContent(null, this.url, Config.DEFAULT_THUMBNAIL_URL.split(',')[1]);
                 if (this.data) {
                     content.thumbnail = this.data.thumb;
                 }
                 break;
             case MessageContentType.Video:
-                content = new VideoMessageContent(null, this.url);
+                    content = new VideoMessageContent(null, this.url, Config.DEFAULT_THUMBNAIL_URL.split(',')[1]);
                 if (this.data) {
                     content.thumbnail = this.data.thumb;
                 }

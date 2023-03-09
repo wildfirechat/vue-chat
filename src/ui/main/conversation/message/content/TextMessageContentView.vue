@@ -104,4 +104,7 @@ export default {
 .text-message-container .text >>> a{
     white-space: normal;
 }
+.text-message-container .text >>> .emoji{
+    vertical-align:middle;
+}
 </style>

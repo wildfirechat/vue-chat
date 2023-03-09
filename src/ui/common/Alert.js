@@ -35,7 +35,7 @@ export default {
                     clickToClose: true,
                     adaptive: true,
                     width: 260,
-                    height: showIcon ? 200 : 100,
+                    height: showIcon ? 200 : 150,
                     borderRadius: 10,
                 }, {
                     'before-open': beforeOpen,

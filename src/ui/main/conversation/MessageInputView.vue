@@ -221,6 +221,7 @@ export default {
                             // file
                             store.sendFile(this.conversationInfo.conversation, file)
                         }
+                        return;
                     }
                     console.log('handle paste file', file);
                 } else {
@@ -230,6 +231,7 @@ export default {
                         if (item.types.includes("image/png")) {
                             const blob = await item.getType("image/png");
                             document.execCommand('insertImage', false, URL.createObjectURL(blob));
+                            return;
                         }
                     }
                 }
@@ -367,7 +369,6 @@ export default {
                 .replace(/<\/b>/g, '')
                 .replace(/&nbsp;/g, ' ');
 
-            // TODO 可以在此对文本消息进行处理，比如过滤掉 script，iframe 等标签
 
             //  自行部署表情时，需要手动替换下面的正则
             // TODO 在正则中使用变量，避免手动替换
@@ -674,8 +675,8 @@ export default {
             console.log('restore draft', this.conversationInfo, draft);
             store.quoteMessage(draft.quotedMessage);
             let input = this.$refs['input'];
-            if (input.innerHTML.trim() === draft.text) {
-                console.log('draft is same as current input, ignore', draft.text)
+            if (input.innerHTML.trim()) {
+                console.log('inputting, ignore', draft.text)
             } else {
                 input.innerHTML = draft.text.replace(/ /g, '&nbsp').replace(/\n/g, '<br>');
                 this.moveCursorToEnd(input);

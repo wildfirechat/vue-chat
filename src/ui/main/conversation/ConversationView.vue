@@ -131,7 +131,7 @@
                     <li v-if="isCopyable(message)">
                         <a @click.prevent="copy(message)">{{ $t('common.copy') }}</a>
                     </li>
-                    <li v-if="isDownloadAble(message)">
+                    <li v-if="isDownloadable(message)">
                         <a @click.prevent="download(message)">{{ $t('common.save') }}</a>
                     </li>
                     <li>
@@ -219,6 +219,7 @@ import FriendRequestView from "../contact/FriendRequestView";
 import {currentWindow, ipcRenderer} from "../../../platform";
 import appServerApi from "../../../api/appServerApi";
 import Config from "../../../config";
+import IPCEventType from "../../../ipcEventType";
 
 var amr;
 export default {
@@ -326,7 +327,7 @@ export default {
                     // 根据后缀判断类型
                     if (dragUrl.endsWith('.png') || dragUrl.endsWith('.jpg') || dragUrl.endsWith('jpeg')) {
                         //constructor(fileOrLocalPath, remotePath, thumbnail) {
-                        let content = new ImageMessageContent(null, dragUrl, null);
+                        let content = new ImageMessageContent(null, dragUrl, Config.DEFAULT_THUMBNAIL_URL.split(',')[1]);
                         wfc.sendConversationMessage(this.conversationInfo.conversation, content);
                     } else {
                         // TODO
@@ -480,9 +481,14 @@ export default {
 
         // message context menu
         isCopyable(message) {
-            return message && (message.messageContent instanceof TextMessageContent || message.messageContent instanceof ImageMessageContent);
+            return message
+                && (message.messageContent instanceof TextMessageContent
+                    || message.messageContent instanceof ImageMessageContent
+                    || ((message.messageContent instanceof VideoMessageContent
+                        || message.messageContent instanceof FileMessageContent) && this.isLocalFile(message))
+                );
         },
-        isDownloadAble(message) {
+        isDownloadable(message) {
             return message && (message.messageContent instanceof ImageMessageContent
                 || message.messageContent instanceof FileMessageContent
                 || message.messageContent instanceof VideoMessageContent);
@@ -558,8 +564,12 @@ export default {
                 } else {
                     copyText(content.content)
                 }
-            } else {
+            } else if (content instanceof ImageMessageContent) {
                 copyImg(content.remotePath)
+            } else if (content instanceof MediaMessageContent) {
+                if (isElectron()) {
+                    ipcRenderer.send(IPCEventType.FILE_COPY, {path: content.localPath});
+                }
             }
         },
         download(message) {

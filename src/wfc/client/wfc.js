@@ -26,8 +26,7 @@ export class WfcManager {
 
     /**
      * 初始化，请参考本demo的用法
-     * 只可以在主窗口调用，其他窗口调用之后，会导致主窗口通知失效。
-     * 如果其他窗口想调用wfc里面的非通知方法，可以参考{@link attach}
+     * 只可以在主窗口调用，其他窗口调用应当调用{@link attach}
      * @param {[]} args，pc 时，传入[node实例]; web 时，可以传入Config配置对象，配置项，请参考{@link Config}
      */
     init(args = []) {
@@ -747,11 +746,23 @@ export class WfcManager {
      *
      * @param {function ([string])} successCB
      * @param {function (number)} failCB
+     * @returns {Promise<void>}
      */
     async getMyGroups(successCB, failCB){
         impl.getMyGroups(successCB, failCB);
     }
 
+    /**
+     * 获取用户共同群组ID
+     *
+     * @param {string} userId
+     * @param {function ([string])} successCB
+     * @param {function (number)} failCB
+     * @returns {Promise<void>}
+     */
+    async getCommonGroups(userId, successCB, failCB) {
+      impl.getCommonGroups(userId, successCB, failCB);
+    }
 
     /**
      * 获取用户设置，保存格式可以理解为：scope + key => value
@@ -1279,7 +1290,7 @@ export class WfcManager {
      *
      * @param {[number]} conversationTypes 会话类型列表，可选值参考{@link  ConversationType}
      * @param {[number]} lines 会话线路列表
-     * @param messageStatus 消息状态，可选值参考{@link MessageStatus}
+     * @param {[number]} messageStatus 消息状态，可选值参考{@link MessageStatus}
      * @param {number} fromIndex 本参数暂时无效! messageId，表示从那一条消息开始获取
      * @param {boolean} before 本参数暂时无效! true, 获取fromIndex之前的消息，即更旧的消息；false，获取fromIndex之后的消息，即更新的消息。都不包含fromIndex对应的消息
      * @param {number} count 本参数暂时无效! 获取多少条消息
@@ -1427,10 +1438,11 @@ export class WfcManager {
      * 搜索消息
      * @param {Conversation} conversation 目标会话
      * @param {string} keyword 关键字
+     * @param {string} withUser 目标用户
      * @returns {[Message]}
      */
-    searchMessage(conversation, keyword) {
-        return impl.searchMessage(conversation, keyword);
+    searchMessage(conversation, keyword, withUser='') {
+        return impl.searchMessage(conversation, keyword, withUser);
     }
 
     /**
@@ -1440,10 +1452,11 @@ export class WfcManager {
      * @param {boolean} desc 逆序排列
      * @param {int} limit 返回数量
      * @param {int} offset 偏移
+     * @param {string} withUser 目标用户
      * @returns {Message[]}
      */
-    searchMessageEx(conversation, keyword, desc, limit, offset) {
-        return impl.searchMessageEx(conversation, keyword, desc, limit, offset);
+    searchMessageEx(conversation, keyword, desc, limit, offset, withUser='') {
+        return impl.searchMessageEx(conversation, keyword, desc, limit, offset, withUser);
     }
 
     /**
@@ -1454,10 +1467,28 @@ export class WfcManager {
      * @param {boolean} desc 逆序排列
      * @param {int} limit 返回数量
      * @param {int} offset 偏移
+     * @param {string} withUser 目标用户
      * @returns {Message[]}
      */
-    searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset) {
-        return impl.searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset);
+    searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset, withUser='') {
+        return impl.searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset, withUser);
+    }
+
+    /**
+     * 搜索消息
+     * @param {Conversation} conversation 目标会话，如果为空搜索所有会话
+     * @param {string} keyword 关键字
+     * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
+     * @param {Long} 消息起始时间，如果为0，则忽略起始时间。
+     * @param {Long} 消息结束时间，如果为0，测忽略结束时间。
+     * @param {boolean} desc 逆序排列
+     * @param {int} limit 返回数量
+     * @param {int} offset 偏移
+     * @param {string} withUser 目标用户
+     * @returns {Message[]}
+     */
+    searchMessageByTypesAndTimes(conversation, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser='') {
+        return impl.searchMessageByTypesAndTimes(conversation, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser);
     }
 
     /**
@@ -1469,10 +1500,11 @@ export class WfcManager {
      * @param {number} fromIndex messageId，表示从那一条消息开始获取
      * @param {boolean} desc 逆序排列
      * @param {number} count 最大数量
+     * @param {string} withUser 目标用户
      * @returns {[Message]}
      */
-    searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count) {
-        return impl.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count);
+    searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count, withUser='') {
+        return impl.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count, withUser);
     }
 
     /**

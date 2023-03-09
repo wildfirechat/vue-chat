@@ -166,7 +166,7 @@ export default {
                 }
                 cb && cb(obj.hasMore);
             } else {
-                console.log('loadFavList failed', response)
+                console.error('loadFavList failed', responseData)
                 cb && cb(false)
             }
         },

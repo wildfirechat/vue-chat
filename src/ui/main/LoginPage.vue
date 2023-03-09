@@ -14,7 +14,7 @@
             <!--    等待扫码-->
             <div v-if="loginStatus === 0" class="pending-scan">
                 <p>{{ $t('login.desc') }}</p>
-                <p>{{ $t('login.tip') }}</p>
+                <p>{{ $t('login.tip_web') }}</p>
                 <p>{{ $t('login.warning') }}</p>
                 <a target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
             </div>

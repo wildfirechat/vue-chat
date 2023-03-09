@@ -165,6 +165,7 @@ export default {
             // 可能回调多次
             sessionCallback.didChangeState = (state) => {
                 this.status = state;
+                console.log('didChangeState', state)
                 if (state === CallState.STATUS_CONNECTED) {
                     if (this.startTimestamp === 0) {
                         this.startTimestamp = new Date().getTime();
@@ -224,6 +225,13 @@ export default {
                     }
                 }
             };
+            sessionCallback.didParticipantConnected = (userId) => {
+                console.log('didParticipantConnected', userId)
+            }
+
+            sessionCallback.didReportAudioVolume = (userId, volume) => {
+                console.log('didReportAudioVolume', userId, volume)
+            }
             avenginekit.sessionCallback = sessionCallback;
         },
 

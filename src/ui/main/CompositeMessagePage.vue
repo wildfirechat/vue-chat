@@ -134,7 +134,7 @@ export default {
                     // web 每次加载
                     // do nothing
                 }
-                axios.get(content.remotePath, {responseType: 'arraybuffer', headers: {Authorization: ""}}).then(value => {
+                axios.get(content.remotePath, {responseType: 'arraybuffer'}).then(value => {
                     content._decodeMessages(new TextDecoder('utf-8').decode(value.data));
                     store._patchMessage(this.compositeMessage, 0);
                     content.loaded = true;
