@@ -1,7 +1,8 @@
 {
   "login": {
     "desc": "掃碼登錄野火IM",
-    "tip": "野火IM Web端需要配合您的手機客戶端登錄使用",
+    "tip_pc": "野火IM PC端需要配合您的手機客戶端登錄使用",
+    "tip_web": "野火IM Web端需要配合您的手機客戶端登錄使用",
     "warning": "不是使用微信掃碼登錄!!!",
     "scan_qr_success": "掃碼成功",
     "confirm_login_tip": "請在手機上點擊確認以登錄",

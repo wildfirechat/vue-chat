@@ -1,7 +1,8 @@
 {
     "login": {
         "desc": "Scan the QR code to login Wildfire IM",
-        "tip": "Wildfire IM Web client needs to be used with your mobile",
+        "tip_pc": "Wildfire IM PC client needs to be used with your mobile",
+        "tip_web": "Wildfire IM Web client needs to be used with your mobile",
         "warning": "Don't use WeChat to scan the QR code!!!",
         "scan_qr_success": "Scan code successfully",
         "confirm_login_tip": "Please confirm the login on your mobile",
