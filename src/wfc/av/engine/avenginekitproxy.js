@@ -260,11 +260,6 @@ export class AvEngineKitProxy {
                     if (content.callId !== this.callId) {
                         return;
                     }
-                    this.conversation = null;
-                    // this.queueEvents = [];
-                    this.callId = null;
-                    this.inviteMessageUid = null;
-                    this.participants = [];
                 }
 
                 if (msg.conversation.type === ConversationType.Group
