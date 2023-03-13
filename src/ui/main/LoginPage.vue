@@ -319,7 +319,7 @@ export default {
             if (status === ConnectionStatus.ConnectionStatusLogout
                 || status === ConnectionStatus.ConnectionStatusRejected
                 || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
-                || status === ConnectionStatus.kConnectionStatusKickedOff
+                || status === ConnectionStatus.ConnectionStatusKickedOff
                 || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
                 console.error('连接失败', status, ConnectionStatus.desc(status));
                 this.cancel();

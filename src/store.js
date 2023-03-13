@@ -248,7 +248,7 @@ let store = {
                 } else if (status === ConnectionStatus.ConnectionStatusLogout
                     || status === ConnectionStatus.ConnectionStatusRejected
                     || status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
-                    || status === ConnectionStatus.kConnectionStatusKickedOff
+                    || status === ConnectionStatus.ConnectionStatusKickedOff
                     || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
                     _reset();
                     this.updateTray();
