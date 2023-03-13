@@ -3,6 +3,8 @@
  */
 
 export default class ConnectionStatus {
+    static ConnectionStatusTimeInconsistent = -9;
+    static ConnectionStatusNotLicensed = -8;
     static ConnectionStatusKickedOff = -7;
     static ConnectionStatusSecretKeyMismatch = -6;
     static ConnectionStatusTokenIncorrect = -5;
@@ -16,6 +18,8 @@ export default class ConnectionStatus {
 
     static desc(status) {
         const desc = {
+            '-9': '客户端和IM 服务端时间不同步',
+            '-8': 'IM 服务未授权',
             '-7': '被踢下线',
             '-6': '会话密钥错误，请参考 https://docs.wildfirechat.cn/faq/general.html 第12个问题排查',
             '-5': 'token错误',

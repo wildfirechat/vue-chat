@@ -933,41 +933,18 @@ export class WfcManager {
         return impl.getChannelInfo(channelId, refresh);
     }
 
-    /**
-     * 获取密聊信息
-     * @param {string} targetId
-     * @returns {SecretChatInfo}
-     */
-    getSecretChatInfo(targetId) {
-        return impl.getSecretChatInfo(targetId);
-    }
 
-    destroySecretChat(targetId, successCB, failCB) {
-        impl.destroySecretChat(targetId, successCB, failCB);
-    }
-
-    encodeSecretChatMediaData(targetId, mediaDataBuffer) {
-        return impl.encodeSecretChatMediaData(targetId, mediaDataBuffer);
-    }
-
-    decodeSecretChatMediaData(targetId, mediaDataBuffer) {
-        return impl.decodeSecretChatMediaData(targetId, mediaDataBuffer);
-    }
-
-    setSecretChatBurnTime(targetId, ms) {
-        impl.setSecretChatBurnTime(targetId, ms);
-    }
 
     isEnableSecretChat() {
-        return impl.isEnableSecretChat();
+        return false;
     }
 
     isUserEnableSecretChat() {
-        return impl.isUserEnableSecretChat();
+        return false;
     }
 
     setUserEnableSecretChat(enable, successCB, failCB) {
-        impl.setUserEnableSecretChat(enable, successCB, failCB);
+		// do nothing
     }
 
     /**
@@ -1568,7 +1545,7 @@ export class WfcManager {
     cancelSendingMessage(messageId) {
         return impl.cancelSendingMessage(messageId);
     }
-    // 更新了原始消息的内容
+
     /**
      * 撤回消息
      * @param {Long} messageUid

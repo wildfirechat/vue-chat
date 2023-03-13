@@ -20,6 +20,8 @@ export default class ErrorCode {
     static kEcServerFriendRquestBlocked = 18;
     static kEcServerFriendRequestOvertime = 19;
     static kEcServerNotInChatroom = 20;
+    static kEcServerNotLicensed = 22;
+    static kEcServerTimeInconsistent = 30;
     static kEcServerUserIsBlocked = 245;
     static kEcServerInBlacklist = 246;
     static kEcServerForbidden_send_msg = 247;
