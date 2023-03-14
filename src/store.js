@@ -1272,7 +1272,7 @@ let store = {
                             this._onloadConversationMessages(conversation, msgs);
                         }
                         this._reloadConversation(conversation);
-                        loadedCB();
+                        loadedCB(msgs);
                     }
                 },
                 (error) => {
@@ -1288,7 +1288,8 @@ let store = {
             if (!loadNewMsg) {
                 loadRemoteHistoryMessageFunc();
             } else {
-                setTimeout(() => loadedCB(), 200)
+                loadedCB(lmsgs);
+                // setTimeout(() => loadedCB(lmsgs), 200)
             }
         } else {
             loadRemoteHistoryMessageFunc();

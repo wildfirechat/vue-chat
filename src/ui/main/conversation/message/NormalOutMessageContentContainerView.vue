@@ -32,6 +32,7 @@
                         interactive
                         :animate-fill="false"
                         placement="left"
+                        v-if="false"
                         distant="7"
                         theme="light"
                         animation="fade"

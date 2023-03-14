@@ -49,37 +49,21 @@
                         <p>{{ $t('conversation.drag_to_send_to', [conversationTitle]) }}</p>
                     </div>
                 </div>
-                <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll"
-                     infinite-wrapper>
-                    <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
-                                      @infinite="infiniteHandler">
-                        <!--            <template slot="spinner">加载中...</template>-->
-                        <template slot="no-more">{{ $t('conversation.no_more_message') }}</template>
-                        <template slot="no-results">{{ $t('conversation.all_message_load') }}</template>
-                    </infinite-loading>
-                    <ul v-if="fixTippy">
-                        <!--todo item.messageId or messageUid as key-->
-                        <li v-for="(message) in sharedConversationState.currentConversationMessageList"
-                            :key="message.messageId">
-                            <!--todo 不同的消息类型 notification in out-->
-
-                            <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-                            <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
-                            <ContextableNotificationMessageContentContainerView
-                                v-else-if="isContextableNotificationMessage(message)"
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                                :message="message"
-                            />
-                            <NormalOutMessageContentView
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                                :message="message"
-                                v-else-if="message.direction === 0"/>
-                            <NormalInMessageContentView
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                                :message="message"
-                                v-else/>
-                        </li>
-                    </ul>
+                <div ref="conversationMessageList" class="conversation-message-list">
+                    <virtual-list ref="vsl" :data-component="messageItemView"
+                                  :data-sources="sharedConversationState.currentConversationMessageList"
+                                  :data-key="messageItemKey"
+                                  :estimate-size="100"
+                                  style="height: 100%; overflow-y: auto; position: relative"
+                                  v-on:scroll="onScroll"
+                                  v-on:resized="onItemRendered"
+                                  v-on:totop="onScrollToTop"
+                                  v-on:tobottom="onScrollToBottom"
+                    />
+                    <div slot="header" v-show="overflow" class="header">
+                        <div class="spinner" v-show="!finished"></div>
+                        <div class="finished" v-show="finished">No more data</div>
+                    </div>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
                     <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>
@@ -179,16 +163,11 @@ import SecretConversationInfoView from "@/ui/main/conversation/SecretConversatio
 import GroupConversationInfoView from "@/ui/main/conversation/GroupConversationInfoView";
 import MessageInputView from "@/ui/main/conversation/MessageInputView";
 import ClickOutside from 'vue-click-outside'
-import NormalOutMessageContentView from "@/ui/main/conversation/message/NormalOutMessageContentContainerView";
-import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInMessageContentContainerView";
-import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
-import RecallNotificationMessageContentView from "@/ui/main/conversation/message/RecallNotificationMessageContentView";
 import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
 import TextMessageContent from "@/wfc/messages/textMessageContent";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
 import {numberValue} from "@/wfc/util/longUtil";
-import InfiniteLoading from 'vue-infinite-loading';
 import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
@@ -213,29 +192,23 @@ import RichNotificationMessageContent from "../../../wfc/messages/notification/r
 import MessageStatus from "../../../wfc/messages/messageStatus";
 import MediaMessageContent from "../../../wfc/messages/mediaMessageContent";
 import ArticlesMessageContent from "../../../wfc/messages/articlesMessageContent";
-import ContextableNotificationMessageContentContainerView from "./message/ContextableNotificationMessageContentContainerView";
 import ChannelConversationInfoView from "./ChannelConversationInfoView";
 import FriendRequestView from "../contact/FriendRequestView";
 import {currentWindow, ipcRenderer} from "../../../platform";
 import appServerApi from "../../../api/appServerApi";
 import Config from "../../../config";
 import IPCEventType from "../../../ipcEventType";
+import MessageItemView from "./MessageItemView.vue";
 
 var amr;
 export default {
     components: {
         ChannelConversationInfoView,
-        ContextableNotificationMessageContentContainerView,
         MultiSelectActionView,
-        NotificationMessageContentView,
-        RecallNotificationMessageContentView,
-        NormalInMessageContentView,
-        NormalOutMessageContentView,
         MessageInputView,
         GroupConversationInfoView,
         SingleConversationInfoView,
         SecretConversationInfoView,
-        InfiniteLoading,
         ScaleLoader,
     },
     props: {
@@ -250,6 +223,7 @@ export default {
     },
     data() {
         return {
+            messageItemView: MessageItemView,
             conversationInfo: null,
             showConversationInfo: false,
             sharedConversationState: store.state.conversation,
@@ -269,6 +243,13 @@ export default {
             messageInputViewResized: false,
             unreadMessageCount: 0,
             isWindowAlwaysTop: currentWindow && currentWindow.isAlwaysOnTop(),
+
+            overflow: false,
+            finished: false,
+            isFirstPageReady: false,
+            isFetching: false,
+
+            scrollOffset: 0,
         };
     },
 
@@ -419,8 +400,9 @@ export default {
             this.$refs.messageInputView.insertText(message.messageContent.originalSearchableContent);
         },
 
-        onScroll(e) {
+        onScroll(e, range) {
             // hide tippy userCard
+            // console.log('onScroll', e, range)
             for (const popper of document.querySelectorAll('.tippy-popper')) {
                 const instance = popper._tippy;
                 if (instance.state.isVisible) {
@@ -431,11 +413,18 @@ export default {
             this.$refs.menu && this.$refs.menu.close();
 
             // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
-            if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
+            const vsl = this.$refs.vsl
+            // console.log('onScroll', vsl.getClientSize(), vsl.getScrollSize(), vsl.getOffset());
+            //if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
+            if (vsl.getScrollSize() - vsl.getOffset() > vsl.getClientSize() * 1.5) {
+                console.log('onScroll tob', false)
                 store.setShouldAutoScrollToBottom(false)
+                this.scrollOffset = vsl.getOffset();
             } else {
+                console.log('onScroll tob', true)
                 store.setShouldAutoScrollToBottom(true)
                 this.clearConversationUnreadStatus();
+                this.scrollOffset = 0;
             }
         },
 
@@ -681,7 +670,38 @@ export default {
             this.toggleMessageMultiSelectionActionView(message);
         },
 
-        infiniteHandler($state) {
+        onScrollToTop() {
+            if (this.isFetching) {
+                return;
+            }
+            console.log('scroll to top')
+            this.isFetching = true;
+            this.overflow = true;
+            store.loadConversationHistoryMessages((msgs) => {
+                console.log('loaded')
+                this.$nextTick(() => {
+                    const vsl = this.$refs.vsl
+                    let msgIds = msgs.map(m => m.messageId);
+                    const offset = msgIds.reduce((previousValue, currentMessageId) => {
+                        const previousSize = typeof previousValue === 'string' && previousValue !== 0 ? vsl.getSize(previousValue) : previousValue
+                        return previousSize + this.$refs.vsl.getSize(currentMessageId)
+                    }, 0)
+                    this.setVirtualListToOffset(offset)
+                    this.isFetching = false;
+                    this.overflow = false;
+                })
+            }, () => {
+                console.log('complete')
+                this.isFetching = false;
+                this.finished = true;
+                this.overflow = false;
+            });
+        },
+        onScrollToBottom() {
+            console.log('scroll to bottom')
+        },
+
+        infiniteHandler() {
             console.log('to load more message');
             store.loadConversationHistoryMessages(() => {
                 console.log('loaded')
@@ -754,7 +774,8 @@ export default {
 
         showUnreadMessage() {
             let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            // messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            this.setVirtualListToBottom();
         },
 
         clearConversationUnreadStatus() {
@@ -762,6 +783,41 @@ export default {
             if (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll > 0) {
                 store.clearConversationUnreadStatus(info.conversation);
                 // this.unreadMessageCount = 0;
+            }
+        },
+        messageItemKey(message) {
+            return message.messageId;
+        },
+
+        onItemRendered() {
+            if (!this.$refs.vsl) {
+                return
+            }
+            // first page items are all mounted, scroll to bottom
+            //if (!this.param.isFirstPageReady && this.$refs.vsl.getSizes() >= this.param.pageSize) {
+            if (!this.isFirstPageReady) {
+                this.isFirstPageReady = true
+                this.setVirtualListToBottom()
+            }
+            this.checkOverFlow()
+        },
+        checkOverFlow() {
+            // const vsl = this.$refs.vsl
+            // if (vsl) {
+            //     console.log('xxx', vsl.getScrollSize(), vsl.getClientSize());
+            //     this.overflow = vsl.getScrollSize() > vsl.getClientSize()
+            // }
+        },
+        setVirtualListToOffset(offset) {
+            console.log('xxxx setVirtualListToOffset', offset)
+            if (this.$refs.vsl) {
+                this.$refs.vsl.scrollToOffset(offset)
+            }
+        },
+        setVirtualListToBottom() {
+            console.log('xxxxxxxx setVirtualListToBottom')
+            if (this.$refs.vsl) {
+                this.$refs.vsl.scrollToBottom()
             }
         }
     },
@@ -822,12 +878,15 @@ export default {
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
         console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
-        if (this.sharedConversationState.shouldAutoScrollToBottom  && !this.sharedMiscState.isPageHidden) {
-            let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+        if (this.sharedConversationState.shouldAutoScrollToBottom && !this.sharedMiscState.isPageHidden) {
+            console.log('updated, and scroll to bottom')
+            this.setVirtualListToBottom();
             this.clearConversationUnreadStatus();
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
+            if (this.scrollOffset){
+                // this.setVirtualListToOffset(this.scrollOffset);
+            }
         }
         if (this.sharedConversationState.currentConversationInfo) {
             let unreadCount = this.sharedConversationState.currentConversationInfo.unreadCount;
@@ -848,6 +907,8 @@ export default {
                 clearInterval(this.ongoingCallTimer);
                 this.ongoingCallTimer = 0;
             }
+            this.finished = false;
+            this.isFirstPageReady = false;
         }
         this.conversationInfo = this.sharedConversationState.currentConversationInfo;
     },
@@ -899,7 +960,7 @@ export default {
                 }
             }
             return null;
-        }
+        },
     },
     // watch: {
     //     conversationInfo() {
@@ -943,7 +1004,6 @@ export default {
     border-top-right-radius: var(--main-border-radius);
     position: relative;
 }
-
 
 .title-container h1 {
     font-size: 16px;
@@ -1046,6 +1106,7 @@ export default {
 .conversation-message-list {
     flex: 1 1 auto;
     overflow: auto;
+    position: relative;
 }
 
 .conversation-message-list ul {
@@ -1117,4 +1178,76 @@ i:hover {
 i.active {
     color: #3f64e4;
 }
+
+.header {
+    padding: .5em;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: auto;
+}
+
+.header .finished {
+    font-size: 14px;
+    text-align: center;
+    color: #bfbfbf;
+}
+
+.header .spinner {
+    font-size: 10px;
+    margin: 0px auto;
+    text-indent: -9999em;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ffffff;
+    background: linear-gradient(to right, #ccc 10%, rgba(255, 255, 255, 0) 42%);
+    position: relative;
+    animation: load3 1.4s infinite linear;
+    transform: translateZ(0);
+}
+
+.header .spinner:before {
+    width: 50%;
+    height: 50%;
+    background: #ccc;
+    border-radius: 100% 0 0 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+}
+
+.header .spinner:after {
+    background: #ffffff;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    content: '';
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+@-webkit-keyframes load3 {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes load3 {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 </style>
