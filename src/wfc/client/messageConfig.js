@@ -212,13 +212,13 @@ export default class MessageConfig {
         },
         {
             name: 'friendGreeting',
-            flag: PersistFlag.No_Persist,
+            flag: PersistFlag.Persist,
             type: MessageContentType.Friend_Added,
             contentClazz: FriendGreetingNotification,
         },
         {
             name: 'friendAdded',
-            flag: PersistFlag.No_Persist,
+            flag: PersistFlag.Persist,
             type: MessageContentType.Friend_Greeting,
             contentClazz: FriendAddedNotification,
         },
