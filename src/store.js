@@ -262,7 +262,7 @@ let store = {
             console.log('store UserInfosUpdate', userInfos, miscState.connectionStatus)
             this._reloadSingleConversationIfExist(userInfos);
             // TODO optimize
-            this._loadCurrentConversationMessages();
+            this._patchCurrentConversationMessages();
             this._loadFriendList();
             this._loadFriendRequest();
             this._loadSelfUserInfo();
@@ -277,9 +277,9 @@ let store = {
             this._loadChannelList();
             this.updateTray();
             // 清除远程消息时，WEB SDK会同时触发ConversationInfoUpdate 和 setting更新，但PC SDK不会，只会触发setting更新
-            if (isElectron()) {
-                this._loadCurrentConversationMessages();
-            }
+            // if (isElectron()) {
+            //     this._loadCurrentConversationMessages();
+            // }
         });
 
         wfc.eventEmitter.on(EventType.FriendRequestUpdate, (newFrs) => {
@@ -291,7 +291,7 @@ let store = {
             this._loadFriendRequest();
             this._loadFavContactList();
             this._loadDefaultConversationList();
-            this._loadCurrentConversationMessages();
+            this._patchCurrentConversationMessages();
         });
 
         wfc.eventEmitter.on(EventType.GroupInfosUpdate, (groupInfos) => {
@@ -318,9 +318,9 @@ let store = {
 
         wfc.eventEmitter.on(EventType.ConversationInfoUpdate, (conversationInfo) => {
             this._reloadConversation(conversationInfo.conversation)
-            if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
-                this._loadCurrentConversationMessages();
-            }
+            // if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
+            //     this._loadCurrentConversationMessages();
+            // }
             // 标记已读未读
             this.updateTray();
         });
@@ -626,6 +626,7 @@ let store = {
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         if (conversationState.currentConversationInfo) {
             this._loadCurrentConversationMessages();
+            this._patchCurrentConversationMessages();
         }
     },
 
@@ -825,16 +826,16 @@ let store = {
         }
         let conversation = conversationInfo.conversation;
         if (conversation.type === ConversationType.Group || (conversation.type === ConversationType.Single && !wfc.isMyFriend(conversation.target))) {
-		    wfc.watchOnlineState(conversation.type, [conversation.target], 1000, (states) => {
-		        states.forEach((e => {
-		            miscState.userOnlineStateMap.set(e.userId, e);
-		        }))
-		        this._patchCurrentConversationOnlineStatus();
+            wfc.watchOnlineState(conversation.type, [conversation.target], 1000, (states) => {
+                states.forEach((e => {
+                    miscState.userOnlineStateMap.set(e.userId, e);
+                }))
+                this._patchCurrentConversationOnlineStatus();
 
-		    }, (err) => {
-		        console.log('watchOnlineState error', err);
-		    })
-		}
+            }, (err) => {
+                console.log('watchOnlineState error', err);
+            })
+        }
         if (conversation.type === ConversationType.Channel) {
             let content = new EnterChannelChatMessageContent();
             wfc.sendConversationMessage(conversation, content);
@@ -845,6 +846,7 @@ let store = {
         conversationState.currentConversationOldestMessageId = 0;
         conversationState.currentConversationOldestMessageUid = 0;
         this._loadCurrentConversationMessages();
+        this._patchCurrentConversationMessages();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
         conversationState.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
@@ -920,7 +922,7 @@ let store = {
 
     forwardMessage(forwardType, targetConversations, messages, extraMessageText) {
         // web 端，避免撤回消息等操作，影响组合消息
-        if (!isElectron()){
+        if (!isElectron()) {
             messages = messages.map(m => Object.assign({}, m));
         }
         targetConversations.forEach(conversation => {
@@ -1105,12 +1107,12 @@ let store = {
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
                 let iThumbnail = '';
-                if (file.size > 15 * 1024){
+                if (file.size > 15 * 1024) {
                     iThumbnail = await imageThumbnail(file);
                     iThumbnail = iThumbnail ? iThumbnail : Config.DEFAULT_THUMBNAIL_URL;
                 }
                 console.log('image file', file)
-                if (iThumbnail.length > 15 * 1024){
+                if (iThumbnail.length > 15 * 1024) {
                     console.warn('generated thumbnail is too large, use default thumbnail', iThumbnail.length);
                     iThumbnail = Config.DEFAULT_THUMBNAIL_URL;
                 }
@@ -1123,7 +1125,7 @@ let store = {
                 if (vThumbnail === null) {
                     return false;
                 }
-                if (vThumbnail.length > 15 * 1024){
+                if (vThumbnail.length > 15 * 1024) {
                     console.warn('generated thumbnail is too large, use default thumbnail', vThumbnail.length);
                     vThumbnail = Config.DEFAULT_THUMBNAIL_URL;
                 }
@@ -1209,16 +1211,13 @@ let store = {
     },
 
     _loadCurrentConversationMessages() {
+        console.log('_loadCurrentConversationMessages')
         if (!conversationState.currentConversationInfo) {
             return;
         }
+        // TODO 可以在这儿加载所有未读消息，以实现滚动到一条未读消息的地方
         let conversation = conversationState.currentConversationInfo.conversation;
         let msgs = wfc.getMessages(conversation, 0, true, 20);
-        let lastTimestamp = 0;
-        msgs.forEach(m => {
-            this._patchMessage(m, lastTimestamp);
-            lastTimestamp = m.timestamp;
-        });
         conversationState.currentConversationMessageList = msgs;
         if (msgs.length) {
             conversationState.currentConversationOldestMessageId = msgs[0].messageId;
@@ -1229,6 +1228,15 @@ let store = {
                 break;
             }
         }
+    },
+
+    _patchCurrentConversationMessages(){
+        let lastTimestamp = 0;
+        let msgs = conversationState.currentConversationMessageList;
+        msgs.forEach(m => {
+            this._patchMessage(m, lastTimestamp);
+            lastTimestamp = m.timestamp;
+        });
     },
 
     _onloadConversationMessages(conversation, messages) {
@@ -1261,7 +1269,7 @@ let store = {
         let loadRemoteHistoryMessageFunc = () => {
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
-                console.log('loadRemoteConversationMessages response', msgs.length);
+                    console.log('loadRemoteConversationMessages response', msgs.length);
                     if (msgs.length === 0) {
                         completeCB();
                     } else {
