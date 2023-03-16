@@ -578,7 +578,7 @@ export default {
             }
             this.selfUserInfo._isVideoMuted = !enable;
 
-            console.log('muteVideo', this.selfUserInfo._isVideoMuted, this.session.audience)
+            console.log('muteVideo result', this.selfUserInfo._isVideoMuted, this.session.audience)
             if (enable) {
                 if (this.session.audience) {
                     await this.session.switchAudience(false);
