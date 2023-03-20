@@ -3,7 +3,7 @@
         <!--    <i class="icon-ion-android-volume-up"></i>-->
         <!--    <span> {{ duration }} </span>-->
 
-        <audio preload="auto" controls controlsList="nodownload">
+        <audio preload="auto" controls controlsList="nodownload" @ended="onAudioComplete">
             <source :src="remotePath" type="audio/mp4"/>
         </audio>
     </div>
@@ -12,6 +12,8 @@
 <script>
 import Message from "@/wfc/messages/message";
 import Config from "@/config";
+import wfc from "../../../../../wfc/client/wfc";
+import MessageStatus from "../../../../../wfc/messages/messageStatus";
 
 export default {
     name: "AudioMessageContentView",
@@ -32,6 +34,14 @@ export default {
         },
     },
     mounted() {
+    },
+
+    methods: {
+        onAudioComplete() {
+            if (this.message.status === MessageStatus.Unread){
+                wfc.updateMessageStatus(this.message.messageId, MessageStatus.Played);
+            }
+        }
     },
 
     computed: {

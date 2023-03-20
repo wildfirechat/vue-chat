@@ -705,6 +705,9 @@ export default {
             amr.onEnded(() => {
                 message._isPlaying = false;
                 store.playVoice(null)
+                if (message.status === MessageStatus.Unread){
+                    wfc.updateMessageStatus(message.messageId, MessageStatus.Played);
+                }
             })
         },
         mentionMessageSenderTitle(message) {
