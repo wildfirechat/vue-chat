@@ -173,6 +173,19 @@ export default class CallSession {
     getSubscriber(userId, screenSharing) {
     }
 
+    /**
+     * 获取参与者的通话信息列表
+     */
+    getParticipantProfiles(){
+
+    }
+
+    /**
+     * 获取自己的通话信息
+     */
+    getSelfProfile(){
+
+    }
 
     /**
      * 仅会议时有效
