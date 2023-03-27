@@ -130,7 +130,7 @@ export class OrganizationServerApi {
      * @return {Promise<string | AxiosResponse<any>|*|T>}
      * @private
      */
-    async _post(path, data = null, rawResponse = false, rawResponseData = false) {
+    async _post(path, data = {}, rawResponse = false, rawResponseData = false) {
         let response;
         path = Config.ORGANIZATION_SERVER + path;
         response = await axios.post(path, data, {
