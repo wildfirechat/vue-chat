@@ -78,8 +78,8 @@ import EventType from "../../../wfc/client/wfcEvent";
 import appServerApi from "../../../api/appServerApi";
 import AppServerError from "../../../api/appServerError";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
-import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
-import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";
+
+
 
 export default {
     name: "GroupConversationInfoView",

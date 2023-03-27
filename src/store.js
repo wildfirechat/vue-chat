@@ -287,6 +287,7 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.FriendListUpdate, (updatedFriendIds) => {
+            console.log('FriendListUpdate', updatedFriendIds);
             this._loadFriendList();
             this._loadFriendRequest();
             this._loadFavContactList();
