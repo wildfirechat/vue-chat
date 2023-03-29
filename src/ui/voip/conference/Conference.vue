@@ -11,14 +11,14 @@
             <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
                                               :title="'野火会议'"
                                               :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
-            <ScreenShareControlView v-if="session && session.isScreenSharing()" type="conference"/>
+            <ScreenShareControlView v-if="session && session.screenSharing" type="conference"/>
             <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
         </div>
         <div v-if="endReason !== undefined && endReason === 4" @click="rejoinConference" class="rejoin-container">
             会议断开，点击重新加入
         </div>
         <div v-if="session" class="main-slider-container"
-             v-bind:style="{display: session.isScreenSharing() && sharedMiscState.isElectron ? 'none' : 'flex'}">
+             v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="main">
                 <header style="background: white; height: 20px; display: flex; justify-content: space-between">
                     <a href="#">
@@ -82,7 +82,7 @@
                         <!--                    演讲者布局-->
                         <section v-else class="content-container focus video">
                             <div :style="{width: hideFocusLayoutParticipantListVideoView ? '100%' : 'calc(100% - 200px)', height: '100%', position: 'relative'}">
-                                <video v-if=" computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && !computedFocusVideoParticipant._isVideoMuted && computedFocusVideoParticipant._stream"
+                                <video v-if=" computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && (!computedFocusVideoParticipant._isVideoMuted || computedFocusVideoParticipant._isScreenSharing) && computedFocusVideoParticipant._stream"
                                        v-bind:style="{objectFit:computedFocusVideoParticipant._isScreenSharing ? 'contain' : 'fit'}"
                                        style="width: 100%; height: 100%"
                                        :srcObject.prop="computedFocusVideoParticipant._stream"
@@ -153,7 +153,7 @@
                                     <p>静音</p>
                                 </div>
                                 <div class="action"
-                                     v-if="!session.isScreenSharing()">
+                                     v-if="!session.screenSharing">
                                     <img v-if="!session.audience && !session.videoMuted" @click="muteVideo" class="action-img"
                                          src='@/assets/images/av_conference_video.png'/>
                                     <img v-else @click="muteVideo" class="action-img"
@@ -329,6 +329,7 @@ export default {
                 console.log('oninitial', selfUserInfo._isAudience)
                 // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null);
+                this.$set(this.selfUserInfo, '_isScreenSharing', false);
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
 
                 this.session = session;
@@ -337,14 +338,21 @@ export default {
                 conferenceManager.getConferenceInfo(session.callId);
             };
 
-            sessionCallback.didCreateLocalVideoTrack = (stream) => {
+            sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
+                console.log('didCreateLocalVideoTrack', screenShare)
                 this.selfUserInfo._stream = stream;
+                this.selfUserInfo._isScreenSharing= screenShare;
             };
 
             sessionCallback.didRotateLocalVideoTrack = (stream) => {
                 console.log('didRotateLocalVideoTrack', stream.getAudioTracks())
                 this.selfUserInfo._stream = stream;
             };
+
+            sessionCallback.didScreenShareEnded = () => {
+                console.log('didScreenShareEnded');
+                this.selfUserInfo._isScreenSharing = false;
+            }
 
             sessionCallback.didCreateLocalVideoTrackError = () => {
                 // TODO
@@ -434,8 +442,6 @@ export default {
                 this.participantUserInfos.forEach(u => {
                     if (u.uid === userId && u._isScreenSharing === screenSharing) {
                         u._isAudience = audience;
-                        u._isAudioMuted = false;
-                        u._isVideoMuted = false;
                         if (audience) {
                             u._stream = null;
                         }
@@ -695,7 +701,7 @@ export default {
             //     return;
             // }
 
-            if (this.session.isScreenSharing()) {
+            if (this.session.screenSharing) {
                 this.session.stopScreenShare();
                 console.log('stopScreenShare', this.session.videoMuted, this.session.audioMuted);
                 if (this.session.videoMuted && this.session.audioMuted) {
@@ -1038,8 +1044,14 @@ export default {
             if (conferenceManager.currentFocusUser) {
                 this.session.setParticipantVideoType(conferenceManager.currentFocusUser.uid, conferenceManager.currentFocusUser._isScreenSharing, VideoType.SMALL_STREAM);
             }
-            conferenceManager.currentFocusUser = sp;
-            this.session.setParticipantVideoType(conferenceManager.currentFocusUser.uid, conferenceManager.currentFocusUser._isScreenSharing, VideoType.BIG_STREAM);
+            if (sp) {
+                conferenceManager.currentFocusUser = sp;
+                this.session.setParticipantVideoType(conferenceManager.currentFocusUser.uid, conferenceManager.currentFocusUser._isScreenSharing, VideoType.BIG_STREAM);
+            } else {
+                if (this.session.screenSharing) {
+                    sp = this.selfUserInfo;
+                }
+            }
             console.log('computedSpeakingParticipant', sp)
             return sp;
         }
@@ -1050,13 +1062,20 @@ export default {
             deep: true,
             handler(infos) {
                 let audioOnly = true;
-                for (let i = 0; i < this.participantUserInfos.length; i++) {
-                    let u = this.participantUserInfos[i];
-                    if (!u._isAudience && !u._isVideoMuted) {
-                        audioOnly = false;
-                        break;
+                console.log('participantUserInfos', this.session.screenSharing);
+                if (this.session.screenSharing) {
+                    audioOnly = false;
+                } else {
+                    for (let i = 0; i < this.participantUserInfos.length; i++) {
+                        let u = this.participantUserInfos[i];
+                        if (!u._isAudience && !u._isVideoMuted) {
+                            console.log('xx audio only false', u);
+                            audioOnly = false;
+                            break;
+                        }
                     }
                 }
+                console.log('audioOnly', audioOnly);
                 this.audioOnly = audioOnly;
 
                 // mute self audio
@@ -1163,7 +1182,7 @@ export default {
             //     this.$forceUpdate();
             // })
             window.addEventListener("mousemove", (event) => {
-                if (!this.session || !this.session.isScreenSharing()) {
+                if (!this.session || !this.session.screenSharing) {
                     return;
                 }
                 if (event.target.id === "main-content-container") {

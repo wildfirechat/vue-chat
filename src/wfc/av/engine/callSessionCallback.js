@@ -81,6 +81,13 @@ export default class CallSessionCallback {
 
     }
 
+    /**
+     * 屏幕共享结束回调
+     */
+    didScreenShareEnded(){
+
+    }
+
 
     /**
      * 本地视频流旋转回调
