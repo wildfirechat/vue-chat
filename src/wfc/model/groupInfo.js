@@ -36,6 +36,9 @@ export default class GroupInfo {
     //是否运行群中普通成员私聊。0 允许，1不允许
     privateChat = 0;
 
+    //是否是超级群组
+    superGroup = 0;
+
     //是否可以搜索到该群，功能暂未实现
     searchable
 

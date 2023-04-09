@@ -344,7 +344,6 @@ let store = {
                     this.setCurrentConversationInfo(null);
                     return;
                 }
-                // 移动端，目前只有单聊会发送typing消息
                 if (msg.messageContent.type === MessageContentType.Typing) {
                     let groupId = msg.conversation.type === 1 ? msg.conversation.target : '';
                     let userInfo = wfc.getUserInfo(msg.from, false, groupId)
@@ -627,7 +626,6 @@ let store = {
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         if (conversationState.currentConversationInfo) {
             this._loadCurrentConversationMessages();
-            this._patchCurrentConversationMessages();
         }
     },
 
@@ -847,7 +845,6 @@ let store = {
         conversationState.currentConversationOldestMessageId = 0;
         conversationState.currentConversationOldestMessageUid = 0;
         this._loadCurrentConversationMessages();
-        this._patchCurrentConversationMessages();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
         conversationState.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
@@ -1183,31 +1180,23 @@ let store = {
      * @param {function (Message[]) } callback 消息列表会回调
      */
     getMessages(conversation, fromIndex = 0, before = true, withUser = '', callback) {
-        let lmsgs = wfc.getMessages(conversation, fromIndex, before, 20);
-        if (lmsgs.length > 0) {
-            lmsgs = lmsgs.map(m => this._patchMessage(m, 0));
-            setTimeout(() => callback && callback(lmsgs), 200)
-        } else {
+        wfc.getMessagesV2(conversation, fromIndex, before, 20, withUser, msgs => {
+            msgs = msgs.map(m => this._patchMessage(m, 0));
+            //callback && callback(msgs);
+            setTimeout(() => callback && callback(msgs), 200)
+        }, err => {
+            console.error('getMessageV2 error', err)
             callback && callback([]);
-            // 只获取本地的消息
-            // wfc.loadRemoteConversationMessages(conversation, fromUid, 20,
-            //     (msgs) => {
-            //         callback(msgs.map(m => this._patchMessage(m, 0)))
-            //     },
-            //     (error) => {
-            //         callback([])
-            //     });
-        }
+        });
     },
 
     getMessageInTypes(conversation, contentTypes, timestamp, before = true, withUser = '', callback) {
-        let lmsgs = wfc.getMessagesByTimestamp(conversation, contentTypes, timestamp, before, 20, withUser);
-        if (lmsgs.length > 0) {
-            lmsgs = lmsgs.map(m => this._patchMessage(m, 0));
-            setTimeout(() => callback && callback(lmsgs), 200)
-        } else {
+        wfc.getMessagesByTimestampV2(conversation, contentTypes, timestamp, before, 20, withUser, msgs => {
+            msgs = msgs.map(m => this._patchMessage(m, 0));
+            callback && callback(msgs);
+        }, err => {
             callback && callback([]);
-        }
+        });
 
     },
 
@@ -1218,8 +1207,9 @@ let store = {
         }
         // TODO 可以在这儿加载所有未读消息，以实现滚动到一条未读消息的地方
         let conversation = conversationState.currentConversationInfo.conversation;
-        let msgs = wfc.getMessages(conversation, 0, true, 20);
+        wfc.getMessagesV2(conversation, 0, true, 20, '', msgs => {
         conversationState.currentConversationMessageList = msgs;
+            this._patchCurrentConversationMessages();
         if (msgs.length) {
             conversationState.currentConversationOldestMessageId = msgs[0].messageId;
         }
@@ -1229,6 +1219,9 @@ let store = {
                 break;
             }
         }
+        }, err => {
+            console.error('_loadCurrentConversationMessages error', err);
+        });
     },
 
     _patchCurrentConversationMessages(){
@@ -1266,7 +1259,6 @@ let store = {
         }
         let conversation = conversationState.currentConversationInfo.conversation;
         console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
-        let lmsgs = wfc.getMessages(conversation, conversationState.currentConversationOldestMessageId, true, 20);
         let loadRemoteHistoryMessageFunc = () => {
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
@@ -1288,6 +1280,7 @@ let store = {
                     completeCB();
                 });
         }
+        wfc.getMessagesV2(conversation, conversationState.currentConversationOldestMessageId, true, 20, '', lmsgs => {
         if (lmsgs.length > 0) {
             conversationState.currentConversationOldestMessageId = lmsgs[0].messageId;
             if (gt(lmsgs[0].messageUid, 0)) {
@@ -1297,11 +1290,15 @@ let store = {
             if (!loadNewMsg) {
                 loadRemoteHistoryMessageFunc();
             } else {
+                    // loadedCB();
                 setTimeout(() => loadedCB(), 200)
             }
         } else {
             loadRemoteHistoryMessageFunc();
         }
+        }, err => {
+            completeCB();
+        });
     },
 
     setConversationTop(conversation, top) {

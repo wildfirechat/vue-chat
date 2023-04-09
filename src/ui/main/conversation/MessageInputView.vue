@@ -56,6 +56,7 @@
                  draggable="false"
                  title="Enter发送，Ctrl+Enter换行"
                  autofocus
+                 @input="onInput"
                  @contextmenu.prevent="$refs.menu.open($event)"
                  onmouseover="this.setAttribute('org_title', this.title); this.title='';"
                  onmouseout="this.title = this.getAttribute('org_title');"
@@ -125,6 +126,7 @@ import TalkingCallback from "../../../wfc/ptt/client/talkingCallback";
 import Config from "../../../config";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
+import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -159,6 +161,7 @@ export default {
             tributeReplaced: false,
             enablePtt: wfc.isCommercialServer() && Config.ENABLE_PTT,
             amrRecorder: null,
+            lastTypingMessageTimestamp: 0,
         }
     },
     methods: {
@@ -187,6 +190,20 @@ export default {
             store.quoteMessage(null)
         },
 
+        onInput(e) {
+            this.notifyTyping(TypingMessageContent.TYPING_TEXT);
+        },
+
+        notifyTyping(type) {
+            if ([ConversationType.Single, ConversationType.Group].indexOf(this.conversationInfo.conversation.type) >= 0) {
+                let now = new Date().getTime();
+                if (now - this.lastTypingMessageTimestamp > 10 * 1000) {
+                    let typing = new TypingMessageContent(type);
+                    wfc.sendConversationMessage(this.conversationInfo.conversation, typing)
+                    this.lastTypingMessageTimestamp = now;
+                }
+            }
+        },
         async handlePaste(e, source) {
             let text;
             e.preventDefault();
@@ -469,6 +486,7 @@ export default {
 
         pickFile() {
             this.$refs['fileInput'].click();
+            this.notifyTyping(TypingMessageContent.TYPING_FILE);
         },
 
         startAudioCall() {
@@ -777,6 +795,7 @@ export default {
         },
 
         recordAudio(start) {
+            this.notifyTyping(TypingMessageContent.TYPING_VOICE);
             if (start) {
                 if (!this.amrRecorder) {
                     this.amrRecorder = new BenzAMRRecorder();
