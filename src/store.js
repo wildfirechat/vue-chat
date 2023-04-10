@@ -1208,23 +1208,23 @@ let store = {
         // TODO 可以在这儿加载所有未读消息，以实现滚动到一条未读消息的地方
         let conversation = conversationState.currentConversationInfo.conversation;
         wfc.getMessagesV2(conversation, 0, true, 20, '', msgs => {
-        conversationState.currentConversationMessageList = msgs;
+            conversationState.currentConversationMessageList = msgs;
             this._patchCurrentConversationMessages();
-        if (msgs.length) {
-            conversationState.currentConversationOldestMessageId = msgs[0].messageId;
-        }
-        for (let i = 0; i < msgs.length; i++) {
-            if (gt(msgs[i].messageUid, 0)) {
-                conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
-                break;
+            if (msgs.length) {
+                conversationState.currentConversationOldestMessageId = msgs[0].messageId;
             }
-        }
+            for (let i = 0; i < msgs.length; i++) {
+                if (gt(msgs[i].messageUid, 0)) {
+                    conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
+                    break;
+                }
+            }
         }, err => {
             console.error('_loadCurrentConversationMessages error', err);
         });
     },
 
-    _patchCurrentConversationMessages(){
+    _patchCurrentConversationMessages() {
         let lastTimestamp = 0;
         let msgs = conversationState.currentConversationMessageList;
         msgs.forEach(m => {
@@ -1261,10 +1261,15 @@ let store = {
         console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let loadRemoteHistoryMessageFunc = () => {
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
-                (msgs) => {
+                (msgs, hasMore) => {
                     console.log('loadRemoteConversationMessages response', msgs.length);
                     if (msgs.length === 0) {
-                        completeCB();
+                        // 拉回来的消息，本地全都有时，会走到这儿
+                        if (hasMore) {
+                            loadedCB();
+                        } else {
+                            completeCB();
+                        }
                     } else {
                         // 可能拉回来的时候，本地已经切换会话了
                         if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
@@ -1281,21 +1286,24 @@ let store = {
                 });
         }
         wfc.getMessagesV2(conversation, conversationState.currentConversationOldestMessageId, true, 20, '', lmsgs => {
-        if (lmsgs.length > 0) {
-            conversationState.currentConversationOldestMessageId = lmsgs[0].messageId;
-            if (gt(lmsgs[0].messageUid, 0)) {
-                conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
-            }
-            let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
-            if (!loadNewMsg) {
-                loadRemoteHistoryMessageFunc();
-            } else {
+            if (lmsgs.length > 0) {
+                if (!conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                    return;
+                }
+                conversationState.currentConversationOldestMessageId = lmsgs[0].messageId;
+                if (gt(lmsgs[0].messageUid, 0)) {
+                    conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
+                }
+                let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
+                if (!loadNewMsg) {
+                    loadRemoteHistoryMessageFunc();
+                } else {
                     // loadedCB();
-                setTimeout(() => loadedCB(), 200)
+                    setTimeout(() => loadedCB(), 200)
+                }
+            } else {
+                loadRemoteHistoryMessageFunc();
             }
-        } else {
-            loadRemoteHistoryMessageFunc();
-        }
         }, err => {
             completeCB();
         });
