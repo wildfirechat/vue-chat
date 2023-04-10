@@ -105,6 +105,9 @@ export default class Config {
     // 是否将用户信息、群组信息、频道信息、聊天室信息持久化
     static ENABLE_INFO_PERSISTENCE = true;
 
+    // 登录时，每个会话最多加载多少条未读消息
+    static MAX_TO_LOAD_UNREAD_COUNT_PER_CONVERSATION = 99;
+
     /**
      * 允许重新编辑多长时间内的撤回消息，单位是秒
      */
