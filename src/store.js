@@ -40,9 +40,9 @@ import EnterChannelChatMessageContent from "./wfc/messages/enterChannelChatMessa
 import ArticlesMessageContent from "./wfc/messages/articlesMessageContent";
 import NullUserInfo from "./wfc/model/nullUserInfo";
 import NullGroupInfo from "./wfc/model/nullGroupInfo";
-import GroupInfo from "./wfc/model/groupInfo";
 import {genGroupPortrait} from "./ui/util/imageUtil";
 import IPCEventType from "./ipcEventType";
+import NullChannelInfo from "./wfc/model/NullChannelInfo";
 
 /**
  * 一些说明
@@ -1602,10 +1602,16 @@ let store = {
     },
 
     _loadChannelList() {
-        let channelIds = wfc.getListenedChannels();
-        if (channelIds) {
-            contactState.channelList = channelIds.map(channleId => wfc.getChannelInfo(channleId, false));
-        }
+        wfc.getRemoteListenedChannels(channelIds => {
+            if (channelIds) {
+                contactState.channelList = channelIds.map(channelId => wfc.getChannelInfo(channelId, false));
+                contactState.channelList = contactState.channelList.filter(ch => {
+                    return !(ch instanceof NullChannelInfo)
+                });
+            }
+        }, err => {
+            console.error('getRemoteListenedChannels error', err)
+        });
     },
 
 
