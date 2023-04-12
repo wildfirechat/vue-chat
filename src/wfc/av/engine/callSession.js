@@ -136,10 +136,14 @@ export default class CallSession {
 
     /**
      * @param {{sourceId: source.id,
-                minWidth: 1280,
-                maxWidth: 1280,
-                minHeight: 720,
-                maxHeight: 720}} desktopShareOptions 仅当桌面时有效
+     *       minWidth: 1280,
+     *       maxWidth: 1280,
+     *       idealWidth: 1280,
+     *       minHeight: 720,
+     *       maxHeight: 720,
+     *       idealHeight: 720,
+     *       frameRate: 15,
+             }} desktopShareOptions
      * 开始屏幕共享
      */
     async startScreenShare(desktopShareOptions) {
@@ -176,14 +180,14 @@ export default class CallSession {
     /**
      * 获取参与者的通话信息列表
      */
-    getParticipantProfiles(){
+    getParticipantProfiles() {
 
     }
 
     /**
      * 获取自己的通话信息
      */
-    getSelfProfile(){
+    getSelfProfile() {
 
     }
 
