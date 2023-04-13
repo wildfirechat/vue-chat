@@ -54,4 +54,8 @@ export default class WfcAVEngineKit {
     static SMALL_STREAM_FPS = 8;
 
     static VIDEO_PROFILE = VideoProfile.VPDEFAULT;
+
+    // 可参考 {@link videoProfile} 里面的bitrate，仅非替换模式生效。
+    // 屏幕共享的分辨率等，需通过{@link startScreenShare} 设置
+    static SCREEN_SHARE_MAX_BITRATE = 3600;
 }

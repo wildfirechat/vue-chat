@@ -621,9 +621,8 @@ export default {
         },
 
         members() {
-            // this.showConferenceManageView = !this.showConferenceManageView;
-            // this.toggleSliderView();
-            this.session.muteVideo(false);
+            this.showConferenceManageView = !this.showConferenceManageView;
+            this.toggleSliderView();
         },
 
         chat() {
@@ -763,7 +762,9 @@ export default {
                     if (this.session.audience) {
                         await this.session.switchAudience(false);
                     }
-                    this.session.startScreenShare();
+                    this.session.startScreenShare({
+                        frameRate: 30
+                    });
                 }
             }
         },
