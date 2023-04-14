@@ -176,7 +176,7 @@ export class AvEngineKitProxy {
                     this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
                 }
             }
-            if (!this.isSupportVoip || !this.hasMicrophone || !this.hasSpeaker || !this.hasWebcam) {
+            if (!this.isSupportVoip || !this.hasMicrophone || !this.hasSpeaker || (!content.audioOnly && !this.hasWebcam)) {
                 this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
                 return;
             }
