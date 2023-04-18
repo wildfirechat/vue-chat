@@ -237,7 +237,6 @@ let store = {
 
     init(isMainWindow) {
         console.log('init store')
-        // 目前，通知只可能在主窗口触发
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             console.log('store ConnectionStatusChanged', status)
             miscState.connectionStatus = status;

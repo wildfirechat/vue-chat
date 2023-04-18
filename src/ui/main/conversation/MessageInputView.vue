@@ -811,6 +811,7 @@ export default {
                             type: 'error'
                         });
                         console.log('录音失败', e);
+                        this.amrRecorder = null;
                     });
                 }
             } else {
