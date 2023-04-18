@@ -206,6 +206,7 @@ export default {
                 this.session = null;
             }
             sessionCallback.didVideoMuted = (userId, muted) => {
+                console.log('didVideoMuted', userId, muted);
                 this.muted = muted;
             };
             sessionCallback.didMediaLostPacket = (media, lostPacket) => {
