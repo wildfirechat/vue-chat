@@ -317,6 +317,8 @@ export default {
 .header .badge.silent {
     width: 8px;
     height: 8px;
+    min-width: 8px;
+    padding: 0;
     font-size: 0;
 }
 
