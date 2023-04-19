@@ -301,6 +301,8 @@ export default {
                 console.log('didChangeState', state)
                 this.status = state;
                 if (state === CallState.STATUS_CONNECTED) {
+                    // 比如没有摄像头，但发起视频通话时，会自动 muteVideo
+                    this.selfUserInfo._isVideoMuted = this.session.videoMuted;
                     if (this.startTimestamp === 0) {
                         this.startTimestamp = new Date().getTime();
                         this.timer = setInterval(() => {
@@ -493,8 +495,13 @@ export default {
             sessionCallback.didMuteStateChanged = (participants) => {
                 console.log('conference', 'didMuteStateChanged', participants)
                 participants.forEach(p => {
-                    let s = this.session.getSubscriber(p);
                     // 自己
+                    if (p === this.selfUserInfo.uid){
+                        console.log('conference', 'didMuteStateChanged self', this.session.videoMuted);
+                        this.selfUserInfo._isVideoMuted = this.session.videoMuted;
+                        return;
+                    }
+                    let s = this.session.getSubscriber(p);
                     if (!s) {
                         return;
                     }

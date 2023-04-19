@@ -124,7 +124,7 @@ export default {
         audience() {
             return !(this.conferenceInfo.owner === conferenceManager.selfUserId || !this.conferenceInfo.audience || this.conferenceInfo.allowSwitchMode)
                 // Safari 浏览器，不支持直接静音自动播放音视频
-                || navigator.userAgent.indexOf('Safari') > 0
+                || navigator.vendor.indexOf('Apple') > 0
         },
         enableDestroy() {
             return this.conferenceInfo.owner === conferenceManager.selfUserId && new Date().getTime() < this.conferenceInfo.startTime * 1000;
