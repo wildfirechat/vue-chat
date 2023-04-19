@@ -16,13 +16,13 @@
             <div class="header">
                 <img class="avatar" draggable="false" :src="portrait" alt=""
                      @error="imgUrlAlt"/>
-                <em v-if="unread > 0" class="badge" v-bind:class="{silent:source.isSilent}">{{ unread }}</em>
+                <em v-if="unread > 0" class="badge" v-bind:class="{silent:source.isSilent}">{{ unread > 99 ? '···' : unread }}</em>
             </div>
             <div class="content-container">
                 <div class="title-time-container">
                     <i v-if="source.conversation.type === 5" class="icon-ion-android-lock" style="padding-right: 5px"></i>
                     <div v-if="isOrganizationGroupConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
-                    <h2 class="title single-line">{{ conversationTitle }}</h2>
+                        <h2 class="title single-line">{{ conversationTitle }}</h2>
                         <p class="single-line" style="background: #3f64e4; border-radius: 2px; color: white; padding: 1px 2px; font-size: 9px">官方</p>
                     </div>
                     <h2 v-else class="title single-line">{{ conversationTitle }}</h2>
@@ -111,14 +111,14 @@ export default {
             if (this.source.conversation.type === ConversationType.Group) {
                 e.target.src = Config.DEFAULT_GROUP_PORTRAIT_URL;
             } else {
-            	e.target.src = Config.DEFAULT_PORTRAIT_URL;
+                e.target.src = Config.DEFAULT_PORTRAIT_URL;
             }
         },
 
         showConversation() {
             store.setCurrentConversationInfo(this.source);
             if (this.unread > 0) {
-            	wfc.clearConversationUnreadStatus(this.source.conversation);
+                wfc.clearConversationUnreadStatus(this.source.conversation);
             }
             this.refreshGroupPortrait();
         },
@@ -136,7 +136,7 @@ export default {
                 getConversationPortrait(info.conversation).then((portrait => {
                     if (info.conversation.equal(this.source.conversation)) {
                         console.log('update portrait', this.source.conversation.target)
-                        if (portrait !== Config.DEFAULT_GROUP_PORTRAIT_URL){
+                        if (portrait !== Config.DEFAULT_GROUP_PORTRAIT_URL) {
                             info.conversation._target.portrait = portrait;
                         }
                         this.groupPortrait = portrait;
@@ -303,13 +303,15 @@ export default {
     font-size: 10px;
     background-color: red;
     border-radius: 8px;
-    width: 16px;
+    min-width: 16px;
     height: 16px;
+    padding: 0 5px;
     line-height: 16px;
     font-style: normal;
     text-align: center;
     right: 8px;
     top: 8px;
+    vertical-align: center;
 }
 
 .header .badge.silent {

@@ -40,7 +40,7 @@
                                 <i class="icon-ion-ios-chatboxes"
                                    v-bind:class="{active : this.$router.currentRoute.path === '/home'}"
                                    @click="go2Conversation"></i>
-                                <em v-show="unread > 0" class="badge">{{ unread > 99 ? '99' : unread }}</em>
+                                <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
                         </li>
                         <li>
@@ -405,8 +405,9 @@ export default {
     font-size: 10px;
     background-color: red;
     border-radius: 8px;
-    width: 16px;
+    min-width: 16px;
     height: 16px;
+    padding: 0 5px;
     line-height: 16px;
     font-style: normal;
     text-align: center;
