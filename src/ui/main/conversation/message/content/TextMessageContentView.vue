@@ -1,14 +1,14 @@
 <template>
     <div class="text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <article class="text" v-html="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></article>
+        <p class="text" v-text="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
     </div>
 </template>
 
 <script>
 import Message from "@/wfc/messages/message";
 import {parser as emojiParse} from "@/ui/util/emoji";
-import {marked} from "marked";
+//import {marked} from "marked";
 
 export default {
     name: "TextMessageContentView",
@@ -52,10 +52,7 @@ export default {
             // pls refer to https://stackoverflow.com/questions/4522124/replace-leading-spaces-with-nbsp-in-javascript
             tmp = tmp.replace(/<script/gi, "&lt;script");
             tmp = tmp.replace(/<iframe/gi, "&lt;iframe");
-            tmp = marked.parse(tmp);
-            // tmp = tmp.replace(/^[ \t]+/gm, function (x) {
-            //     return new Array(x.length + 1).join('&nbsp;')
-            // })
+            // tmp = marked.parse(tmp);
             if (tmp.indexOf('<img') >= 0) {
                 tmp = tmp.replace(/<img/g, '<img style="max-width:400px;"')
                 return tmp;
@@ -97,14 +94,14 @@ export default {
 
 .text-message-container .text {
     color: #050505;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 25px;
     /*max-height: 1000px;*/
     word-break: break-word;
     overflow: hidden;
     display: inline-block;
     text-overflow: ellipsis;
-    user-select: auto;
+    user-select: text;
 }
 
 /*style for v-html */

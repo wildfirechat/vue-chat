@@ -993,6 +993,7 @@ export default {
     overflow: auto;
     user-select: text;
     -webkit-user-select: text;
+    font-size: 13px;
 }
 
 .input:empty:before {
