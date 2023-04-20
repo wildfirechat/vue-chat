@@ -362,8 +362,9 @@ export default {
 }
 
 .content .draft {
-    font-size: 13px;
+    font-size: 12px;
     height: 20px;
+    color: #b8b8b8;
 }
 
 /*refer to: https://blog.csdn.net/weixin_42412046/article/details/80804285*/

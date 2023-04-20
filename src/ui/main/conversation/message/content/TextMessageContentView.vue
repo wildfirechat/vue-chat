@@ -1,7 +1,7 @@
 <template>
     <div class="text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <p class="text" v-text="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
+        <p class="text" v-html="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
     </div>
 </template>
 

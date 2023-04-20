@@ -906,6 +906,7 @@ export default {
                     }
 
                     if (this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
+                        this.$refs.input.innerHTML = '';
                         this.restoreDraft();
                         this.initMention(this.conversationInfo.conversation)
                     }
