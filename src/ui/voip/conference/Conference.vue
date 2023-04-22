@@ -1077,7 +1077,7 @@ export default {
             deep: true,
             handler(infos) {
                 let audioOnly = true;
-                console.log('participantUserInfos', this.session.screenSharing);
+                // console.log('participantUserInfos', this.session.screenSharing);
                 if (this.session.screenSharing) {
                     audioOnly = false;
                 } else {
