@@ -9,8 +9,8 @@
                 <p class="content">{{ message.messageContent.digest(message) }}</p>
             </div>
         </div>
-        <div v-if="sharedMiscState.isElectron" class="send-message-container">
-            <input placeholder="说点说什么..." @change="sendMessage" v-model.trim="text">
+        <div class="send-message-container">
+            <input placeholder="说点什么..." @change="sendMessage" v-model.trim="text">
         </div>
     </div>
 </template>

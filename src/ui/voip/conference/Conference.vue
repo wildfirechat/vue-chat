@@ -168,7 +168,7 @@
                                          src='@/assets/images/av_conference_screen_sharing_hover.png'/>
                                     <p class="single-line">共享屏幕</p>
                                 </div>
-                                <div v-if="sharedMiscState.isElectron" class="action" @click="chat">
+                                <div class="action" @click="chat">
                                     <i class="icon-ion-ios-chatboxes"
                                        style="width: 40px; height: 40px; font-size: 40px; color: black"
                                        v-bind:style="{color: showConversationView ? 'white' : 'black'}"/>
