@@ -22,7 +22,6 @@ import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import {gt} from "../../../wfc/util/longUtil";
-import IpcSub from "../../../ipc/ipcSub";
 
 export default {
     name: "ConferenceConversationFloatingView",

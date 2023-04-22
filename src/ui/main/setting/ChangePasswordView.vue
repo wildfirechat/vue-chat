@@ -17,7 +17,6 @@
 
 <script>
 
-import axios from "axios";
 import appServerApi from "../../../api/appServerApi";
 
 export default {

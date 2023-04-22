@@ -73,7 +73,6 @@ import UserListVue from "@/ui/main/user/UserListVue";
 import ChannelListView from "./ChannelListView";
 import ContactItemView from "./ContactItemView";
 import OrganizationListView from "./OrganizationListView.vue";
-import organizationServerApi from "../../../api/organizationServerApi";
 
 export default {
     name: "ContactListView",

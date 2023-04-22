@@ -42,7 +42,6 @@ import conferenceManager from "./conferenceManager";
 import ConferenceParticipantListView from "./ConferenceParticipantListView";
 import ConferenceApplyUnmuteListView from "./ConferenceApplyUnmuteListView";
 import ConferenceHandUpListView from "./ConferenceHandUpListView";
-import IpcSub from "../../../ipc/ipcSub";
 
 export default {
     name: "ConferenceManageView",

@@ -33,9 +33,7 @@
 <script>
 import CallState from "../../../wfc/av/engine/callState";
 import VideoType from "../../../wfc/av/engine/videoType";
-import wfc from "../../../wfc/client/wfc";
 import conferenceManager from "./conferenceManager";
-import IpcSub from "../../../ipc/ipcSub";
 
 export default {
     name: "ConferenceParticipantVideoView",

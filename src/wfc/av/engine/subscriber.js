@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2020 WildFireChat. All rights reserved.
  */
-import WfcAVEngineKit from "./avenginekit";
 export default class Subscriber {
     isInitiator = false;
     userId;

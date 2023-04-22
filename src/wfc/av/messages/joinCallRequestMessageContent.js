@@ -3,7 +3,6 @@
  */
 import MessageContent from '../../messages/messageContent';
 import wfc from "../../client/wfc"
-import {_patchToJavaLong, _reverseToJsLongString, longValue, stringValue} from '../../util/longUtil'
 import MessageContentType from '../../messages/messageContentType';
 
 export default class JoinCallRequestMessageContent extends MessageContent {

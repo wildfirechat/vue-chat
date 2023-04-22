@@ -54,7 +54,6 @@ import store from "@/store";
 import Config from "../../../config";
 import organizationServerApi from "../../../api/organizationServerApi";
 import UserCardView from "../user/UserCardView.vue";
-import UserInfo from "../../../wfc/model/userInfo";
 
 export default {
     name: "OrganizationTreeView",

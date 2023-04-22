@@ -4,8 +4,6 @@
 
 <script>
 import localStorageEmitter from "./localStorageEmitter";
-import wfc from "../wfc/client/wfc";
-import Message from "../wfc/messages/message";
 import Conversation from "../wfc/model/conversation";
 import store from "../store";
 import avenginekitproxy from "../wfc/av/engine/avenginekitproxy";

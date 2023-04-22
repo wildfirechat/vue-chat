@@ -70,15 +70,12 @@ import UserListVue from "@/ui/main/user/UserListVue";
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import store from "@/store";
 import wfc from "@/wfc/client/wfc";
-import axios from "axios";
 import GroupMemberType from "@/wfc/model/groupMemberType";
 import GroupType from "@/wfc/model/groupType";
 import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
 import EventType from "../../../wfc/client/wfcEvent";
 import appServerApi from "../../../api/appServerApi";
-import AppServerError from "../../../api/appServerError";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
-
 
 
 export default {

@@ -93,7 +93,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import helper from "@/ui/util/helper";
 import MessageContentType from "@/wfc/messages/messageContentType";
 import wfc from "@/wfc/client/wfc";

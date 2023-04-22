@@ -40,7 +40,6 @@ import EnterChannelChatMessageContent from "./wfc/messages/enterChannelChatMessa
 import ArticlesMessageContent from "./wfc/messages/articlesMessageContent";
 import NullUserInfo from "./wfc/model/nullUserInfo";
 import NullGroupInfo from "./wfc/model/nullGroupInfo";
-import GroupInfo from "./wfc/model/groupInfo";
 import {genGroupPortrait} from "./ui/util/imageUtil";
 import IPCEventType from "./ipcEventType";
 import NullChannelInfo from "./wfc/model/NullChannelInfo";

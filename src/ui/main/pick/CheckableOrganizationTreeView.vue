@@ -31,7 +31,6 @@
 <script>
 import Config from "../../../config";
 import organizationServerApi from "../../../api/organizationServerApi";
-import UserInfo from "../../../wfc/model/userInfo";
 import store from "../../../store";
 
 export default {

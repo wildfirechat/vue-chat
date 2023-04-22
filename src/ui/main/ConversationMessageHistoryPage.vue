@@ -86,7 +86,6 @@ import MessageContentContainerView from "./conversation/message/MessageContentCo
 import Conversation from "../../wfc/model/conversation";
 import store from "../../store";
 import InfiniteLoading from "vue-infinite-loading";
-import {stringValue} from "../../wfc/util/longUtil";
 import MessageContentType from "../../wfc/messages/messageContentType";
 
 export default {

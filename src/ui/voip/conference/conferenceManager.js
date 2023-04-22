@@ -4,7 +4,6 @@ import MessageContentType from "../../../wfc/messages/messageContentType";
 import ConferenceCommandMessageContent from "../../../wfc/av/messages/conferenceCommandMessageContent";
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
-import IpcSub from "../../../ipc/ipcSub";
 import wfc from "../../../wfc/client/wfc";
 
 class ConferenceManager {

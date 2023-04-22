@@ -13,7 +13,7 @@ import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "@/store";
 import visibility from 'vue-visibility-change';
-import {isElectron, remote} from "@/platform";
+import {isElectron} from "@/platform";
 import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'
@@ -21,7 +21,7 @@ import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
 import Forward from "./ui/common/Forward";
 import VirtualList from "vue-virtual-scroll-list/src";
-import xss, {getDefaultWhiteList} from "xss";
+import xss from "xss";
 
 Vue.config.productionTip = false
 

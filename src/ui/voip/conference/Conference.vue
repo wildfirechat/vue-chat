@@ -223,10 +223,9 @@
 import avenginekit from "../../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../../wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
-import IpcSub from "../../../ipc/ipcSub";
 import ClickOutside from 'vue-click-outside'
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import {currentWindow, isElectron, remote} from "../../../platform";
+import {currentWindow, isElectron} from "../../../platform";
 import ScreenOrWindowPicker from "../ScreenOrWindowPicker";
 import CallEndReason from "../../../wfc/av/engine/callEndReason";
 import ScreenShareControlView from "../ScreenShareControlView";

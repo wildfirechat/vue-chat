@@ -65,11 +65,8 @@ import Message from "../../../wfc/messages/message";
 import {isElectron} from "../../../platform";
 import ForwardType from "../../main/conversation/message/forward/ForwardType";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import wfc from "../../../wfc/client/wfc";
 import UserCardView from "../../main/user/UserCardView";
 import conferenceManager from "./conferenceManager";
-import conversationFloatPage from "../../main/ConversationFloatPage";
-import IpcSub from "../../../ipc/ipcSub";
 
 export default {
     name: "ConferenceParticipantListView",
