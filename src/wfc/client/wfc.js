@@ -1613,7 +1613,7 @@ export class WfcManager {
      * @param {function (number)} failCB
      * @returns {Promise<void>}
      */
-    async sendConversationMessage(conversation, messageContent, toUsers, preparedCB, progressCB, successCB, failCB) {
+    async sendConversationMessage(conversation, messageContent, toUsers = [], preparedCB = null, progressCB = null, successCB = null, failCB = null) {
         impl.sendConversationMessage(conversation, messageContent, toUsers, preparedCB, progressCB, successCB, failCB);
     }
 

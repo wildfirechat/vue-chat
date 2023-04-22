@@ -64,7 +64,7 @@ export default {
     methods: {
         sendMessage() {
             let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
-            IpcSub.sendMessage(conversation, new TextMessageContent(this.text))
+            wfc.sendConversationMessage(conversation, new TextMessageContent(this.text))
             this.text = '';
         },
 

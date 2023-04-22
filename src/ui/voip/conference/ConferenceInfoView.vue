@@ -84,10 +84,8 @@ export default {
         }
     },
     mounted() {
-        console.log('conferenceInfo', this.conferenceInfo)
-        IpcSub.getUserDisplayName(this.conferenceInfo.owner).then(name => {
-            this.ownerName = name;
-        });
+        console.log('conferenceInfo', this.conferenceInfo);
+        this.ownerName = wfc.getUserDisplayName(this.conferenceInfo.owner);
     },
     methods: {
         favConference() {

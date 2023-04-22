@@ -242,6 +242,7 @@ import ChooseConferenceLayoutView from "./ChooseConferenceLayoutView";
 import ConferenceConversationFloatingView from "./ConferenceConversationFloatingView";
 import conferenceManager from "./conferenceManager";
 import ConferenceManageView from "./ConferenceManageView";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: 'Conference',
@@ -386,19 +387,17 @@ export default {
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
                 console.log('didParticipantJoined', userId, screenSharing)
-                IpcSub.getUserInfos([userId], null, (userInfos) => {
-                    let userInfo = userInfos[0];
-                    let subscriber = this.session.getSubscriber(userId, screenSharing);
-                    userInfo._stream = subscriber.stream;
-                    userInfo._isAudience = subscriber.audience;
-                    userInfo._isHost = this.session.host === userId;
-                    userInfo._isVideoMuted = subscriber.videoMuted;
-                    userInfo._isAudioMuted = subscriber.audioMuted;
-                    userInfo._volume = 0;
-                    userInfo._isScreenSharing = screenSharing;
-                    this.participantUserInfos.push(userInfo);
-                    console.log('joined', userInfos, subscriber.audience, this.participantUserInfos.length);
-                })
+                let userInfo = wfc.getUserInfo(userId);
+                let subscriber = this.session.getSubscriber(userId, screenSharing);
+                userInfo._stream = subscriber.stream;
+                userInfo._isAudience = subscriber.audience;
+                userInfo._isHost = this.session.host === userId;
+                userInfo._isVideoMuted = subscriber.videoMuted;
+                userInfo._isAudioMuted = subscriber.audioMuted;
+                userInfo._volume = 0;
+                userInfo._isScreenSharing = screenSharing;
+                this.participantUserInfos.push(userInfo);
+                console.log('joined', userInfo, subscriber.audience, this.participantUserInfos.length);
             }
 
             sessionCallback.didParticipantLeft = (userId, endReason, screenSharing) => {
@@ -496,7 +495,7 @@ export default {
                 console.log('conference', 'didMuteStateChanged', participants)
                 participants.forEach(p => {
                     // 自己
-                    if (p === this.selfUserInfo.uid){
+                    if (p === this.selfUserInfo.uid) {
                         console.log('conference', 'didMuteStateChanged self', this.session.videoMuted);
                         this.selfUserInfo._isVideoMuted = this.session.videoMuted;
                         return;
@@ -829,20 +828,19 @@ export default {
 
             if (toRefreshUsers.length > 0) {
                 console.log('to refreshUsers', toRefreshUsers)
-                IpcSub.getUserInfos(toRefreshUsers, null, (userInfos) => {
-                    userInfos.forEach(u => {
-                        let index = this.participantUserInfos.findIndex(p => p.uid === u.uid);
-                        if (u.updateDt && index > -1) {
-                            let ou = this.participantUserInfos[index];
-                            u._stream = ou._stream;
-                            u._isAudience = ou._isAudience;
-                            u._isHost = ou._isHost;
-                            u._isVideoMuted = ou._isVideoMuted;
-                            u._isAudioMuted = ou._isAudioMuted;
-                            u._volume = ou._volume;
-                            this.participantUserInfos[index] = u;
-                        }
-                    })
+                let userInfos = wfc.getUserInfos(toRefreshUsers, '');
+                userInfos.forEach(u => {
+                    let index = this.participantUserInfos.findIndex(p => p.uid === u.uid);
+                    if (u.updateDt && index > -1) {
+                        let ou = this.participantUserInfos[index];
+                        u._stream = ou._stream;
+                        u._isAudience = ou._isAudience;
+                        u._isHost = ou._isHost;
+                        u._isVideoMuted = ou._isVideoMuted;
+                        u._isAudioMuted = ou._isAudioMuted;
+                        u._volume = ou._volume;
+                        this.participantUserInfos[index] = u;
+                    }
                 })
             }
         },
