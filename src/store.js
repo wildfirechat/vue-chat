@@ -611,7 +611,7 @@ let store = {
         miscState.connectionStatus = wfc.getConnectionStatus();
 
         miscState.isMainWindow = isMainWindow;
-        window.__wfc = wfc;
+        // window.__wfc = wfc;
     },
 
     _loadDefaultData() {

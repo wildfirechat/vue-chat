@@ -2084,5 +2084,12 @@ export class WfcManager {
 }
 
 const self = new WfcManager();
-export default self;
+if (window.opener){
+    window.__wfc = window.opener.__wfc;
+} else if(window.parent && window.parent.__wfc) {
+    window.__wfc = window.parent.__wfc;
+} else {
+    window.__wfc = self;
+}
+export default window.__wfc;
 
