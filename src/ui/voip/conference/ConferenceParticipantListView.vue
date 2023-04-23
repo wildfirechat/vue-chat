@@ -67,6 +67,7 @@ import ForwardType from "../../main/conversation/message/forward/ForwardType";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import UserCardView from "../../main/user/UserCardView";
 import conferenceManager from "./conferenceManager";
+import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 
 export default {
     name: "ConferenceParticipantListView",
@@ -103,7 +104,7 @@ export default {
                     messages: [message]
                 });
             } else {
-                localStorageEmitter.send('inviteConferenceParticipant', {messagePayload: inviteMessageContent.encode()})
+                localStorageEmitter.send(LocalStorageIpcEventType.inviteConferenceParticipant, {messagePayload: inviteMessageContent.encode()})
             }
             this.showParticipantList = false;
         },

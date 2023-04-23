@@ -1,8 +1,8 @@
 // 不同窗口间通信事件定义
 export default class LocalStorageIpcEventType {
     static openConversation = 'open-conversation';
-    static sendMessage = 'send-message';
     static startConversation = 'start-conversation';
-    static startCall = 'start-call'
-
+    static startCall = 'start-call';
+    static inviteConferenceParticipant = 'invite-conference-participant';
+    static joinConferenceFailed = 'join-conference-failed';
 }

@@ -589,18 +589,11 @@ let store = {
                 this._reloadConversation(conv);
             });
 
-            localStorageEmitter.on('wf-ipc-to-main', (events, args) => {
-                let type = args.type;
-                switch (type) {
-                    case LocalStorageIpcEventType.openConversation:
-                        let conversation = args.value;
-                        let win = remote.getCurrentWindow();
-                        win.focus();
-                        this.setCurrentConversation(Object.assign(new Conversation(), conversation));
-                        break;
-                    default:
-                        break;
-                }
+            localStorageEmitter.on(LocalStorageIpcEventType.openConversation, (events, args) => {
+                let conversation = args.conversation;
+                let win = remote.getCurrentWindow();
+                win.focus();
+                this.setCurrentConversation(Object.assign(new Conversation(), conversation));
             })
 
             if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {

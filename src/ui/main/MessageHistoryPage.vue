@@ -142,7 +142,7 @@ export default {
 
         openConversation() {
             let conversation = this.currentConversationSearchResult.conversation;
-            localStorageEmitter.send('wf-ipc-to-main', {type: LocalStorageIpcEventType.openConversation, value: conversation})
+            localStorageEmitter.send(LocalStorageIpcEventType.openConversation, {conversation: conversation})
         },
 
         showContextMessages(message) {

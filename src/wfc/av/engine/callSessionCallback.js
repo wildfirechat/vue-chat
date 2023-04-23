@@ -19,7 +19,7 @@ export default class CallSessionCallback {
 
     /**
      *  自己挂断回调
-     * @param {CallEndReason} reason 挂断原因
+     * @param {number} reason 挂断原因，参考{@link CallEndReason}
      */
     didCallEndWithReason(reason) {
 

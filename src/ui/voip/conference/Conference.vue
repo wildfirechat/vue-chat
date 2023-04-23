@@ -242,6 +242,7 @@ import ConferenceConversationFloatingView from "./ConferenceConversationFloating
 import conferenceManager from "./conferenceManager";
 import ConferenceManageView from "./ConferenceManageView";
 import wfc from "../../../wfc/client/wfc";
+import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 
 export default {
     name: 'Conference',
@@ -420,7 +421,7 @@ export default {
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
                     let obj = {reason: reason, session: this.session};
-                    localStorageEmitter.send('join-conference-failed', obj);
+                    localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
                 }
                 this.session.closeVoipWindow();
                 this.session = null;
@@ -1081,13 +1082,11 @@ export default {
                     for (let i = 0; i < this.participantUserInfos.length; i++) {
                         let u = this.participantUserInfos[i];
                         if (!u._isAudience && !u._isVideoMuted) {
-                            console.log('xx audio only false', u);
                             audioOnly = false;
                             break;
                         }
                     }
                 }
-                console.log('audioOnly', audioOnly);
                 this.audioOnly = audioOnly;
 
                 // mute self audio

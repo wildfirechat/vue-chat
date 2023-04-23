@@ -220,6 +220,7 @@ import {currentWindow, ipcRenderer} from "../../../platform";
 import appServerApi from "../../../api/appServerApi";
 import Config from "../../../config";
 import IPCEventType from "../../../ipcEventType";
+import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 
 var amr;
 export default {
@@ -705,7 +706,7 @@ export default {
             amr.onEnded(() => {
                 message._isPlaying = false;
                 store.playVoice(null)
-                if (message.status === MessageStatus.Unread){
+                if (message.status === MessageStatus.Unread) {
                     wfc.updateMessageStatus(message.messageId, MessageStatus.Played);
                 }
             })
@@ -799,7 +800,7 @@ export default {
         });
 
         if (!isElectron()) {
-            localStorageEmitter.on('inviteConferenceParticipant', (ev, args) => {
+            localStorageEmitter.on(LocalStorageIpcEventType.inviteConferenceParticipant, (ev, args) => {
                 let payload = args.messagePayload;
                 let messageContent = Message.messageContentFromMessagePayload(payload, wfc.getUserId());
                 let message = new Message(null, messageContent);
@@ -826,7 +827,7 @@ export default {
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
         console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
-        if (this.sharedConversationState.shouldAutoScrollToBottom  && !this.sharedMiscState.isPageHidden) {
+        if (this.sharedConversationState.shouldAutoScrollToBottom && !this.sharedMiscState.isPageHidden) {
             let messageListElement = this.$refs['conversationMessageList'];
             messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
             this.clearConversationUnreadStatus();

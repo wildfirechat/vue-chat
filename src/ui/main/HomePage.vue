@@ -118,6 +118,7 @@ import CallEndReason from "../../wfc/av/engine/callEndReason";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
+import LocalStorageIpcEventType from "../../ipc/localStorageIpcEventType";
 
 export default {
     data() {
@@ -262,7 +263,7 @@ export default {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         this.onConnectionStatusChange(wfc.getConnectionStatus())
 
-        localStorageEmitter.on('join-conference-failed', (sender, args) => {
+        localStorageEmitter.on(LocalStorageIpcEventType.joinConferenceFailed, (sender, args) => {
             let reason = args.reason;
             let session = args.session;
             if (reason === CallEndReason.RoomNotExist) {
