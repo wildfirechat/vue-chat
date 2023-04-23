@@ -17,4 +17,8 @@ export default class IpcSub {
             audioOnly: audioOnly,
         })
     }
+
+    static openConversation(conversation){
+        localStorageEmitter.send(LocalStorageIpcEventType.openConversation, {conversation: conversation})
+    }
 }

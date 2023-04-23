@@ -263,39 +263,6 @@ export default {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         this.onConnectionStatusChange(wfc.getConnectionStatus())
 
-        localStorageEmitter.on(LocalStorageIpcEventType.joinConferenceFailed, (sender, args) => {
-            let reason = args.reason;
-            let session = args.session;
-            if (reason === CallEndReason.RoomNotExist) {
-                if (session.host === wfc.getUserId()) {
-                    this.$alert({
-                        showIcon: false,
-                        content: '会议已结束，是否重新开启会议？',
-                        cancelCallback: () => {
-                            // do nothing
-                        },
-                        confirmCallback: () => {
-                            // 等待之前的音视频通话窗口完全关闭
-                            setTimeout(() => {
-                                avenginekitproxy.startConference(session.callId, session.audioOnly, session.pin, session.host, session.title, session.desc, session.audience, session.advance)
-                            }, 1000);
-                        }
-                    })
-                } else {
-                    this.$notify({
-                        title: '会议已结束',
-                        text: '请联系主持人开启会议',
-                        type: 'warn'
-                    });
-                }
-            } else if (reason === CallEndReason.RoomParticipantsFull) {
-                this.$notify({
-                    title: '加入会议失败',
-                    text: '参与者已满，请重试',
-                    type: 'warn'
-                });
-            }
-        });
     },
 
     mounted() {

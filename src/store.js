@@ -589,13 +589,6 @@ let store = {
                 this._reloadConversation(conv);
             });
 
-            localStorageEmitter.on(LocalStorageIpcEventType.openConversation, (events, args) => {
-                let conversation = args.conversation;
-                let win = remote.getCurrentWindow();
-                win.focus();
-                this.setCurrentConversation(Object.assign(new Conversation(), conversation));
-            })
-
             if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
                 this._loadDefaultData();
             }

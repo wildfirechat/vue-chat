@@ -110,6 +110,8 @@ import store from "../../store";
 import localStorageEmitter from "../../ipc/localStorageEmitter";
 import LocalStorageIpcEventType from "../../ipc/localStorageIpcEventType";
 import InfiniteLoading from "vue-infinite-loading";
+import ConversationView from "./conversation/ConversationView.vue";
+import IpcSub from "../../ipc/ipcSub";
 
 export default {
     name: "MessageHistoryPage",
@@ -142,7 +144,7 @@ export default {
 
         openConversation() {
             let conversation = this.currentConversationSearchResult.conversation;
-            localStorageEmitter.send(LocalStorageIpcEventType.openConversation, {conversation: conversation})
+            IpcSub.openConversation(conversation);
         },
 
         showContextMessages(message) {
