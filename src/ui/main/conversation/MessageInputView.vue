@@ -491,29 +491,21 @@ export default {
 
         startAudioCall() {
             console.log(`startAudioCall from mainWindow ${this.sharedMiscState.isMainWindow}`);
+            let conversation = this.conversationInfo.conversation;
             if (this.sharedMiscState.isMainWindow) {
-                let conversation = this.conversationInfo.conversation;
-                if (conversation.type === ConversationType.Single) {
-                    avenginekitproxy.startCall(conversation, true, [conversation.target])
-                } else {
-                    this.startGroupVoip(true);
-                }
+                this.$startVoipCall({audioOnly: true, conversation: conversation});
             } else {
-                IpcSub.startCall(this.conversationInfo.conversation, true);
+                IpcSub.startVoipCall(conversation, true);
             }
         },
 
         startVideoCall() {
             console.log(`startVideoCall from mainWindow ${this.sharedMiscState.isMainWindow}`);
+            let conversation = this.conversationInfo.conversation;
             if (this.sharedMiscState.isMainWindow) {
-                let conversation = this.conversationInfo.conversation;
-                if (conversation.type === ConversationType.Single) {
-                    avenginekitproxy.startCall(conversation, false, [conversation.target])
-                } else {
-                    this.startGroupVoip(false);
-                }
+                this.$startVoipCall({audioOnly: false, conversation: conversation});
             } else {
-                IpcSub.startCall(this.conversationInfo.conversation, false);
+                IpcSub.startVoipCall(conversation, false);
             }
         },
 
@@ -527,20 +519,6 @@ export default {
                 }
             }
             store.toggleChannelMenu(toggle);
-        },
-
-        startGroupVoip(isAudioOnly) {
-            let successCB = users => {
-                let participantIds = users.map(u => u.uid);
-                avenginekitproxy.startCall(this.conversationInfo.conversation, isAudioOnly, participantIds)
-            };
-            this.$pickContact({
-                successCB,
-                users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true, true),
-                initialCheckedUsers: [this.sharedContactState.selfUserInfo],
-                uncheckableUsers: [this.sharedContactState.selfUserInfo],
-                confirmTitle: this.$t('common.confirm'),
-            });
         },
 
         onPickFile(event) {

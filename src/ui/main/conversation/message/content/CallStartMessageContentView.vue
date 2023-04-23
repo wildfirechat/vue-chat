@@ -1,5 +1,6 @@
 <template>
     <div class="call-start-message-container"
+         @click="startCall"
          v-bind:class="{out:message.direction === 0}">
         <i class="icon-ion-android-call"></i>
         <p class="text" v-html="this.textContent"></p>
@@ -9,6 +10,10 @@
 <script>
 import Message from "@/wfc/messages/message";
 import CallEndReason from "../../../../../wfc/av/engine/callEndReason";
+import IpcSub from "../../../../../ipc/ipcSub";
+import store from "../../../../../store";
+import ConversationType from "../../../../../wfc/model/conversationType";
+import avenginekitproxy from "../../../../../wfc/av/engine/avenginekitproxy";
 
 export default {
     name: "CallStartMessageContentView",
@@ -18,7 +23,25 @@ export default {
             required: true,
         }
     },
+    data() {
+        return {
+            sharedMiscState: store.state.misc,
+            sharedContactState: store.state.contact,
+        }
+    },
     mounted() {
+    },
+
+    methods: {
+        startCall() {
+            let callStartMsgContent = this.message.messageContent;
+            let audioOnly = callStartMsgContent.audioOnly;
+            if (this.sharedMiscState.isMainWindow) {
+                this.$startVoipCall({audioOnly: audioOnly, conversation: this.message.conversation});
+            } else {
+                IpcSub.startVoipCall(this.message.conversation, audioOnly);
+            }
+        },
     },
 
     computed: {
@@ -32,7 +55,7 @@ export default {
                 let reason = voip.status;
                 switch (reason) {
                     case CallEndReason.REASON_Unknown:
-                desc = this.$t('voip.not_answer');
+                        desc = this.$t('voip.not_answer');
                         break;
                     case CallEndReason.REASON_Busy:
                         desc = '线路忙';

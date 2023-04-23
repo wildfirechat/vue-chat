@@ -336,7 +336,7 @@ export class AvEngineKitProxy {
      * @param {[String]} participants 参与者用户id列表
      * @param {string} callExtra 通话附加信息，会议版有效
      */
-    startCall(conversation, audioOnly, participants, callExtra) {
+    startCall(conversation, audioOnly, participants, callExtra = '') {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);

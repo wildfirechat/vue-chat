@@ -11,8 +11,8 @@ export default class IpcSub {
         })
     }
 
-    static startCall(conversation, audioOnly) {
-        localStorageEmitter.send(LocalStorageIpcEventType.startCall, {
+    static startVoipCall(conversation, audioOnly) {
+        localStorageEmitter.send(LocalStorageIpcEventType.startVoipCall, {
             conversation: conversation,
             audioOnly: audioOnly,
         })

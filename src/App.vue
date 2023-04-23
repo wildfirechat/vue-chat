@@ -34,7 +34,7 @@
         </CoolLightBox>
 
         <notifications/>
-        <IpcMain/>
+        <IpcMain v-if="sharedMiscState.isMainWindow"/>
         <router-view id="main-content-container" class="main-content-container"></router-view>
     </div>
 </template>

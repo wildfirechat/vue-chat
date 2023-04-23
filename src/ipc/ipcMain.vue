@@ -17,13 +17,12 @@ export default {
     name: "ipcMain",
 
     mounted() {
-
         localStorageEmitter.on(LocalStorageIpcEventType.startConversation, (ev, args) => {
             let conversation = Object.assign(new Conversation(), args.conversation);
             store.setCurrentConversation(conversation);
         })
 
-        localStorageEmitter.on(LocalStorageIpcEventType.startCall, (ev, args) => {
+        localStorageEmitter.on(LocalStorageIpcEventType.startVoipCall, (ev, args) => {
             let conversation = Object.assign(new Conversation(), args.conversation);
             let audioOnly = args.audioOnly;
             if (conversation.type === ConversationType.Single) {
@@ -76,17 +75,7 @@ export default {
     },
     methods: {
         startGroupVoip(conversation, isAudioOnly) {
-            let successCB = users => {
-                let participantIds = users.map(u => u.uid);
-                avenginekitproxy.startCall(conversation, isAudioOnly, participantIds, '')
-            };
-            this.$pickContact({
-                successCB,
-                users: store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, true, true),
-                initialCheckedUsers: [this.sharedContactState.selfUserInfo],
-                uncheckableUsers: [this.sharedContactState.selfUserInfo],
-                confirmTitle: this.$t('common.confirm'),
-            });
+            this.$startVoipCall({audioOnly: isAudioOnly, conversation: conversation});
         },
 
     }

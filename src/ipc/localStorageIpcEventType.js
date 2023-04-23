@@ -2,7 +2,7 @@
 export default class LocalStorageIpcEventType {
     static openConversation = 'open-conversation';
     static startConversation = 'start-conversation';
-    static startCall = 'start-call';
+    static startVoipCall = 'start-voip-call';
     static inviteConferenceParticipant = 'invite-conference-participant';
     static joinConferenceFailed = 'join-conference-failed';
 }
