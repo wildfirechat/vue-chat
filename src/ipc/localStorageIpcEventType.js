@@ -2,4 +2,7 @@
 export default class LocalStorageIpcEventType {
     static openConversation = 'open-conversation';
     static sendMessage = 'send-message';
+    static startConversation = 'start-conversation';
+    static startCall = 'start-call'
+
 }
