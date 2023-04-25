@@ -10,6 +10,8 @@
                      :show-category-label="false"
                      :padding-left="'20px'"
         />
+        <div v-if="sharedMiscState.isElectron" class="conversation-action-item" @click="clearConversationHistory">{{ $t('conversation.clear_conversation_history') }}</div>
+        <div class="conversation-action-item" @click="clearRemoteConversationHistory">{{ $t('conversation.clear_remote_conversation_history') }}</div>
     </div>
 </template>
 
@@ -17,6 +19,7 @@
 import UserListVue from "@/ui/main/user/UserListVue";
 import ConversationInfo from "@/wfc/model/conversationInfo";
 import store from "@/store";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "SingleConversationInfoView",
@@ -30,6 +33,7 @@ export default {
         return {
             users: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
             sharedContactState: store.state.contact,
+            sharedMiscState: store.state.misc,
         }
     },
     components: {UserListVue},
@@ -50,6 +54,13 @@ export default {
             // TODO
             console.log('todo show userInfo', user);
         },
+        clearConversationHistory() {
+            wfc.clearMessages(this.conversationInfo.conversation);
+        },
+
+        clearRemoteConversationHistory(){
+            wfc.clearRemoteConversationMessages(this.conversationInfo.conversation);
+        }
     },
 
     computed: {}
@@ -95,6 +106,21 @@ export default {
 
 .action-item:active {
     background-color: #d6d6d6;
+}
+
+.conversation-action-item {
+    display: flex;
+    color: red;
+    align-items: center;
+    font-size: 12px;
+    justify-content: center;
+    height: 42px;
+    max-height: 42px;
+    border-top: 1px solid #ececec;
+}
+
+.conversation-action-item:active {
+    background: #d6d6d6;
 }
 
 </style>

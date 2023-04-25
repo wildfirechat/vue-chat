@@ -59,7 +59,13 @@
                          :padding-left="'20px'"
             />
         </div>
-        <div v-if="enableQuitGroup" @click="quitGroup" class="quit-group-item">
+        <div v-if="sharedMiscState.isElectron" @click="clearConversationHistory" class="conversation-action-item">
+            {{ $t('conversation.clear_conversation_history') }}
+        </div>
+        <div class="conversation-action-item" @click="clearRemoteConversationHistory">
+            {{ $t('conversation.clear_remote_conversation_history') }}
+        </div>
+        <div v-if="enableQuitGroup" @click="quitGroup" class="conversation-action-item">
             {{ $t('conversation.quit_group') }}
         </div>
     </div>
@@ -91,6 +97,7 @@ export default {
             groupMemberUserInfos: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
             filterQuery: '',
             sharedContactState: store.state.contact,
+            sharedMiscState: store.state.misc,
             groupAnnouncement: '',
             newGroupName: '',
             newGroupAnnouncement: '',
@@ -233,6 +240,13 @@ export default {
 
             });
         },
+        clearConversationHistory() {
+            wfc.clearMessages(this.conversationInfo.conversation);
+        },
+
+        clearRemoteConversationHistory() {
+            wfc.clearRemoteConversationMessages(this.conversationInfo.conversation);
+        }
     },
 
     created() {
@@ -437,17 +451,18 @@ header label input {
     background-color: #d6d6d6;
 }
 
-.quit-group-item {
+.conversation-action-item {
     display: flex;
     color: red;
     align-items: center;
     justify-content: center;
-    height: 50px;
-    max-height: 50px;
+    font-size: 12px;
+    height: 42px;
+    max-height: 42px;
     border-top: 1px solid #ececec;
 }
 
-.quit-group-item:active {
+.conversation-action-item:active {
     background: #d6d6d6;
 }
 

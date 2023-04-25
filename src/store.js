@@ -693,6 +693,10 @@ let store = {
 
         if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversation)) {
             conversationState.currentConversationInfo = conversationInfo;
+            // 清除聊天记录
+            if (!conversationInfo.lastMessage){
+                conversationState.currentConversationMessageList = [];
+            }
         }
 
         // sort

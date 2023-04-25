@@ -84,7 +84,9 @@
         "disable_notification": "消息免打扰",
         "mark_as_unread": "标记为未读",
         "mark_as_read": "标记为已读",
-        "show_in_float_window": "在独立窗口打开"
+        "show_in_float_window": "在独立窗口打开",
+        "clear_conversation_history": "清空本地聊天记录",
+        "clear_remote_conversation_history": "清空远程聊天记录"
     },
     "fav": {
         "fav": "收藏",

@@ -348,6 +348,7 @@ export default {
                     this.selfUserInfo._screenShareStream = stream;
                 } else {
                     this.selfUserInfo._stream = stream;
+                    this.selfUserInfo._screenShareStream = null;
                     this.selfUserInfo._isVideoMuted = false;
                 }
                 this.selfUserInfo._isScreenSharing = screenShare;

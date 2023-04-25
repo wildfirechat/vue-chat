@@ -72,7 +72,9 @@
         "enable_notification": "Allow notification",
         "disable_notification": "Not disturb",
         "mark_as_unread": "Mark as unread",
-        "mark_as_read": "Mark as read"
+        "mark_as_read": "Mark as read",
+        "clear_conversation_history": "Clear local history",
+        "clear_remote_conversation_history": "Clear remote history"
     },
     "fav": {
         "fav": "Collection",
@@ -170,5 +172,6 @@
         "test_user": "Test User",
         "gen_qr_code": "Generating QR code",
         "send_to_friend": "Send to Friend..."
+
     }
 }

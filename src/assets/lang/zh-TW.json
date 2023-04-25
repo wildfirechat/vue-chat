@@ -73,7 +73,9 @@
     "enable_notification": "允許通知",
     "disable_notification": "消息免打擾",
     "mark_as_unread": "標記為未讀",
-    "mark_as_read": "標記為已讀"
+    "mark_as_read": "標記為已讀",
+    "clear_conversation_history": "清空本地聊天記錄",
+    "clear_remote_conversation_history": "清空遠程聊天記錄"
   },
   "fav": {
     "fav": "收藏",
