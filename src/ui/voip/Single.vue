@@ -152,7 +152,7 @@ export default {
                     videoType = VideoType.BIG_STREAM;
                 }else if (currentVideoType === VideoType.BIG_STREAM){
                     videoType = VideoType.SMALL_STREAM;
-                }else if (videoType === VideoType.SMALL_STREAM){
+                }else if (currentVideoType === VideoType.SMALL_STREAM){
                     videoType = VideoType.NONE;
                 }
                 console.log('setParticipantVideoType', userId, videoType);
