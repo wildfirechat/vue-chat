@@ -167,6 +167,10 @@ export class AvEngineKitProxy {
             return;
         }
         let content = msg.messageContent;
+        if (this.callWin && this.conference && content.type !== MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND){
+            console.log('in conference, ignore all other msg');
+            return;
+        }
         if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
             || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
             if (this.callWin) {
