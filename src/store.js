@@ -26,8 +26,6 @@ import SearchType from "@/wfc/model/searchType";
 import Config from "@/config";
 import {getItem, setItem} from "@/ui/util/storageHelper";
 import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
-import LocalStorageIpcEventType from "./ipc/localStorageIpcEventType";
-import localStorageEmitter from "./ipc/localStorageEmitter";
 import {stringValue} from "./wfc/util/longUtil";
 import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
 import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffGroupMemberNotification";
@@ -525,6 +523,8 @@ let store = {
                 conversationState.currentConversationRead = new Map(wfc.getConversationRead(conversationState.currentConversationInfo.conversation));
             }
         });
+
+        avenginekitproxy.onVoipCallStatusCallback = this.updateVoipStatus
 
         if (isElectron()) {
             ipcRenderer.on('deep-link', (event, args) => {

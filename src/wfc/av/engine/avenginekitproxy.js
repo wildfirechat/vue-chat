@@ -12,8 +12,6 @@ import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
-import IPCEventType from "../../../ipcEventType";
-
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -42,6 +40,11 @@ export class AvEngineKitProxy {
      * @type {(Number) => {}}
      */
     onVoipCallErrorCallback;
+
+    /**
+     * 音视频通话通话状态回调
+     */
+    onVoipCallStatusCallback = (covnersation, ongonging) => {};
 
     /**
      * 应用初始化的时候调用
@@ -623,8 +626,7 @@ export class AvEngineKitProxy {
                 // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
                 return;
             }
-            let store = require('../../../store')
-            store && store.default && store.default.updateVoipStatus(this.conversation, false)
+            this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
             this.conversation = null;
             this.queueEvents = [];
             if (this.conference) {
@@ -641,9 +643,8 @@ export class AvEngineKitProxy {
 
     onVoipWindowReady(win) {
         this.callWin = win;
-        console.log('onVoipWindowReady')
-        let store = require('../../../store')
-        store && store.default && store.default.updateVoipStatus(this.conversation, true)
+        console.log('onVoipWindowReady', this.onVoipCallStatusCallback)
+        this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, true);
         if (!isElectron()) {
             if (!this.events) {
                 this.events = new PostMessageEventEmitter(win, window.location.origin)
@@ -660,7 +661,7 @@ export class AvEngineKitProxy {
             ipcRenderer.on('voip-message', this.sendVoipListener);
             ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
             ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
-            ipcRenderer.on(IPCEventType.START_SCREEN_SHARE, (event, args) => {
+            ipcRenderer.on(/*IPCEventType.START_SCREEN_SHARE*/'start-screen-share', (event, args) => {
                 if (this.callWin) {
                     let screenWidth = args.width;
                     this.callWin.resizable = true;
@@ -673,7 +674,7 @@ export class AvEngineKitProxy {
                     this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
                 }
             });
-            ipcRenderer.on(IPCEventType.STOP_SCREEN_SHARE, (event, args) => {
+            ipcRenderer.on(/*IPCEventType.STOP_SCREEN_SHARE*/'stop-screen-share', (event, args) => {
                 if (this.callWin) {
                     let type = args.type;
                     let width = 360;
