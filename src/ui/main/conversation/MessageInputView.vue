@@ -23,7 +23,11 @@
                                style="display: none">
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
-                        <i id="screenShot" @click="screenShot" class="icon-ion-scissors"/>
+                        <div style="display: inline-block; text-align: center">
+                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors"/>
+                            <i class="icon-ion-chevron-down" style="font-size: 10px; color: #494849; padding-left: 5px;"/>
+                            <span @click="screenShot(true)" class="screen-shot-button">隐藏当前窗口截图</span>
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
@@ -127,6 +131,7 @@ import Config from "../../../config";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
+import {currentWindow} from "../../../platform";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -415,7 +420,11 @@ export default {
             this.focusInput();
         },
 
-        screenShot() {
+        screenShot(hideCurrentWindow = false) {
+            if (hideCurrentWindow) {
+                currentWindow.hide();
+            }
+            console.log('screenShot', hideCurrentWindow);
             ipcRenderer.send(IpcEventType.START_SCREEN_SHOT, {});
         },
         showMessageHistory() {
@@ -984,6 +993,7 @@ export default {
 .input-action-container ul li {
     display: inline;
     margin-left: 20px;
+    position: relative;
 }
 
 .input-action-container ul li:last-of-type {
@@ -998,6 +1008,23 @@ i {
 
 i:hover {
     color: #3f64e4;
+}
+
+.input-action-container ul li .screen-shot-button {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    display: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    background-color: #b8b8b8;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.input-action-container ul li:hover .screen-shot-button {
+    display: inline-block;
+    width: 120px;
 }
 
 </style>

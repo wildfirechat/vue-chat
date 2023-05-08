@@ -635,12 +635,12 @@ let store = {
         conversationList.forEach(info => {
             if (info.conversation.type === ConversationType.Single) {
                 toLoadUserIdSet.add(info.conversation.target)
-                if (info.lastMessage) {
+                if (info.lastMessage && info.lastMessage.from) {
                     toLoadUserIdSet.add(info.lastMessage.from);
                 }
             } else if (info.conversation.type === ConversationType.Group) {
                 toLoadGroupIds.push(info.conversation.target)
-                if (info.lastMessage) {
+                if (info.lastMessage && info.lastMessage.from) {
                     toLoadUserIdSet.add(info.lastMessage.from);
                 }
             }

@@ -360,8 +360,12 @@ export default {
             };
 
             sessionCallback.didScreenShareEnded = () => {
-                console.log('didScreenShareEnded');
+                console.log('didScreenShareEnded', this.session.videoMuted, this.session.audioMuted);
+                if (isElectron()){
+                    currentWindow.setIgnoreMouseEvents(false);
+                }
                 this.selfUserInfo._isScreenSharing = false;
+                this.selfUserInfo._isVideoMuted = this.session.videoMuted;
             }
 
             sessionCallback.didCreateLocalVideoTrackError = () => {
