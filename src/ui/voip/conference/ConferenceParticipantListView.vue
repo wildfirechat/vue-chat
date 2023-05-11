@@ -11,8 +11,9 @@
             <p>移除参与者</p>
         </div>
         <ul>
-            <li v-for="participant in participants" :key="participant.uid">
+            <li v-for="participant in participants" :key="participant.uid + participant._isScreenSharing">
                 <tippy
+                    v-if="!participant._isScreenSharing"
                     :to="'user-' + participant.uid"
                     interactive
                     theme="light"
@@ -27,7 +28,7 @@
                 <div class="participant-user"
                      @click.stop.prevent="showContextMenu($event, participant)"
                      :ref="'userCardTippy-'+participant.uid"
-                     v-bind:class="{active: participant.uid === currentParticipant.uid}"
+                     v-bind:class="{active: participant.uid === currentParticipant.uid && participant._isScreenSharing === currentParticipant._isScreenSharing}"
                      :name="'user-'+participant.uid">
                     <div class="avatar-container">
                         <img class="avatar" :src="participant.portrait" alt="">
@@ -161,6 +162,8 @@ export default {
                 }
             } else if (user.uid === conferenceManager.conferenceInfo.owner) {
                 desc = "主持人"
+            }else if (user._isScreenSharing){
+                desc = '屏幕共享';
             }
             return desc;
         },
