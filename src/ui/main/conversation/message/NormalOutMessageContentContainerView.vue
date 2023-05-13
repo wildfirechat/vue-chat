@@ -45,7 +45,7 @@
                          class="avatar"
                          @click="onClickUserPortrait(message.from)"
                          draggable="false"
-                         :src="message._from.portrait">
+                         :src="message._from ? message._from.portrait : ''">
                 </div>
             </div>
             <p v-if="shouldShowMessageReceipt" class="receipt" @click="showMessageReceiptDetail">
