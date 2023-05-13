@@ -28,14 +28,6 @@
         </div>
         <div>
             <label>
-                使用个人会议号
-                <!--                TODO -->
-                <input v-model="enableUserCallId" :disabled="true" type="checkbox">
-            </label>
-            <p style="font-size: 12px">{{ callId }}</p>
-        </div>
-        <div>
-            <label>
                 大规模会议
                 <input v-model="advance" type="checkbox">
             </label>
@@ -67,21 +59,13 @@ export default {
             allowTurnOnMic: true,
             enablePassword: false,
             password: '',
-            enableUserCallId: false,
-            callId: '',
         }
-    },
-    async mounted() {
-        this.callId = await conferenceApi.getMyPrivateConferenceId();
     },
 
     methods: {
         async _createConference() {
             let info = new ConferenceInfo();
             info.conferenceTitle = this.title;
-            if (this.enableUserCallId) {
-                info.conferenceId = this.callId;
-            }
             if (this.password) {
                 info.password = this.password;
             }
