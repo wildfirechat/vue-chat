@@ -18,7 +18,7 @@ export default {
                     };
                     this.$pickContact({
                         successCB,
-                        users: store.getGroupMemberUserInfos(this.message.conversation.target, true, true),
+                        users: store.getGroupMemberUserInfos(conversation.target, true, true),
                         initialCheckedUsers: [store.state.contact.selfUserInfo],
                         uncheckableUsers: [store.state.contact.selfUserInfo],
                         confirmTitle: this.$t('common.confirm'),
