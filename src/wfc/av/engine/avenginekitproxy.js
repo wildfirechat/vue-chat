@@ -603,12 +603,9 @@ export class AvEngineKitProxy {
                 }, true);
             }
 
-            // pls refer to https://stackoverflow.com/questions/52448909/onbeforeunload-not-working-inside-react-component
-            // In react, if you need to handle DOM events not already provided by React you have to add DOM listeners after the component is mounted
-            // 所以这儿延时一下
-            setTimeout(() => {
                 win.addEventListener('beforeunload', this.onVoipWindowClose);
-            }, 600)
+            // for ios
+            win.addEventListener('unload', this.onVoipWindowClose);
         }
     }
 
@@ -620,6 +617,7 @@ export class AvEngineKitProxy {
         }
         if (!isElectron()) {
             this.callWin.removeEventListener('beforeunload', this.onVoipWindowClose)
+            this.callWin.removeEventListener('unload', this.onVoipWindowClose)
         }
         setTimeout(() => {
             if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
