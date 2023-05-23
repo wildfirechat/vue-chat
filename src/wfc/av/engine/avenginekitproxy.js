@@ -174,8 +174,8 @@ export class AvEngineKitProxy {
             console.log('in conference, ignore all other msg');
             return;
         }
-        if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
-            || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
+        if (msg.direction === 1 &&
+            (content.type === MessageContentType.VOIP_CONTENT_TYPE_START || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT)) {
             if (this.callWin) {
                 if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
                     || (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT && content.participants.indexOf(wfc.getUserId()) >= 0)) {
