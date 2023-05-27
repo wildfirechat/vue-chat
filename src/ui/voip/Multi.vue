@@ -22,15 +22,16 @@
                                    class="hidden-video"
                                    :srcObject.prop="selfUserInfo._stream"
                                    muted
-                                   playsInline autoPlay/>
+                                   webkit-playsinline playsinline x5-playsinline preload="auto"
+                                   autoPlay/>
                             <p>我</p>
                         </div>
                         <video v-else
                                class="video me"
                                ref="localVideo"
                                :srcObject.prop="selfUserInfo._stream"
-                               playsInline
                                muted
+                               webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
                     </div>
 
@@ -43,14 +44,15 @@
                             <video v-if="audioOnly && participant._stream"
                                    class="hidden-video"
                                    :srcObject.prop="participant._stream"
-                                   playsInline autoPlay/>
+                                   webkit-playsinline playsinline x5-playsinline preload="auto"
+                                   autoPlay/>
                             <p class="single-line">{{ userName(participant) }}</p>
                         </div>
                         <video v-else
                                class="video"
                                @click="switchVideoType(participant.uid, participant._isScreenSharing)"
                                :srcObject.prop="participant._stream"
-                               playsInline
+                               webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
                     </div>
                     <!--add more-->
@@ -141,9 +143,44 @@ export default {
             currentTimestamp: 0,
             videoInputDeviceIndex: 0,
             broadcastMultiCallOngoingTimer: 0,
+			autoPlayInterval: 0,
         }
     },
     methods: {
+        // 用来解决 iOS 上，不能自动播放问题
+        autoPlay() {
+            console.log('auto play');
+            if (!this.autoPlayInterval) {
+                this.autoPlayInterval = setInterval(() => {
+                    try {
+                        let videos = document.getElementsByTagName('video');
+                        let allPlaying = true;
+                        for (const video of videos) {
+                            if (video.paused) {
+                                allPlaying = false;
+                                break;
+                            }
+                        }
+                        // participantUserInfos 不包含自己
+                        if (allPlaying && videos.length === this.participantUserInfos.length + 1) {
+                            clearInterval(this.autoPlayInterval);
+                            this.autoPlayInterval = 0;
+                            console.log('auto play, allPlaying', videos.length);
+                            return;
+                        }
+
+                        for (const video of videos) {
+                            if (video.paused) {
+                                video.play();
+                            }
+                        }
+                    } catch (e) {
+                        // do nothing
+                    }
+
+                }, 100);
+            }
+        },
         switchVideoType(userId, screenSharing) {
             if (!this.session) {
                 return
@@ -208,6 +245,7 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream) => {
                 this.selfUserInfo._stream = stream;
+                this.autoPlay();
             };
 
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
@@ -219,6 +257,7 @@ export default {
                         break;
                     }
                 }
+                this.autoPlay();
             };
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
