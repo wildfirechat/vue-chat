@@ -44,7 +44,8 @@ export class AvEngineKitProxy {
     /**
      * 音视频通话通话状态回调
      */
-    onVoipCallStatusCallback = (covnersation, ongonging) => {};
+    onVoipCallStatusCallback = (covnersation, ongonging) => {
+    };
 
     /**
      * 应用初始化的时候调用
@@ -170,7 +171,7 @@ export class AvEngineKitProxy {
             return;
         }
         let content = msg.messageContent;
-        if (this.callWin && this.conference && content.type !== MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND){
+        if (this.callWin && this.conference && content.type !== MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND) {
             console.log('in conference, ignore all other msg');
             return;
         }
@@ -232,7 +233,10 @@ export class AvEngineKitProxy {
                     if (!this.callWin) {
                         setTimeout(() => {
                             if (this.conversation) {
-                                this.showCallUI(msg.conversation);
+                                this.showCallUI(msg.conversation, false, {
+                                    event: 'message',
+                                    args: msg
+                                });
                             } else {
                                 console.log('call ended')
                             }
@@ -257,7 +261,10 @@ export class AvEngineKitProxy {
                     if (!this.callWin && content.participants.indexOf(selfUserInfo.uid) > -1) {
                         setTimeout(() => {
                             if (this.conversation) {
-                                this.showCallUI(msg.conversation);
+                                this.showCallUI(msg.conversation, false, {
+                                    event: 'message',
+                                    args: msg
+                                });
                             } else {
                                 console.log('call ended')
                             }
@@ -280,7 +287,9 @@ export class AvEngineKitProxy {
                 msg.participantUserInfos = participantUserInfos;
                 msg.selfUserInfo = selfUserInfo;
                 msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
-                this.emitToVoip("message", msg);
+                if (this.callWin) {
+                    this.emitToVoip("message", msg);
+                }
             }
         }
     };
@@ -369,15 +378,17 @@ export class AvEngineKitProxy {
             let memberIds = wfc.getGroupMemberIds(conversation.target);
             groupMemberUserInfos = wfc.getUserInfos(memberIds, conversation.target);
         }
-        this.showCallUI(conversation, false);
-        this.emitToVoip('startCall', {
-            conversation: conversation,
-            audioOnly: audioOnly,
-            callId: callId,
-            selfUserInfo: selfUserInfo,
-            groupMemberUserInfos: groupMemberUserInfos,
-            participantUserInfos: participantUserInfos,
-            callExtra: callExtra,
+        this.showCallUI(conversation, false, {
+            event: 'startCall',
+            args: {
+                conversation: conversation,
+                audioOnly: audioOnly,
+                callId: callId,
+                selfUserInfo: selfUserInfo,
+                groupMemberUserInfos: groupMemberUserInfos,
+                participantUserInfos: participantUserInfos,
+                callExtra: callExtra,
+            }
         });
     }
 
@@ -495,7 +506,7 @@ export class AvEngineKitProxy {
         });
     }
 
-    showCallUI(conversation, isConference) {
+    showCallUI(conversation, isConference, options) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         this.type = type;
 
@@ -574,7 +585,7 @@ export class AvEngineKitProxy {
             } else {
                 url += "/voip"
             }
-            url += '/' + type + '?t=' + new Date().getTime()
+            url += '/' + type + '?t=' + new Date().getTime() + '&options=' + encodeURIComponent(JSON.stringify(options, null, ''));
 
             let win;
             let iframe = this.iframe;
@@ -603,9 +614,20 @@ export class AvEngineKitProxy {
                 }, true);
             }
 
-                win.addEventListener('beforeunload', this.onVoipWindowClose);
+            win.addEventListener('beforeunload', this.onVoipWindowClose);
             // for ios
             win.addEventListener('unload', this.onVoipWindowClose);
+
+            if (!this.events) {
+                this.events = new PostMessageEventEmitter(win, window.location.origin)
+            }
+            console.log('windowEmitter subscribe events');
+            this.events.on('voip-message', this.sendVoipListener)
+            this.events.on('conference-request', this.sendConferenceRequestListener);
+            this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
+            if (this.useIframe) {
+                this.events.on('close-iframe-window', this.onVoipWindowClose)
+            }
         }
     }
 
@@ -644,16 +666,7 @@ export class AvEngineKitProxy {
         console.log('onVoipWindowReady', this.onVoipCallStatusCallback)
         this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, true);
         if (!isElectron()) {
-            if (!this.events) {
-                this.events = new PostMessageEventEmitter(win, window.location.origin)
-            }
-            console.log('windowEmitter subscribe events');
-            this.events.on('voip-message', this.sendVoipListener)
-            this.events.on('conference-request', this.sendConferenceRequestListener);
-            this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
-            if (this.useIframe) {
-                this.events.on('close-iframe-window', this.onVoipWindowClose)
-            }
+            // 启动页面的时候就监听，不然太慢了，会丢事件
         } else {
             console.log('ipcRenderer subscribe events');
             ipcRenderer.on('voip-message', this.sendVoipListener);

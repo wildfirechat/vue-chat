@@ -121,6 +121,7 @@ import CallState from "@/wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import VideoType from "../../wfc/av/engine/videoType";
+import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 
 export default {
     name: 'Single',
@@ -148,11 +149,11 @@ export default {
             if (subscriber) {
                 let currentVideoType = subscriber.currentVideoType;
                 let videoType = VideoType.NONE;
-                if (currentVideoType === VideoType.NONE){
+                if (currentVideoType === VideoType.NONE) {
                     videoType = VideoType.BIG_STREAM;
-                }else if (currentVideoType === VideoType.BIG_STREAM){
+                } else if (currentVideoType === VideoType.BIG_STREAM) {
                     videoType = VideoType.SMALL_STREAM;
-                }else if (currentVideoType === VideoType.SMALL_STREAM){
+                } else if (currentVideoType === VideoType.SMALL_STREAM) {
                     videoType = VideoType.NONE;
                 }
                 console.log('setParticipantVideoType', userId, videoType);
@@ -330,6 +331,32 @@ export default {
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();
+
+        this.$nextTick(() => {
+            const urlParams = new URLSearchParams(window.location.href);
+            let options = urlParams.get('options');
+            console.log('parse queries')
+            options = JSON.parse(decodeURIComponent(options));
+            if (!isElectron()) {
+                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
+                let listenersSymbol;
+                for (const symbol of symbols) {
+                    if (symbol.description === 'listeners') {
+                        listenersSymbol = symbol;
+                        break;
+                    }
+                }
+                if (listenersSymbol) {
+                    let listeners = avenginekitproxy.events[listenersSymbol];
+                    console.log('listeners', listenersSymbol, listeners);
+                    let ls = listeners[options.event];
+                    for (const l of ls) {
+                        l(options.event, options.args);
+                        console.log('handle voip event', options);
+                    }
+                }
+            }
+        })
     },
 
     computed: {
@@ -425,7 +452,7 @@ export default {
     left: 0;
 }
 
-.localVideo.me{
+.localVideo.me {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
 }
