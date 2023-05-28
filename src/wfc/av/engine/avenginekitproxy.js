@@ -432,22 +432,24 @@ export class AvEngineKitProxy {
         });
 
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
-        this.showCallUI(null, true);
-        this.emitToVoip('startConference', {
-            audioOnly: audioOnly,
-            callId: callId,
-            pin: pin ? pin : Math.ceil(Math.random() * 1000000) + '',
-            host: host,
-            title: title,
-            desc: desc,
-            audience: audience,
-            advance: advance,
-            record: record,
-            selfUserInfo: selfUserInfo,
-            extra: extra,
-            callExtra: callExtra,
-            muteAudio: muteAudio,
-            muteVideo: muteVideo,
+        this.showCallUI(null, true, {
+            event: 'startConference',
+            args: {
+                audioOnly: audioOnly,
+                callId: callId,
+                pin: pin ? pin : Math.ceil(Math.random() * 1000000) + '',
+                host: host,
+                title: title,
+                desc: desc,
+                audience: audience,
+                advance: advance,
+                record: record,
+                selfUserInfo: selfUserInfo,
+                extra: extra,
+                callExtra: callExtra,
+                muteAudio: muteAudio,
+                muteVideo: muteVideo,
+            }
         });
     }
 
@@ -488,21 +490,23 @@ export class AvEngineKitProxy {
             console.error('join conference chatRoom fail', callId, err);
         });
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
-        this.showCallUI(null, true);
-        this.emitToVoip('joinConference', {
-            audioOnly: audioOnly,
-            callId: callId,
-            pin: pin,
-            host: host,
-            title: title,
-            desc: desc,
-            audience: audience,
-            advance: advance,
-            muteAudio: muteAudio,
-            muteVideo: muteVideo,
-            selfUserInfo: selfUserInfo,
-            extra: extra,
-            callExtra: callExtra,
+        this.showCallUI(null, true, {
+            event: 'joinConference',
+            args: {
+                audioOnly: audioOnly,
+                callId: callId,
+                pin: pin,
+                host: host,
+                title: title,
+                desc: desc,
+                audience: audience,
+                advance: advance,
+                muteAudio: muteAudio,
+                muteVideo: muteVideo,
+                selfUserInfo: selfUserInfo,
+                extra: extra,
+                callExtra: callExtra,
+            }
         });
     }
 
@@ -576,6 +580,8 @@ export class AvEngineKitProxy {
             console.log('voip windows url', url)
             win.show();
             win.removeMenu();
+
+            this.emitToVoip(options.event, options.args);
         } else {
             console.log('location', window.location);
             let hash = window.location.hash;

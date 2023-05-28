@@ -126,6 +126,7 @@ import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import MultiCallOngoingMessageContent from "../../wfc/av/messages/multiCallOngoingMessageContent";
 import VideoType from "../../wfc/av/engine/videoType";
 import wfc from "../../wfc/client/wfc";
+import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 
 export default {
     name: 'Multi',
@@ -143,12 +144,15 @@ export default {
             currentTimestamp: 0,
             videoInputDeviceIndex: 0,
             broadcastMultiCallOngoingTimer: 0,
-			autoPlayInterval: 0,
+            autoPlayInterval: 0,
         }
     },
     methods: {
         // 用来解决 iOS 上，不能自动播放问题
         autoPlay() {
+            if (isElectron()) {
+                return;
+            }
             console.log('auto play');
             if (!this.autoPlayInterval) {
                 this.autoPlayInterval = setInterval(() => {
@@ -463,6 +467,32 @@ export default {
     mounted() {
         avenginekit.setup();
         this.setupSessionCallback();
+
+        if (!isElectron()) {
+            this.$nextTick(() => {
+                const urlParams = new URLSearchParams(window.location.href);
+                let options = urlParams.get('options');
+                console.log('parse queries')
+                options = JSON.parse(decodeURIComponent(options));
+                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
+                let listenersSymbol;
+                for (const symbol of symbols) {
+                    if (symbol.description === 'listeners') {
+                        listenersSymbol = symbol;
+                        break;
+                    }
+                }
+                if (listenersSymbol) {
+                    let listeners = avenginekitproxy.events[listenersSymbol];
+                    console.log('listeners', listenersSymbol, listeners);
+                    let ls = listeners[options.event];
+                    for (const l of ls) {
+                        l(options.event, options.args);
+                        console.log('handle voip event', options);
+                    }
+                }
+            })
+        }
     },
 
     destroyed() {

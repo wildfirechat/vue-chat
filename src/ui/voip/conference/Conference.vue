@@ -295,6 +295,44 @@ export default {
         ConversationView
     },
     methods: {
+        // 用来解决 iOS 上，不能自动播放问题
+        autoPlay() {
+            if (isElectron()) {
+                return;
+            }
+            console.log('auto play');
+            if (!this.autoPlayInterval) {
+                this.autoPlayInterval = setInterval(() => {
+                    try {
+                        let videos = document.getElementsByTagName('video');
+                        let allPlaying = true;
+                        for (const video of videos) {
+                            if (video.paused) {
+                                allPlaying = false;
+                                break;
+                            }
+                        }
+                        // participantUserInfos 不包含自己
+                        if (allPlaying && videos.length === this.participantUserInfos.filter(p => !p._isAudience).length + 1) {
+                            clearInterval(this.autoPlayInterval);
+                            this.autoPlayInterval = 0;
+                            console.log('auto play, allPlaying', videos.length);
+                            return;
+                        }
+
+                        for (const video of videos) {
+                            if (video.paused) {
+                                video.play();
+                            }
+                        }
+                    } catch (e) {
+                        // do nothing
+                    }
+
+                }, 100);
+            }
+        },
+
         setupSessionCallback() {
             let sessionCallback = new CallSessionCallback();
 
@@ -352,17 +390,18 @@ export default {
                     this.selfUserInfo._isVideoMuted = false;
                 }
                 this.selfUserInfo._isScreenSharing = screenShare;
+                this.autoPlay();
             };
 
             sessionCallback.didRotateLocalVideoTrack = (stream) => {
                 console.log('didRotateLocalVideoTrack', stream.getAudioTracks())
                 this.selfUserInfo._stream = stream;
-                this.selfUserInfo._stream.timestamp  = new Date().getTime();
+                this.selfUserInfo._stream.timestamp = new Date().getTime();
             };
 
             sessionCallback.didScreenShareEnded = () => {
                 console.log('didScreenShareEnded', this.session.videoMuted, this.session.audioMuted);
-                if (isElectron()){
+                if (isElectron()) {
                     currentWindow.setIgnoreMouseEvents(false);
                 }
                 this.selfUserInfo._isScreenSharing = false;
@@ -386,6 +425,7 @@ export default {
                         break;
                     }
                 }
+                this.autoPlay();
             };
 
             sessionCallback.didRemoveRemoteVideoTrack = (userId) => {
@@ -1216,6 +1256,32 @@ export default {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '30px');
         } else {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
+        }
+
+        if (!isElectron()) {
+            this.$nextTick(() => {
+                const urlParams = new URLSearchParams(window.location.href);
+                let options = urlParams.get('options');
+                console.log('parse queries')
+                options = JSON.parse(decodeURIComponent(options));
+                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
+                let listenersSymbol;
+                for (const symbol of symbols) {
+                    if (symbol.description === 'listeners') {
+                        listenersSymbol = symbol;
+                        break;
+                    }
+                }
+                if (listenersSymbol) {
+                    let listeners = avenginekitproxy.events[listenersSymbol];
+                    console.log('listeners', listenersSymbol, listeners);
+                    let ls = listeners[options.event];
+                    for (const l of ls) {
+                        l(options.event, options.args);
+                        console.log('handle voip event', options);
+                    }
+                }
+            })
         }
     },
 

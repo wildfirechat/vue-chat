@@ -146,6 +146,9 @@ export default {
     },
     methods: {
         autoPlay() {
+            if (isElectron()) {
+                return;
+            }
             console.log('can play');
             if (!this.autoPlayInterval) {
                 this.autoPlayInterval = setInterval(() => {
@@ -363,12 +366,13 @@ export default {
         avenginekit.setup();
         this.setupSessionCallback();
 
-        this.$nextTick(() => {
-            const urlParams = new URLSearchParams(window.location.href);
-            let options = urlParams.get('options');
-            console.log('parse queries')
-            options = JSON.parse(decodeURIComponent(options));
-            if (!isElectron()) {
+        if (!isElectron()) {
+            this.$nextTick(() => {
+                // 解决弱网，首次可能无法正常音视频通话问题
+                const urlParams = new URLSearchParams(window.location.href);
+                let options = urlParams.get('options');
+                console.log('parse queries')
+                options = JSON.parse(decodeURIComponent(options));
                 const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
                 let listenersSymbol;
                 for (const symbol of symbols) {
@@ -386,8 +390,8 @@ export default {
                         console.log('handle voip event', options);
                     }
                 }
-            }
-        })
+            })
+        }
     },
 
     computed: {
