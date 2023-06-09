@@ -38,6 +38,7 @@
         "receipt": "Message Receipt",
         "receipt_detail": "Message Receipt Detail",
         "receipt_read_users": "Read",
+        "receipt_unread_users": "Unread",
         "receipt_received_users": "Delivered",
         "receipt_unreceived_users": "Undelivered",
         "sender": "Message Sender",

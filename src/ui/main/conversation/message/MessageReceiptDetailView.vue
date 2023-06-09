@@ -3,10 +3,8 @@
         <h1>{{ $t('message.receipt_detail') }}</h1>
         <h2>{{ $t('message.receipt_read_users') }}</h2>
         <p>{{ readUsersDesc() }}</p>
-        <h2>{{ $t('message.receipt_received_users') }}</h2>
-        <p>{{ receivedUsersDesc() }}</p>
-        <h2>{{ $t('message.receipt_unreceived_users') }}</h2>
-        <p>{{ unreceiveUsersDesc() }}</p>
+        <h2>{{ $t('message.receipt_unread_users') }}</h2>
+        <p>{{ unrreadUsersDesc() }}</p>
     </section>
 </template>
 
@@ -19,12 +17,7 @@ export default {
             required: true,
             default: null,
         },
-        receivedUsers: {
-            type: Array,
-            required: true,
-            default: null,
-        },
-        unreceiveUsers: {
+        unreadUsers: {
             type: Array,
             required: true,
             default: null,
@@ -41,20 +34,10 @@ export default {
             }
             return desc ? desc : this.$t('common.none');
         },
-        receivedUsersDesc() {
+        unrreadUsersDesc() {
             let desc = '';
-            if (this.receivedUsers) {
-                this.receivedUsers.forEach(u => {
-                    desc += u._displayName + '、';
-                });
-                desc = desc.substring(0, desc.length - 1)
-            }
-            return desc ? desc : this.$t('common.none');
-        },
-        unreceiveUsersDesc() {
-            let desc = '';
-            if (this.unreceiveUsers) {
-                this.unreceiveUsers.forEach(u => {
+            if (this.unreadUsers) {
+                this.unreadUsers.forEach(u => {
                     desc += u._displayName + '、';
                 });
                 desc = desc.substring(0, desc.length - 1)

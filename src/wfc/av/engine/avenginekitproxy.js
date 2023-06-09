@@ -44,8 +44,7 @@ export class AvEngineKitProxy {
     /**
      * 音视频通话通话状态回调
      */
-    onVoipCallStatusCallback = (covnersation, ongonging) => {
-    };
+    onVoipCallStatusCallback = (covnersation, ongonging) => {};
 
     /**
      * 应用初始化的时候调用

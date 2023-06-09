@@ -100,7 +100,7 @@ import InfiniteLoading from "vue-infinite-loading";
 import store from "@/store";
 import {ipcRenderer} from "@/platform";
 import FavItem from "../../../wfc/model/favItem";
-import {isElectron} from "../../../platform";
+import {isElectron, currentWindow} from "../../../platform";
 import {_reverseToJsLongString} from "../../../wfc/util/longUtil";
 import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
 import Config from "../../../config";
@@ -233,12 +233,15 @@ export default {
                     store.previewMedia(favItem.url, favItem.thumbUrl, favItem.data && favItem.data.thumb ? favItem.data.thumb : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
                     break;
                 case MessageContentType.File:
-                    ipcRenderer.send(IpcEventType.DOWNLOAD_FILE, {
-                        // TODO -1时，不通知进度
-                        messageId: -1,
-                        remotePath: favItem.url,
-                        fileName: favItem.title,
-                    });
+                    if (isElectron()) {
+                        ipcRenderer.send(IpcEventType.DOWNLOAD_FILE, {
+                            // TODO -1时，不通知进度
+                            messageId: -1,
+                            remotePath: favItem.url,
+                            fileName: favItem.title,
+                            windowId: currentWindow.getMediaSourceId(),
+                        });
+                    }
                     break;
                 case MessageContentType.Composite_Message:
                     if (isElectron()) {

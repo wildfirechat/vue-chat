@@ -6,8 +6,9 @@
 
         <div class="drag-area"/>
         <div v-if="loginType === 0" class="qrcode-login-container">
-            <div class="qr-container">
-                <img v-if="qrCode" v-bind:src="qrCode" alt="">
+            <div class="qr-container" @click="regenerateQrCode">
+                <p v-if="qrCode === 'error'">生成二维码失败，点击重试</p>
+                <img v-else-if="qrCode" v-bind:src="qrCode" alt="">
                 <p v-else>{{ $t('misc.gen_qr_code') }}</p>
                 <ClipLoader v-if="loginStatus === 4" class="loading" :color="'white'" :height="'80px'" :width="'80px'"/>
             </div>
@@ -224,6 +225,12 @@ export default {
                 })
         },
 
+        regenerateQrCode() {
+            if (this.qrCode === 'error') {
+                this.qrCode = null;
+                this.createPCLoginSession(null);
+            }
+        },
         async createPCLoginSession(userId) {
             appServerApi.createPCSession(userId)
                 .then(response => {
@@ -237,6 +244,10 @@ export default {
                 })
                 .catch(err => {
                     console.log('createPCSession error', err);
+                    this.qrCode = 'error';
+                    if (this.qrCodeTimer) {
+                        clearInterval(this.qrCodeTimer)
+                    }
                 })
         },
 
@@ -351,7 +362,10 @@ export default {
                         store.setEnableAutoLogin(this.enableAutoLogin)
                     }
                 }
-                organizationServerApi.login();
+                organizationServerApi.login()
+                    .catch(r => {
+                        console.error('organizationServer login failed', r)
+                    });
             }
         },
     },

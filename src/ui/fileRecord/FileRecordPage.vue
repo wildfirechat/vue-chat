@@ -108,7 +108,7 @@
 <script>
 import store from "@/store";
 import InfiniteLoading from "vue-infinite-loading";
-import {ipcRenderer, isElectron} from "@/platform";
+import {ipcRenderer, isElectron, currentWindow} from "@/platform";
 import UserListVue from "@/ui/main/user/UserListVue";
 import IpcEventType from "../../ipcEventType";
 
@@ -265,6 +265,7 @@ export default {
                     remotePath: fileRecord.url,
                     fileName: fileRecord.name,
                     source: 'file',
+                    windowId: currentWindow.getMediaSourceId(),
                 });
             }
         },
