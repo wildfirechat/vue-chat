@@ -34,7 +34,7 @@ export default class GroupJoinTypeNotificationContent extends GroupNotificationC
                 notifyStr += ' 仅允许群成员邀请加入群组';
                 break;
             case 2:
-                notifyStr += " 只关闭了加入群组功能";
+                notifyStr += " 关闭了加入群组功能";
                 break;
             default:
                 break;
