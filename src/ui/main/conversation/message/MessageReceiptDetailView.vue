@@ -1,16 +1,34 @@
 <template>
     <section class="receipt-detail-container">
-        <h1>{{ $t('message.receipt_detail') }}</h1>
-        <h2>{{ $t('message.receipt_read_users') }}</h2>
-        <p>{{ readUsersDesc() }}</p>
-        <h2>{{ $t('message.receipt_unread_users') }}</h2>
-        <p>{{ unrreadUsersDesc() }}</p>
+        <p class="title">{{ $t('message.receipt_detail') }}</p>
+        <div class="receipt-container">
+            <div class="receipt-item">
+                <p class="label">{{ readTitle }}</p>
+                <div class="users">
+                    <UserListVue :users="readUsers"
+                                 :show-category-label="false"
+                                 :padding-left="'20px'"/>
+                </div>
+            </div>
+            <div class="receipt-item">
+                <p class="label">{{ unreadTitle }}</p>
+                <div class="users">
+                    <UserListVue :users="unreadUsers"
+                                 :show-category-label="false"
+                                 :click-user-item-func="()=>{}"
+                    />
+                </div>
+            </div>
+        </div>
     </section>
 </template>
 
 <script>
+import UserListVue from "../../user/UserListVue.vue";
+
 export default {
     name: "MessageReceiptDetailView",
+    components: {UserListVue},
     props: {
         readUsers: {
             type: Array,
@@ -44,6 +62,23 @@ export default {
             }
             return desc ? desc : this.$t('common.none');
         },
+    },
+
+    computed: {
+        unreadTitle() {
+            if (this.unreadUsers.length > 0) {
+                return `未读(${this.unreadUsers.length})`
+            } else {
+                return '未读'
+            }
+        },
+        readTitle() {
+            if (this.readUsers.length > 0) {
+                return `已读(${this.readUsers.length})`
+            } else {
+                return '已读'
+            }
+        },
     }
 }
 
@@ -51,14 +86,53 @@ export default {
 
 <style lang="css" scoped>
 .receipt-detail-container {
+    height: 100%;
+    width: 100%;
     padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-.receipt-detail-container h1 {
+.receipt-detail-container .title {
     align-self: center;
+    font-size: 16px;
+    color: #3f64e4;
+}
+
+.receipt-container {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding-top: 10px;
+}
+
+.receipt-item {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 250px;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.receipt-item .label {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+}
+
+.receipt-item .users {
+    flex: 1;
+    overflow-y: scroll;
+}
+
+
+.receipt-item:last-of-type {
+//border-left: 1px solid lightgrey;
 }
 
 </style>
