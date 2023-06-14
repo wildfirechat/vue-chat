@@ -14,6 +14,7 @@ import IpcSub from "../../../../../ipc/ipcSub";
 import store from "../../../../../store";
 import ConversationType from "../../../../../wfc/model/conversationType";
 import avenginekitproxy from "../../../../../wfc/av/engine/avenginekitproxy";
+import {numberValue} from "../../../../../wfc/util/longUtil";
 
 export default {
     name: "CallStartMessageContentView",
@@ -49,7 +50,7 @@ export default {
             let voip = this.message.messageContent;
             let desc = this.$t('voip.desc');
             if (voip.endTime > 0 && voip.connectTime > 0) {
-                let duration = parseInt((voip.endTime - voip.connectTime) / 1000);
+                let duration = parseInt((numberValue(voip.endTime) - numberValue(voip.connectTime)) / 1000);
                 desc = `通话时长：${duration}''`
             } else {
                 let reason = voip.status;
