@@ -61,9 +61,12 @@
 
 ## 开发
 ```
-$ npm install
-$ npm run serve
+npm install
+npm run serve
 浏览器访问: http://localhost:5000
+
+// 如果需要 https 访问的话(要求 app-server 和 im-server 都配置了 https)，请执行：
+npm run serve-https 
 
 ```
 

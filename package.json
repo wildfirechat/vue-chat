@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --https true --skip-plugins @vue/cli-plugin-eslint",
+    "serve": "vue-cli-service serve --skip-plugins @vue/cli-plugin-eslint",
+    "serve-https": "vue-cli-service serve --https true --skip-plugins @vue/cli-plugin-eslint",
     "build": "vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
     "lint": "vue-cli-service lint"
   },
