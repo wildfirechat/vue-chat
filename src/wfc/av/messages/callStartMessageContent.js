@@ -58,7 +58,7 @@ export default class CallStartMessageContent extends MessageContent {
             audioOnly: this.audioOnly,
             participants: this.targetIds,
         }
-        payload.pushData = JSON.toString(pushData);
+        payload.pushData = JSON.stringify(pushData);
 
         return payload;
     }

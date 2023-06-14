@@ -96,8 +96,9 @@ export default {
 
 .receipt-detail-container .title {
     align-self: center;
-    font-size: 16px;
-    color: #3f64e4;
+    font-weight: 400;
+    font-size: 18px;
+    padding: 5px 0;
 }
 
 .receipt-container {
