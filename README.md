@@ -55,8 +55,8 @@
 ![](http://static.wildfirechat.cn/web-multi-video-call.png)
 ![](http://static.wildfirechat.cn/web-multi-audio-call.png)
 ## 开发、打包依赖
-1. nodejs v10.16.3
-2. npm 6.9.0
+1. nodejs v14.18.X
+2. npm 6.14.15
 > 注意避免使用`cnpm`，我们使用`cnpm`出现过一些奇怪问题的情况。如果您使用`cnpm`当遇到问题时请切换到`npm`试一下。
 
 ## 开发
