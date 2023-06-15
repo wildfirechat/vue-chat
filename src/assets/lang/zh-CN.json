@@ -185,6 +185,7 @@
         "beijing": "北京",
         "test_user": "测试用户",
         "gen_qr_code": "二维码生成中",
-        "send_to_friend": "发送给朋友..."
+        "send_to_friend": "发送给朋友...",
+        "share_to_friend": "分享给朋友..."
     }
 }

@@ -172,7 +172,8 @@
         "beijing": "Beijing",
         "test_user": "Test User",
         "gen_qr_code": "Generating QR code",
-        "send_to_friend": "Send to Friend..."
+        "send_to_friend": "Send to Friend...",
+        "share_to_friend": "Share to Friend..."
 
     }
 }

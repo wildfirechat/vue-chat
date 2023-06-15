@@ -55,12 +55,25 @@
                     :users="users"
                     :click-user-item-func="setCurrentUser"
                     :padding-left="'30px'"
+                    :enable-contact-context-menu="true"
                 />
                 <virtual-list
                     v-else-if="sharedContactState.expandFriendList"
                     :data-component="contactItemView" :data-sources="groupedContacts" :data-key="'uid'"
                     :estimate-size="30"
                     style="max-height: 600px; overflow-y: auto"/>
+                <vue-context ref="menu" v-slot="{data:userInfo}" v-on:close="onContactContextMenuClose">
+                    <li>
+                        <a @click.prevent="sendMessage(userInfo)">{{
+                                $t('message.send_message')
+                            }}</a>
+                    </li>
+                    <li>
+                        <a @click.prevent="sendUserCard(userInfo)">{{
+                                $t('misc.share_to_friend')
+                            }}</a>
+                    </li>
+                </vue-context>
             </li>
         </ul>
     </section>
@@ -73,6 +86,12 @@ import UserListVue from "@/ui/main/user/UserListVue";
 import ChannelListView from "./ChannelListView";
 import ContactItemView from "./ContactItemView";
 import OrganizationListView from "./OrganizationListView.vue";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationType from "../../../wfc/model/conversationType";
+import ForwardType from "../conversation/message/forward/ForwardType";
+import CardMessageContent from "../../../wfc/messages/cardMessageContent";
+import wfc from "../../../wfc/client/wfc";
+import Message from "../../../wfc/messages/message";
 
 export default {
     name: "ContactListView",
@@ -89,6 +108,14 @@ export default {
             contactItemView: ContactItemView,
             rootOrganizations: [],
         }
+    },
+    created() {
+        this.$eventBus.$on('showContactContextMenu', (event, userInfo) => {
+            this.showContactContextMenu(event, userInfo);
+        });
+    },
+    destroyed() {
+        this.$eventBus.$off('showContactContextMenu');
     },
     methods: {
         setCurrentUser(userInfo) {
@@ -109,6 +136,33 @@ export default {
 
         showOrganization() {
             store.toggleOrganizationList();
+        },
+        sendMessage(userInfo) {
+            let conversation = new Conversation(ConversationType.Single, userInfo.uid, 0);
+            store.setCurrentConversation(conversation);
+            this.$router.replace('/home');
+        },
+        sendUserCard(userInfo) {
+            let userCardMessageContent = new CardMessageContent(0, userInfo.uid, userInfo.displayName, userInfo.portrait, wfc.getUserId());
+            userCardMessageContent.name = userInfo.name;
+            let message = new Message(null, userCardMessageContent);
+
+            return this.$forwardMessage({
+                forwardType: ForwardType.NORMAL,
+                messages: [message],
+            });
+        },
+
+        showContactContextMenu(event, userInfo) {
+            if (!this.$refs.menu) {
+                return;
+            }
+            console.log('showContactContextMenu')
+            this.sharedContactState.contextMenuUserInfo = userInfo;
+            this.$refs.menu.open(event, userInfo)
+        },
+        onContactContextMenuClose() {
+            this.sharedContactState.contextMenuUserInfo = null;
         }
     },
     computed: {

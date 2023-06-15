@@ -5,8 +5,10 @@
     <div v-else class="contact-item"
          v-bind:class="{active: (sharedContactState.currentFriend
                         && source._category === sharedContactState.currentFriend._category
-                        && source.uid === sharedContactState.currentFriend.uid) || (sharedContactState.currentUser && sharedContactState.currentUser.uid === source.uid)}"
-         @click.stop="clickUserItem()">
+                        && source.uid === sharedContactState.currentFriend.uid) || (sharedContactState.currentUser && sharedContactState.currentUser.uid === source.uid),
+         highlight:sharedContactState.contextMenuUserInfo&& sharedContactState.contextMenuUserInfo.uid === source.uid}"
+         @click="clickUserItem()"
+         @contextmenu.prevent="showContactContextMenu">
         <img class="avatar" :src="source.portrait" alt="" @error="imgUrlAlt">
         <div style="padding-left: 10px">
             <p class="single-line"> {{ source._displayName }}</p>
@@ -40,6 +42,9 @@ export default {
 
         imgUrlAlt(e) {
             e.target.src = Config.DEFAULT_PORTRAIT_URL;
+        },
+        showContactContextMenu(event) {
+            this.$eventBus.$emit('showContactContextMenu', event, this.source);
         }
     }
 }
@@ -55,12 +60,14 @@ export default {
 .label p {
     padding: 5px 5px 5px 0;
     border-bottom: 1px solid #e0e0e0;
+    font-size: 13px;
 }
 
 .contact-item {
     padding: 5px 5px 5px 30px;
     display: flex;
     width: 100%;
+    font-size: 13px;
     align-items: center;
 }
 
@@ -74,6 +81,11 @@ export default {
 
 .contact-item:active {
     background-color: #d6d6d6;
+}
+
+.contact-item.highlight {
+    box-shadow: 0 0 0 1px #4168e0 inset;
+    z-index: 100;
 }
 
 .user-online-status {

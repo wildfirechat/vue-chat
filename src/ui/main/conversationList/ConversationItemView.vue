@@ -261,7 +261,7 @@ export default {
 }
 
 .conversation-item-container.highlight {
-    box-shadow: 0 0 0 2px #4168e0 inset;
+    box-shadow: 0 0 0 1px #4168e0 inset;
     z-index: 100;
 }
 
