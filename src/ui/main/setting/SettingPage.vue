@@ -49,7 +49,13 @@
         </div>
         <footer>
             <p class="proto-version-info">{{ protoRevision() }}</p>
-            <a class="button" target="_blank" @click="webrtcTest">
+            <a
+                class="button"
+                href="https://github.com/wildfirechat/vue-chat/issues"
+                target="_blank">
+                问题反馈
+            </a>
+            <a v-if="!sharedMiscState.isElectron" class="button" target="_blank" @click="webrtcTest">
                 音视频能力测试
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
             </a>
