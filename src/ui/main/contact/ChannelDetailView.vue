@@ -51,6 +51,7 @@ export default {
     border-radius: 5px;
     font-size: 14px;
     border: 1px solid transparent;
+    margin-bottom: 150px;
 }
 
 .channel-info-container a:active {

@@ -2,9 +2,12 @@
     <section class="group-info-container">
         <div class="group-info">
             <img :src="sharedContactState.currentGroup.portrait">
-            <p>{{ $t('group.name', [sharedContactState.currentGroup.name]) }}</p>
+            <p>{{ sharedContactState.currentGroup.name }}</p>
         </div>
         <a @click="chat">{{ $t('group.chat') }}</a>
+        <div class="action-container">
+            <p @click="unfavGroup">从通讯录中删除</p>
+        </div>
     </section>
 </template>
 
@@ -12,6 +15,7 @@
 import store from "@/store";
 import Conversation from "@/wfc/model/conversation";
 import ConversationType from "@/wfc/model/conversationType";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "GroupDetailView",
@@ -26,6 +30,15 @@ export default {
             let conversation = new Conversation(ConversationType.Group, this.sharedContactState.currentGroup.target, 0);
             store.setCurrentConversation(conversation);
             this.$router.replace('/home');
+        },
+
+        unfavGroup() {
+            wfc.setFavGroup(this.sharedContactState.currentGroup.target, false, () => {
+                this.sharedContactState.currentGroup = null;
+                store.reloadFavGroupList();
+            }, err => {
+                console.error('setFavGroup error', err);
+            });
         }
     }
 
@@ -42,6 +55,7 @@ export default {
     align-items: center;
     border-top-right-radius: var(--main-border-radius);
     border-bottom-right-radius: var(--main-border-radius);
+    position: relative;
 }
 
 .group-info-container a {
@@ -51,6 +65,7 @@ export default {
     border-radius: 5px;
     font-size: 14px;
     border: 1px solid transparent;
+    margin-bottom: 150px;
 }
 
 .group-info-container a:active {
@@ -74,6 +89,18 @@ export default {
     margin-top: 20px;
     font-size: 20px;
     margin-bottom: 100px;
+}
+
+.action-container {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    color: #3f64e4;
+    font-size: 13px;
 }
 
 </style>

@@ -1,12 +1,13 @@
 <template>
     <section class="user-detail-container">
+        <div class="user-header-content-container">
         <div class="header">
             <div>
+                    <img class="avatar" :src="sharedStateContact.currentFriend.portrait">
+                </div>
+                <div class="name">
                 <h2>{{ name }}</h2>
                 <p>你好，野火</p>
-            </div>
-            <div>
-                <img class="avatar" :src="sharedStateContact.currentFriend.portrait">
             </div>
         </div>
         <div class="content">
@@ -32,7 +33,19 @@
             </ul>
         </div>
         <div class="footer">
-            <a @click="this.chat">{{ $t('message.send_message') }}</a>
+                <div class="action" @click="chat">
+                    <i class="icon-ion-ios-chatboxes-outline"></i>
+                    <a>{{ $t('message.send_message') }}</a>
+                </div>
+                <div class="action" @click="startAudioCall">
+                    <i class="icon-ion-ios-telephone-outline"></i>
+                    <a>语音通话</a>
+                </div>
+                <div class="action" @click="startVideoCall">
+                    <i class="icon-ion-ios-videocam-outline"></i>
+                    <a>视频通话</a>
+                </div>
+            </div>
         </div>
     </section>
 </template>
@@ -73,6 +86,15 @@ export default {
                     })
         }
     },
+        startAudioCall() {
+            let conversation = new Conversation(ConversationType.Single, this.user.uid, 0);
+            this.$startVoipCall({audioOnly: true, conversation: conversation});
+        },
+
+        startVideoCall() {
+            let conversation = new Conversation(ConversationType.Single, this.user.uid, 0);
+            this.$startVoipCall({audioOnly: false, conversation: conversation});
+        },
     },
     computed: {
         name: function () {
@@ -96,42 +118,60 @@ export default {
 <style lang="css" scoped>
 
 .user-detail-container {
-    margin-left: 90px;
-    margin-right: 90px;
     border-top-right-radius: var(--main-border-radius);
     border-bottom-right-radius: var(--main-border-radius);
+    display: flex;
+    justify-content: center;
+}
+
+.user-header-content-container {
+    width: 400px;
 }
 
 .header {
     margin-top: 60px;
+    height: 75px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding-bottom: 15px;
     border-bottom: 1px solid #e6e6e6;
 }
 
 .header .avatar {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 5px;
+    margin-right: 20px;
 }
 
-.header h2 {
-    font-size: 20px;
+.header .name {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.header .name h2 {
+    font-size: 15px;
     font-style: normal;
     font-weight: normal;
     margin-bottom: 5px;
 }
 
+.header .name p {
+    font-size: 13px;
+    color: #7f7f7f;
+}
+
 .content {
     width: 100%;
     text-align: left;
+    border-bottom: 1px solid #e6e6e6;
 }
 
 .content ul {
     list-style: none;
-    margin: 20px 0;
+    margin: 20px 0 10px 0;
 }
 
 .content ul li {
@@ -139,13 +179,19 @@ export default {
     height: 40px;
     line-height: 40px;
     display: flex;
+    font-size: 12px;
 }
 
 .content ul li label {
     margin-right: 20px;
-    width: 50px;
+    width: 40px;
     text-align: justify;
     text-align-last: justify;
+    color: #7f7f7f;
+}
+
+.content ul li p {
+    font-size: 12px;
 }
 
 .content ul li .alias > input {
@@ -154,6 +200,8 @@ export default {
     border-radius: 3px;
     outline: none;
     padding: 5px;
+    color: #bfbfbf;
+    font-size: 13px;
 }
 .content ul li .alias > input:active {
     border: 1px solid #4168e0;
@@ -171,19 +219,25 @@ export default {
 .footer {
     display: flex;
     justify-content: center;
+    padding-top: 30px;
 }
 
-.footer a {
-    margin-top: 30px;
-    color: white;
-    padding: 10px 40px;
-    background-color: #3861e0;
-    border-radius: 5px;
-    border: 1px solid transparent;
+.footer .action {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    color: #5d7ce8;
 }
 
-.footer a:active {
-    background-color: #4168e0;
+.footer .action a {
+    font-size: 10px;
+    padding-top: 1px;
+}
+
+.footer .action i {
+    font-size: 20px;
 }
 
 </style>
