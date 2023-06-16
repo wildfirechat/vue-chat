@@ -5,7 +5,7 @@
                 <VEmojiPicker
                     id="emoji"
                     ref="emojiPicker"
-                    v-show="showEmojiDialog"
+                    v-if="showEmojiDialog"
                     labelSearch="Search"
                     lang="pt-BR"
                     v-click-outside="hideEmojiView"
@@ -115,7 +115,6 @@ import Draft from "@/ui/util/draft";
 import Mention from "../../../wfc/model/mention";
 import {parser as emojiParse} from '@/ui/util/emoji';
 import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
-import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import {fileFromDataUri} from "@/ui/util/imageUtil";
 import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
 import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
@@ -394,8 +393,10 @@ export default {
 
             //  自行部署表情时，需要手动替换下面的正则
             // TODO 在正则中使用变量，避免手动替换
+            let p = `" src="${Config.emojiBaseUrl()}72x72\\/[0-9a-z-]+\\.png">`
+            let re = new RegExp(p, 'g');
             message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
-                .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
+                .replace(re, '')
 
             if (message && message.trim()) {
                 let textMessageContent = this.handleMention(message);
@@ -564,6 +565,7 @@ export default {
         },
 
         initEmojiPicker() {
+            window.__twemoji_base_url__ = Config.emojiBaseUrl();
             let config = emojiConfig();
             if (this.conversationInfo.conversation.type === ConversationType.SecretChat) {
                 this.emojiCategories = config.emojiCategories.filter(c => !c.name.startsWith('Sticker'));
@@ -693,6 +695,8 @@ export default {
                 return;
             }
             let draftText = this.$refs['input'].innerHTML.trim();
+            let p = `" src="${Config.emojiBaseUrl()}72x72\\/[0-9a-z-]+\\.png">`
+            let re = new RegExp(p, 'g');
             draftText = draftText
                 .replace(/<br>/g, '\n')
                 .replace(/<div>/g, '\n')
@@ -700,7 +704,7 @@ export default {
                 .replace(/<div><\/div>/g, ' ')
                 .replace(/&nbsp;/g, ' ')
                 .replace(/<img class="emoji" draggable="false" alt="/g, '')
-                .replace(/" src="https:\/\/static\.wildfirechat\.net\/twemoji\/assets\/72x72\/[0-9a-z-]+\.png">/g, '')
+                .replace(re, '')
                 .replace(/<img src="local-resource:.*">/g, '')
                 .trimStart()
                 .replace(/\s+$/g, ' ');

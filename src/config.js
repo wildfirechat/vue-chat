@@ -1,4 +1,5 @@
 import {isElectron} from './platform'
+import wfc from "./wfc/client/wfc";
 
 export default class Config {
     // 调试用
@@ -154,8 +155,54 @@ export default class Config {
             return url;
         }
         // 示例代码
-        // url = url.replace('oss.xxxx.com', '192.168.2.19');
+        // 双网环境时，将媒体文件地址切到备选网络
+        // if (Config.isUseBackupAddress()) {
+        //     url = url.replace('oss.xxxx.com', '192.168.2.19');
+        // }
         return url;
+    }
+
+    /**
+     * 双网环境时，判断是否是备选网络
+     * @return {boolean}
+     */
+    static isUseBackupAddress() {
+        //示例代码
+        let host = wfc.getHost();
+        if (host === '192.168.2.169'/* backupHost */) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 表情 base 路径
+     * @return {string}
+     */
+    static emojiBaseUrl() {
+        // 表情的 baseUrl，一定要求以 / 结尾
+        let emojiBaseUrl = 'https://static.wildfirechat.net/twemoji/assets/';
+        // 实例代码
+        // 双网环境时，将表情地址切换到备选网络
+        // if (Config.isUseBackupAddress()) {
+        //     emojiBaseUrl = 'https://192.168.2.169/twemoji/assets/';
+        // }
+        return emojiBaseUrl;
+    }
+
+    /**
+     * 动态表情 base 路径
+     * @return {string}
+     */
+    static stickerBaseUrl() {
+        // 动态表情的 baseUrl，一定要求以 / 结尾
+        let stickerBaseUrl = 'https://static.wildfirechat.net/sticker/';
+        // 实例代码
+        // 双网环境时，将动态表情地址切换到备选网络
+        // if (Config.isUseBackupAddress()) {
+        //     stickerBaseUrl = 'https://192.168.2.169/sticker/';
+        // }
+        return stickerBaseUrl;
     }
 
     static validate() {
