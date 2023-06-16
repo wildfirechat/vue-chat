@@ -31,7 +31,8 @@
                                  v-bind:class="{active: (sharedContactState.currentFriend
                         && user._category === sharedContactState.currentFriend._category
                         && user.uid === sharedContactState.currentFriend.uid) || (currentUser && currentUser.uid === user.uid)}"
-                                 @click.stop="clickUserItem(user)">
+                                 @click.stop="clickUserItem(user)"
+                                 @contextmenu.prevent="showContactContextMenu($event, user)">
                                 <img class="avatar" :src="user.portrait" alt="" @error="imgUrlAlt">
                                 <div style="padding-left: 10px">
                                     <p class="single-line"> {{ user._displayName }}</p>
@@ -81,6 +82,11 @@ export default {
             type: String,
             required: false,
             default: '5px'
+        },
+        enableContactContextMenu: {
+            type: Boolean,
+            required: false,
+            default: false,
         }
     },
     data() {
@@ -110,11 +116,15 @@ export default {
         closeUserCard(user) {
             this.$refs["userCardTippy-" + user.uid][0]._tippy.hide();
         },
-        imgUrlAlt(e){
+        imgUrlAlt(e) {
             e.target.src = Config.DEFAULT_PORTRAIT_URL;
+        },
+        showContactContextMenu(event, user) {
+            if (this.enableContactContextMenu) {
+                this.$eventBus.$emit('showContactContextMenu', event, user);
+            }
+
         }
-
-
     },
 
     mounted() {

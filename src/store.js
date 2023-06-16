@@ -135,6 +135,7 @@ let store = {
             favContactList: [],
 
             selfUserInfo: null,
+            contextMenuUserInfo: null,
             _reset() {
                 this.currentFriendRequest = null;
                 this.currentGroup = null;
@@ -157,6 +158,7 @@ let store = {
                 this.favContactList = [];
 
                 this.selfUserInfo = null;
+                this.contextMenuUserInfo = null;
             }
         },
 
