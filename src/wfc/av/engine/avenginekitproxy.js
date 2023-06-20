@@ -12,6 +12,8 @@ import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
+import CallEndReason from "./callEndReason";
+import CallByeMessageContent from "../messages/callByeMessageContent";
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -44,7 +46,8 @@ export class AvEngineKitProxy {
     /**
      * 音视频通话通话状态回调
      */
-    onVoipCallStatusCallback = (covnersation, ongonging) => {};
+    onVoipCallStatusCallback = (covnersation, ongonging) => {
+    };
 
     /**
      * 应用初始化的时候调用
@@ -741,6 +744,21 @@ export class AvEngineKitProxy {
     forceCloseVoipWindow() {
         if (this.callWin) {
             this.callWin.close();
+        }
+    }
+
+    // 仅 web 端，单人、多人通话有效
+    forceCloseVoipWindowAndHangup() {
+        if (this.callWin && !this.conference) {
+            let byeMessage = new CallByeMessageContent();
+            // 处理用户没有主动挂断，而是直接返回页面时，补偿一个挂断消息
+            // 现在还无法处理会议的情况，会议只能等待超时
+            byeMessage.callId = this.callId;
+            byeMessage.inviteMsgUid = this.inviteMessageUid;
+            byeMessage.reason = CallEndReason.REASON_Hangup;
+            wfc.sendConversationMessage(this.conversation, byeMessage);
+
+            this.onVoipWindowClose()
         }
     }
 }
