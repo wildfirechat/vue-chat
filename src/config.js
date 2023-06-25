@@ -223,11 +223,11 @@ export default class Config {
             console.warn('已启用WSS，请确认服务端已配置支持https，配置方法请参考这儿：https://docs.wildfirechat.cn/faq/web/https.html');
         }
         if (Config.USE_WSS && Config.ROUTE_PORT !== 443) {
-            console.warn(`配置使用WSS连接时，默认端口是${Config.ROUTE_PORT}，但目前配置是，请确认!!`);
+            console.warn(`配置使用WSS连接时，默认端口是443，但目前配置是${Config.ROUTE_PORT}，请确认!!`);
         }
 
         if (!Config.USE_WSS && Config.ROUTE_PORT !== 80) {
-            console.warn(`配置使用WS连接时，默认端口是${Config.ROUTE_PORT}，但目前配置是，请确认!!`);
+            console.warn(`配置使用WS连接时，默认端口是80，但目前配置是${Config.ROUTE_PORT}，请确认!!`);
         }
     }
 }
