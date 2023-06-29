@@ -324,24 +324,24 @@ async function genGroupPortrait(groupMemberUsers) {
     return await mergeImages(groupMemberPortraits);
 }
 
-// return data uri
+// return {data uri, width, height}
 function imageThumbnail(file) {
     return new Promise((resolve, reject) => {
         var img = new Image();
         img.setAttribute('crossOrigin', 'anonymous');
         img.onload = () => {
-            let resizedCanvas = resizeImage.resize2Canvas(img, 320, 240);
+            let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
             resizedCanvas.toBlob((blob) => {
                 var reader = new FileReader();
                 reader.readAsDataURL(blob);
                 reader.onloadend = () => {
                     let base64data = reader.result;
-                    resolve(base64data);
+                    resolve({thumbnail: base64data, width: img.naturalWidth, height: img.naturalHeight});
                 }
                 reader.onerror = () => {
                     resolve(null);
                 }
-            }, 'image/jpeg', 0.6);
+            }, 'image/jpeg', 0.4);
         };
         img.onerror = () => {
             resolve(null);
@@ -362,7 +362,7 @@ function imageThumbnail(file) {
     });
 }
 
-// return data uri
+// return {data uri, width, height}
 function videoThumbnail(file) {
     return new Promise(
         (resolve, reject) => {
@@ -378,19 +378,19 @@ function videoThumbnail(file) {
                 var img = document.createElement("img");
                 img.src = canvas.toDataURL();
                 img.onload = () => {
-                    let resizedCanvas = resizeImage.resize2Canvas(img, 320, 240);
+                    let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
                     resizedCanvas.toBlob((blob) => {
                         var reader = new FileReader();
                         reader.readAsDataURL(blob);
                         reader.onloadend = () => {
                             let base64data = reader.result;
-                            resolve(base64data);
+                            resolve({thumbnail: base64data, width: video.videoWidth, height: video.videoHeight});
                             video.src = null;
                         };
                         reader.onerror = () => {
                             resolve(null);
                         }
-                    }, 'image/jpeg', 0.6);
+                    }, 'image/jpeg', 0.4);
                 };
                 img.onerror = () => {
                     resolve(null);

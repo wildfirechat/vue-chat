@@ -218,7 +218,7 @@ export default {
                 text = await navigator.clipboard.readText();
             }
             console.log('handlePaste', e, source);
-            if (isElectron()) {
+            if (isElectron() && false) {
                 let args = ipcRenderer.sendSync(IpcEventType.FILE_PASTE);
                 if (args.hasImage) {
                     document.execCommand('insertText', false, ' ');
@@ -233,18 +233,21 @@ export default {
             } else {
                 const dT = e.clipboardData || window.clipboardData;
                 if (dT) {
-                    const file = dT.files[0];
-                    if (file) {
-                        if (file.type.indexOf('image') !== -1) {
-                            // image
-                            document.execCommand('insertImage', false, URL.createObjectURL(file));
-                        } else {
-                            // file
-                            store.sendFile(this.conversationInfo.conversation, file)
+                    let fileList = dT.files;
+                    if (fileList.length > 0) {
+                        for (let i = 0; i < fileList.length; i++) {
+                            let file = fileList.item(i);
+                            if (file.type.indexOf('image') !== -1) {
+                                // image
+                                document.execCommand('insertImage', false, URL.createObjectURL(file));
+                            } else {
+                                // file
+                                store.sendFile(this.conversationInfo.conversation, file)
+                            }
+                            console.log('handle paste file', file);
                         }
                         return;
                     }
-                    console.log('handle paste file', file);
                 } else {
                     const clipboardContents = await navigator.clipboard.read();
                     for (const item of clipboardContents) {
@@ -364,7 +367,7 @@ export default {
                     }
                     let src = img.src;
                     let file;
-                    if (isElectron()) {
+                    if (isElectron() && false) {
                         // 'local-resource://' + 绝对路径
                         file = decodeURI(src.substring(17, src.length));
                     } else {

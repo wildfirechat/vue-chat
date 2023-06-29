@@ -15,6 +15,7 @@ import ConversationMessageHistoryPage from "./ui/main/ConversationMessageHistory
 import ConversationFloatPage from "./ui/main/ConversationFloatPage";
 import ConferencePortalPage from "./ui/voip/conference/ConferencePortalPage";
 import MessagePage from "./ui/main/MessagePage.vue";
+import MultimediaPreviewPage from "./ui/main/MultimediaPreviewPage.vue";
 
 const routers = [
     {
@@ -91,6 +92,11 @@ const routers = [
         name: 'message',
         path: '/message',
         component: MessagePage,
+    },
+    {
+        name: 'mmpreview',
+        path: '/mmpreview',
+        component: MultimediaPreviewPage,
     },
     {
         name: 'message-history',

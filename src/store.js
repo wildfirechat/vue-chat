@@ -1096,30 +1096,30 @@ let store = {
         let messageContent;
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
-                let iThumbnail = '';
-                if (file.size > 15 * 1024) {
-                    iThumbnail = await imageThumbnail(file);
-                    iThumbnail = iThumbnail ? iThumbnail : Config.DEFAULT_THUMBNAIL_URL;
-                }
+                let {thumbnail: it, width: iw, height: ih} = await imageThumbnail(file);
+                it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
                 console.log('image file', file)
-                if (iThumbnail.length > 15 * 1024) {
-                    console.warn('generated thumbnail is too large, use default thumbnail', iThumbnail.length);
-                    iThumbnail = Config.DEFAULT_THUMBNAIL_URL;
+                if (it.length > 15 * 1024) {
+                    console.warn('generated thumbnail is too large, use default thumbnail', it.length);
+                    it = Config.DEFAULT_THUMBNAIL_URL;
                 }
-                messageContent = new ImageMessageContent(fileOrLocalPath, remotePath, iThumbnail.split(',')[1]);
+                messageContent = new ImageMessageContent(fileOrLocalPath, remotePath, it.split(',')[1]);
+                messageContent.imageWidth = iw;
+                messageContent.imageHeight = ih;
                 break;
             case MessageContentMediaType.Video:
-                let vThumbnail = await videoThumbnail(file);
+                let {thumbnail: vt, width: vw, height: vh} = await videoThumbnail(file);
                 let duration = await videoDuration(file)
                 duration = Math.ceil(duration * 1000);
-                if (vThumbnail === null) {
+                if (vt === null) {
                     return false;
                 }
-                if (vThumbnail.length > 15 * 1024) {
-                    console.warn('generated thumbnail is too large, use default thumbnail', vThumbnail.length);
-                    vThumbnail = Config.DEFAULT_THUMBNAIL_URL;
+                if (vt.length > 15 * 1024) {
+                    console.warn('generated thumbnail is too large, use default thumbnail', vt.length);
+                    vt = Config.DEFAULT_THUMBNAIL_URL;
                 }
-                messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, vThumbnail.split(',')[1]);
+                messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, vt.split(',')[1]);
+                // TODO width and height
                 break;
             case MessageContentMediaType.File:
                 messageContent = new FileMessageContent(fileOrLocalPath, remotePath);

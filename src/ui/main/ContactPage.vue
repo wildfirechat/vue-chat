@@ -18,6 +18,8 @@
             class="contact-detail-container"/>
         <FriendRequestDetailView
             v-else-if="sharedContactState.currentFriendRequest"
+            :user="sharedContactState.currentFriendRequest._target"
+            :friend-request="sharedContactState.currentFriendRequest"
             class="contact-detail-container"/>
         <div v-else class="contact-empty-container">
             <h1>^~^</h1>

@@ -8,6 +8,7 @@ const IpcEventType = {
     CLICK_NOTIFICATION: 'click-notification',
     UPDATE_BADGE: 'update-badge',
     SHOW_FILE_WINDOW: 'show-file-window',
+    SHOW_MULTIMEDIA_PREVIEW_WINDOW: 'show-multimedia-preview-window',
     LOGINED: 'logined',
     LOGOUT: 'logouted',
     FILE_PASTE: 'file-paste',

@@ -9,6 +9,7 @@ import {compare} from "../../wfc/util/longUtil";
 import MessagePayload from "../messages/messagePayload";
 import {isElectron} from "../../platform";
 import ArticlesMessageContent from "./articlesMessageContent";
+import MessageContentMediaType from "./messageContentMediaType";
 
 export default class CompositeMessageContent extends MediaMessageContent {
     title = '';
@@ -17,7 +18,7 @@ export default class CompositeMessageContent extends MediaMessageContent {
     loaded = false;
 
     constructor() {
-        super(MessageContentType.Composite_Message, '', '')
+        super(MessageContentType.Composite_Message, MessageContentMediaType.General, '')
     }
 
     setMessages(msgs) {

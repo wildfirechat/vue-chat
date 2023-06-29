@@ -221,6 +221,7 @@ import appServerApi from "../../../api/appServerApi";
 import Config from "../../../config";
 import IPCEventType from "../../../ipcEventType";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
+import {imageThumbnail} from "../../util/imageUtil";
 
 var amr;
 export default {
@@ -282,7 +283,7 @@ export default {
     },
 
     methods: {
-        dragEvent(e, v) {
+        async dragEvent(e, v) {
             if (v === 'dragenter') {
                 this.dragAndDropEnterCount++;
             } else if (v === 'dragleave') {
@@ -328,7 +329,14 @@ export default {
                     // 根据后缀判断类型
                     if (dragUrl.endsWith('.png') || dragUrl.endsWith('.jpg') || dragUrl.endsWith('jpeg')) {
                         //constructor(fileOrLocalPath, remotePath, thumbnail) {
-                        let content = new ImageMessageContent(null, dragUrl, Config.DEFAULT_THUMBNAIL_URL.split(',')[1]);
+                        let {thumbnail: it, width: iw, height: ih} = await imageThumbnail(dragUrl);
+                        it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
+                        if (it.length > 15 * 1024) {
+                            it = Config.DEFAULT_THUMBNAIL_URL;
+                        }
+                        let content = new ImageMessageContent(null, dragUrl, it.split(',')[1]);
+                        content.imageWidth = iw;
+                        content.imageHeight = ih;
                         wfc.sendConversationMessage(this.conversationInfo.conversation, content);
                     } else {
                         // TODO

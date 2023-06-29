@@ -82,7 +82,7 @@
                         <!--                    演讲者布局-->
                         <section v-else class="content-container focus video">
                             <div :style="{width: hideFocusLayoutParticipantListVideoView ? '100%' : 'calc(100% - 200px)', height: '100%', position: 'relative'}">
-                                <video v-if="computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && (!computedFocusVideoParticipant._isVideoMuted || computedFocusVideoParticipant._isScreenSharing) && computedFocusVideoParticipant._stream"
+                                <video v-if=" computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && (!computedFocusVideoParticipant._isVideoMuted || computedFocusVideoParticipant._isScreenSharing) && computedFocusVideoParticipant._stream"
                                        v-bind:style="{objectFit:computedFocusVideoParticipant._isScreenSharing ? 'contain' : 'fit'}"
                                        style="width: 100%; height: 100%"
                                        :srcObject.prop="computedFocusVideoParticipant._screenShareStream ? computedFocusVideoParticipant._screenShareStream : computedFocusVideoParticipant._stream"
@@ -243,6 +243,7 @@ import conferenceManager from "./conferenceManager";
 import ConferenceManageView from "./ConferenceManageView";
 import wfc from "../../../wfc/client/wfc";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
+import UserInfo from "../../../wfc/model/userInfo";
 
 export default {
     name: 'Conference',
@@ -332,7 +333,6 @@ export default {
                 }, 100);
             }
         },
-
         setupSessionCallback() {
             let sessionCallback = new CallSessionCallback();
 
@@ -417,19 +417,23 @@ export default {
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream, screenSharing) => {
                 let p;
                 console.log('didReceiveRemoteVideoTrack', userId, stream, screenSharing);
+                let index = -1;
                 for (let i = 0; i < this.participantUserInfos.length; i++) {
                     p = this.participantUserInfos[i];
                     if (p.uid === userId && p._isScreenSharing === screenSharing) {
+                        index = i;
                         p._stream = stream;
                         p._stream.timestamp = new Date().getTime();
                         break;
                     }
                 }
+                // if (index > -1) {
+                //     this.$set(this.participantUserInfos, index, p);
+                // }
                 this.autoPlay();
             };
 
             sessionCallback.didRemoveRemoteVideoTrack = (userId) => {
-
                 console.log('didRemoveRemoteVideoTrack', userId)
             };
 
@@ -444,7 +448,9 @@ export default {
                 userInfo._isAudioMuted = subscriber.audioMuted;
                 userInfo._volume = 0;
                 userInfo._isScreenSharing = screenSharing;
-                this.participantUserInfos.push(userInfo);
+                // 动态添加的属性不是 reactive 的，故直接创建个新的对象
+                // 其实这个问题很奇怪，只有发起会议，第一次进入该会议的时候，其他端加入，参与者列表会不刷新；重新进入等，都一切正常
+                this.participantUserInfos.push(Object.assign(new UserInfo(), userInfo));
                 console.log('joined', userInfo, subscriber.audience, this.participantUserInfos.length);
             }
 
@@ -454,6 +460,7 @@ export default {
                 this.participantUserInfos = this.participantUserInfos.filter(p => {
                     return !(p.uid === userId && p._isScreenSharing === screenSharing);
                 });
+                //fixme 上面可能会没有触发重新计算 focusVideoParticipant
                 console.log('didParticipantLeft d', userId, endReason, screenSharing, this.participantUserInfos.length)
             }
 
@@ -1086,6 +1093,7 @@ export default {
         // TODO 可以缓存到 conferenceManager 里面
         computedFocusVideoParticipant() {
             if (this.currentLayout === 0) {
+                console.log('computedSpeakingParticipant null')
                 return null;
             }
             let sp;

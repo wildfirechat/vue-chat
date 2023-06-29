@@ -24,7 +24,7 @@
             <i v-if="participant._isHost" class="icon-ion-person"></i>
             <i v-if="participant._isAudioMuted" class="icon-ion-ios-mic-off" style="color: white"></i>
             <i v-else class="icon-ion-ios-mic"></i>
-            <div>{{ userName(participant) }}</div>
+            <div>{{ userName }}</div>
         </div>
     </div>
 
@@ -76,20 +76,6 @@ export default {
     //     }
     // },
     methods: {
-        userName(user) {
-            let name = '';
-            if (user.groupAlias) {
-                name = user.groupAlias;
-            } else if (user.friendAlias) {
-                name = user.friendAlias;
-            } else if (user.displayName) {
-                name = user.displayName;
-            } else {
-                name = user.name;
-            }
-            return name;
-        },
-
         onDbClickVideo() {
             if (conferenceManager.isOwner()) {
                 conferenceManager.requestFocus(this.participant.uid);
@@ -145,6 +131,22 @@ export default {
             })
         },
     },
+    computed: {
+        userName() {
+            let name = '';
+            let user = this.participant;
+            if (user.groupAlias) {
+                name = user.groupAlias;
+            } else if (user.friendAlias) {
+                name = user.friendAlias;
+            } else if (user.displayName) {
+                name = user.displayName;
+            } else {
+                name = user.name;
+            }
+            return name;
+        }
+    }
 }
 </script>
 
