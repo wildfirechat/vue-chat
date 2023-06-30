@@ -130,7 +130,7 @@ import Config from "../../../config";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
-import {currentWindow} from "../../../platform";
+import {currentWindow, fs} from "../../../platform";
 
 // vue 不允许在computed里面有副作用
 // 和store.state.conversation.quotedMessage 保持同步
@@ -242,6 +242,26 @@ export default {
                                 document.execCommand('insertImage', false, URL.createObjectURL(file));
                             } else {
                                 // file
+                                if (isElectron()) {
+                                    if (fs.lstatSync(file.path).isDirectory()) {
+                                        this.$notify({
+                                            // title: '不支持',
+                                            text: this.$t('conversation.not_support_send_folder'),
+                                            type: 'warn'
+                                        });
+                                        break;
+                                    }
+                                } else {
+                                    // TODO 浏览器端，不能判断是否是文件夹
+                                    if (file.size < 1024 && file.type === '') {
+                                        this.$notify({
+                                            // title: '不支持',
+                                            text: this.$t('conversation.not_support_send_folder'),
+                                            type: 'warn'
+                                        });
+                                        break;
+                                    }
+                                }
                                 store.sendFile(this.conversationInfo.conversation, file)
                             }
                             console.log('handle paste file', file);

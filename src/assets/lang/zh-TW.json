@@ -62,6 +62,7 @@
     "all_message_load": "已加載全部消息 :(",
     "drag_to_send_limit_tip": "一次最多發送5個文件",
     "not_support_send_folder": "不支持發送文件夾",
+    "not_support_send_such_file": "不支持發送該類型文件",
     "group_name": "群名",
     "group_announcement": "群公告",
     "add_member": "添加成員",

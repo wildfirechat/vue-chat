@@ -68,6 +68,7 @@
         "all_message_load": "已加载全部消息 :(",
         "drag_to_send_limit_tip": "一次最多发送5个文件",
         "not_support_send_folder": "不支持发送文件夹",
+        "not_support_send_such_file": "不支持发送该类型文件",
         "group_name": "群名",
         "group_announcement": "群公告",
         "channel_name": "频道名称",
