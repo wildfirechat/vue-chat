@@ -237,6 +237,7 @@ export default {
                     if (fileList.length > 0) {
                         for (let i = 0; i < fileList.length; i++) {
                             let file = fileList.item(i);
+                            console.log('handle paste file', file);
                             if (file.type.indexOf('image') !== -1) {
                                 // image
                                 document.execCommand('insertImage', false, URL.createObjectURL(file));
@@ -256,7 +257,7 @@ export default {
                                     if (file.size < 1024 && file.type === '') {
                                         this.$notify({
                                             // title: '不支持',
-                                            text: this.$t('conversation.not_support_send_folder'),
+                                            text: this.$t('conversation.not_support_send_such_file'),
                                             type: 'warn'
                                         });
                                         break;
@@ -264,7 +265,6 @@ export default {
                                 }
                                 store.sendFile(this.conversationInfo.conversation, file)
                             }
-                            console.log('handle paste file', file);
                         }
                         return;
                     }
