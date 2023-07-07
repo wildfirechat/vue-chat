@@ -21,5 +21,9 @@ PC端音视频通话功能，分为两个版本：普通版和高级版，两个
 
 1. 项目默认使用普通版音视频SDK，即```engine-multi.min.js```
 2. 根据具体情况，用```engine-conference.min.js(高级版)``` 或 ```engine-multi.min.js(普通版)``` 替换 ```engine.min.js```
-    > 其实就是将`engine.min.js`的文件内容替换为`engine-conference.min.js`或`engine-multi.min.js`的文件内容
+
+ 	1. 高级版复制`engine-conference.min.js`内容替换`engine.min.js`中的内容
+    2. 普通版默认不做操作（如需从高级版切换成普通版，复制`engine-multi.min.js`内容替换`engine.min.js`中的内容）
+    
+   > 其实就是将`engine.min.js`的文件内容替换为`engine-conference.min.js`或`engine-multi.min.js`的文件内容
 3. PC端普通版音视频功能库能和移动端的单人音视频功能库互通
