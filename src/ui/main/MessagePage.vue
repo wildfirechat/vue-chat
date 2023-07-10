@@ -1,6 +1,6 @@
 <template>
-    <section class="composite-page">
-        <div v-if="!sharedMiscState.isElectron" class="close-button-container" @click="hideCompositeMessagePage">
+    <section class="message-page">
+        <div v-if="!sharedMiscState.isElectron" class="close-button-container" @click="hideMessagePage">
             <i class="icon-ion-close"></i>
         </div>
         <div v-if="!previewMessage">
@@ -27,14 +27,12 @@
                             <!--                            <AudioMessageContentView :message="message"-->
                             <!--                                                     v-else-if="message.messageContent.type === 2"/>-->
                             <ImageMessageContentView :message="message"
-                                                     :is-in-composite-view="true"
                                                      v-else-if="message.messageContent.type === 3"/>
                             <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
                             <FileMessageContentView :message="message"
                                                     v-else-if="message.messageContent.type === 5"
                                                     v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
                             <VideoMessageContentView :message="message"
-                                                     :is-in-composite-view="true"
                                                      v-else-if="message.messageContent.type === 6"/>
                             <!--                           v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>-->
                             <StickerMessageContentView :message="message"
@@ -113,9 +111,12 @@ export default {
     },
 
     methods: {
-        hideCompositeMessagePage() {
-            this.$modal.hide('show-composite-message-modal' + '-' + stringValue(this.message.messageUid))
+        hideMessagePage() {
+            this.$modal.hide('show-message-message-modal' + '-' + stringValue(this.message.messageUid))
         },
+        previewCompositeMessage(focusMessageUid){
+            store.previewCompositeMessage(this.message, focusMessageUid)
+        }
     },
 
     components: {
@@ -136,7 +137,7 @@ export default {
 
 <style scoped>
 
-.composite-page {
+.message-page {
     width: var(--composite-message-page-width);
     height: var(--composite-message-page-height);
     background: #f7f7f7;
@@ -154,19 +155,19 @@ export default {
     background: lightgrey;
 }
 
-.composite-page ul {
+.message-page ul {
     width: 100%;
     height: 100%;
     padding: 20px 30px;
     list-style-position: inside;
 }
 
-.composite-page ul li {
+.message-page ul li {
     position: relative;
     padding: 10px 0;
 }
 
-.composite-page ul li:not(:last-child)::after {
+.message-page ul li:not(:last-child)::after {
     content: "";
     width: calc(100% - 55px);
     position: absolute;

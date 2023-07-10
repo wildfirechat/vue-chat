@@ -12,7 +12,9 @@
 import Message from "@/wfc/messages/message";
 import store from "@/store";
 import IpcEventType from "../../../../../ipcEventType";
-import {ipcRenderer, isElectron} from "../../../../../platform";
+import {ipcRenderer, isElectron, screen} from "../../../../../platform";
+import {previewMM} from "../../../../../platformHelper";
+import {scaleDown} from "../../../../util/imageUtil";
 
 export default {
     name: "ImageMessageContentView",
@@ -36,7 +38,7 @@ export default {
         let iw = this.message.messageContent.imageWidth;
         let ih = this.message.messageContent.imageHeight;
         if (iw && ih) {
-            let size = this.scaleDown(iw, ih, 300, 300);
+            let size = scaleDown(iw, ih, 300, 300);
             if (size) {
                 this.$refs.img.style.height = size.height + 'px';
                 this.$refs.img.style.width = size.width + 'px';
@@ -46,42 +48,12 @@ export default {
         }
     },
     methods: {
-        scaleDown(width, height, maxWidth, maxHeight) {
-            const widthRatio = maxWidth / width;
-            const heightRatio = maxHeight / height;
-
-            // 计算比例最小的缩放倍数
-            const scale = Math.min(widthRatio, heightRatio);
-
-            // 缩放后的宽度和高度
-            const scaledWidth = width * scale;
-            const scaledHeight = height * scale;
-
-            return {width: Math.ceil(scaledWidth), height: Math.ceil(scaledHeight)};
-        },
         preview(message) {
             if (this.isInCompositeView) {
                 this.$parent.previewCompositeMessage(message.messageUid);
             } else {
                 console.log('preview', message);
-                if (isElectron()) {
-                    let hash = window.location.hash;
-                    let url = window.location.origin;
-                    if (hash) {
-                        url = window.location.href.replace(hash, '#/mmpreview');
-                    } else {
-                        url += "/mmpreview"
-                    }
-
-                    url += `?messageUid=${stringValue(message.messageUid)}`
-                    ipcRenderer.send(IpcEventType.SHOW_MULTIMEDIA_PREVIEW_WINDOW, {
-                        url: url,
-                        messageUid: message.messageUid,
-                    });
-                    console.log('show-multimedia-preview-window', url)
-                } else {
-                    store.previewMessage(message, true);
-                }
+                previewMM(message)
             }
         },
         onImageLoaded() {

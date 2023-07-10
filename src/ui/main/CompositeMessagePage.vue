@@ -141,6 +141,9 @@ export default {
                 })
             }
 
+        },
+        previewCompositeMessage(focusMessageUid){
+            store.previewCompositeMessage(this.compositeMessage, focusMessageUid)
         }
     },
 

@@ -98,6 +98,7 @@ import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControl
 import IpcEventType from "../../ipcEventType";
 import appServerApi from "../../api/appServerApi";
 import organizationServerApi from "../../api/organizationServerApi";
+import WfcScheme from "../../wfcScheme";
 
 export default {
     name: 'App',
@@ -237,7 +238,7 @@ export default {
                     let session = Object.assign(new PCSession(), response);
                     this.appToken = session.token;
                     if (!userId || session.status === 0/*服务端pc login session不存在*/) {
-                        this.qrCode = jrQRCode.getQrBase64(Config.QR_CODE_PREFIX_PC_SESSION + session.token);
+                        this.qrCode = jrQRCode.getQrBase64(WfcScheme.QR_CODE_PREFIX_PC_SESSION + session.token);
                         this.refreshQrCode();
                     }
                     this.login();

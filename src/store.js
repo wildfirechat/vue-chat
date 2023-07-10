@@ -136,6 +136,7 @@ let store = {
 
             selfUserInfo: null,
             contextMenuUserInfo: null,
+
             _reset() {
                 this.currentFriendRequest = null;
                 this.currentGroup = null;
@@ -234,8 +235,9 @@ let store = {
         },
     },
 
-    init(isMainWindow) {
+    init(isMainWindow, subWindowLoadDataOptions) {
         console.log('init store')
+        miscState.connectionStatus = wfc.getConnectionStatus();
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             console.log('store ConnectionStatusChanged', status)
             miscState.connectionStatus = status;
@@ -307,7 +309,7 @@ let store = {
             // TODO optimize
             console.log('store GroupMembersUpdate', groupId)
             this._reloadGroupConversationIfExist([new NullGroupInfo(groupId)]);
-            //     this._loadFavGroupList();
+            // this._loadFavGroupList();
             // TODO 其他相关逻辑
         });
 
@@ -374,13 +376,14 @@ let store = {
                 }
                 this._patchMessage(msg, lastTimestamp);
                 let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
-                    return m.messageId === msg.messageId ||(gt(m.messageUid, 0) && eq(m.messageUid, msg.messageUid));
+                    return m.messageId === msg.messageId || (gt(m.messageUid, 0) && eq(m.messageUid, msg.messageUid));
                 });
                 if (msgIndex > -1) {
                     conversationState.currentConversationMessageList[msgIndex] = msg;
                     console.log('msg duplicate')
                     return;
                 }
+
                 conversationState.currentConversationMessageList.push(msg);
             }
 
@@ -464,6 +467,7 @@ let store = {
             if (message.messageContent instanceof LeaveChannelChatMessageContent) {
                 return;
             }
+
             this._reloadConversation(message.conversation);
             if (!this._isDisplayMessage(message)) {
                 return;
@@ -528,23 +532,35 @@ let store = {
         });
 
         avenginekitproxy.onVoipCallStatusCallback = this.updateVoipStatus
-
         if (isElectron()) {
-            ipcRenderer.on('deep-link', (event, args) => {
-                console.log('deep-link', args)
-                // 下面是示例
-                // 可以根据 pathname 和 query parameter 进行相应的逻辑处理，这儿是跳转到对应的会话
-                let url = new URL(args);
-                let pathname = url.pathname;
-                let searchParams = url.searchParams;
-                if ('//conversation' === pathname) {
-                    let target = searchParams.get('target');
-                    let line = Number(searchParams.get('line'));
-                    let type = Number(searchParams.get('type'))
-                    let conversation = new Conversation(type, target, line)
-                    this.setCurrentConversation(conversation);
-                }
-            })
+            if (isMainWindow) {
+                ipcRenderer.on('deep-link', (event, args) => {
+                    console.log('deep-link', args)
+                    // 下面是示例
+                    // 可以根据 pathname 和 query parameter 进行相应的逻辑处理，这儿是跳转到对应的会话
+                    let url = new URL(args);
+                    let pathname = url.pathname;
+                    let searchParams = url.searchParams;
+                    if ('//conversation' === pathname) {
+                        let target = searchParams.get('target');
+                        let line = Number(searchParams.get('line'));
+                        let type = Number(searchParams.get('type'))
+                        let conversation = new Conversation(type, target, line)
+                        this.setCurrentConversation(conversation);
+                    }
+                })
+
+                ipcRenderer.on('floating-conversation-window-closed', (event, args) => {
+                    let type = args.type;
+                    let target = args.target;
+                    let line = args.line;
+
+                    let conv = new Conversation(type, target, line);
+                    this.removeFloatingConversation(conv)
+                    this._reloadConversation(conv);
+                });
+
+            }
             ipcRenderer.on('file-downloaded', (event, args) => {
                 let messageId = args.messageId;
                 let localPath = args.filePath;
@@ -582,24 +598,15 @@ let store = {
                 // console.log('file download progress', messageId, receivedBytes, totalBytes);
             });
 
-            ipcRenderer.on('floating-conversation-window-closed', (event, args) => {
-                let type = args.type;
-                let target = args.target;
-                let line = args.line;
-
-                let conv = new Conversation(type, target, line);
-                this.removeFloatingConversation(conv)
-                this._reloadConversation(conv);
-            });
+            miscState.isMainWindow = isMainWindow;
+            miscState.subWindowLoadDataOptions = subWindowLoadDataOptions ? subWindowLoadDataOptions : {};
 
             if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
+                // 根据 subWindowLoadDataOptions 配置去加载
                 this._loadDefaultData();
             }
+            window.__wfc = wfc;
         }
-        miscState.connectionStatus = wfc.getConnectionStatus();
-
-        miscState.isMainWindow = isMainWindow;
-        // window.__wfc = wfc;
     },
 
     _loadDefaultData() {
@@ -697,7 +704,7 @@ let store = {
         if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversation)) {
             conversationState.currentConversationInfo = conversationInfo;
             // 清除聊天记录
-            if (!conversationInfo.lastMessage){
+            if (!conversationInfo.lastMessage) {
                 conversationState.currentConversationMessageList = [];
             }
         }
@@ -1156,12 +1163,14 @@ let store = {
 
     quoteMessage(message) {
         conversationState.quotedMessage = message;
+        conversationState.currentConversationInfo._quotedMessage = message;
     },
 
     getConversationInfo(conversation) {
         let info = wfc.getConversationInfo(conversation);
         return this._patchConversationInfo(info, false);
     },
+
 
     /**
      * 获取会话消息
@@ -1189,7 +1198,6 @@ let store = {
         }, err => {
             callback && callback([]);
         });
-
     },
 
     _loadCurrentConversationMessages() {
@@ -1277,6 +1285,7 @@ let store = {
                     completeCB();
                 });
         }
+
         wfc.getMessagesV2(conversation, conversationState.currentConversationOldestMessageId, true, 20, '', lmsgs => {
             if (lmsgs.length > 0) {
                 if (!conversation.equal(conversationState.currentConversationInfo.conversation)) {
@@ -1654,6 +1663,7 @@ let store = {
         contactState.currentGroup = null;
         contactState.currentChannel = channel;
     },
+
     setCurrentOrganization(organization) {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
@@ -2113,7 +2123,6 @@ let store = {
             return;
         }
         let count = 0;
-
         conversationState.conversationInfoList.forEach(info => {
             if (info.isSilent) {
                 return;

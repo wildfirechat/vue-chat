@@ -459,5 +459,22 @@ function fileFromDataUri(dataUri, fileName) {
     return resultFile;
 }
 
+function scaleDown(width, height, maxWidth, maxHeight) {
+    if (width < maxWidth && height < maxHeight) {
+        return {width, height}
+    }
 
-export {mergeImages, getConversationPortrait, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri};
+    const widthRatio = maxWidth / width;
+    const heightRatio = maxHeight / height;
+
+    // 计算比例最小的缩放倍数
+    const scale = Math.min(widthRatio, heightRatio);
+
+    // 缩放后的宽度和高度
+    const scaledWidth = width * scale;
+    const scaledHeight = height * scale;
+
+    return {width: Math.ceil(scaledWidth), height: Math.ceil(scaledHeight)};
+}
+
+export {mergeImages, getConversationPortrait, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri, scaleDown};

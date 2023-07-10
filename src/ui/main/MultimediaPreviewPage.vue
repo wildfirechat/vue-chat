@@ -52,6 +52,7 @@ import {currentWindow, ipcRenderer, screen} from "../../platform";
 import MessageContentType from "../../wfc/messages/messageContentType";
 import {downloadFile} from "../../platformHelper";
 import ForwardType from "./conversation/message/forward/ForwardType";
+import {scaleDown} from "../util/imageUtil";
 
 export default {
     name: 'MultimediaPreviewPage',
@@ -85,29 +86,13 @@ export default {
     },
 
     methods: {
-        scaleDown(width, height, maxWidth, maxHeight) {
-            if (width < maxWidth && height < maxHeight) {
-                return {width, height}
-            }
-            const widthRatio = maxWidth / width;
-            const heightRatio = maxHeight / height;
-
-            // 计算比例最小的缩放倍数
-            const scale = Math.min(widthRatio, heightRatio);
-
-            // 缩放后的宽度和高度
-            const scaledWidth = width * scale;
-            const scaledHeight = height * scale;
-
-            return {width: Math.ceil(scaledWidth), height: Math.ceil(scaledHeight)};
-        },
 
         resize(width, height) {
             let display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
             let workAreaWith = display.workAreaSize.width;
             let workAreaHeight = display.workAreaSize.height;
 
-            let size = this.scaleDown(width, height, workAreaWith, workAreaHeight);
+            let size = scaleDown(width, height, workAreaWith, workAreaHeight);
             currentWindow.setSize(size.width, size.height);
             currentWindow.center();
         },

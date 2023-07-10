@@ -16,6 +16,7 @@ import Message from "@/wfc/messages/message";
 import store from "@/store";
 import {ipcRenderer, isElectron} from "../../../../../platform";
 import IpcEventType from "../../../../../ipcEventType";
+import {previewMM} from "../../../../../platformHelper";
 
 export default {
     name: "VideoMessageContentView",
@@ -35,25 +36,7 @@ export default {
             if (this.isInCompositeView) {
                 this.$parent.previewCompositeMessage(message.messageUid);
             } else {
-                console.log('preview', message);
-                if (isElectron()) {
-                    let hash = window.location.hash;
-                    let url = window.location.origin;
-                    if (hash) {
-                        url = window.location.href.replace(hash, '#/mmpreview');
-                    } else {
-                        url += "/mmpreview"
-                    }
-
-                    url += `?messageUid=${stringValue(message.messageUid)}`
-                    ipcRenderer.send(IpcEventType.SHOW_MULTIMEDIA_PREVIEW_WINDOW, {
-                        url: url,
-                        messageUid: message.messageUid,
-                    });
-                    console.log('show-multimedia-preview-window', url)
-                } else {
-                    store.previewMessage(message, true);
-                }
+                previewMM(message);
             }
         },
 

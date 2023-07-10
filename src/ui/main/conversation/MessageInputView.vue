@@ -83,7 +83,7 @@
                 </li>
             </vue-context>
             <QuoteMessageView
-                v-if="quotedMessage !== null"
+                v-if="quotedMessage"
                 style="padding: 10px 20px"
                 v-on:cancelQuoteMessage="cancelQuoteMessage"
                 :enable-message-preview="false"
@@ -132,9 +132,6 @@ import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
 
-// vue 不允许在computed里面有副作用
-// 和store.state.conversation.quotedMessage 保持同步
-let lastQuotedMessage = null;
 
 export default {
     name: "MessageInputView",
@@ -191,6 +188,7 @@ export default {
         },
 
         cancelQuoteMessage() {
+            this.conversationInfo._quotedMessage = null;
             store.quoteMessage(null)
         },
 
@@ -387,7 +385,8 @@ export default {
                     }
                     let src = img.src;
                     let file;
-                    if (isElectron() && false) {
+                    // 截图
+                    if (isElectron() && src.startsWith('local-resource')) {
                         // 'local-resource://' + 绝对路径
                         file = decodeURI(src.substring(17, src.length));
                     } else {
@@ -435,6 +434,7 @@ export default {
 
             input.innerHTML = '';
             store.quoteMessage(null);
+            this.conversationInfo._quotedMessage = null;
             Draft.setConversationDraft(conversation, '', null, null);
             e.preventDefault();
         },
@@ -545,7 +545,7 @@ export default {
         toggleChannelMenu(toggle = true) {
             if (toggle) {
                 this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
-                this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
+                this.storeDraft(this.lastConversationInfo);
             } else {
                 if (this.$parent.messageInputViewResized) {
                     this.$parent.$refs['conversationMessageList'].style.flexGrow = 0;
@@ -713,8 +713,8 @@ export default {
             }
         },
 
-        storeDraft(conversationInfo, quotedMessage) {
-            if (!this.$refs['input']) {
+        storeDraft(conversationInfo) {
+            if (!this.$refs['input'] && conversationInfo._quotedMessage) {
                 return;
             }
             let draftText = this.$refs['input'].innerHTML.trim();
@@ -760,14 +760,17 @@ export default {
                 draftText = draftText.trimEnd();
             }
 
-            let quoteInfo = quotedMessage ? QuoteInfo.initWithMessage(quotedMessage) : null;
+            let quoteInfo = null;
+            if (conversationInfo._quotedMessage) {
+                quoteInfo = QuoteInfo.initWithMessage(conversationInfo._quotedMessage);
+            }
 
-            if (draftText.length === 0) {
+            if (draftText.length === 0 && !quoteInfo) {
                 if (conversationInfo.draft !== '') {
                     Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions)
                 }
             } else {
-                if (draftText !== conversationInfo.draft) {
+                if (draftText !== conversationInfo.draft || (!conversationInfo.draft && quoteInfo)) {
                     Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions)
                 }
             }
@@ -859,7 +862,7 @@ export default {
 
     deactivated() {
         if (!this.sharedConversationState.showChannelMenu) {
-            this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
+            this.storeDraft(this.lastConversationInfo);
             this.$refs['input'].innerHTML = '';
         }
     },
@@ -886,7 +889,7 @@ export default {
             });
         }
         this.storeDraftIntervalId = setInterval(() => {
-            this.storeDraft(this.conversationInfo, this.quotedMessage);
+            this.storeDraft(this.conversationInfo);
         }, 5 * 1000)
     },
 
@@ -916,7 +919,7 @@ export default {
                         this.$parent.$refs['conversationMessageList'].style.flexGrow = 0;
                     }
                     if (this.lastConversationInfo && !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation)) {
-                        this.storeDraft(this.lastConversationInfo, lastQuotedMessage);
+                        this.storeDraft(this.lastConversationInfo);
                     }
 
                     if (this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
@@ -930,14 +933,14 @@ export default {
                 })
             } else {
                 // 其他端更新了草稿
-                this.restoreDraft();
+                // fixme
+                // this.restoreDraft();
             }
         },
     },
 
     computed: {
         quotedMessage() {
-            lastQuotedMessage = this.sharedConversationState.quotedMessage;
             // side affect
             this.$refs.input && this.$refs.input.focus();
             return this.sharedConversationState.quotedMessage;

@@ -40,7 +40,7 @@ import MessageContentType from "@/wfc/messages/messageContentType";
 import Message from "@/wfc/messages/message";
 import PreviewQuotedMessageView from "@/ui/main/conversation/message/PreviewQuotedMessageView";
 import {fs, isElectron, shell} from "../../../../platform";
-import {downloadFile} from "../../../../platformHelper";
+import {downloadFile, previewMM} from "../../../../platformHelper";
 
 export default {
     name: "QuoteMessageView",
@@ -90,7 +90,7 @@ export default {
                 switch (this.quotedMessage.messageContent.type) {
                     case MessageContentType.Video:
                     case MessageContentType.Image:
-                        store.previewMessage(this.quotedMessage, false);
+                        previewMM(this.quotedMessage)
                         break;
                     case MessageContentType.File:
                         this.downloadQuotedFile(this.quotedMessage)
@@ -170,6 +170,8 @@ export default {
     border-radius: 5px;
     padding: 5px 10px;
     margin-right: 10px;
+    font-size: 13px;
+    color: #737373;
 }
 
 .quoted-message > p {

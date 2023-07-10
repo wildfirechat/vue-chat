@@ -1,6 +1,7 @@
 import wfc from "../../wfc/client/wfc";
 import {_patchToJavaLong, _reverseToJsLongString, stringValue} from "../../wfc/util/longUtil";
 import store from "@/store";
+import QuoteInfo from "../../wfc/model/quoteInfo";
 
 export default class Draft {
 
@@ -42,8 +43,12 @@ export default class Draft {
         let draft = JSON.parse(draftStr);
         obj.text = draft.content;
         obj.text = obj.text ? obj.text : '';
+        console.log('getConversationDraftEx', conversationInfo, draft)
         if (draft.quoteInfo) {
-            let msg = store.getMessageByUid(draft.quoteInfo.messageUid);
+            let quoteInfo = new QuoteInfo();
+            quoteInfo.decode(draft.quoteInfo);
+            obj.quoteInfo = quoteInfo;
+            let msg = store.getMessageByUid(quoteInfo.messageUid);
             obj.quotedMessage = msg;
         }
         return obj;

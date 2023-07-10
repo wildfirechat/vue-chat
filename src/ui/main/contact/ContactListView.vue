@@ -61,7 +61,7 @@
                     v-else-if="sharedContactState.expandFriendList"
                     :data-component="contactItemView" :data-sources="groupedContacts" :data-key="'uid'"
                     :estimate-size="30"
-                    style="max-height: 600px; overflow-y: auto"/>
+                    style="max-height: 700px; overflow-y: auto"/>
                 <vue-context ref="menu" v-slot="{data:userInfo}" v-on:close="onContactContextMenuClose">
                     <li>
                         <a @click.prevent="sendMessage(userInfo)">{{

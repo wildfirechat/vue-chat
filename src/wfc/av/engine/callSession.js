@@ -16,7 +16,9 @@ export default class CallSession {
     startTime
     startMsgUid
 
+    callId
     // conference 相关
+    pin
     defaultAudience = false;
     audience = false;
     conference = false;
