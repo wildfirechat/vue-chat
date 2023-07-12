@@ -119,6 +119,7 @@ import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
 import LocalStorageIpcEventType from "../../ipc/localStorageIpcEventType";
+import {isElectron} from "../../platform";
 
 export default {
     data() {
@@ -282,6 +283,21 @@ export default {
                 });
 
             } else if (errorCode === -2) {
+                if (isElectron()) {
+                    console.error(`不支持音视频通话，原因可能是:
+                        1. 可通过这个网页测试浏览器对音视频通话的支持情况，https://docs.wildfirechat.cn/webrtc/abilitytest/
+                        2. 确保系统已授予当前应用 摄像头 和 麦克风 权限
+                    `)
+                } else {
+
+                    console.error(`不支持音视频通话，原因可能是:
+                        1. 浏览器上，只有通过 http://localhost 或 https://xxxx 访问的网页才支持音视频通话
+                        2. 可通过这个网页测试浏览器对音视频通话的支持情况，https://docs.wildfirechat.cn/webrtc/abilitytest/
+                        3. 确保浏览器已授予网页 摄像头 和 麦克风 权限
+                        4. 确保系统已授予浏览器 摄像头 和麦克风 权限
+                        5. 配置 https，请参考：https://docs.wildfirechat.cn/faq/web/https.html
+                    `)
+                }
                 this.$notify({
                     title: '不支持音视频通话',
                     text: '请到手机上接听音视频通话',

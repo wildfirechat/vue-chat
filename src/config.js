@@ -220,7 +220,10 @@ export default class Config {
         }
 
         if (Config.USE_WSS) {
-            console.warn('已启用WSS，请确认服务端已配置支持https，配置方法请参考这儿：https://docs.wildfirechat.cn/faq/web/https.html');
+            console.warn('已启用WSS，请确认服务端已配置支持https，配置方法请参考：https://docs.wildfirechat.cn/faq/web/https.html');
+        }
+        if (Config.APP_SERVER.startsWith('https:') && !Config.USE_WSS){
+            throw new Error('https 站点，不能使用 ws，请配置wss, 配置方法请参考：https://docs.wildfirechat.cn/faq/web/https.html');
         }
         if (Config.USE_WSS && Config.ROUTE_PORT !== 443) {
             console.warn(`配置使用WSS连接时，默认端口是443，但目前配置是${Config.ROUTE_PORT}，请确认!!`);
