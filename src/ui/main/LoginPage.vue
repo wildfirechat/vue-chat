@@ -7,7 +7,7 @@
         <div class="drag-area"/>
         <div v-if="loginType === 0" class="qrcode-login-container">
             <div class="qr-container" @click="regenerateQrCode">
-                <p v-if="qrCode === 'error'">生成二维码失败，点击重试</p>
+                <p v-if="qrCode === 'error'">生成二维码失败，点击重试<br>开发者请打开控制台查看日志</p>
                 <img v-else-if="qrCode" v-bind:src="qrCode" alt="">
                 <p v-else>{{ $t('misc.gen_qr_code') }}</p>
                 <ClipLoader v-if="loginStatus === 4" class="loading" :color="'white'" :height="'80px'" :width="'80px'"/>
@@ -245,6 +245,7 @@ export default {
                 })
                 .catch(err => {
                     console.log('createPCSession error', err);
+                    console.log('!!! 如果是 CORS 相关错误，可能是通过 nginx 等代理了 app-server 相关请求，但 nginx 配置错误，请参考 app-server 项目下 nginx 目录下的参考配置 !!!')
                     this.qrCode = 'error';
                     if (this.qrCodeTimer) {
                         clearInterval(this.qrCodeTimer)
