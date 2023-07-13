@@ -145,7 +145,7 @@ export default class CallSession {
      *       maxHeight: 720,
      *       idealHeight: 720,
      *       frameRate: 15,
-             }} desktopShareOptions
+             }} desktopShareOptions，sourceId 仅 pc 端有效，web 端无效；其他参数对应 getDisplayMedia(options) options.video，具体可以参考：https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia
      * 开始屏幕共享
      */
     async startScreenShare(desktopShareOptions) {
@@ -161,8 +161,8 @@ export default class CallSession {
     }
 
     /**
-     * 请在callState变为connecting 或 connected之后，调用
      * @deprecated
+     * 请在callState变为connecting 或 connected之后，调用
      * @param {string} userId
      * @return {Subscriber}
      */
@@ -171,6 +171,7 @@ export default class CallSession {
     }
 
     /**
+     * @deprecated 请使用{@link getParticipantProfiles}
      * 请在callState变为connecting 或 connected之后，调用
      * @param {string} userId
      * @param {boolean} screenSharing
@@ -299,6 +300,13 @@ export default class CallSession {
      * @param {VideoType} videoType 视频流类型
      */
     setParticipantVideoType(userId, isScreenSharing, videoType) {
+    }
+
+    /**
+     * 强制关闭媒体流
+     * 正常不需要调用，仅当将通话界面直接渲染在当前界面时，需要调用
+     */
+    forceEndMedia() {
 
     }
 }

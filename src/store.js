@@ -844,6 +844,7 @@ let store = {
         conversationState.currentConversationOldestMessageId = 0;
         conversationState.currentConversationOldestMessageUid = 0;
         this._loadCurrentConversationMessages();
+        this._patchCurrentConversationOnlineStatus();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
         conversationState.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);

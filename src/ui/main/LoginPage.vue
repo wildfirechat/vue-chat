@@ -256,6 +256,9 @@ export default {
         async refreshQrCode() {
             if (!this.qrCodeTimer) {
                 this.qrCodeTimer = setInterval(() => {
+                    if (this.loginStatus === 3) {
+                        return;
+                    }
                     this.appToken = '';
                     this.loginStatus = 0;
                     this.createPCLoginSession(null);
@@ -337,27 +340,21 @@ export default {
                 console.error('连接失败', status, ConnectionStatus.desc(status));
                 this.cancel();
             }
-            if (status === ConnectionStatus.ConnectionStatusConnected) {
-                // pc 端首次登录时，等待同步数据
+            if (status === ConnectionStatus.ConnectionStatusReceiveing) {
                 // TODO 添加同步中动画
-                if (isElectron() && this.firstTimeConnect) {
                     if (this.$refs.loginWithAuthCodeButton) {
                         this.$refs.loginWithAuthCodeButton.textContent = '数据同步中...';
                     }
                     if (this.$refs.loginWithPasswordButton) {
                         this.$refs.loginWithPasswordButton.textContent = '数据同步中...';
                     }
-                    // 先等待加载数据
-                    setTimeout(() => {
-                        isElectron() && ipcRenderer.send('logined', {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
-                        this.$router.replace({path: "/home"});
-                    }, 5 * 1000)
-                } else {
+            }
+
+            if (status === ConnectionStatus.ConnectionStatusConnected) {
                     if (isElectron()) {
                         ipcRenderer.send('logined', {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                     }
                     this.$router.replace({path: "/home"});
-                }
                 if (isElectron() || (Config.CLIENT_ID_STRATEGY === 1 || Config.CLIENT_ID_STRATEGY === 2)) {
                     isElectron() && ipcRenderer.send(IpcEventType.LOGINED, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                     if (this.enableAutoLogin) {

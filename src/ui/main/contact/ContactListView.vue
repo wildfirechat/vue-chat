@@ -15,7 +15,10 @@
                 <div @click="showGroups" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandGroup}"></i>
                     <div class="category-item">
-                        <span class="title">{{ $t('contact.group') }}</span>
+                        <div>
+                            <span class="title">{{ $t('contact.group') }}</span>
+                            <span class="tip">(保存在通讯录的群组)</span>
+                        </div>
                         <span class="desc">{{ sharedContactState.favGroupList.length }}</span>
                     </div>
                 </div>
@@ -221,6 +224,12 @@ export default {
 
 .category-item span:last-of-type {
     margin-right: 15px;
+}
+
+.category-item .tip {
+    font-size: 12px;
+    padding-left: 5px;
+    color: #7f7f7f;
 }
 
 .arrow {
