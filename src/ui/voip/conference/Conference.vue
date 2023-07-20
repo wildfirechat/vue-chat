@@ -466,6 +466,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
+                conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000)
                 // 可以根据reason，进行一些提示
                 // alert('会议已结束');
 
@@ -603,6 +604,7 @@ export default {
 
         hangup() {
             this.session.leaveConference(false);
+            conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000)
         },
 
         muteAudio() {

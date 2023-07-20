@@ -57,7 +57,7 @@
                         </div>
                         <div>
                             <p class="title single-line">{{ conferenceInfo.conferenceTitle }}</p>
-                            <p class="desc">{{ favConferenceDesc(conferenceInfo) }}</p>
+                            <p class="desc">{{ historyConferenceDesc(conferenceInfo) }}</p>
                         </div>
                     </div>
                 </div>
@@ -76,6 +76,8 @@ import JoinConferenceView from "./JoinConferenceView";
 import OrderConferenceView from "./OrderConferenceView";
 import conferenceApi from "../../../api/conferenceApi";
 import ConferenceInfoView from "./ConferenceInfoView";
+import conferenceManager from "./conferenceManager";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "ConferencePortalPage",
@@ -87,6 +89,7 @@ export default {
     },
     mounted() {
         this.loadFavConferences();
+        this.historyConferenceInfos = conferenceManager.getHistoryConference();
     },
     methods: {
         loadFavConferences() {
@@ -206,6 +209,26 @@ export default {
             } else {
                 return '会议已结束';
             }
+        },
+
+        historyConferenceDesc(conferenceInfo) {
+            console.log('xxxx', conferenceInfo)
+            let duration = this.formatDuration(conferenceInfo.endTime - conferenceInfo.startTime);
+            let ownerDisplayName = wfc.getUserDisplayName(conferenceInfo.owner);
+            let date = new Date(conferenceInfo.startTime * 1000).toLocaleDateString();
+            return `时间：${date} 发起人：${ownerDisplayName} 时长：${duration}`
+        },
+
+        formatDuration(second) {
+            let desc = '';
+            if (second > 60 * 60) {
+                desc = Math.floor(second / 60 / 60) + 'H';
+            }
+            if (second > 60) {
+                desc += Math.floor(second % (60 * 60) / 60) + 'M';
+            }
+            desc += second % 60 + 'S'
+            return desc;
         }
     }
 }
