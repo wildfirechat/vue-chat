@@ -618,7 +618,7 @@ export default {
             mentionMenuItems.push({
                 key: this.$t('conversation.all_people'),
                 value: '@' + conversation.target,
-                avatar: groupInfo.portrait,
+                avatar: groupInfo.portrait ? groupInfo.portrait : Config.DEFAULT_GROUP_PORTRAIT_URL,
                 //searchKey: '所有人' + pinyin.letter('所有人', '', null)
                 searchKey: this.$t('conversation.all_people') + 'suoyouren' + 'syr'
             });

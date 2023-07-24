@@ -619,9 +619,9 @@ let store = {
         this._loadDefaultConversationList();
         this._loadUserLocalSettings();
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
-        if (conversationState.currentConversationInfo) {
-            this._loadCurrentConversationMessages();
-        }
+        // if (conversationState.currentConversationInfo) {
+        //     this._loadCurrentConversationMessages();
+        // }
     },
 
     // conversation actions
@@ -843,7 +843,8 @@ let store = {
         conversationState.currentConversationMessageList.length = 0;
         conversationState.currentConversationOldestMessageId = 0;
         conversationState.currentConversationOldestMessageUid = 0;
-        this._loadCurrentConversationMessages();
+        // 会话页面会触发调用 loadConversationHistoryMessages，这儿不用提前加载消息
+        // this._loadCurrentConversationMessages();
         this._patchCurrentConversationOnlineStatus();
 
         conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
@@ -1296,8 +1297,8 @@ let store = {
                 if (gt(lmsgs[0].messageUid, 0)) {
                     conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
                 }
-                let loadNewMsg = this._onloadConversationMessages(conversation, lmsgs)
-                if (!loadNewMsg) {
+                this._onloadConversationMessages(conversation, lmsgs)
+                if (lmsgs.length === 0) {
                     loadRemoteHistoryMessageFunc();
                 } else {
                     // loadedCB();

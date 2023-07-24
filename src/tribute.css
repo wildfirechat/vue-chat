@@ -3,14 +3,16 @@
     bottom: 0;
     left: 0;
     height: auto;
-    max-height: 300px;
+    max-height: 200px;
     max-width: 500px;
     min-width: 150px;
     overflow: auto;
     display: block;
     z-index: 999999;
     border-radius: 5px;
-    box-shadow: 0 6px 28px 0 rgba(230, 230, 230, 100);
+    box-shadow: 6px 6px 28px 6px rgba(230, 230, 230, 100);
+    padding: 5px;
+    background: white;
 }
 
 .tribute-container ul {
@@ -18,7 +20,6 @@
     margin-top: 2px;
     padding: 0;
     list-style: none;
-    background: #efefef;
 }
 
 .tribute-container li {
@@ -27,15 +28,19 @@
     color: #000;
     display: flex;
     align-items: center;
-    background: #F0E6EA;
+    border-radius: 3px;
+    font-size: 13px;
 }
 
 .tribute-container li img {
-    margin-right: 5px;
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+    border-radius: 4px;
 }
 
 .tribute-container li.highlight {
-    background: #D8CFD2;
+    background: #e5e5e5;
 }
 
 .tribute-container li span {
@@ -48,11 +53,4 @@
 
 .tribute-container .menu-highlighted {
     font-weight: bold;
-}
-
-
-.tribute-container.avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 100%;
 }
