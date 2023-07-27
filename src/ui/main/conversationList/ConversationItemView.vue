@@ -70,7 +70,7 @@ export default {
         };
     },
     mounted() {
-        this.refreshGroupPortrait();
+        // this.refreshGroupPortrait();
     },
     methods: {
         dragEvent(e, v) {
@@ -120,7 +120,7 @@ export default {
             if (this.unread > 0) {
                 wfc.clearConversationUnreadStatus(this.source.conversation);
             }
-            this.refreshGroupPortrait();
+            // this.refreshGroupPortrait();
         },
         showConversationInfoContextMenu(event) {
             this.$eventBus.$emit('showConversationContextMenu', event, this.source);
