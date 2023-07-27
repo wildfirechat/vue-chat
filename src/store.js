@@ -668,6 +668,7 @@ let store = {
             .forEach(u => {
                 userInfoMap.set(u.uid, u);
             });
+        console.log('to load groupIds', toLoadGroupIds);
         wfc.getGroupInfos(toLoadGroupIds)
             .forEach(g => {
                 groupInfoMap.set(g.target, g);

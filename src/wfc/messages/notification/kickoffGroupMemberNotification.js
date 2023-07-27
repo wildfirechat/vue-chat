@@ -26,11 +26,12 @@ export default class KickoffGroupMemberNotification extends GroupNotificationCon
         }
 
         let kickedMembersStr = '';
-        this.kickedMembers.forEach(mid => {
-            if (mid === wfc.getUserId()) {
+        let userInfos = wfc.getUserInfos(this.kickedMembers, this.groupId);
+        userInfos.forEach(userInfo => {
+            if (userInfo.uid === wfc.getUserId()) {
                 kickedMembersStr += ' 您';
             } else {
-                kickedMembersStr += ' ' + wfc.getGroupMemberDisplayName(this.groupId, mid);
+                kickedMembersStr += ' ' + userInfo.displayName;
             }
         });
 

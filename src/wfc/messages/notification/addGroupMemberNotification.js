@@ -34,8 +34,9 @@ export default class AddGroupMemberNotification extends GroupNotificationContent
         }
 
         let membersStr = '';
-        this.invitees.forEach(m => {
-            membersStr += ' ' + wfc.getUserDisplayName(m);
+        let userInfos = wfc.getUserInfos(this.invitees, this.groupId);
+        userInfos.forEach(m => {
+            membersStr += ' ' + m.displayName;
         });
 
         return notifyStr + membersStr + '加入了群组';

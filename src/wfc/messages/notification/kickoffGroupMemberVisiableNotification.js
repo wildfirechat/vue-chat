@@ -26,8 +26,13 @@ export default class KickoffGroupMemberVisiableNotification extends GroupNotific
         }
 
         let kickedMembersStr = '';
-        this.kickedMembers.forEach(m => {
-            kickedMembersStr += ' ' + wfc.getGroupMemberDisplayName(this.groupId, m);
+        let userInfos = wfc.getUserInfos(this.kickedMembers, this.groupId);
+        userInfos.forEach(userInfo => {
+            if (userInfo.uid === wfc.getUserId()) {
+                kickedMembersStr += ' 您';
+            } else {
+                kickedMembersStr += ' ' + userInfo.displayName;
+            }
         });
 
         return notifyStr + kickedMembersStr + ' 移除了群组';
