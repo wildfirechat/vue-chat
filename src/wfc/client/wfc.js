@@ -10,6 +10,9 @@ import impl from '../proto/proto.min';
 import Config from "../../config";
 import avenginekit from "../av/engine/avenginekitproxy";
 import pttClient from "../ptt/client/pttClient";
+import EventType from "./wfcEvent";
+import ConnectionStatus from "./connectionStatus";
+import NullUserInfo from "../model/nullUserInfo";
 
 
 export class WfcManager {
@@ -21,7 +24,19 @@ export class WfcManager {
     eventEmitter = new EventEmitter();
 
     constructor() {
-        impl.eventEmitter = this.eventEmitter;
+        impl.eventEmitter = {
+            emit: (ev, ...args) => {
+                if (ev === EventType.ConnectionStatusChanged || ev === EventType.UserOnlineEvent) {
+                    self.eventEmitter.emit(ev, ...args)
+                } else {
+                    if (impl.connectionStatus === ConnectionStatus.ConnectionStatusConnected) {
+                        self.eventEmitter.emit(ev, ...args)
+                    } else {
+                        // ignore
+                    }
+                }
+            }
+        };
     }
 
     /**
@@ -33,10 +48,11 @@ export class WfcManager {
         console.log('wfc init');
         impl.init(args);
         avenginekit.setup(self);
-        if (Config.ENABLE_PTT){
+        if (Config.ENABLE_PTT) {
             pttClient.init();
         }
     }
+
     /**
      * 注册新的自定义消息
      *
@@ -58,16 +74,17 @@ export class WfcManager {
     }
 
     /**
-    * 获取协议栈版本号
-    */
+     * 获取协议栈版本号
+     */
     getProtoRevision() {
         return impl.getProtoRevision();
     }
+
     /*
      * 启用国密加密。注意需要服务器端同步开启国密配置
      */
     useSM4() {
-      impl.useSM4();
+        impl.useSM4();
     }
 
     /**
@@ -87,6 +104,7 @@ export class WfcManager {
     setDeviceToken(pushType, token) {
         impl.setDeviceToken(pushType, token);
     }
+
     disconnect() {
         impl.disconnect();
     }
@@ -502,7 +520,7 @@ export class WfcManager {
         infos.forEach(info => {
             if (!info.portrait || info.portrait.startsWith(Config.APP_SERVER)) {
                 info.portrait = this.defaultGroupPortrait(info);
-    }
+            }
         })
         return infos;
     }
@@ -746,6 +764,7 @@ export class WfcManager {
     getGroupRemark(groupId) {
         return impl.setGroupRemark(groupId);
     }
+
     /**
      * 获取保存到通讯录的群id列表
      * @returns {[string]}
@@ -783,7 +802,7 @@ export class WfcManager {
      * @param {function (number)} failCB
      * @returns {Promise<void>}
      */
-    async getMyGroups(successCB, failCB){
+    async getMyGroups(successCB, failCB) {
         impl.getMyGroups(successCB, failCB);
     }
 
@@ -796,7 +815,7 @@ export class WfcManager {
      * @returns {Promise<void>}
      */
     async getCommonGroups(userId, successCB, failCB) {
-      impl.getCommonGroups(userId, successCB, failCB);
+        impl.getCommonGroups(userId, successCB, failCB);
     }
 
     /**
@@ -969,7 +988,6 @@ export class WfcManager {
     }
 
 
-
     isEnableSecretChat() {
         return false;
     }
@@ -979,7 +997,7 @@ export class WfcManager {
     }
 
     setUserEnableSecretChat(enable, successCB, failCB) {
-		// do nothing
+        // do nothing
     }
 
     /**
@@ -1339,6 +1357,7 @@ export class WfcManager {
     getMessagesByTimestamp(conversation, contentTypes, timestamp, before = true, count = 20, withUser = '') {
         return impl.getMessagesByTimestamp(conversation, contentTypes, timestamp, before, count, withUser);
     }
+
     /**
      * 获取用户会话消息
      * @deprecated 请使用{@link getUserMessagesV2}
@@ -1429,6 +1448,7 @@ export class WfcManager {
     getMessagesByTimestampV2(conversation, contentTypes, timestamp, before, count, withUser, successCB, failCB) {
         impl.getMessagesByTimestampV2(conversation, contentTypes, timestamp, before, count, withUser, successCB, failCB);
     }
+
     /**
      * 获取用户会话消息
      * @param {string} userId 用户id
@@ -1505,7 +1525,7 @@ export class WfcManager {
      * @param {function ([Message])} successCB
      * @param failCB
      */
-    loadRemoteConversationMessagesEx(conversation, contentTypes, beforeUid, count, filterLocalMessage, successCB, failCB){
+    loadRemoteConversationMessagesEx(conversation, contentTypes, beforeUid, count, filterLocalMessage, successCB, failCB) {
         impl.loadRemoteMessages(conversation, contentTypes, beforeUid, count, successCB, failCB, filterLocalMessage);
     }
 
@@ -1518,7 +1538,7 @@ export class WfcManager {
      * @param {function ([Message])} successCB
      * @param failCB
      */
-    loadRemoteLineMessages(line,contentTypes, beforeUid, count, successCB, failCB){
+    loadRemoteLineMessages(line, contentTypes, beforeUid, count, successCB, failCB) {
         impl.loadRemoteLineMessages(line, contentTypes, beforeUid, count, successCB, failCB)
     }
 
@@ -1532,7 +1552,7 @@ export class WfcManager {
      * @param {function ([Message])} successCB
      * @param failCB
      */
-    loadRemoteLineMessages(line,contentTypes, beforeUid, count, filterLocalMessage, successCB, failCB){
+    loadRemoteLineMessages(line, contentTypes, beforeUid, count, filterLocalMessage, successCB, failCB) {
         impl.loadRemoteLineMessages(line, contentTypes, beforeUid, count, successCB, failCB, filterLocalMessage)
     }
 
@@ -1542,7 +1562,7 @@ export class WfcManager {
      * @param {function ([Message])} successCB
      * @param failCB
      */
-    loadRemoteMessage(messageUid, successCB, failCB){
+    loadRemoteMessage(messageUid, successCB, failCB) {
         impl.loadRemoteMessage(messageUid, successCB, failCB);
     }
 
@@ -1571,7 +1591,7 @@ export class WfcManager {
      * @param {string} withUser 目标用户
      * @returns {[Message]}
      */
-    searchMessage(conversation, keyword, withUser='') {
+    searchMessage(conversation, keyword, withUser = '') {
         return impl.searchMessage(conversation, keyword, withUser);
     }
 
@@ -1585,7 +1605,7 @@ export class WfcManager {
      * @param {string} withUser 目标用户
      * @returns {Message[]}
      */
-    searchMessageEx(conversation, keyword, desc, limit, offset, withUser='') {
+    searchMessageEx(conversation, keyword, desc, limit, offset, withUser = '') {
         return impl.searchMessageEx(conversation, keyword, desc, limit, offset, withUser);
     }
 
@@ -1600,7 +1620,7 @@ export class WfcManager {
      * @param {string} withUser 目标用户
      * @returns {Message[]}
      */
-    searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset, withUser='') {
+    searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset, withUser = '') {
         return impl.searchMessageByTypes(conversation, keyword, contentTypes, desc, limit, offset, withUser);
     }
 
@@ -1617,7 +1637,7 @@ export class WfcManager {
      * @param {string} withUser 目标用户
      * @returns {Message[]}
      */
-    searchMessageByTypesAndTimes(conversation, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser='') {
+    searchMessageByTypesAndTimes(conversation, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser = '') {
         return impl.searchMessageByTypesAndTimes(conversation, keyword, contentTypes, startTime, endTime, desc, limit, offset, withUser);
     }
 
@@ -1633,7 +1653,7 @@ export class WfcManager {
      * @param {string} withUser 目标用户
      * @returns {[Message]}
      */
-    searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count, withUser='') {
+    searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count, withUser = '') {
         return impl.searchMessageEx2(conversationTypes, lines, contentTypes, keyword, fromIndex, desc, count, withUser);
     }
 
@@ -1690,11 +1710,12 @@ export class WfcManager {
     async sendSavedMessage(message, expireDuration, successCB, failCB) {
         impl.sendSavedMessage(message, expireDuration, successCB, failCB);
     }
+
     /**
-    * 取消发送消息，仅媒体类消息可以取消
-    * @param messageId 消息ID
-    * @returns 是否取消成功
-    */
+     * 取消发送消息，仅媒体类消息可以取消
+     * @param messageId 消息ID
+     * @returns 是否取消成功
+     */
     cancelSendingMessage(messageId) {
         return impl.cancelSendingMessage(messageId);
     }
@@ -1725,12 +1746,12 @@ export class WfcManager {
      * @param {function ()} successCB
      * @param {function (number)} failCB
      */
-    deleteRemoteMessageByUid(msgUid, successCB, failCB){
+    deleteRemoteMessageByUid(msgUid, successCB, failCB) {
         impl.deleteRemoteMessage(msgUid, successCB, failCB);
     }
 
     /**
-    * 更新远程消息消息内容，只有专业版支持。客户端仅能更新自己发送的消息，更新的消息类型不能变，更新的消息类型是服务配置允许更新的内容。Server API更新则没有限制。
+     * 更新远程消息消息内容，只有专业版支持。客户端仅能更新自己发送的消息，更新的消息类型不能变，更新的消息类型是服务配置允许更新的内容。Server API更新则没有限制。
      * @param {Long | string} msgUid 消息uid
      * @param {MessageContent} messageContent 具体的消息内容，一定要求是{@link MessageContent} 的子类，不能是普通的object
      * @param {boolean} distribute 是否重新分发给其他客户端
@@ -1738,7 +1759,7 @@ export class WfcManager {
      * @param {function ()} successCB
      * @param {function (number)} failCB
      */
-    updateRemoteMessageContent(msgUid, messageContent, distribute, updateLocal, successCB, failCB){
+    updateRemoteMessageContent(msgUid, messageContent, distribute, updateLocal, successCB, failCB) {
         impl.updateRemoteMessageContent(msgUid, messageContent, distribute, updateLocal, successCB, failCB);
     }
 
@@ -1831,11 +1852,11 @@ export class WfcManager {
 
     /**
      * 获取上传链接。一般用户大文件上传。
-    * @param {string} fileName
-    * @param {number} mediaType 媒体类型，可选值参考{@link MessageContentMediaType}
-    * @param {string} contentType HTTP请求的ContentType header，为空时默认为"application/octet-stream"
-    * @param {function (string, string)} successCB 回调通知上传成功之后的url
-    * @param {function (number)} failCB
+     * @param {string} fileName
+     * @param {number} mediaType 媒体类型，可选值参考{@link MessageContentMediaType}
+     * @param {string} contentType HTTP请求的ContentType header，为空时默认为"application/octet-stream"
+     * @param {function (string, string)} successCB 回调通知上传成功之后的url
+     * @param {function (number)} failCB
      */
     getUploadMediaUrl(fileName, mediaType, contentType, successCB, failCB) {
         impl.getUploadMediaUrl(fileName, mediaType, contentType, successCB, failCB);
@@ -2034,7 +2055,7 @@ export class WfcManager {
         impl.sendConferenceRequest(sessionId, roomId, request, data, advance, callback);
     }
 
-    isUserOnlineStateEnabled(){
+    isUserOnlineStateEnabled() {
         return impl.isUserOnlineStateEnabled();
     }
 
@@ -2046,26 +2067,27 @@ export class WfcManager {
      * @param {function(UserOnlineState[])} successCB
      * @param {function(number)} failCB
      */
-    watchOnlineState(type, targets, duration, successCB, failCB){
+    watchOnlineState(type, targets, duration, successCB, failCB) {
         impl.watchOnlineState(type, targets, duration, successCB, failCB);
     }
 
-    unwatchOnlineState(type, targets, successCB, failCB){
+    unwatchOnlineState(type, targets, successCB, failCB) {
         impl.unwatchOnlineState(type, targets, successCB, failCB);
     }
 
-    setMyCustomState(customState, customText, successCB, failCB){
+    setMyCustomState(customState, customText, successCB, failCB) {
         impl.setMyCustomState(customState, customText, successCB, failCB)
     }
 
-    getAuthCode(appId, appType, host, successCB, failCB){
+    getAuthCode(appId, appType, host, successCB, failCB) {
         impl.getAuthCode(appId, appType, host, successCB, failCB);
     }
-    requireLock(lockId, duration, successCB, failCB){
+
+    requireLock(lockId, duration, successCB, failCB) {
         impl.requireLock(lockId, duration, successCB, failCB);
     }
 
-    releaseLock(lockId, successCB, failCB){
+    releaseLock(lockId, successCB, failCB) {
         impl.releaseLock(lockId, successCB, failCB);
     }
 
@@ -2102,16 +2124,17 @@ export class WfcManager {
         return bytes.buffer;
     }
 
-    arrayBuffer_to_b64(data){
+    arrayBuffer_to_b64(data) {
         return Buffer.from(data).toString('base64');
     }
-    unescape (str) {
+
+    unescape(str) {
         return (str + '==='.slice((str.length + 3) % 4))
             .replace(/-/g, '+')
             .replace(/_/g, '/')
     }
 
-    escape (str) {
+    escape(str) {
         return str.replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=/g, '')
@@ -2157,9 +2180,9 @@ export class WfcManager {
 }
 
 const self = new WfcManager();
-if (window.opener){
+if (window.opener) {
     window.__wfc = window.opener.__wfc;
-} else if(window.parent && window.parent.__wfc) {
+} else if (window.parent && window.parent.__wfc) {
     window.__wfc = window.parent.__wfc;
 } else {
     window.__wfc = self;
