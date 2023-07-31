@@ -598,7 +598,6 @@ let store = {
                 // console.log('file download progress', messageId, receivedBytes, totalBytes);
             });
 
-            miscState.isMainWindow = isMainWindow;
             miscState.subWindowLoadDataOptions = subWindowLoadDataOptions ? subWindowLoadDataOptions : {};
 
             if (!isMainWindow && wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
@@ -607,6 +606,7 @@ let store = {
             }
             window.__wfc = wfc;
         }
+        miscState.isMainWindow = isMainWindow;
     },
 
     _loadDefaultData() {
