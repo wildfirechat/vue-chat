@@ -1932,15 +1932,6 @@ export class WfcManager {
      * @param conversation
      * @return {Map<string, Long>}
      */
-    getConversationDelivery(conversation) {
-        return impl.getConversationDelivery(conversation);
-    }
-
-    /**
-     *
-     * @param conversation
-     * @return {Map<string, Long>}
-     */
     getConversationRead(conversation) {
         return impl.getConversationRead(conversation);
     }

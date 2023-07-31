@@ -60,7 +60,6 @@ let store = {
             currentConversationOldestMessageId: 0,
             currentConversationOldestMessageUid: 0,
 
-            currentConversationDeliveries: null,
             currentConversationRead: null,
 
             // TODO 调用setUserEnableReceipt时，需要更新
@@ -93,7 +92,6 @@ let store = {
                 this.currentConversationMessageList = [];
                 this.currentConversationOldestMessageId = 0;
                 this.currentConversationOldestMessageUid = 0;
-                this.currentConversationDeliveries = null;
                 this.currentConversationRead = null;
                 this.isMessageReceiptEnable = false;
                 this.inputtingUser = null;
@@ -515,12 +513,6 @@ let store = {
             }
         });
 
-        wfc.eventEmitter.on(EventType.MessageReceived, (delivery) => {
-            if (conversationState.currentConversationInfo) {
-                conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationState.currentConversationInfo.conversation);
-            }
-        });
-
         wfc.eventEmitter.on(EventType.MessageRead, (readEntries) => {
             // optimization
             if (conversationState.currentConversationInfo) {
@@ -813,7 +805,6 @@ let store = {
             conversationState.currentConversationMessageList.length = 0;
             conversationState.currentConversationOldestMessageId = 0;
             conversationState.currentConversationOldestMessageUid = 0;
-            conversationState.currentConversationDeliveries = null;
             conversationState.currentConversationRead = null;
             conversationState.enableMessageMultiSelection = false;
             conversationState.showChannelMenu = false;
@@ -848,7 +839,6 @@ let store = {
         // this._loadCurrentConversationMessages();
         this._patchCurrentConversationOnlineStatus();
 
-        conversationState.currentConversationDeliveries = wfc.getConversationDelivery(conversationInfo.conversation);
         conversationState.currentConversationRead = wfc.getConversationRead(conversationInfo.conversation);
 
         conversationState.enableMessageMultiSelection = false;
