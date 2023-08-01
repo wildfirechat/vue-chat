@@ -646,13 +646,13 @@ export class AvEngineKitProxy {
 
     onVoipWindowClose = (event) => {
         // 让voip内部先处理关闭事件，内部处理时，可能还需要发消息
-        console.log('onVoipWindowClose')
         if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
             // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
-            console.log('ignore onVoipWindowClose');
             return;
         }
+        console.log('onVoipWindowClose')
         if (!this.callId) {
+            console.log('callId is null, ignore')
             return;
         }
         if (!isElectron()) {
@@ -675,7 +675,7 @@ export class AvEngineKitProxy {
 
     onVoipWindowReady() {
         if (!this.callId) {
-            console.error('onVoipWindowReady, but call already ended');
+            console.error('onVoipWindowReady, but callId is null, return');
             return;
         }
         console.log('onVoipWindowReady', this.callId);
