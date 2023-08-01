@@ -22,7 +22,7 @@ export class AvEngineKitProxy {
     queueEvents = [];
     callWin;
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
-    useIframe = false;
+    useIframe = true;
     iframe;
     type;
 
@@ -674,6 +674,9 @@ export class AvEngineKitProxy {
     }
 
     onVoipWindowReady(win) {
+        if (!this.callId){
+            return;
+        }
         this.callWin = win;
         console.log('onVoipWindowReady', this.onVoipCallStatusCallback)
         this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, true);
