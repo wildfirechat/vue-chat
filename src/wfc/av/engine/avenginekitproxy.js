@@ -117,10 +117,10 @@ export class AvEngineKitProxy {
         content.decode(msg.content);
         console.log('to send voip message', content);
         let delta = wfc.getServerDeltaTime();
-        console.log('delta', delta);
         if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
             this.participants.push(content.participants);
         } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
+            console.log('end reason', content.reason);
             this.conversation = null;
             this.queueEvents = [];
             this.callId = null;
@@ -563,7 +563,7 @@ export class AvEngineKitProxy {
             remoteMain.enable(win.webContents);
 
             win.webContents.on('did-finish-load', () => {
-                this.onVoipWindowReady(win);
+                this.onVoipWindowReady();
             });
 
             if (localStorage.getItem("enable_voip_debug")) {
@@ -618,11 +618,11 @@ export class AvEngineKitProxy {
             if (iframe) {
                 iframe.onload = () => {
                     console.log('iframe loaded');
-                    this.onVoipWindowReady(win);
+                    this.onVoipWindowReady();
                 }
             } else {
                 win.addEventListener('load', () => {
-                    this.onVoipWindowReady(win);
+                    this.onVoipWindowReady();
                 }, true);
             }
 
@@ -633,6 +633,7 @@ export class AvEngineKitProxy {
             if (!this.events) {
                 this.events = new PostMessageEventEmitter(win, window.location.origin)
             }
+            this.callWin = win;
             console.log('windowEmitter subscribe events');
             this.events.on('voip-message', this.sendVoipListener)
             this.events.on('conference-request', this.sendConferenceRequestListener);
@@ -646,36 +647,38 @@ export class AvEngineKitProxy {
     onVoipWindowClose = (event) => {
         // 让voip内部先处理关闭事件，内部处理时，可能还需要发消息
         console.log('onVoipWindowClose')
-        if (!this.callWin) {
+        if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
+            // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
+            console.log('ignore onVoipWindowClose');
+            return;
+        }
+        if (!this.callId) {
             return;
         }
         if (!isElectron()) {
             this.callWin.removeEventListener('beforeunload', this.onVoipWindowClose)
             this.callWin.removeEventListener('unload', this.onVoipWindowClose)
         }
-        setTimeout(() => {
-            if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
-                // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
-                return;
-            }
-            this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
-            this.conversation = null;
-            this.queueEvents = [];
-            if (this.conference) {
-                wfc.quitChatroom(this.callId);
-                this.conference = false;
-            }
-            this.callId = null;
-            this.participants = [];
-            this.queueEvents = [];
-            this.callWin = null;
-            this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
-        }, 2000);
+        this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
+        this.conversation = null;
+        this.queueEvents = [];
+        if (this.conference) {
+            wfc.quitChatroom(this.callId);
+            this.conference = false;
+        }
+        this.callId = null;
+        this.participants = [];
+        this.queueEvents = [];
+        this.callWin = null;
+        this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
     }
 
-    onVoipWindowReady(win) {
-        this.callWin = win;
-        console.log('onVoipWindowReady', this.onVoipCallStatusCallback)
+    onVoipWindowReady() {
+        if (!this.callId) {
+            console.error('onVoipWindowReady, but call already ended');
+            return;
+        }
+        console.log('onVoipWindowReady', this.callId);
         this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, true);
         if (!isElectron()) {
             // 启动页面的时候就监听，不然太慢了，会丢事件
