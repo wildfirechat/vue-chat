@@ -644,6 +644,10 @@ export class AvEngineKitProxy {
     }
 
     onVoipWindowClose = (event) => {
+        if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
+            // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
+            return;
+        }
         // 让voip内部先处理关闭事件，内部处理时，可能还需要发消息
         console.log('onVoipWindowClose')
         if (!this.callWin) {
@@ -654,10 +658,6 @@ export class AvEngineKitProxy {
             this.callWin.removeEventListener('unload', this.onVoipWindowClose)
         }
         setTimeout(() => {
-            if (event && event.srcElement && event.srcElement.URL === 'about:blank') {
-                // fix safari bug: safari 浏览器，页面刚打开的时候，也会走到这个地方
-                return;
-            }
             this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
             this.conversation = null;
             this.queueEvents = [];
@@ -669,6 +669,9 @@ export class AvEngineKitProxy {
             this.participants = [];
             this.queueEvents = [];
             this.callWin = null;
+            if (this.iframe){
+                this.iframe.src = 'about:blank'
+            }
             this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
         }, 2000);
     }
