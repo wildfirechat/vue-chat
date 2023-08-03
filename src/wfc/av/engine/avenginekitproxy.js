@@ -115,12 +115,12 @@ export class AvEngineKitProxy {
 
         let content = new contentClazz();
         content.decode(msg.content);
-        console.log('to send voip message', content);
+        console.log('to send voip message', content.type, content.callId, content);
         let delta = wfc.getServerDeltaTime();
-        console.log('delta', delta);
         if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
             this.participants.push(content.participants);
         } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
+            console.log('to send end message', content.reason, content);
             this.conversation = null;
             this.queueEvents = [];
             this.callId = null;
@@ -210,7 +210,7 @@ export class AvEngineKitProxy {
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_CHANGE_MODE
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND
             ) {
-                console.log("receive voip message", msg.messageContent.type, msg.messageUid.toString(), msg);
+                console.log("receive voip message", msg.messageContent.type, msg.messageContent.callId, msg.messageUid.toString(), msg);
                 if (msg.direction === 0
                     && content.type !== MessageContentType.VOIP_CONTENT_TYPE_END
                     && content.type !== MessageContentType.VOIP_CONTENT_TYPE_ACCEPT
