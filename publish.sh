@@ -10,8 +10,8 @@ git checkout -- src/config.js
 git checkout -- vue.config.js
 
 cd dist
-qshell qupload2 --src-dir=./js --bucket=firechat --key-prefix=/js/
-qshell qupload2 --src-dir=./css --bucket=firechat --key-prefix=/css/
+qshell qupload2 --src-dir=./js --bucket=firechat --key-prefix=js/
+qshell qupload2 --src-dir=./css --bucket=firechat --key-prefix=css/
 
 cd ..
 tar -czvf dist.tar.gz dist
