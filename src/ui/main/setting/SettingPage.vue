@@ -106,11 +106,11 @@
 </template>
 
 <script>
-import wfc from "@/wfc/client/wfc";
-import store from "@/store";
+import wfc from "../../../wfc/client/wfc";
+import store from "../../../store";
 import dropdown from 'vue-dropdowns';
-import {clear} from "@/ui/util/storageHelper";
-import {ipcRenderer, isElectron} from "@/platform";
+import {clear} from "../../util/storageHelper";
+import {ipcRenderer, isElectron} from "../../../platform";
 import {getItem, setItem} from "../../util/storageHelper";
 import ChangePasswordView from "./ChangePasswordView";
 import ResetPasswordView from "./ResetPasswordView";

@@ -78,6 +78,7 @@
         "add_member": "添加成员",
         "remove_member": "移除成员",
         "quit_group": "退出群聊",
+        "dismiss_group": "解散群组",
         "click_to_edit_group_announcement": "点击编辑群公告",
         "all_people": "所有人",
         "sticky_top": "置顶",
@@ -180,7 +181,8 @@
         "month_10": "十月",
         "month_11": "十一月",
         "month_12": "十二月",
-        "wfc_id": "野火号"
+        "wfc_id": "野火号",
+        "channel": "频道"
     },
     "misc":{
         "beijing": "北京",

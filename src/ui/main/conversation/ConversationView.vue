@@ -174,28 +174,28 @@
 </template>
 
 <script>
-import SingleConversationInfoView from "@/ui/main/conversation/SingleConversationInfoView";
-import SecretConversationInfoView from "@/ui/main/conversation/SecretConversationInfoView";
-import GroupConversationInfoView from "@/ui/main/conversation/GroupConversationInfoView";
-import MessageInputView from "@/ui/main/conversation/MessageInputView";
+import SingleConversationInfoView from "../../main/conversation/SingleConversationInfoView";
+import SecretConversationInfoView from "../../main/conversation/SecretConversationInfoView";
+import GroupConversationInfoView from "../../main/conversation/GroupConversationInfoView";
+import MessageInputView from "../../main/conversation/MessageInputView";
 import ClickOutside from 'vue-click-outside'
-import NormalOutMessageContentView from "@/ui/main/conversation/message/NormalOutMessageContentContainerView";
-import NormalInMessageContentView from "@/ui/main/conversation/message/NormalInMessageContentContainerView";
-import NotificationMessageContentView from "@/ui/main/conversation/message/NotificationMessageContentView";
-import RecallNotificationMessageContentView from "@/ui/main/conversation/message/RecallNotificationMessageContentView";
-import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
-import TextMessageContent from "@/wfc/messages/textMessageContent";
-import store from "@/store";
-import wfc from "@/wfc/client/wfc";
-import {numberValue} from "@/wfc/util/longUtil";
+import NormalOutMessageContentView from "../../main/conversation/message/NormalOutMessageContentContainerView";
+import NormalInMessageContentView from "../../main/conversation/message/NormalInMessageContentContainerView";
+import NotificationMessageContentView from "../../main/conversation/message/NotificationMessageContentView";
+import RecallNotificationMessageContentView from "../../main/conversation/message/RecallNotificationMessageContentView";
+import NotificationMessageContent from "../../../wfc/messages/notification/notificationMessageContent";
+import TextMessageContent from "../../../wfc/messages/textMessageContent";
+import store from "../../../store";
+import wfc from "../../../wfc/client/wfc";
+import {numberValue} from "../../../wfc/util/longUtil";
 import InfiniteLoading from 'vue-infinite-loading';
-import MultiSelectActionView from "@/ui/main/conversation/MessageMultiSelectActionView";
+import MultiSelectActionView from "../../main/conversation/MessageMultiSelectActionView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
-import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
-import {fs, isElectron, shell} from "@/platform";
-import FileMessageContent from "@/wfc/messages/fileMessageContent";
-import ImageMessageContent from "@/wfc/messages/imageMessageContent";
-import {copyImg, copyText} from "@/ui/util/clipboard";
+import ForwardType from "../../main/conversation/message/forward/ForwardType";
+import {fs, isElectron, shell} from "../../../platform";
+import FileMessageContent from "../../../wfc/messages/fileMessageContent";
+import ImageMessageContent from "../../../wfc/messages/imageMessageContent";
+import {copyImg, copyText} from "../../util/clipboard";
 import Message from "../../../wfc/messages/message";
 import {downloadFile} from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
@@ -893,7 +893,11 @@ export default {
                     return 'bot';
                 }
             } else if (info.conversation.type === ConversationType.Channel) {
-                return info.conversation._target.desc;
+                let desc = info.conversation._target.desc;
+                if (!desc) {
+                    desc = 'channel'
+                }
+                return desc;
             } else {
                 return '';
             }

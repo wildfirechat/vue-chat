@@ -43,15 +43,15 @@
             </div>
 
         </section>
-        <FavView class="fav-list-view" :category="category"/>
+        <FavListView class="fav-list-view" :category="category"/>
     </section>
 </template>
 
 <script>
-import FavView from "@/ui/main/fav/FavListView";
-import store from "@/store";
-import SearchResultView from "@/ui/main/search/SearchResultView";
-import SearchView from "@/ui/main/search/SearchView";
+import FavListView from "./FavListView.vue";
+import store from "../../../store";
+import SearchResultView from "../search/SearchResultView.vue";
+import SearchView from "../search/SearchView.vue";
 
 export default {
     name: "FavPage",
@@ -104,7 +104,7 @@ export default {
     },
 
     components: {
-        FavView,
+        FavListView,
         SearchResultView,
         SearchView,
     },

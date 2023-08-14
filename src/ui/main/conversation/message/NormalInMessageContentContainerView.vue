@@ -55,10 +55,10 @@
 </template>
 
 <script>
-import UserCardView from "@/ui/main/user/UserCardView";
-import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
-import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
-import store from "@/store";
+import UserCardView from "../../user/UserCardView";
+import MessageContentContainerView from "./MessageContentContainerView.vue";
+import QuoteMessageView from "./QuoteMessageView.vue";
+import store from "../../../../store";
 import wfc from "../../../../wfc/client/wfc";
 import ConversationType from "../../../../wfc/model/conversationType";
 import ChannelCardView from "../../contact/ChannelCardView";

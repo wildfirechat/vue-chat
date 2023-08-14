@@ -9,10 +9,7 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
-import store from "@/store";
-import IpcEventType from "../../../../../ipcEventType";
-import {ipcRenderer, isElectron, screen} from "../../../../../platform";
+import Message from "../../../../../wfc/messages/message";
 import {previewMM} from "../../../../../platformHelper";
 import {scaleDown} from "../../../../util/imageUtil";
 

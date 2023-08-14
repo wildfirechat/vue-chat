@@ -7,7 +7,7 @@
 
 <script>
 import ConversationView from "./conversation/ConversationView";
-import ConversationListPanel from "@/ui/main/ConversationListPanel";
+import ConversationListPanel from "./ConversationListPanel.vue";
 
 export default {
     name: "ConversationPage",

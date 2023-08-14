@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import UserListVue from "@/ui/main/user/UserListVue";
-import ConversationInfo from "@/wfc/model/conversationInfo";
-import store from "@/store";
+import UserListVue from "../user/UserListVue.vue";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
+import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 
 export default {
@@ -45,15 +45,16 @@ export default {
             }
             this.$pickContact({
                 successCB,
-                    initialCheckedUsers: [this.conversationInfo.conversation._target],
-                    uncheckableUsers: [this.conversationInfo.conversation._target],
-                    confirmTitle: this.$t('common.add'),
+                initialCheckedUsers: [this.conversationInfo.conversation._target],
+                uncheckableUsers: [this.conversationInfo.conversation._target],
+                confirmTitle: this.$t('common.add'),
             });
         },
         showUserInfo(user) {
             // TODO
             console.log('todo show userInfo', user);
         },
+
         clearConversationHistory() {
             wfc.clearMessages(this.conversationInfo.conversation);
         },

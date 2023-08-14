@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
-import {parser as emojiParse} from "@/ui/util/emoji";
+import Message from "../../../../../wfc/messages/message";
+import {parser as emojiParse} from "../../../../util/emoji";
 //import {marked} from "marked";
 
 export default {
@@ -46,6 +46,7 @@ export default {
             }
         }
     },
+
     computed: {
         textContent() {
             let tmp = emojiParse(this.message.messageContent.digest(this.message));
@@ -91,7 +92,6 @@ export default {
     background-color: #98ea70;
 }
 
-
 .text-message-container .text {
     color: #050505;
     font-size: 13px;
@@ -110,11 +110,12 @@ export default {
     display: inline-block;
 }
 
-.text-message-container .text >>> a {
+.text-message-container .text >>> a{
     white-space: normal;
 }
 
-.text-message-container .text >>> .emoji {
-    vertical-align: middle;
+.text-message-container .text >>> .emoji{
+    vertical-align:middle;
 }
+
 </style>

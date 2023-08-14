@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import store from "@/store";
+import store from "../../../store";
 import Config from "../../../config";
 import organizationServerApi from "../../../api/organizationServerApi";
 import UserCardView from "../user/UserCardView.vue";

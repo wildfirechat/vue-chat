@@ -33,39 +33,37 @@
             <p class="single-line">{{ title }}</p>
         </div>
         <div id="window-controls" ref="content">
+            <div class="button" id="min-button" @click="minimize" v-if="sharedMiscState.enableMinimize">
+                <img class="icon"
+                     srcset="@/assets/windows_control_icons/min-k-10.png 1x, @/assets/windows_control_icons/min-k-12.png 1.25x, @/assets/windows_control_icons/min-k-15.png 1.5x, @/assets/windows_control_icons/min-k-15.png 1.75x, @/assets/windows_control_icons/min-k-20.png 2x, @/assets/windows_control_icons/min-k-20.png 2.25x, @/assets/windows_control_icons/min-k-24.png 2.5x, @/assets/windows_control_icons/min-k-30.png 3x, @/assets/windows_control_icons/min-k-30.png 3.5x"
+                     draggable="false" alt=""/>
+            </div>
 
-        <div class="button" id="min-button" @click="minimize" v-if="sharedMiscState.enableMinimize">
-            <img class="icon"
-                 srcset="@/assets/windows_control_icons/min-k-10.png 1x, @/assets/windows_control_icons/min-k-12.png 1.25x, @/assets/windows_control_icons/min-k-15.png 1.5x, @/assets/windows_control_icons/min-k-15.png 1.75x, @/assets/windows_control_icons/min-k-20.png 2x, @/assets/windows_control_icons/min-k-20.png 2.25x, @/assets/windows_control_icons/min-k-24.png 2.5x, @/assets/windows_control_icons/min-k-30.png 3x, @/assets/windows_control_icons/min-k-30.png 3.5x"
-                 draggable="false" alt=""/>
-        </div>
+            <div class="button" v-bind:class="{disabled: !maximizable}" v-if="maximizable" id="max-button"
+                 @click="maximize">
+                <img class="icon"
+                     srcset="@/assets/windows_control_icons/max-k-10.png 1x, @/assets/windows_control_icons/max-k-12.png 1.25x, @/assets/windows_control_icons/max-k-15.png 1.5x, @/assets/windows_control_icons/max-k-15.png 1.75x, @/assets/windows_control_icons/max-k-20.png 2x, @/assets/windows_control_icons/max-k-20.png 2.25x, @/assets/windows_control_icons/max-k-24.png 2.5x, @/assets/windows_control_icons/max-k-30.png 3x, @/assets/windows_control_icons/max-k-30.png 3.5x"
+                     draggable="false" alt=""/>
+            </div>
 
-        <div class="button" v-bind:class="{disabled: !maximizable}" v-if="maximizable" id="max-button"
-             @click="maximize">
-            <img class="icon"
-                 srcset="@/assets/windows_control_icons/max-k-10.png 1x, @/assets/windows_control_icons/max-k-12.png 1.25x, @/assets/windows_control_icons/max-k-15.png 1.5x, @/assets/windows_control_icons/max-k-15.png 1.75x, @/assets/windows_control_icons/max-k-20.png 2x, @/assets/windows_control_icons/max-k-20.png 2.25x, @/assets/windows_control_icons/max-k-24.png 2.5x, @/assets/windows_control_icons/max-k-30.png 3x, @/assets/windows_control_icons/max-k-30.png 3.5x"
-                 draggable="false" alt=""/>
-        </div>
+            <div class="button" v-bind:class="{disabled: !maximizable}" v-if="maximizable" id="restore-button"
+                 @click="maximize">
+                <img class="icon"
+                     srcset="@/assets/windows_control_icons/restore-k-10.png 1x, @/assets/windows_control_icons/restore-k-12.png 1.25x, @/assets/windows_control_icons/restore-k-15.png 1.5x, @/assets/windows_control_icons/restore-k-15.png 1.75x, @/assets/windows_control_icons/restore-k-20.png 2x, @/assets/windows_control_icons/restore-k-20.png 2.25x, @/assets/windows_control_icons/restore-k-24.png 2.5x, @/assets/windows_control_icons/restore-k-30.png 3x, @/assets/windows_control_icons/restore-k-30.png 3.5x"
+                     draggable="false" alt=""/>
+            </div>
 
-        <div class="button" v-bind:class="{disabled: !maximizable}" v-if="maximizable" id="restore-button"
-             @click="maximize">
-            <img class="icon"
-                 srcset="@/assets/windows_control_icons/restore-k-10.png 1x, @/assets/windows_control_icons/restore-k-12.png 1.25x, @/assets/windows_control_icons/restore-k-15.png 1.5x, @/assets/windows_control_icons/restore-k-15.png 1.75x, @/assets/windows_control_icons/restore-k-20.png 2x, @/assets/windows_control_icons/restore-k-20.png 2.25x, @/assets/windows_control_icons/restore-k-24.png 2.5x, @/assets/windows_control_icons/restore-k-30.png 3x, @/assets/windows_control_icons/restore-k-30.png 3.5x"
-                 draggable="false" alt=""/>
-        </div>
-
-        <div class="button" id="close-button" @click="close">
-            <img class="icon"
-                 srcset="@/assets/windows_control_icons/close-k-10.png 1x, @/assets/windows_control_icons/close-k-12.png 1.25x, @/assets/windows_control_icons/close-k-15.png 1.5x, @/assets/windows_control_icons/close-k-15.png 1.75x, @/assets/windows_control_icons/close-k-20.png 2x, @/assets/windows_control_icons/close-k-20.png 2.25x, @/assets/windows_control_icons/close-k-24.png 2.5x, @/assets/windows_control_icons/close-k-30.png 3x, @/assets/windows_control_icons/close-k-30.png 3.5x"
-                 draggable="false" alt=""/>
-        </div>
-
+            <div class="button" id="close-button" @click="close">
+                <img class="icon"
+                     srcset="@/assets/windows_control_icons/close-k-10.png 1x, @/assets/windows_control_icons/close-k-12.png 1.25x, @/assets/windows_control_icons/close-k-15.png 1.5x, @/assets/windows_control_icons/close-k-15.png 1.75x, @/assets/windows_control_icons/close-k-20.png 2x, @/assets/windows_control_icons/close-k-20.png 2.25x, @/assets/windows_control_icons/close-k-24.png 2.5x, @/assets/windows_control_icons/close-k-30.png 3x, @/assets/windows_control_icons/close-k-30.png 3.5x"
+                     draggable="false" alt=""/>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import {remote} from "@/platform";
+import {remote} from "../../platform";
 import wfc from "../../wfc/client/wfc";
 import store from "../../store";
 import {app} from "../../platform";
@@ -94,12 +92,14 @@ export default {
             sharedMiscState: store.state.misc,
         }
     },
+
     mounted() {
         if (!this.maximizable) {
             this.$refs.content.style.setProperty('--control-count', '2');
             this.$refs.content.style.setProperty('--close-button-column', '2');
         }
     },
+
     methods: {
         minimize() {
             const win = remote.getCurrentWindow();
@@ -126,16 +126,16 @@ export default {
                     confirmCallback: () => {
                         wfc.disconnect();
                         setTimeout(()=> {
-                        	app.exit(0)
+                            app.exit(0)
                         }, 1000)
                     }
                 })
 
             } else {
-            const win = remote.getCurrentWindow();
-            win.close();
+                const win = remote.getCurrentWindow();
+                win.close();
                 if (!wfc.isLogin() && this.sharedMiscState.isMainWindow) {
-                app.exit(0)
+                    app.exit(0)
                 }
             }
         },

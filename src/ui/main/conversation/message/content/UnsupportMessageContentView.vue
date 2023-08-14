@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
+import Message from "../../../../../wfc/messages/message";
 
 // pc/web端不支持的消息，比如红包等
 export default {

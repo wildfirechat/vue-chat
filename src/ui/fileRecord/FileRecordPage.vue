@@ -106,10 +106,10 @@
 </template>
 
 <script>
-import store from "@/store";
+import store from "../../store";
 import InfiniteLoading from "vue-infinite-loading";
-import {ipcRenderer, isElectron, currentWindow} from "@/platform";
-import UserListVue from "@/ui/main/user/UserListVue";
+import {ipcRenderer, isElectron, currentWindow} from "../../platform";
+import UserListVue from "../main/user/UserListVue.vue";
 import IpcEventType from "../../ipcEventType";
 
 export default {

@@ -82,10 +82,10 @@
     </section>
 </template>
 <script>
-import FriendRequestListView from "@/ui/main/contact/FriendRequestListView";
-import GroupListVue from "@/ui/main/contact/GroupListView";
-import store from "@/store";
-import UserListVue from "@/ui/main/user/UserListVue";
+import FriendRequestListView from "../../main/contact/FriendRequestListView";
+import GroupListVue from "../../main/contact/GroupListView";
+import store from "../../../store";
+import UserListVue from "../../main/user/UserListVue";
 import ChannelListView from "./ChannelListView";
 import ContactItemView from "./ContactItemView";
 import OrganizationListView from "./OrganizationListView.vue";

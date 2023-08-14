@@ -21,7 +21,23 @@
                     <div v-if="!shouldShowAllUser&& this.sharedSearchState.userSearchResult.length > 5"
                          class="show-all"
                          @click.stop="showAllUser">
-                        {{ $t('search.view_all') + this.sharedSearchState.contactSearchResult.length }}
+                        {{ $t('search.view_all') + this.sharedSearchState.userSearchResult.length }}
+                    </div>
+                </li>
+                <li class="category-item" v-if="sharedSearchState.channelSearchResult.length > 0">
+                    <label>{{ $t('common.channel') }}</label>
+                    <ul>
+                        <li v-for="(channel, index) in toShowChannelList" :key="index">
+                            <div class="search-result-item contact" @click.stop="chatToChannel(channel)">
+                                <img :src="channel.portrait">
+                                <span>{{ channel.name }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div v-if="!shouldShowAllChannel&& this.sharedSearchState.channelSearchResult.length > 5"
+                         class="show-all"
+                         @click.stop="showAllChannel">
+                        {{ $t('search.view_all') + this.sharedSearchState.channelSearchResult.length }}
                     </div>
                 </li>
                 <li class="category-item" v-if="sharedSearchState.contactSearchResult.length > 0">
@@ -69,10 +85,10 @@
 
 <script>
 import ClickOutside from "vue-click-outside";
-import store from "@/store";
-import Conversation from "@/wfc/model/conversation";
-import ConversationType from "@/wfc/model/conversationType";
-import FriendRequestView from "@/ui/main/contact/FriendRequestView";
+import store from "../../../store";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationType from "../../../wfc/model/conversationType";
+import FriendRequestView from "../contact/FriendRequestView.vue";
 import IpcEventType from "../../../ipcEventType";
 import {ipcRenderer} from "../../../platform";
 import wfc from "../../../wfc/client/wfc";
@@ -87,6 +103,7 @@ export default {
             sharedSearchState: store.state.search,
             sharedMiscState: store.state.misc,
             shouldShowAllUser: false,
+            shouldShowAllChannel: false,
             shouldShowAllContact: false,
             shouldShowAllGroup: false,
         }
@@ -112,7 +129,7 @@ export default {
     },
 
     methods: {
-        isFriend(userId){
+        isFriend(userId) {
             return wfc.isMyFriend(userId);
         },
         addFriend(user) {
@@ -130,6 +147,9 @@ export default {
         },
         showAllUser() {
             this.shouldShowAllUser = true;
+        },
+        showAllChannel() {
+            this.shouldShowAllChannel = true;
         },
         showAllContact() {
             this.shouldShowAllContact = true;
@@ -150,6 +170,15 @@ export default {
                 this.$router.replace("/home");
             }
             let conversation = new Conversation(ConversationType.Single, contact.uid, 0);
+            store.setCurrentConversation(conversation);
+            store.toggleSearchView(false);
+        },
+
+        chatToChannel(channel) {
+            if (this.$router.currentRoute.path !== '/home') {
+                this.$router.replace("/home");
+            }
+            let conversation = new Conversation(ConversationType.Channel, channel.channelId, 0);
             store.setCurrentConversation(conversation);
             store.toggleSearchView(false);
         },
@@ -182,6 +211,9 @@ export default {
     computed: {
         toShowUserList: function () {
             return !this.shouldShowAllUser && this.sharedSearchState.userSearchResult.length > 5 ? this.sharedSearchState.userSearchResult.slice(0, 4) : this.sharedSearchState.userSearchResult;
+        },
+        toShowChannelList: function () {
+            return !this.shouldShowAllChannel&& this.sharedSearchState.channelSearchResult.length > 5 ? this.sharedSearchState.channelSearchResult.slice(0, 4) : this.sharedSearchState.channelSearchResult;
         },
         toShowContactList: function () {
             return !this.shouldShowAllContact && this.sharedSearchState.contactSearchResult.length > 5 ? this.sharedSearchState.contactSearchResult.slice(0, 4) : this.sharedSearchState.contactSearchResult;
@@ -224,6 +256,7 @@ export default {
     padding-top: 10px;
     padding-bottom: 2px;
     margin-left: 12px;
+    font-size: 13px;
     border-bottom: 1px solid #eeeeee;
 }
 
@@ -286,6 +319,7 @@ export default {
     height: 54px;
     display: flex;
     align-items: center;
+    font-size: 13px;
 }
 
 .show-all {

@@ -43,12 +43,12 @@
 </template>
 
 <script>
-import store from "@/store";
-import Draft from "@/ui/util/draft";
-import FileMessageContent from "@/wfc/messages/fileMessageContent";
-import Message from "@/wfc/messages/message";
-import wfc from "@/wfc/client/wfc";
-import NotificationMessageContent from "@/wfc/messages/notification/notificationMessageContent";
+import store from "../../../store";
+import Draft from "../../util/draft";
+import FileMessageContent from "../../../wfc/messages/fileMessageContent";
+import Message from "../../../wfc/messages/message";
+import wfc from "../../../wfc/client/wfc";
+import NotificationMessageContent from "../../../wfc/messages/notification/notificationMessageContent";
 import Config from "../../../config";
 import {getConversationPortrait} from "../../util/imageUtil";
 import ConversationType from "../../../wfc/model/conversationType";

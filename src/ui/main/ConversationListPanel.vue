@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import ConversationListView from "@/ui/main/conversationList/ConversationListView";
-import store from "@/store";
-import SearchResultView from "@/ui/main/search/SearchResultView";
-import SearchView from "@/ui/main/search/SearchView";
+import ConversationListView from "./conversationList/ConversationListView.vue";
+import store from "../../store";
+import SearchResultView from "./search/SearchResultView.vue";
+import SearchView from "./search/SearchView.vue";
 
 export default {
     name: 'ConversationListPanel',

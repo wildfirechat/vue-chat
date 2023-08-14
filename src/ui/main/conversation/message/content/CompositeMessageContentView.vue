@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
-import {parser as emojiParse} from "@/ui/util/emoji";
-import wfc from "@/wfc/client/wfc";
-import ConversationType from "@/wfc/model/conversationType";
+import Message from "../../../../../wfc/messages/message";
+import {parser as emojiParse} from "../../../../util/emoji";
+import wfc from "../../../../../wfc/client/wfc";
+import ConversationType from "../../../../../wfc/model/conversationType";
 import {ipcRenderer, isElectron} from "../../../../../platform";
 import {stringValue} from "../../../../../wfc/util/longUtil";
 import IpcEventType from "../../../../../ipcEventType";

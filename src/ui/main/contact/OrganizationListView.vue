@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import store from "@/store";
+import store from "../../../store";
 import organizationServerApi from "../../../api/organizationServerApi";
 import Config from "../../../config";
 

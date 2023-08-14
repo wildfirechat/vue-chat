@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import store from "@/store";
+import store from "../../../store";
 import Config from "../../../config";
 
 export default {
@@ -41,13 +41,11 @@ export default {
 
         showCreateConversationModal() {
             let successCB = users => {
-                    store.createConversation(users);
-
-
+                store.createConversation(users);
             }
             let users = this.sharedContactState.favContactList.concat(this.sharedContactState.friendList);
             users = users.filter(u => {
-               return u.uid !== Config.FILE_HELPER_ID
+                return u.uid !== Config.FILE_HELPER_ID
             });
             this.$pickContact({
                 users,

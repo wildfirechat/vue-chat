@@ -22,7 +22,7 @@ export class AvEngineKitProxy {
     queueEvents = [];
     callWin;
     // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
-    useIframe = true;
+    useIframe = false;
     iframe;
     type;
 

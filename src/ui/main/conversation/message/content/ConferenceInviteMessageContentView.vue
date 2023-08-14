@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
+import Message from "../../../../../wfc/messages/message";
 import avenginekitproxy from "../../../../../wfc/av/engine/avenginekitproxy";
 import avenginekit from "../../../../../wfc/av/internal/engine.min";
 import store from "../../../../../store";

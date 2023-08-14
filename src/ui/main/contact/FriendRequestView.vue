@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import wfc from "@/wfc/client/wfc";
-import store from "@/store";
+import wfc from "../../../wfc/client/wfc";
+import store from "../../../store";
 
 export default {
     name: "FriendRequestView",

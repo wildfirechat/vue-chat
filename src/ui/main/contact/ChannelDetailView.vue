@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import store from "@/store";
-import Conversation from "@/wfc/model/conversation";
-import ConversationType from "@/wfc/model/conversationType";
+import store from "../../../store";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationType from "../../../wfc/model/conversationType";
 
 export default {
     name: "ChannelDetailView",

@@ -11,9 +11,9 @@ import VModal from 'vue-js-modal'
 import './global.css'
 import './wfc.css'
 import './assets/fonts/icomoon/style.css'
-import store from "@/store";
+import store from "./store";
 import visibility from 'vue-visibility-change';
-import {isElectron} from "@/platform";
+import {isElectron} from "./platform";
 import {getItem} from "./ui/util/storageHelper";
 import VueI18n from 'vue-i18n'
 import Notifications from 'vue-notification'

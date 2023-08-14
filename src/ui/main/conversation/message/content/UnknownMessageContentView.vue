@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
+import Message from "../../../../../wfc/messages/message";
 
 // 未知消息
 export default {

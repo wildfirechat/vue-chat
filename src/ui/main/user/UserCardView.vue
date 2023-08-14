@@ -42,11 +42,11 @@
 </template>
 
 <script>
-import store from "@/store";
-import Conversation from "@/wfc/model/conversation";
-import ConversationType from "@/wfc/model/conversationType";
-import FriendRequestView from "@/ui/main/contact/FriendRequestView";
-import wfc from "@/wfc/client/wfc";
+import store from "../../../store";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationType from "../../../wfc/model/conversationType";
+import FriendRequestView from "../../main/contact/FriendRequestView";
+import wfc from "../../../wfc/client/wfc";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
 import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
 import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";

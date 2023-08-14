@@ -86,8 +86,8 @@
 </template>
 
 <script>
-import store from "@/store";
-import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
+import store from "../../../store";
+import CheckableUserListView from "../user/CheckableUserListView.vue";
 import CheckableOrganizationTreeView from "./CheckableOrganizationTreeView.vue";
 import Config from "../../../config";
 import organizationServerApi from "../../../api/organizationServerApi";

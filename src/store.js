@@ -1,31 +1,31 @@
-import ConnectionStatus from "@/wfc/client/connectionStatus";
+import ConnectionStatus from "./wfc/client/connectionStatus";
 import Vue from 'vue'
-import wfc from "@/wfc/client/wfc";
-import EventType from "@/wfc/client/wfcEvent";
-import ConversationType from "@/wfc/model/conversationType";
-import {eq, gt, numberValue} from "@/wfc/util/longUtil";
-import helper from "@/ui/util/helper";
-import convert from '@/vendor/pinyin'
-import GroupType from "@/wfc/model/groupType";
-import {imageThumbnail, videoDuration, videoThumbnail} from "@/ui/util/imageUtil";
-import MessageContentMediaType from "@/wfc/messages/messageContentMediaType";
-import Conversation from "@/wfc/model/conversation";
-import MessageContentType from "@/wfc/messages/messageContentType";
-import MessageStatus from '@/wfc/messages/messageStatus';
-import Message from "@/wfc/messages/message";
-import ImageMessageContent from "@/wfc/messages/imageMessageContent";
-import VideoMessageContent from "@/wfc/messages/videoMessageContent";
-import FileMessageContent from "@/wfc/messages/fileMessageContent";
+import wfc from "./wfc/client/wfc";
+import EventType from "./wfc/client/wfcEvent";
+import ConversationType from "./wfc/model/conversationType";
+import {eq, gt, numberValue} from "./wfc/util/longUtil";
+import helper from "./ui/util/helper";
+import convert from './vendor/pinyin'
+import GroupType from "./wfc/model/groupType";
+import {imageThumbnail, videoDuration, videoThumbnail} from "./ui/util/imageUtil";
+import MessageContentMediaType from "./wfc/messages/messageContentMediaType";
+import Conversation from "./wfc/model/conversation";
+import MessageContentType from "./wfc/messages/messageContentType";
+import MessageStatus from './wfc/messages/messageStatus';
+import Message from "./wfc/messages/message";
+import ImageMessageContent from "./wfc/messages/imageMessageContent";
+import VideoMessageContent from "./wfc/messages/videoMessageContent";
+import FileMessageContent from "./wfc/messages/fileMessageContent";
 import Push from "push.js";
-import MessageConfig from "@/wfc/client/messageConfig";
-import PersistFlag from "@/wfc/messages/persistFlag";
-import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
-import TextMessageContent from "@/wfc/messages/textMessageContent";
-import {currentWindow, ipcRenderer, isElectron, remote} from "@/platform";
-import SearchType from "@/wfc/model/searchType";
-import Config from "@/config";
-import {getItem, setItem} from "@/ui/util/storageHelper";
-import CompositeMessageContent from "@/wfc/messages/compositeMessageContent";
+import MessageConfig from "./wfc/client/messageConfig";
+import PersistFlag from "./wfc/messages/persistFlag";
+import ForwardType from "./ui/main/conversation/message/forward/ForwardType";
+import TextMessageContent from "./wfc/messages/textMessageContent";
+import {currentWindow, ipcRenderer, isElectron, remote} from "./platform";
+import SearchType from "./wfc/model/searchType";
+import Config from "./config";
+import {getItem, setItem} from "./ui/util/storageHelper";
+import CompositeMessageContent from "./wfc/messages/compositeMessageContent";
 import {stringValue} from "./wfc/util/longUtil";
 import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
 import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffGroupMemberNotification";
@@ -165,6 +165,7 @@ let store = {
             query: null,
             show: false,
             userSearchResult: [],
+            channelSearchResult: [],
             contactSearchResult: [],
             groupSearchResult: [],
             conversationSearchResult: [],
@@ -174,6 +175,7 @@ let store = {
                 this.query = null;
                 this.show = false;
                 this.userSearchResult = [];
+                this.channelSearchResult = [];
                 this.contactSearchResult = [];
                 this.groupSearchResult = [];
                 this.conversationSearchResult = [];
@@ -867,6 +869,13 @@ let store = {
             this.setCurrentConversationInfo(null)
         }, (err) => {
             console.log('quit group error', err)
+        })
+    },
+    dismissGroup(groupId) {
+        wfc.dismissGroup(groupId, [0], null, () => {
+            this.setCurrentConversationInfo(null)
+        }, (err) => {
+            console.log('dismiss group error', err)
         })
     },
     subscribeChannel(channelId, subscribe) {
@@ -1706,15 +1715,11 @@ let store = {
             searchState.groupSearchResult = this.filterGroupConversation(query);
             searchState.conversationSearchResult = this.filterConversation(query);
             // searchState.messageSearchResult = this.searchMessage(query);
-            // 默认不搜索新用户
             this.searchUser(query);
+            this.searchChannel(query);
 
         } else {
-            searchState.contactSearchResult = [];
-            searchState.conversationSearchResult = [];
-            searchState.groupSearchResult = [];
-            searchState.messageSearchResult = [];
-            searchState.userSearchResult = [];
+            searchState._reset();
         }
     },
 
@@ -1731,6 +1736,22 @@ let store = {
                 searchState.userSearchResult = [];
             }
         });
+    },
+
+    searchChannel(query) {
+        console.log('search channel')
+        wfc.searchChannel(query, true, (keyword, channelInfos) => {
+            console.log('search channel result', channelInfos);
+            if (searchState.query === keyword) {
+                console.log('search channel result', channelInfos);
+                searchState.channelSearchResult = channelInfos;
+            }
+        }, err => {
+            console.log('search channel error', query, err)
+            if (searchState.query === query) {
+                searchState.channelSearchResult = [];
+            }
+        })
     },
 
     // TODO 到底是什么匹配了

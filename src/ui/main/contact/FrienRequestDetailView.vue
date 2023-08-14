@@ -55,9 +55,9 @@
 </template>
 
 <script>
-import store from "@/store";
-import ConversationType from "@/wfc/model/conversationType";
-import Conversation from "@/wfc/model/conversation";
+import store from "../../../store";
+import ConversationType from "../../../wfc/model/conversationType";
+import Conversation from "../../../wfc/model/conversation";
 import wfc from "../../../wfc/client/wfc";
 
 export default {

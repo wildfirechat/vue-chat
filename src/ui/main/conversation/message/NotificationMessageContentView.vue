@@ -6,7 +6,7 @@
 
 <script>
 
-import Message from "@/wfc/messages/message";
+import Message from "../../../../wfc/messages/message";
 
 export default {
     name: "NotificationMessageContentView",

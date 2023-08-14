@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
+import Message from "../../../../../wfc/messages/message";
 import {scaleDown} from "../../../../util/imageUtil";
 
 export default {

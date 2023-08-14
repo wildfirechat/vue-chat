@@ -56,17 +56,17 @@
 </template>
 
 <script>
-import UserCardView from "@/ui/main/user/UserCardView";
-import Message from "@/wfc/messages/message";
-import MessageContentContainerView from "@/ui/main/conversation/message/MessageContentContainerView";
-import store from "@/store";
-import LoadingView from "@/ui/common/LoadingView";
-import wfc from "@/wfc/client/wfc";
-import ConversationType from "@/wfc/model/conversationType";
-import {gte} from "@/wfc/util/longUtil";
-import MessageReceiptDetailView from "@/ui/main/conversation/message/MessageReceiptDetailView";
-import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
-import Config from "@/config";
+import UserCardView from "../../user/UserCardView.vue";
+import Message from "../../../../wfc/messages/message";
+import MessageContentContainerView from "./MessageContentContainerView.vue";
+import store from "../../../../store";
+import LoadingView from "../../../common/LoadingView.vue";
+import wfc from "../../../../wfc/client/wfc";
+import ConversationType from "../../../../wfc/model/conversationType";
+import {gte} from "../../../../wfc/util/longUtil";
+import MessageReceiptDetailView from "./MessageReceiptDetailView.vue";
+import QuoteMessageView from "./QuoteMessageView.vue";
+import Config from "../../../../config";
 
 export default {
     name: "NormalOutMessageContentView",
@@ -104,7 +104,7 @@ export default {
                     this.quotedMessage = msg;
                 }, err => {
                     console.log('load remote message error', messageUid, err)
-        })
+                })
             } else {
                 this.quotedMessage = msg;
             }
@@ -113,6 +113,7 @@ export default {
     beforeDestroy() {
         this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
     },
+
     methods: {
         onContextMenuClosed() {
             this.highLight = false;
@@ -181,16 +182,21 @@ export default {
             let conversation = this.message.conversation;
             let timestamp = this.message.timestamp;
             let receiptDesc = ''
+            let deliveries = this.sharedConversationState.currentConversationDeliveries;
             let readEntries = this.sharedConversationState.currentConversationRead;
 
             if (conversation.type === ConversationType.Single) {
                 let readDt = readEntries ? readEntries.get(conversation.target) : 0
                 readDt = readDt ? readDt : 0;
+                let recvDt = deliveries ? deliveries.get(conversation.target) : 0;
+                recvDt = recvDt ? recvDt : 0;
 
                 if (gte(readDt, timestamp)) {
                     receiptDesc = "已读";
+                } else if (gte(recvDt, timestamp)) {
+                    receiptDesc = "已送达";
                 } else {
-                    receiptDesc = " 未读";
+                    receiptDesc = "未送达";
                 }
             } else {
                 let groupMembers = wfc.getGroupMemberIds(conversation.target, false);
@@ -216,7 +222,6 @@ export default {
             }
             return receiptDesc;
         },
-
 
         isDownloading() {
             return store.isDownloadingMessage(this.message.messageId);
@@ -266,6 +271,7 @@ export default {
     align-items: center;
     position: relative;
 }
+
 
 .message-avatar-content-container {
     display: flex;

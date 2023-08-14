@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import SearchView from "@/ui/main/search/SearchView";
-import ContactListView from "@/ui/main/contact/ContactListView";
-import store from "@/store";
-import SearchResultView from "@/ui/main/search/SearchResultView";
+import SearchView from "./search/SearchView.vue";
+import ContactListView from "./contact/ContactListView.vue";
+import store from "../../store";
+import SearchResultView from "./search/SearchResultView.vue";
 
 export default {
     name: 'ContactListPanel',

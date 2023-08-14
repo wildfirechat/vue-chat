@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import store from "@/store";
-import {isElectron} from "@/platform";
+import store from "./store";
+import {isElectron} from "./platform";
 import CoolLightBox from 'vue-cool-lightbox'
 import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import IpcMain from "./ipc/ipcMain";

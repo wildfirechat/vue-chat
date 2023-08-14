@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import store from "@/store";
+import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import EventType from "../../../wfc/client/wfcEvent";
 
@@ -65,7 +65,7 @@ export default {
         onFriendRequestUpdate() {
             if (this.isActive) {
                 wfc.clearUnreadFriendRequestStatus();
-        }
+            }
         },
     },
 

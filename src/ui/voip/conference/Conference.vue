@@ -222,7 +222,7 @@
 <script>
 import avenginekit from "../../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../../wfc/av/engine/callSessionCallback";
-import CallState from "@/wfc/av/engine/callState";
+import CallState from "../../../wfc/av/engine/callState";
 import ClickOutside from 'vue-click-outside'
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import {currentWindow, isElectron} from "../../../platform";

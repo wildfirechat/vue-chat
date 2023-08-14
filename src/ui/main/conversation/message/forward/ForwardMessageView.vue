@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import MessageContentType from "@/wfc/messages/messageContentType";
-import ForwardType from "@/ui/main/conversation/message/forward/ForwardType";
-import ConversationType from "@/wfc/model/conversationType";
+import MessageContentType from "../../../../../wfc/messages/messageContentType";
+import ForwardType from "./ForwardType";
+import ConversationType from "../../../../../wfc/model/conversationType";
 
 export default {
     name: "ForwardMessageView",

@@ -1,38 +1,38 @@
 <template>
     <section class="user-detail-container">
         <div class="user-header-content-container">
-        <div class="header">
-            <div>
+            <div class="header">
+                <div>
                     <img class="avatar" :src="sharedStateContact.currentFriend.portrait">
                 </div>
                 <div class="name">
-                <h2>{{ name }}</h2>
-                <p>你好，野火</p>
+                    <h2>{{ name }}</h2>
+                    <p>你好，野火</p>
+                </div>
             </div>
-        </div>
-        <div class="content">
-            <ul>
-                <li>
-                    <label>{{ $t('common.alias') }}</label>
-                    <div class="alias">
-                        <input type="text" ref="input" :value="sharedStateContact.currentFriend.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias"/>
-                    </div>
-                </li>
-                <li>
-                    <label>{{ $t('common.wfc_id') }}</label>
-                    <p>{{ user.name }}</p>
-                </li>
-                <li>
-                    <label>{{ $t('common.area') }}</label>
-                    <p>{{ $t('common.unknown') }}</p>
-                </li>
-                <li>
-                    <label>{{ $t('common.label') }}</label>
-                    <p>{{ $t('misc.test_user') }}</p>
-                </li>
-            </ul>
-        </div>
-        <div class="footer">
+            <div class="content">
+                <ul>
+                    <li>
+                        <label>{{ $t('common.alias') }}</label>
+                        <div class="alias">
+                            <input type="text" ref="input" :value="sharedStateContact.currentFriend.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias"/>
+                        </div>
+                    </li>
+                    <li>
+                        <label>{{ $t('common.wfc_id') }}</label>
+                        <p>{{ user.name }}</p>
+                    </li>
+                    <li>
+                        <label>{{ $t('common.area') }}</label>
+                        <p>{{ $t('common.unknown') }}</p>
+                    </li>
+                    <li>
+                        <label>{{ $t('common.label') }}</label>
+                        <p>{{ $t('misc.test_user') }}</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer">
                 <div class="action" @click="chat">
                     <i class="icon-ion-ios-chatboxes-outline"></i>
                     <a>{{ $t('message.send_message') }}</a>
@@ -51,9 +51,9 @@
 </template>
 
 <script>
-import store from "@/store";
-import ConversationType from "@/wfc/model/conversationType";
-import Conversation from "@/wfc/model/conversation";
+import store from "../../../store";
+import ConversationType from "../../../wfc/model/conversationType";
+import Conversation from "../../../wfc/model/conversation";
 import wfc from "../../../wfc/client/wfc";
 
 export default {
@@ -84,8 +84,8 @@ export default {
                     (error) => {
                         // do nothing
                     })
-        }
-    },
+            }
+        },
         startAudioCall() {
             let conversation = new Conversation(ConversationType.Single, this.user.uid, 0);
             this.$startVoipCall({audioOnly: true, conversation: conversation});
@@ -203,6 +203,7 @@ export default {
     color: #bfbfbf;
     font-size: 13px;
 }
+
 .content ul li .alias > input:active {
     border: 1px solid #4168e0;
 }

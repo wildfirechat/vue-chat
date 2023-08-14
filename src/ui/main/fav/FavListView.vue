@@ -93,12 +93,12 @@
 </template>
 
 <script>
-import helper from "@/ui/util/helper";
-import MessageContentType from "@/wfc/messages/messageContentType";
-import wfc from "@/wfc/client/wfc";
+import helper from "../../util/helper";
+import MessageContentType from "../../../wfc/messages/messageContentType";
+import wfc from "../../../wfc/client/wfc";
 import InfiniteLoading from "vue-infinite-loading";
-import store from "@/store";
-import {ipcRenderer} from "@/platform";
+import store from "../../../store";
+import {ipcRenderer} from "../../../platform";
 import FavItem from "../../../wfc/model/favItem";
 import {isElectron, currentWindow} from "../../../platform";
 import {_reverseToJsLongString} from "../../../wfc/util/longUtil";

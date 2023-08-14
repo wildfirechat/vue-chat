@@ -1,6 +1,6 @@
 // ie11 not support browser-md5-file
 // import MD5 from 'browser-md5-file';
-import {numberValue} from '@/wfc/util/longUtil'
+import {numberValue} from '../../wfc/util/longUtil'
 import IPCEventType from "../../ipcEventType";
 
 

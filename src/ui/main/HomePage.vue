@@ -104,21 +104,18 @@
 </template>
 
 <script>
-import UserCardView from "@/ui/main/user/UserCardView";
-import store from "@/store";
-import wfc from "@/wfc/client/wfc";
-import EventType from "@/wfc/client/wfcEvent";
-import ConnectionStatus from "@/wfc/client/connectionStatus";
-import ElectronWindowsControlButtonView from "@/ui/common/ElectronWindowsControlButtonView";
-import {removeItem} from "@/ui/util/storageHelper";
-import {ipcRenderer} from "@/platform";
+import UserCardView from "./user/UserCardView.vue";
+import store from "../../store";
+import wfc from "../../wfc/client/wfc";
+import EventType from "../../wfc/client/wfcEvent";
+import ConnectionStatus from "../../wfc/client/connectionStatus";
+import ElectronWindowsControlButtonView from "../common/ElectronWindowsControlButtonView.vue";
+import {removeItem} from "../util/storageHelper";
+import {ipcRenderer} from "../../platform";
 import avenginekit from "../../wfc/av/internal/engine.min";
-import localStorageEmitter from "../../ipc/localStorageEmitter";
-import CallEndReason from "../../wfc/av/engine/callEndReason";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
-import LocalStorageIpcEventType from "../../ipc/localStorageIpcEventType";
 import {isElectron} from "../../platform";
 
 export default {

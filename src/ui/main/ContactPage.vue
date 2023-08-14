@@ -28,11 +28,11 @@
 </template>
 
 <script>
-import ContactListPanel from "@/ui/main/ContactListPanel";
-import GroupDetailView from "@/ui/main/contact/GroupDetailView";
-import store from "@/store";
-import UserDetailView from "@/ui/main/contact/UserDetailView";
-import FriendRequestDetailView from "@/ui/main/contact/FrienRequestDetailView";
+import ContactListPanel from "./ContactListPanel.vue";
+import GroupDetailView from "./contact/GroupDetailView.vue";
+import store from "../../store";
+import UserDetailView from "./contact/UserDetailView.vue";
+import FriendRequestDetailView from "./contact/FrienRequestDetailView.vue";
 import ChannelListView from "./contact/ChannelListView";
 import ChannelDetailView from "./contact/ChannelDetailView";
 import OrganizationDetailView from "./contact/OrganizationTreeView.vue";
@@ -93,4 +93,5 @@ ul {
     font-size: 17px;
     font-weight: normal;
 }
+
 </style>

@@ -12,10 +12,7 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
-import store from "@/store";
-import {ipcRenderer, isElectron} from "../../../../../platform";
-import IpcEventType from "../../../../../ipcEventType";
+import Message from "../../../../../wfc/messages/message";
 import {previewMM} from "../../../../../platformHelper";
 
 export default {

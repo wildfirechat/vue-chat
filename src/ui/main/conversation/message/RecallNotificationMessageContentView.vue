@@ -7,7 +7,7 @@
 
 <script>
 
-import Message from "@/wfc/messages/message";
+import Message from "../../../../wfc/messages/message";
 import wfc from "../../../../wfc/client/wfc";
 import MessageContentType from "../../../../wfc/messages/messageContentType";
 import {numberValue} from "../../../../wfc/util/longUtil";

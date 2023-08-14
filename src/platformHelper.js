@@ -1,4 +1,4 @@
-import {ipcRenderer, isElectron} from "@/platform";
+import {ipcRenderer, isElectron} from "./platform";
 import {remote, screen} from "./platform";
 import IPCEventType from "./ipcEventType";
 import IpcEventType from "./ipcEventType";

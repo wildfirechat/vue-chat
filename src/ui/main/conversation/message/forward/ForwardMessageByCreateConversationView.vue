@@ -43,9 +43,9 @@
 </template>
 
 <script>
-import store from "@/store";
-import ForwardMessageView from "@/ui/main/conversation/message/forward/ForwardMessageView";
-import CheckableUserListView from "@/ui/main/user/CheckableUserListView";
+import store from "../../../../../store";
+import ForwardMessageView from "./ForwardMessageView.vue";
+import CheckableUserListView from "../../../user/CheckableUserListView.vue";
 import Config from "../../../../../config";
 
 export default {

@@ -8,12 +8,10 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
+import Message from "../../../../../wfc/messages/message";
 import CallEndReason from "../../../../../wfc/av/engine/callEndReason";
 import IpcSub from "../../../../../ipc/ipcSub";
 import store from "../../../../../store";
-import ConversationType from "../../../../../wfc/model/conversationType";
-import avenginekitproxy from "../../../../../wfc/av/engine/avenginekitproxy";
 import {numberValue} from "../../../../../wfc/util/longUtil";
 
 export default {

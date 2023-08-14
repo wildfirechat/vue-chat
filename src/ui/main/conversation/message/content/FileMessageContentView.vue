@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import Message from "@/wfc/messages/message";
-import helper from "@/ui/util/helper";
-import {downloadFile} from "@/platformHelper";
-import {fs, isElectron, shell} from "@/platform";
-import store from "@/store";
+import Message from "../../../../../wfc/messages/message";
+import helper from "../../../../util/helper";
+import {downloadFile} from "../../../../../platformHelper";
+import {fs, isElectron, shell} from "../../../../../platform";
+import store from "../../../../../store";
 
 export default {
     name: "FileMessageContentView",
@@ -83,6 +83,7 @@ export default {
             let icon = helper.getFiletypeIcon(fileName.substring(fileName.lastIndexOf('.') + 1))
             return require("@/assets/images/filetypes/" + icon);
         },
+
         downloadStats() {
             let dm = store.getDownloadingMessageStatus(this.message.messageId);
             return dm;

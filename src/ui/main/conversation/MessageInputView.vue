@@ -99,26 +99,26 @@
 </template>
 
 <script>
-import wfc from "@/wfc/client/wfc";
-import TextMessageContent from "@/wfc/messages/textMessageContent";
-import store from "@/store";
+import wfc from "../../../wfc/client/wfc";
+import TextMessageContent from "../../../wfc/messages/textMessageContent";
+import store from "../../../store";
 import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker"
 import ClickOutside from "vue-click-outside";
 import Tribute from "tributejs";
 import '../../../tribute.css'
-import ConversationType from "@/wfc/model/conversationType";
-import ConversationInfo from "@/wfc/model/conversationInfo";
-import GroupInfo from "@/wfc/model/groupInfo";
-import GroupMemberType from "@/wfc/model/groupMemberType";
-import QuoteInfo from "@/wfc/model/quoteInfo";
-import Draft from "@/ui/util/draft";
+import ConversationType from "../../../wfc/model/conversationType";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
+import GroupInfo from "../../../wfc/model/groupInfo";
+import GroupMemberType from "../../../wfc/model/groupMemberType";
+import QuoteInfo from "../../../wfc/model/quoteInfo";
+import Draft from "../../util/draft";
 import Mention from "../../../wfc/model/mention";
-import {parser as emojiParse} from '@/ui/util/emoji';
-import QuoteMessageView from "@/ui/main/conversation/message/QuoteMessageView";
-import {fileFromDataUri} from "@/ui/util/imageUtil";
-import StickerMessageContent from "@/wfc/messages/stickerMessageContent";
-import {config as emojiConfig} from "@/ui/main/conversation/EmojiAndStickerConfig";
-import {ipcRenderer, isElectron} from "@/platform";
+import {parser as emojiParse} from '../../util/emoji';
+import QuoteMessageView from "../../main/conversation/message/QuoteMessageView";
+import {fileFromDataUri} from "../../util/imageUtil";
+import StickerMessageContent from "../../../wfc/messages/stickerMessageContent";
+import {config as emojiConfig} from "../../main/conversation/EmojiAndStickerConfig";
+import {ipcRenderer, isElectron} from "../../../platform";
 import {copyText} from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
 import IpcEventType from "../../../ipcEventType";
@@ -131,7 +131,6 @@ import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
-
 
 export default {
     name: "MessageInputView",

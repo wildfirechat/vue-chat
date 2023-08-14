@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import store from "@/store";
-import ForwardMessageView from "@/ui/main/conversation/message/forward/ForwardMessageView";
+import store from "../../../../../store";
+import ForwardMessageView from "./ForwardMessageView.vue";
 
 export default {
     name: "ForwardMessageByPickConversationView",

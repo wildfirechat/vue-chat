@@ -1,6 +1,6 @@
 import wfc from "../../wfc/client/wfc";
 import {_patchToJavaLong, _reverseToJsLongString, stringValue} from "../../wfc/util/longUtil";
-import store from "@/store";
+import store from "../../store";
 import QuoteInfo from "../../wfc/model/quoteInfo";
 
 export default class Draft {

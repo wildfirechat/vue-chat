@@ -26,10 +26,10 @@
 </template>
 
 <script>
-import store from "@/store";
-import Conversation from "@/wfc/model/conversation";
-import ConversationType from "@/wfc/model/conversationType";
-import wfc from "@/wfc/client/wfc";
+import store from "../../../store";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationType from "../../../wfc/model/conversationType";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "ChannelCardView",

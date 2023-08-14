@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import ConversationInfo from "@/wfc/model/conversationInfo";
-import store from "@/store";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
+import store from "../../../store";
 import ListView from "./ListView";
 import wfc from "../../../wfc/client/wfc";
 

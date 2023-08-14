@@ -76,17 +76,16 @@
 </template>
 
 <script>
-import UserListVue from "@/ui/main/user/UserListVue";
-import ConversationInfo from "@/wfc/model/conversationInfo";
-import store from "@/store";
-import wfc from "@/wfc/client/wfc";
-import GroupMemberType from "@/wfc/model/groupMemberType";
-import GroupType from "@/wfc/model/groupType";
+import UserListVue from "../user/UserListVue.vue";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
+import store from "../../../store";
+import wfc from "../../../wfc/client/wfc";
+import GroupMemberType from "../../../wfc/model/groupMemberType";
+import GroupType from "../../../wfc/model/groupType";
 import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
 import EventType from "../../../wfc/client/wfcEvent";
 import appServerApi from "../../../api/appServerApi";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
-
 
 export default {
     name: "GroupConversationInfoView",
@@ -213,6 +212,7 @@ export default {
         dismissGroup() {
             store.dismissGroup(this.conversationInfo.conversation.target)
         },
+
         setFavGroup(groupId, fav) {
             wfc.setFavGroup(groupId, fav, () => {
                 this.conversationInfo.conversation._target._isFav = fav;
@@ -247,6 +247,7 @@ export default {
 
             });
         },
+
         clearConversationHistory() {
             wfc.clearMessages(this.conversationInfo.conversation);
         },
@@ -268,6 +269,7 @@ export default {
             }
             return true;
         },
+
         clickGroupMemberItemFunc() {
             let groupInfo = this.conversationInfo.conversation._target;
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, wfc.getUserId());
@@ -289,6 +291,7 @@ export default {
             }
             return false;
         },
+
         enableAddGroupMember() {
             let selfUid = wfc.getUserId();
             let groupInfo = this.conversationInfo.conversation._target;

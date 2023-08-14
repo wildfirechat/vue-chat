@@ -18,7 +18,7 @@
 
 <script>
 
-import Message from "@/wfc/messages/message";
+import Message from "../../../../wfc/messages/message";
 import {ipcRenderer, isElectron} from "../../../../platform";
 import IpcEventType from "../../../../ipcEventType";
 
