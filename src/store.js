@@ -1365,7 +1365,10 @@ let store = {
             m._from = userInfoMap ? userInfoMap.get(m.from) : wfc.getUserInfo(m.from, false, '');
         }
         if (!m._from) {
-            m._from = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
+            let u = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
+            // clone for modify
+            // TODO sdk 返回的时候，直接返回 clone copy，而不是直接返回底层的数据，防止上层修改，影响到底层数据模型
+            m._from = Object.assign({}, u);
         }
         if (m.conversation.type === ConversationType.Group) {
             m._from._displayName = wfc.getGroupMemberDisplayNameEx(m._from);
