@@ -5,6 +5,7 @@
             <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
             <div class="message-avatar-content-container">
                 <tippy
+                    v-if="enableClickMessageSenderPortrait"
                     :to="'infoTrigger' + this.message.messageId"
                     interactive
                     :animate-fill="false"
@@ -62,6 +63,7 @@ import store from "../../../../store";
 import wfc from "../../../../wfc/client/wfc";
 import ConversationType from "../../../../wfc/model/conversationType";
 import ChannelCardView from "../../contact/ChannelCardView";
+import GroupMemberType from "../../../../wfc/model/groupMemberType";
 
 export default {
     name: "NormalInMessageContentView",
@@ -135,7 +137,17 @@ export default {
             } else {
                 return this.message._from.portrait;
             }
-        }
+        },
+        enableClickMessageSenderPortrait() {
+            if (this.message.conversation.type === ConversationType.Group) {
+                let groupInfo = wfc.getGroupInfo(this.message.conversation.target);
+                let groupMember = wfc.getGroupMember(this.message.conversation.target, wfc.getUserId());
+                if (groupInfo.privateChat === 1 && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) === -1) {
+                    return false;
+                }
+            }
+            return true;
+        },
     },
     components: {
         ChannelCardView,
