@@ -81,7 +81,7 @@ export default {
             } else if (v === 'drop') {
                 this.dragAndDropEnterCount--;
                 let length = e.dataTransfer.files.length;
-                if (length > 0 && length < 5) {
+                if (length > 0 && length <= 5) {
                     for (let i = 0; i < length; i++) {
                         this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i])
                         store.sendFile(this.source.conversation, e.dataTransfer.files[i]);
