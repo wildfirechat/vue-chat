@@ -896,7 +896,8 @@ export default {
                         u._isVideoMuted = ou._isVideoMuted;
                         u._isAudioMuted = ou._isAudioMuted;
                         u._volume = ou._volume;
-                        this.participantUserInfos[index] = u;
+                        // FYI: https://v2.vuejs.org/v2/guide/reactivity#Change-Detection-Caveats
+                        this.participantUserInfos.splice(index, 1, u)
                     }
                 })
             }
