@@ -713,7 +713,7 @@ export default {
         },
 
         storeDraft(conversationInfo) {
-            if (!this.$refs['input'] && conversationInfo._quotedMessage) {
+            if (!this.$refs['input']) {
                 return;
             }
             let draftText = this.$refs['input'].innerHTML.trim();
