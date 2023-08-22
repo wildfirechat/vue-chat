@@ -41,6 +41,7 @@ import NullGroupInfo from "./wfc/model/nullGroupInfo";
 import {genGroupPortrait} from "./ui/util/imageUtil";
 import IPCEventType from "./ipcEventType";
 import NullChannelInfo from "./wfc/model/NullChannelInfo";
+import ModifyGroupSettingNotification from "./wfc/messages/notification/modifyGroupSettingNotification";
 
 /**
  * 一些说明
@@ -393,6 +394,9 @@ let store = {
                     this.notify(msg);
                 }
                 this.updateTray();
+            }
+            if (msg.messageContent instanceof ModifyGroupSettingNotification) {
+                wfc.getGroupInfo(msg.messageContent.groupId, true);
             }
         });
 

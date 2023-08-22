@@ -66,6 +66,7 @@ import ConferenceCommandMessageContent from "../av/messages/conferenceCommandMes
 import ChannelMenuEventMessageContent from "../messages/channelMenuEventMessageContent";
 import EnterChannelChatMessageContent from "../messages/enterChannelChatMessageContent";
 import LeaveChannelChatMessageContent from "../messages/leaveChannelChatMessageContent";
+import ModifyGroupSettingNotification from "../messages/notification/modifyGroupSettingNotification";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -335,6 +336,12 @@ export default class MessageConfig {
             flag: PersistFlag.Persist,
             type: MessageContentType.AllowGroupMember_Notification,
             contentClazz: AllowGroupMemberNotification,
+        },
+        {
+            name: 'modifyGroupSettingNotificationContent',
+            flag: PersistFlag.No_Persist,
+            type: MessageContentType.ModifyGroupSetting_Notification,
+            contentClazz: ModifyGroupSettingNotification,
         },
         {
             name: 'recall',
