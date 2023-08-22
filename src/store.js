@@ -379,7 +379,8 @@ let store = {
                     return m.messageId === msg.messageId || (gt(m.messageUid, 0) && eq(m.messageUid, msg.messageUid));
                 });
                 if (msgIndex > -1) {
-                    conversationState.currentConversationMessageList[msgIndex] = msg;
+                    // FYI: https://v2.vuejs.org/v2/guide/reactivity#Change-Detection-Caveats
+                    conversationState.currentConversationMessageList.splice(msgIndex, 1, msg);
                     console.log('msg duplicate')
                     return;
                 }
