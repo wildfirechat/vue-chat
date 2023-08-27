@@ -527,8 +527,12 @@ export default {
                         return true;
                     }
 
+                    let fromGroupMember = wfc.getGroupMember(message.from, message.conversation.target);
                     let groupMember = wfc.getGroupMember(message.conversation.target, selfUserId);
-                    if (groupMember && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) > -1) {
+                    if (!fromGroupMember || !groupMember){
+                        return false;
+                    }
+                    if (groupMember.type === GroupMemberType.Manager && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(fromGroupMember.type) === -1) {
                         return true;
                     }
                 }
