@@ -42,7 +42,7 @@
 
 ## 体验
 
-[在线体验野火IM Web版](http://web.wildfirechat.cn)，请使用野火IM Andorid或iOS Demo扫码登录
+[在线体验野火IM Web版](http://web.wildfirechat.cn)
 
 ## 截图
 ![](http://static.wildfirechat.cn/web-home.png)
