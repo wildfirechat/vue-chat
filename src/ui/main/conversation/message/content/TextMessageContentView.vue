@@ -44,21 +44,35 @@ export default {
                     document.selection.empty();
                 }
             }
+        },
+        escapeHtml(text) {
+            return text.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/ /g, '&nbsp;')
+                .replace(/<script/gi, "&lt;script")
+                .replace(/<iframe/gi, "&lt;iframe");
         }
     },
 
     computed: {
+        // todo 禁用 emoji shortcodes，如 :smile: 不能展示成笑脸
         textContent() {
-            let tmp = emojiParse(this.message.messageContent.digest(this.message));
-            // pls refer to https://stackoverflow.com/questions/4522124/replace-leading-spaces-with-nbsp-in-javascript
-            tmp = tmp.replace(/<script/gi, "&lt;script");
-            tmp = tmp.replace(/<iframe/gi, "&lt;iframe");
-            // tmp = marked.parse(tmp);
-            if (tmp.indexOf('<img') >= 0) {
-                tmp = tmp.replace(/<img/g, '<img style="max-width:400px;"')
-                return tmp;
+            let content = this.message.messageContent.digest(this.message);
+            let lines = content.split('\n');
+            if (lines.length > 1) {
+                content = lines.map(line => `<span>${this.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
+            } else {
+               content = this.escapeHtml(content)
             }
-            return tmp;
+
+            content = emojiParse(content);
+            // tmp = marked.parse(tmp);
+            if (content.indexOf('<img') >= 0) {
+                content = content.replace(/<img/g, '<img style="max-width:400px;"')
+                return content;
+            }
+            return content;
         }
     }
 }
@@ -81,7 +95,7 @@ export default {
 }
 
 .text-message-container >>> code {
-    background:  #f5f5f5;
+    background: #f5f5f5;
     display: inline-block;
     border-radius: 3px;
     padding: 0 5px;
@@ -97,6 +111,8 @@ export default {
     font-size: 13px;
     line-height: 25px;
     /*max-height: 1000px;*/
+    max-width: 400px;
+    word-spacing: normal;
     word-break: break-word;
     overflow: hidden;
     display: inline-block;
@@ -110,12 +126,12 @@ export default {
     display: inline-block;
 }
 
-.text-message-container .text >>> a{
+.text-message-container .text >>> a {
     white-space: normal;
 }
 
-.text-message-container .text >>> .emoji{
-    vertical-align:middle;
+.text-message-container .text >>> .emoji {
+    vertical-align: middle;
 }
 
 </style>
