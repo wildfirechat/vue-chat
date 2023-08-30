@@ -339,7 +339,7 @@ export default {
                         content.imageHeight = ih;
                         wfc.sendConversationMessage(this.conversationInfo.conversation, content);
                     } else {
-                        // TODO
+                        // TODO blob uri
                     }
                 }
                 console.log('drag Url', dragUrl);

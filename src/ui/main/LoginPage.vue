@@ -101,7 +101,7 @@ import organizationServerApi from "../../api/organizationServerApi";
 import WfcScheme from "../../wfcScheme";
 
 export default {
-    name: 'App',
+    name: 'LoginPage',
     data() {
         return {
             sharedMiscState: store.state.misc,
@@ -134,8 +134,10 @@ export default {
                 this.loginStatus = 4;
             } else {
                 this.loginStatus = 2;
+                isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
             }
         } else {
+            isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
             this.createPCLoginSession(null);
         }
     },
@@ -358,11 +360,11 @@ export default {
 
             if (status === ConnectionStatus.ConnectionStatusConnected) {
                     if (isElectron()) {
-                        ipcRenderer.send('logined', {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
+                    ipcRenderer.send(IpcEventType.LOGIN, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                     }
                     this.$router.replace({path: "/home"});
                 if (isElectron() || (Config.CLIENT_ID_STRATEGY === 1 || Config.CLIENT_ID_STRATEGY === 2)) {
-                    isElectron() && ipcRenderer.send(IpcEventType.LOGINED, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
+                    isElectron() && ipcRenderer.send(IpcEventType.LOGIN, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                     if (this.enableAutoLogin) {
                         store.setEnableAutoLogin(this.enableAutoLogin)
                     }
