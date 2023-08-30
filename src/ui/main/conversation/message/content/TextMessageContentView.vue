@@ -56,7 +56,6 @@ export default {
     },
 
     computed: {
-        // todo 禁用 emoji shortcodes，如 :smile: 不能展示成笑脸
         textContent() {
             let content = this.message.messageContent.digest(this.message);
             let lines = content.split('\n');
