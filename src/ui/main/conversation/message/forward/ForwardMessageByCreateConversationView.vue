@@ -216,12 +216,13 @@ export default {
     flex-direction: column;
     column-count: 1;
     justify-content: center;
-    align-content: center;
+    align-items: center;
     padding: 5px 10px;
 }
 
 .checked-user-list-container .content .picked-user-container .name {
-    width: 100%;
+    text-align: center;
+    max-width: 80px;
     font-size: 12px;
 }
 
