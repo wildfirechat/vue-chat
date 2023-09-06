@@ -238,6 +238,7 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     background-color: #f7f7f7;
+    overflow: hidden;
 }
 
 .contact-list-container .input-container {
