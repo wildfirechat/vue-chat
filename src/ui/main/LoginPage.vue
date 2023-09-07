@@ -529,6 +529,7 @@ export default {
 .login-form-container .title {
     align-self: flex-start;
     font-size: 18px;
+    color: white;
 }
 
 .login-form-container .item {
@@ -592,7 +593,7 @@ input::-webkit-inner-spin-button {
 .tip {
     align-self: flex-start;
     font-size: 12px;
-    color: #4168e0;
+    color: lightgrey;
     margin-top: 10px;
 }
 
