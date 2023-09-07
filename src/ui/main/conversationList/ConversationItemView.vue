@@ -50,7 +50,6 @@ import Message from "../../../wfc/messages/message";
 import wfc from "../../../wfc/client/wfc";
 import NotificationMessageContent from "../../../wfc/messages/notification/notificationMessageContent";
 import Config from "../../../config";
-import {getConversationPortrait} from "../../util/imageUtil";
 import ConversationType from "../../../wfc/model/conversationType";
 import GroupType from "../../../wfc/model/groupType";
 
@@ -125,25 +124,6 @@ export default {
         showConversationInfoContextMenu(event) {
             this.$eventBus.$emit('showConversationContextMenu', event, this.source);
         },
-
-        refreshGroupPortrait() {
-            let info = this.source;
-            if (info.conversation.type !== ConversationType.Group) {
-                return;
-            }
-            console.log('refreshGroupPortrait', !info.conversation._target.portrait, info.conversation._target.portrait === Config.DEFAULT_GROUP_PORTRAIT_URL);
-            if (!info.conversation._target.portrait || info.conversation._target.portrait === Config.DEFAULT_GROUP_PORTRAIT_URL) {
-                getConversationPortrait(info.conversation).then((portrait => {
-                    if (info.conversation.equal(this.source.conversation)) {
-                        console.log('update portrait', this.source.conversation.target)
-                        if (portrait !== Config.DEFAULT_GROUP_PORTRAIT_URL) {
-                            info.conversation._target.portrait = portrait;
-                        }
-                        this.groupPortrait = portrait;
-                    }
-                }))
-            }
-        }
     },
     computed: {
         conversationTitle() {

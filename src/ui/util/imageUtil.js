@@ -1,8 +1,4 @@
 import resizeImage from "resize-image";
-import wfc from '../../wfc/client/wfc';
-import ConversationType from "../../wfc/model/conversationType";
-import Config from "../../config";
-import GroupMemberType from "../../wfc/model/groupMemberType";
 
 function mergeImages(sources = [], options = {}) {
     // Defaults
@@ -255,67 +251,6 @@ function mergeImages(sources = [], options = {}) {
 let groupPortraitMap = new Map();
 window.__groupPortraitMap = groupPortraitMap;
 
-async function getConversationPortrait(conversation, userInfoMap, groupInfoMap) {
-    let portrait = '';
-    switch (conversation.type) {
-        case ConversationType.Single:
-            let u = userInfoMap ? userInfoMap.get(conversation.target) : wfc.getUserInfo(conversation.target, false);
-            portrait = u.portrait;
-            break;
-        case ConversationType.Group:
-            portrait = await getGroupPortrait(conversation.target, groupInfoMap);
-            break;
-        case ConversationType.Channel:
-            break;
-        case ConversationType.ChatRoom:
-            break;
-        default:
-            break;
-    }
-
-    if (!portrait) {
-        switch (conversation.type) {
-            case ConversationType.Single:
-                portrait = 'assets/images/user-fallback.png';
-                break;
-            case ConversationType.Group:
-                portrait = 'assets/images/default_group_avatar.png';
-                break;
-            default:
-                break;
-        }
-    }
-
-    return portrait;
-}
-
-async function getGroupPortrait(groupId, groupInfoMap) {
-    let groupInfo = groupInfoMap ? groupInfoMap.get(groupId) : wfc.getGroupInfo(groupId, false);
-    if (groupInfo.portrait) {
-        return groupInfo.portrait;
-    }
-
-    let portrait = groupPortraitMap.get(groupId);
-    let now = new Date().getTime();
-    if (!portrait || now - portrait.timestamp > 30 * 1000) {
-        let groupMembers = wfc.getGroupMembers(groupId, false);
-        if (!groupMembers || groupMembers.length === 0) {
-            console.error('gen group portrait, members empty', groupId)
-            return Config.DEFAULT_GROUP_PORTRAIT_URL;
-        }
-        groupMembers = groupMembers.filter(m => m.type !== GroupMemberType.Removed);
-        let groupMemberPortraits = [];
-        for (let i = 0; i < Math.min(9, groupMembers.length); i++) {
-            groupMemberPortraits.push(groupMembers[i].getPortrait())
-        }
-        portrait = await mergeImages(groupMemberPortraits)
-        groupPortraitMap.set(groupId, {timestamp: now, uri: portrait})
-        return portrait;
-    } else {
-        return portrait.uri;
-    }
-}
-
 async function genGroupPortrait(groupMemberUsers) {
     let groupMemberPortraits = [];
     for (let i = 0; i < Math.min(9, groupMemberUsers.length); i++) {
@@ -477,4 +412,4 @@ function scaleDown(width, height, maxWidth, maxHeight) {
     return {width: Math.ceil(scaledWidth), height: Math.ceil(scaledHeight)};
 }
 
-export {mergeImages, getConversationPortrait, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri, scaleDown};
+export {mergeImages, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri, scaleDown};
