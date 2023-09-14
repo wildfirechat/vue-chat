@@ -264,7 +264,7 @@ export default {
                     this.appToken = '';
                     this.loginStatus = 0;
                     this.createPCLoginSession(null);
-                }, 30 * 1000);
+                }, 60 * 1000);
             }
         },
 
