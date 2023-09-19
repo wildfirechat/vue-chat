@@ -26,7 +26,7 @@ import SearchType from "./wfc/model/searchType";
 import Config from "./config";
 import {getItem, setItem} from "./ui/util/storageHelper";
 import CompositeMessageContent from "./wfc/messages/compositeMessageContent";
-import {stringValue} from "./wfc/util/longUtil";
+import {stringValue, longValue} from "./wfc/util/longUtil";
 import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
 import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffGroupMemberNotification";
 import QuitGroupNotification from "./wfc/messages/notification/quitGroupNotification";
@@ -2215,4 +2215,5 @@ function _reset() {
 
 window.__store = store;
 window.stringValue = stringValue;
+window.longValue = longValue;
 export default store

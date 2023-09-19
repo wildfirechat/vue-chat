@@ -204,6 +204,10 @@ export default {
     overflow: auto;
 }
 
+.contact-list::-webkit-scrollbar{
+    width: 0;
+}
+
 .category-item-container {
     height: 40px;
     display: flex;

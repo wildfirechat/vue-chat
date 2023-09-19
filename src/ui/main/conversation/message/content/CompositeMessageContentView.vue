@@ -16,6 +16,8 @@ import ConversationType from "../../../../../wfc/model/conversationType";
 import {ipcRenderer, isElectron} from "../../../../../platform";
 import {stringValue} from "../../../../../wfc/util/longUtil";
 import IpcEventType from "../../../../../ipcEventType";
+import TextMessageContent from "../../../../../wfc/messages/textMessageContent";
+import helper from "../../../../util/helper";
 
 export default {
     name: "CompositeMessageContentView",
@@ -38,7 +40,11 @@ export default {
             let conversation = messages[0].conversation;
             let groupId = conversation.type === ConversationType.Group ? conversation.target : '';
             for (let i = 0; i < messages.length && i < 4; i++) {
-                str += wfc.getGroupMemberDisplayName(groupId, messages[i].from) + ': ' + emojiParse(messages[i].messageContent.digest(messages[i]));
+                if (messages[i].messageContent instanceof TextMessageContent) {
+                    str += wfc.getGroupMemberDisplayName(groupId, messages[i].from) + ': ' + this.textMessageContent(messages[i]);
+                } else {
+                    str += wfc.getGroupMemberDisplayName(groupId, messages[i].from) + ': ' + messages[i].messageContent.digest(messages[i]);
+                }
                 str += '\n';
             }
             return str;
@@ -46,6 +52,23 @@ export default {
     },
 
     methods: {
+        textMessageContent(message) {
+            let content = message.messageContent.digest(message);
+            let lines = content.split('\n');
+            if (lines.length > 1) {
+                content = lines.map(line => `<span>${helper.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
+            } else {
+                content = helper.escapeHtml(content)
+            }
+
+            content = emojiParse(content);
+            // tmp = marked.parse(tmp);
+            if (content.indexOf('<img') >= 0) {
+                content = content.replace(/<img/g, '<img style="max-width:400px;"')
+                return content;
+            }
+            return content;
+        },
         showCompositePage() {
             if (isElectron()) {
                 let hash = window.location.hash;
@@ -91,6 +114,7 @@ export default {
     background-color: white;
     position: relative;
     border-radius: 5px;
+    overflow: hidden;
 }
 
 .composite-message-container p {
@@ -112,6 +136,19 @@ export default {
 .composite-message-container .desc {
     border-top: 1px solid #f2f2f2;
     padding: 5px 0 0 0;
+}
+
+.composite-message-container .content >>> img {
+    max-width: 400px !important;
+    display: inline-block;
+}
+
+.composite-message-container .content >>> a {
+    white-space: normal;
+}
+
+.composite-message-container .content >>> .emoji {
+    vertical-align: middle;
 }
 
 </style>

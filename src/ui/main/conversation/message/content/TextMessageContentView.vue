@@ -8,6 +8,7 @@
 <script>
 import Message from "../../../../../wfc/messages/message";
 import {parser as emojiParse} from "../../../../util/emoji";
+import helper from "../../../../util/helper";
 //import {marked} from "marked";
 
 export default {
@@ -44,14 +45,6 @@ export default {
                     document.selection.empty();
                 }
             }
-        },
-        escapeHtml(text) {
-            return text.replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/ /g, '&nbsp;')
-                .replace(/<script/gi, "&lt;script")
-                .replace(/<iframe/gi, "&lt;iframe");
         }
     },
 
@@ -60,9 +53,9 @@ export default {
             let content = this.message.messageContent.digest(this.message);
             let lines = content.split('\n');
             if (lines.length > 1) {
-                content = lines.map(line => `<span>${this.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
+                content = lines.map(line => `<span>${helper.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
             } else {
-               content = this.escapeHtml(content)
+                content = helper.escapeHtml(content)
             }
 
             content = emojiParse(content);

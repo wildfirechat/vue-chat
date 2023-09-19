@@ -86,6 +86,14 @@ const helper = {
     decodeHTML: (text = '') => {
         return text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
     },
+    escapeHtml: (text) => {
+        return text.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/ /g, '&nbsp;')
+            .replace(/<script/gi, "&lt;script")
+            .replace(/<iframe/gi, "&lt;iframe");
+    },
 
     isImage: (ext) => {
         return ['bmp', 'gif', 'jpeg', 'jpg', 'png'].includes(ext);

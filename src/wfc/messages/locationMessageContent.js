@@ -3,6 +3,7 @@
  */
 
 import MessageContent from './messageContent'
+import MessageContentType from "./messageContentType";
 
 export default class LocationMessageContent extends MessageContent {
     title;
@@ -11,6 +12,9 @@ export default class LocationMessageContent extends MessageContent {
     lat;
     long;
 
+    constructor() {
+        super(MessageContentType.Location);
+    }
 
     digest() {
         return '位置'

@@ -146,7 +146,7 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     background-color: #f7f7f7;
-    width: 200px;
+    overflow: hidden;
 }
 
 .conversation-list-panel .input-container {

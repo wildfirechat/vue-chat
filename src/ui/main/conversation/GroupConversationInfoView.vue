@@ -206,11 +206,33 @@ export default {
         },
 
         quitGroup() {
-            store.quitGroup(this.conversationInfo.conversation.target)
+            this.$alert({
+                title: '退出群组',
+                content: '确定退出群组？',
+                confirmText: '确定',
+                cancelText: '取消',
+                cancelCallback: () => {
+                    // do nothing
+                },
+                confirmCallback: () => {
+                    store.quitGroup(this.conversationInfo.conversation.target)
+                }
+            })
         },
 
         dismissGroup() {
-            store.dismissGroup(this.conversationInfo.conversation.target)
+            this.$alert({
+                title: '解散群组',
+                content: '确定解散群组？',
+                confirmText: '确定',
+                cancelText: '取消',
+                cancelCallback: () => {
+                    // do nothing
+                },
+                confirmCallback: () => {
+                    store.dismissGroup(this.conversationInfo.conversation.target)
+                }
+            })
         },
 
         setFavGroup(groupId, fav) {
