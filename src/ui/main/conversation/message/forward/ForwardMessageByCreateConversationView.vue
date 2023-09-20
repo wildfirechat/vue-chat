@@ -137,6 +137,7 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     background-color: #f7f7f7;
+    overflow: hidden;
 }
 
 .user-list-panel .input-container {
@@ -269,6 +270,7 @@ export default {
 
 .checked-user-list-container footer button.confirm {
     background-color: #4168e0;
+    color: white;
     margin-left: 20px;
     margin-right: 20px;
 }
