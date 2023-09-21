@@ -14,7 +14,7 @@
 <script>
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
-import ListView from "./ListView";
+import ListView from "../../common/ListView.vue";
 import wfc from "../../../wfc/client/wfc";
 
 export default {

@@ -25,7 +25,7 @@
                             <!--message content-->
                             <TextMessageContentView :message="message"
                                                     v-if="message.messageContent.type === 1"
-                                                    :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
+                                                    :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
                                                     v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
                             <!--                            <AudioMessageContentView :message="message"-->
                             <!--                                                     v-else-if="message.messageContent.type === 2"/>-->

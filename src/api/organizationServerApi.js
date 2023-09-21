@@ -68,8 +68,9 @@ export class OrganizationServerApi {
         return this._post('/api/organization/query_list', {ids: orgIds});
     }
 
-    getOrganizationEmployees(orgIds) {
-        return this._post('/api/organization/batch_employees', {ids: orgIds});
+    async getOrganizationEmployees(orgIds) {
+        let employeeIds = await this._post('/api/organization/batch_employees', {ids: orgIds});
+        return this.getEmployeeList(employeeIds);
     }
 
     getOrgEmployees(orgId) {
@@ -82,6 +83,10 @@ export class OrganizationServerApi {
 
     getEmployeeEx(employeeId) {
         return this._post('/api/employee/query_ex', {employeeId});
+    }
+
+    getEmployeeList(employeeIds) {
+        return this._post('/api/employee/query_list', {employeeIds: employeeIds})
     }
 
     searchEmployee(orgId, keyword) {

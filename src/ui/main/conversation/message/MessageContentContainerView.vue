@@ -1,7 +1,7 @@
 <template>
     <TextMessageContentView :message="message"
                             v-if="message.messageContent.type === 1"
-                            :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
+                            :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
                             v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     <AudioMessageContentView :message="message"
                              v-else-if="message.messageContent.type === 2"/>
@@ -20,7 +20,7 @@
                                v-else-if="message.messageContent.type === 7"/>
     <LinkMessageContentView :message="message"
                             v-else-if="message.messageContent.type === 8"
-                            :style="{'--out-arrow-color':'#98ea70', '--in-arrow-color':'white'}"
+                            :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
                             v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     <CompositeMessageContentView :message="message"
                                  v-else-if="message.messageContent.type === 11"/>
@@ -90,7 +90,7 @@ export default {
 
 :root {
     --in-arrow-color: white;
-    --out-arrow-color: #98ea70;
+    --out-arrow-color: #a8bdff;
 }
 
 .leftarrow:before {

@@ -1,6 +1,5 @@
 <template>
-    <section>
-        <ul>
+    <ul v-if="this.users.length < 100">
             <li v-for="(groupedUser) in groupedUsers" :key="groupedUser.category">
                 <div ref="contactItem" class="contact-item">
                     <div v-if="showCategoryLabel" class="label"
@@ -31,11 +30,24 @@
                 </div>
             </li>
         </ul>
-    </section>
+    <virtual-list
+        v-else
+        :data-component="CheckableUserItemView" :data-sources="virtualListGroupedUsers" :data-key="'uid'"
+        :estimate-size="30"
+        :extra-props="{
+                enablePick: enablePick,
+                initialCheckedUsers: initialCheckedUsers,
+                uncheckableUsers: uncheckableUsers,
+                showCategoryLabel: showCategoryLabel,
+                enableCategoryLabelSticky: enableCategoryLabelSticky,
+                paddingLeft: paddingLeft,
+            }"
+        style="max-height: 100%; height: 100%; overflow-y: auto"/>
 </template>
 
 <script>
 import store from "../../../store";
+import CheckableUserItemView from "./CheckableUserItemView.vue";
 
 export default {
     name: "CheckableUserListView",
@@ -112,6 +124,32 @@ export default {
     },
 
     computed: {
+        CheckableUserItemView() {
+            return CheckableUserItemView
+        },
+
+        virtualListGroupedUsers() {
+            let groupedUsers = [];
+            let currentCategory = {};
+            let lastCategory = null;
+            let index = 0;
+            this.users.forEach((user) => {
+                index++;
+                if (this.showCategoryLabel && (!lastCategory || lastCategory !== user._category)) {
+                    lastCategory = user._category;
+                    currentCategory = {
+                        type: 'category',
+                        category: user._category,
+                        uid: user._category + index,
+                    };
+                    groupedUsers.push(currentCategory);
+                    groupedUsers.push(user);
+                } else {
+                    groupedUsers.push(user);
+                }
+            });
+            return groupedUsers;
+        },
         groupedUsers() {
             let groupedUsers = [];
             if (!this.showCategoryLabel) {

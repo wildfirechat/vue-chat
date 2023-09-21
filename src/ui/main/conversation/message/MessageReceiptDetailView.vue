@@ -5,7 +5,7 @@
             <div class="receipt-item">
                 <p class="label">{{ readTitle }}</p>
                 <div class="users">
-                    <UserListVue :users="readUsers"
+                    <UserListView :users="readUsers"
                                  :show-category-label="false"
                                  :padding-left="'20px'"/>
                 </div>
@@ -13,7 +13,7 @@
             <div class="receipt-item">
                 <p class="label">{{ unreadTitle }}</p>
                 <div class="users">
-                    <UserListVue :users="unreadUsers"
+                    <UserListView :users="unreadUsers"
                                  :show-category-label="false"
                                  :click-user-item-func="()=>{}"
                     />
@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import UserListVue from "../../user/UserListVue.vue";
+import UserListView from "../../user/UserListView.vue";
 
 export default {
     name: "MessageReceiptDetailView",
-    components: {UserListVue},
+    components: {UserListView},
     props: {
         readUsers: {
             type: Array,

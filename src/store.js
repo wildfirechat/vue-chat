@@ -494,6 +494,10 @@ let store = {
             this._patchMessage(message, lastTimestamp)
 
             conversationState.currentConversationMessageList.push(message);
+            const defaultRenderMessageCount = 50;
+            if (conversationState.currentConversationMessageList.length > defaultRenderMessageCount) {
+                conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.slice(conversationState.currentConversationMessageList.length - defaultRenderMessageCount);
+            }
         });
 
         wfc.eventEmitter.on(EventType.MessageStatusUpdate, (message) => {
@@ -606,6 +610,7 @@ let store = {
             window.__wfc = wfc;
         }
         miscState.isMainWindow = isMainWindow;
+        window.__cw = currentWindow;
     },
 
     _loadDefaultData() {

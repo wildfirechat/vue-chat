@@ -219,6 +219,7 @@ export default {
     justify-content: center;
     align-items: center;
     padding: 5px 10px;
+    overflow: hidden;
 }
 
 .checked-user-list-container .content .picked-user-container .name {

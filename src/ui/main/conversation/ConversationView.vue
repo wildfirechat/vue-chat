@@ -51,15 +51,13 @@
                 </div>
                 <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll"
                      infinite-wrapper>
-                    <infinite-loading :identifier="loadingIdentifier" force-use-infinite-wrapper direction="top"
+                    <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true" direction="top"
                                       @infinite="infiniteHandler">
                         <!--            <template slot="spinner">加载中...</template>-->
                         <template slot="no-more">{{ $t('conversation.no_more_message') }}</template>
                         <template slot="no-results">{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
-                    <ul v-if="fixTippy">
-                        <!--todo item.messageId or messageUid as key-->
-                        <li v-for="(message) in sharedConversationState.currentConversationMessageList"
+                    <div v-for="(message) in sharedConversationState.currentConversationMessageList"
                             :key="message.messageId">
                             <!--todo 不同的消息类型 notification in out-->
 
@@ -78,8 +76,7 @@
                                 @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
                                 :message="message"
                                 v-else/>
-                        </li>
-                    </ul>
+                    </div>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
                     <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>

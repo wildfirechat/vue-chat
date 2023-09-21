@@ -126,7 +126,7 @@ export default {
 }
 
 .call-start-message-container.out {
-    background-color: #98ea70;
+    background-color: #a8bdff;
 }
 
 

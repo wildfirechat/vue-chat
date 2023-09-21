@@ -54,7 +54,7 @@
                 <div class="icon">-</div>
                 <p>{{ $t('conversation.remove_member') }}</p>
             </div>
-            <UserListVue :users="users"
+            <UserListView :users="users"
                          :show-category-label="false"
                          :click-user-item-func="clickGroupMemberItemFunc"
                          :padding-left="'20px'"
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import UserListVue from "../user/UserListVue.vue";
+import UserListView from "../user/UserListView.vue";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
@@ -123,7 +123,7 @@ export default {
         wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onUserInfosUpdate);
     },
 
-    components: {UserListVue},
+    components: {UserListView},
     methods: {
         onUserInfosUpdate() {
             this.groupMemberUserInfos = store.getConversationMemberUsrInfos(this.conversationInfo.conversation);

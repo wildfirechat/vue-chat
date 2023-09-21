@@ -1,51 +1,44 @@
 <template>
-    <section>
-        <ul>
-            <li v-for="(groupedUser) in groupedUsers" :key="groupedUser.category">
-                <div ref="contactItem" class="contact-item">
-                    <div v-if="showCategoryLabel" class="label"
-                         :style="paddingStyle"
-                         v-bind:class="{sticky:enableCategoryLabelSticky}">
-                        <p>{{ groupedUser.category.toUpperCase() }}</p>
-                    </div>
-                    <ul>
-                        <li v-for="(user) in groupedUser.users" :key="user.uid">
-                            <tippy
-                                v-if="!clickUserItemFunc"
-                                :to="'user-' + user.uid"
-                                interactive
-                                theme="light"
-                                :animate-fill="false"
-                                placement="left"
-                                distant="7"
-                                animation="fade"
-                                trigger="click"
-                                :style="tippyStyleFix"
-                            >
-                                <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
-                            </tippy>
-                            <div class="content"
-                                 :ref="'userCardTippy-'+user.uid"
-                                 :name="'user-'+user.uid"
-                                 :style="paddingStyle"
-                                 v-bind:class="{active: (sharedContactState.currentFriend
-                        && user._category === sharedContactState.currentFriend._category
-                        && user.uid === sharedContactState.currentFriend.uid) || (currentUser && currentUser.uid === user.uid)}"
-                                 @click.stop="clickUserItem(user)"
-                                 @contextmenu.prevent="showContactContextMenu($event, user)">
-                                <img class="avatar" :src="user.portrait" alt="" @error="imgUrlAlt">
-                                <div style="padding-left: 10px">
-                                    <p class="single-line"> {{ user._displayName }}</p>
-                                    <p v-if="user._userOnlineStatusDesc" class="single-line user-online-status"> {{ user._userOnlineStatusDesc }}</p>
-                                </div>
-                            </div>
-
-                        </li>
-                    </ul>
+    <div ref="contactItem" class="contact-item">
+        <div v-if="showCategoryLabel && source.type === 'category'"
+             class="label"
+             :style="paddingStyle"
+             v-bind:class="{sticky:enableCategoryLabelSticky}">
+            <p>{{ source.category.toUpperCase() }}</p>
+        </div>
+        <div v-else>
+            <tippy
+                v-if="!clickUserItemFunc"
+                :to="'user-' + source.uid"
+                interactive
+                theme="light"
+                :animate-fill="false"
+                placement="left"
+                distant="7"
+                animation="fade"
+                trigger="click"
+                :style="tippyStyleFix"
+            >
+                <UserCardView :user-info="source" v-on:close="closeUserCard(source)"/>
+            </tippy>
+            <div class="content"
+                 :ref="'userCardTippy-'+source.uid"
+                 :name="'user-'+source.uid"
+                 :style="paddingStyle"
+                 v-bind:class="{active: (sharedContactState.currentFriend
+                        && source._category === sharedContactState.currentFriend._category
+                        && source.uid === sharedContactState.currentFriend.uid) || (currentUser && currentUser.uid === source.uid)}"
+                 @click.stop="clickUserItem(source)"
+                 @contextmenu.prevent="showContactContextMenu($event, ussourceer)">
+                <img class="avatar" :src="source.portrait" alt="" @error="imgUrlAlt">
+                <div style="padding-left: 10px">
+                    <p class="single-line"> {{ source._displayName }}</p>
+                    <p v-if="source._userOnlineStatusDesc" class="single-line user-online-status"> {{ source._userOnlineStatusDesc }}</p>
                 </div>
-            </li>
-        </ul>
-    </section>
+            </div>
+
+        </div>
+    </div>
 </template>
 
 <script>
@@ -56,8 +49,8 @@ import Config from "../../../config";
 export default {
     name: "UserListVue",
     props: {
-        users: {
-            type: Array,
+        source: {
+            type: Object,
             required: true,
         },
         currentUser: {
@@ -114,7 +107,7 @@ export default {
             root.style.setProperty('--tippy-right', '0');
         },
         closeUserCard(user) {
-            this.$refs["userCardTippy-" + user.uid][0]._tippy.hide();
+            this.$refs["userCardTippy-" + user.uid]._tippy.hide();
         },
         imgUrlAlt(e) {
             e.target.src = Config.DEFAULT_PORTRAIT_URL;
@@ -143,31 +136,6 @@ export default {
     },
 
     computed: {
-        groupedUsers() {
-            let groupedUsers = [];
-            if (!this.showCategoryLabel) {
-                groupedUsers.push({
-                    category: 'not-show-category',
-                    users: this.users,
-                })
-            } else {
-                let current = {};
-                let lastCategory = null;
-                this.users.forEach((user) => {
-                    if (!lastCategory || lastCategory !== user._category) {
-                        lastCategory = user._category;
-                        current = {
-                            category: user._category,
-                            users: [user],
-                        };
-                        groupedUsers.push(current);
-                    } else {
-                        current.users.push(user);
-                    }
-                });
-            }
-            return groupedUsers;
-        },
         paddingStyle() {
             return {
                 paddingLeft: this.paddingLeft

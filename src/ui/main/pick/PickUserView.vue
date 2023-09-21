@@ -63,14 +63,14 @@
                 <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="user.uid">
                     <div class="picked-user">
                         <img class="avatar" :src="user.portrait" alt="">
-                        <button @click="unpickUser(user)" class="unpick-button">X</button>
+                        <button @click="onPickUser(user)" class="unpick-button">X</button>
                     </div>
                     <span class="name single-line">{{ user.displayName }}</span>
                 </div>
                 <div class="picked-user-container" v-for="(org, index) in sharedPickState.organizations" :key="org.id">
                     <div class="picked-user">
                         <img class="avatar" :src="org.portrait ? org.portrait : defaultOrganizationPortraitUrl" alt="">
-                        <button @click="unpickOrganization(org)" class="unpick-button">X</button>
+                        <button @click="onPickOrganization(org)" class="unpick-button">X</button>
                     </div>
                     <span class="name single-line">{{ org.name }}</span>
                 </div>
@@ -142,14 +142,14 @@ export default {
         }
     },
     methods: {
-        unpickUser(user) {
+        onPickUser(user) {
             if (this.isUserUncheckable(user)) {
                 return;
             }
             store.pickOrUnpickUser(user);
         },
 
-        unpickOrganization(organization) {
+        onPickOrganization(organization) {
             store.pickOrUnpickOrganization(organization);
         },
 
@@ -187,11 +187,13 @@ export default {
             if (this.sharedPickState.organizations.length) {
                 let orgIds = this.sharedPickState.organizations.map(o => o.id);
                 organizationServerApi.getOrganizationEmployees(orgIds)
-                    .then(employeeIds => {
+                    .then(employeeList => {
                         this.sharedPickState.organizations.length = 0;
-                        for (const employeeId of employeeIds) {
+                        for (const employee of employeeList) {
                             let userInfo = new UserInfo();
-                            userInfo.uid = employeeId;
+                            userInfo.uid = employee.employeeId;
+                            userInfo.displayName = employee.name;
+                            userInfo.updateDt = employee.updateDt;
                             users.push(userInfo);
                         }
                         this.$modal.hide('pick-user-modal', {confirm: true, users: users})

@@ -64,7 +64,7 @@
                 <div v-if="category === CATEGORY_SENDER && !fileQuery"
                      class="conversation-list-container">
                     <!--      发送者列表-->
-                    <UserListVue :users="sharedContactState.friendList"
+                    <UserListView :users="sharedContactState.friendList"
                                  :show-category-label="false"
                                  :current-user="currentUser"
                                  :click-user-item-func="showUserFiles"
@@ -109,7 +109,7 @@
 import store from "../../store";
 import InfiniteLoading from "vue-infinite-loading";
 import {ipcRenderer, isElectron, currentWindow} from "../../platform";
-import UserListVue from "../main/user/UserListVue.vue";
+import UserListView from "../main/user/UserListView.vue";
 import IpcEventType from "../../ipcEventType";
 
 export default {
@@ -341,7 +341,7 @@ export default {
     },
 
     components: {
-        UserListVue,
+        UserListView,
         InfiniteLoading,
     }
 }

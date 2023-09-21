@@ -52,8 +52,8 @@
                         <span class="desc">{{ sharedContactState.friendList.length }}</span>
                     </div>
                 </div>
-                <UserListVue
-                    v-if="sharedContactState.expandFriendList && users.length < 200"
+                <UserListView
+                    v-if="sharedContactState.expandFriendList && users.length < 100"
                     :enable-pick="false"
                     :users="users"
                     :click-user-item-func="setCurrentUser"
@@ -85,7 +85,7 @@
 import FriendRequestListView from "../../main/contact/FriendRequestListView";
 import GroupListVue from "../../main/contact/GroupListView";
 import store from "../../../store";
-import UserListVue from "../../main/user/UserListVue";
+import UserListView from "../user/UserListView.vue";
 import ChannelListView from "./ChannelListView";
 import ContactItemView from "./ContactItemView";
 import OrganizationListView from "./OrganizationListView.vue";
@@ -101,7 +101,7 @@ export default {
     components: {
         OrganizationListView,
         ChannelListView,
-        UserListVue,
+        UserListView,
         GroupListVue,
         NewFriendListView: FriendRequestListView
     },

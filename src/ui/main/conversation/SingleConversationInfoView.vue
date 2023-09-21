@@ -6,7 +6,7 @@
                 <p>{{ $t('conversation.add_member') }}</p>
             </div>
         </div>
-        <UserListVue :users="users"
+        <UserListView :users="users"
                      :show-category-label="false"
                      :padding-left="'20px'"
         />
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import UserListVue from "../user/UserListVue.vue";
+import UserListView from "../user/UserListView.vue";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
@@ -36,7 +36,7 @@ export default {
             sharedMiscState: store.state.misc,
         }
     },
-    components: {UserListVue},
+    components: {UserListView},
     methods: {
         showCreateConversationModal() {
             let successCB = users => {
