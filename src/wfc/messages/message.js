@@ -108,6 +108,7 @@ export default class Message {
                     }
                 }
                 msg.messageContent = content;
+                delete msg.content;
                 if (content instanceof UnknownMessageContent) {
                     console.log('unknownMessage Content', obj)
                 }
