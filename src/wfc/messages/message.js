@@ -122,7 +122,7 @@ export default class Message {
         } else {
             let msg = new Message();
             msg.from = obj.fromUser;
-            msg.content = obj.content;
+            //msg.content = obj.content;
             msg.messageUid = obj.messageId;
             msg.localExtra = obj.localExtra;
             msg.timestamp = obj.serverTimestamp;

@@ -1920,37 +1920,25 @@ let store = {
             successCB && successCB(conversation);
             return;
         }
-
+     
         let groupName = contactState.selfUserInfo.displayName;
         let groupMemberIds = [];
-        let groupMemberPortraits = [contactState.selfUserInfo.portrait];
         for (let i = 0; i < users.length; i++) {
             groupMemberIds.push(users[i].uid)
             if (i <= 3) {
                 groupName += '、' + users[i].displayName;
             }
-            if (i < 8) {
-                groupMemberPortraits.push(users[i].portrait)
-            }
         }
         groupName = groupName.substr(0, groupName.length - 1);
-
-        genGroupPortrait(users)
-            .then(portrait => {
-                wfc.uploadMedia(new Date().getTime() + '.png', portrait, MessageContentMediaType.Portrait, (remoteUrl) => {
-                    wfc.createGroup(null, GroupType.Restricted, groupName, remoteUrl, null, groupMemberIds, null, [0], null,
-                        (groupId) => {
-                            let conversation = new Conversation(ConversationType.Group, groupId, 0)
-                            this.setCurrentConversation(conversation);
-                            successCB && successCB(conversation);
-                        }, (error) => {
-                            console.log('create group error', error)
-                            failCB && failCB(error);
-                        });
-                }, err => {
-                    console.log('upload media err', err)
-                });
-            })
+        wfc.createGroup(null, GroupType.Restricted, groupName, null, null, groupMemberIds, null, [0], null,
+            (groupId) => {
+                let conversation = new Conversation(ConversationType.Group, groupId, 0)
+                this.setCurrentConversation(conversation);
+                successCB && successCB(conversation);
+            }, (error) => {
+                console.log('create group error', error)
+                failCB && failCB(error);
+            });
     },
 
     _loadUserLocalSettings() {
