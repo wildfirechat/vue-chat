@@ -409,11 +409,10 @@ export default {
                 .replace(/<\/div>/g, '')
                 .replace(/<b>/g, '')
                 .replace(/<\/b>/g, '')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
                 .replace(/&nbsp;/g, ' ')
                 .replace(/&amp;/g, '&')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>');
-
 
             //  自行部署表情时，需要手动替换下面的正则
             // TODO 在正则中使用变量，避免手动替换
