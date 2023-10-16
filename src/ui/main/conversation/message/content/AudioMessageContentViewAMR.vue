@@ -42,8 +42,13 @@ export default {
     },
     methods: {
         playVoice() {
-            this.$set(this.message, '_isPlaying', true)
-            store.playVoice(this.message)
+            if (this.message._isPlaying) {
+                store.playVoice(null)
+            } else {
+                // make message._isPlaying reactive
+                this.$set(this.message, '_isPlaying', true)
+                store.playVoice(this.message)
+            }
         },
     },
 

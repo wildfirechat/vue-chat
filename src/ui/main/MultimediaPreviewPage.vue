@@ -75,12 +75,6 @@ export default {
             let messageUid = hash.substring(hash.indexOf('=') + 1);
             this.message = wfc.getMessageByUid(messageUid);
         }
-        ipcRenderer.on('preview-multimedia-message', (event, args) => {
-            this.$refs.menu.close();
-            let messageUid = args.messageUid;
-            this.message = wfc.getMessageByUid(messageUid);
-            this.mediaLoaded = false;
-        });
 
         window.addEventListener('keyup', this.handleKeyPress, true);
     },
@@ -94,7 +88,7 @@ export default {
 
             let size = scaleDown(width, height, workAreaWith, workAreaHeight);
             currentWindow.setSize(size.width, size.height);
-            currentWindow.center();
+            // currentWindow.center();
         },
         onImageLoaded() {
             this.mediaLoaded = true
@@ -160,7 +154,8 @@ export default {
 
         },
         close() {
-            currentWindow.close();
+            currentWindow.webContents.emit('unload')
+            currentWindow.hide();
         },
 
         showContextMenu(event) {

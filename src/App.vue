@@ -27,13 +27,13 @@
         </div>
 
         <CoolLightBox
+            v-if="!sharedMiscState.isElectron"
             :items="sharedConversationState.previewMediaItems"
             :index="sharedConversationState.previewMediaIndex"
             :slideshow="false"
             @close="sharedConversationState.previewMediaIndex = null">
         </CoolLightBox>
-
-        <notifications/>
+        <notifications v-if="sharedMiscState.isMainWindow"/>
         <IpcMain v-if="sharedMiscState.isMainWindow"/>
         <router-view id="main-content-container" class="main-content-container"></router-view>
     </div>

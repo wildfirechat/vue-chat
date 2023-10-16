@@ -593,7 +593,7 @@ input::-webkit-inner-spin-button {
 .tip {
     align-self: flex-start;
     font-size: 12px;
-    color: lightgrey;
+    color: #4168e0;
     margin-top: 10px;
 }
 

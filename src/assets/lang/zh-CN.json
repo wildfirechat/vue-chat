@@ -28,7 +28,7 @@
         "intro": "你好"
     },
     "group": {
-        "name": "群名称: {0}",
+        "name": "群聊名称: {0}",
         "chat": "进入群聊",
         "fav": "保存到通讯录",
         "alias": "我在本群的昵称"
@@ -69,7 +69,7 @@
         "drag_to_send_limit_tip": "一次最多发送5个文件",
         "not_support_send_folder": "不支持发送文件夹",
         "not_support_send_such_file": "不支持发送该类型文件",
-        "group_name": "群名",
+        "group_name": "群聊名称",
         "group_announcement": "群公告",
         "channel_name": "频道名称",
         "channel_desc": "频道描述",

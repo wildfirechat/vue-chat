@@ -106,6 +106,22 @@ export default {
         if (hash.indexOf('messageUid=') >= 0) {
             let messageUid = hash.substring(hash.indexOf('=') + 1);
             this.compositeMessage = store.getMessageByUid(messageUid);
+            if (!this.compositeMessage) {
+                wfc.loadRemoteMessage(messageUid, msg => {
+                    this.compositeMessage = msg
+
+                    if (this.compositeMessage) {
+                        store._patchMessage(this.compositeMessage, 0);
+                        document.title = this.compositeMessage.messageContent.title;
+                        this.loadMediaCompositeMessage(this.compositeMessage);
+                    }
+                }, err => {
+                    console.error('load remote message error', err);
+                })
+            }
+            if (!this.compositeMessage) {
+                return;
+            }
         } else {
             let faveItemData = hash.substring(hash.indexOf('=') + 1);
             let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
@@ -114,9 +130,11 @@ export default {
             favItem.favType = favItem.type;
             this.compositeMessage = favItem.toMessage();
         }
-        store._patchMessage(this.compositeMessage, 0);
-        document.title = this.compositeMessage.messageContent.title;
-        this.loadMediaCompositeMessage(this.compositeMessage);
+        if (this.compositeMessage) {
+            store._patchMessage(this.compositeMessage, 0);
+            document.title = this.compositeMessage.messageContent.title;
+            this.loadMediaCompositeMessage(this.compositeMessage);
+        }
     },
 
     methods: {

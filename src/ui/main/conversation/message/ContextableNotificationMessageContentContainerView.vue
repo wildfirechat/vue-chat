@@ -92,7 +92,7 @@ export default {
 .message-content-container {
     width: 100%;
     display: flex;
-    padding: 10px 20px;
+    padding: 10px 20px 4px 20px;
     justify-content: center;
     align-items: center;
     position: relative;

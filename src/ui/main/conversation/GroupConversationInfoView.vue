@@ -398,15 +398,15 @@ header .group-portrait-container {
 }
 
 header .group-portrait-container p {
-    color: #999999;
-    font-size: 14px;
+    color: #191919;
+    font-size: 13px;
 }
 
 header .group-portrait-container img {
     width: 30px;
     height: 30px;
     border-radius: 5px;
-    margin-left: 20px;
+    margin-left: auto;
 }
 
 header label {
@@ -415,8 +415,8 @@ header label {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    font-size: 14px;
-    color: #999999;
+    font-size: 13px;
+    color: #191919;
 }
 
 header label:not(:first-of-type) {
@@ -436,6 +436,10 @@ header label input {
     width: 100%;
     font-size: 13px;
     background-color: transparent;
+}
+
+header label input::-webkit-input-placeholder{
+    color: #7F7F7F;
 }
 
 .member-container {

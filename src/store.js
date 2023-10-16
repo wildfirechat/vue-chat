@@ -2106,7 +2106,12 @@ let store = {
         let content = msg.messageContent;
         let icon = require('@/assets/images/icon.png');
         let tip
-        //Todo
+        let now = new Date().getTime();
+        if (this._lastNotificationTime && now - this._lastNotificationTime < 4000) {
+            return;
+        }
+        this._lastNotificationTime = now;
+
         if (msg.direction === 0 /* && !(type===0 && target===file_transfer_id)*/) {
             return;
         }

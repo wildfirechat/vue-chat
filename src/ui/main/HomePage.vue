@@ -338,7 +338,7 @@ export default {
     flex-direction: column;
     align-items: center;
     /*background: linear-gradient(180deg, #292a2c 0%, #483a3a 100%);*/
-    background: #e9e4e0;
+    background: #E0E0DF;
     border-top-left-radius: var(--main-border-radius);
     border-bottom-left-radius: var(--main-border-radius);
     padding: var(--home-menu-padding-top) 0 20px 0;
