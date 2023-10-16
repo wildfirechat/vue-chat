@@ -93,7 +93,9 @@ $ npm run build
 1. ```wfc```目录整体不能压缩
 2. ```config.js```不能压缩
 
+## 音视频
+默认附带免费版本音视频，关于野火音视频可以参考[野火音视频使用说明](https://docs.wildfirechat.cn/webrtc/)和[野火音视频简介](https://docs.wildfirechat.cn/blogs/野火音视频简介.html)。如果使用音视频高级版，请参考[音视频高级版切换方法](./src/wfc/av/internal/README.MD)。
+
 ## License
 
 1. Under the Creative Commons Attribution-NoDerivs 3.0 Unported license. See the [LICENSE](https://github.com/wildfirechat/web-chat/blob/master/LICENSE) file for details.
-
