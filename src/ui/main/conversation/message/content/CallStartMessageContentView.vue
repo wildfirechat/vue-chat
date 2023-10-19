@@ -132,7 +132,7 @@ export default {
 
 .call-start-message-container .text {
     color: #050505;
-    font-size: 16px;
+    font-size: 13px;
 }
 
 </style>
