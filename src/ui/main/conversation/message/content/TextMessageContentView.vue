@@ -50,7 +50,7 @@ export default {
 
     computed: {
         textContent() {
-            let content = this.message.messageContent.digest(this.message);
+            let content = this.message.messageContent.digest(this.message).trim();
             let lines = content.replace(/\r\n/g, '\n').split('\n');
             if (lines.length > 1) {
                 content = lines.map(line => `<span>${helper.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
