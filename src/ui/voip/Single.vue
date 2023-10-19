@@ -8,7 +8,9 @@
 <template>
     <div class="flex-column flex-align-center flex-justify-center">
         <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
-
+        <p class="webrtc-tip" v-if="showWebrtcTip">
+            上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!
+        </p>
         <div v-if="session" class="container">
             <section class="full-height full-width">
                 <!--audio-->
@@ -126,6 +128,7 @@ import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import VideoType from "../../wfc/av/engine/videoType";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
+import Config from "../../config";
 
 export default {
     name: 'Single',
@@ -142,6 +145,7 @@ export default {
             remoteStream: null,
             videoInputDeviceIndex: 0,
             autoPlayInterval: 0,
+            showWebrtcTip: false
         }
     },
     methods: {
@@ -362,6 +366,22 @@ export default {
     },
 
     mounted() {
+        let supportConference = avenginekit.startConference !== undefined
+        if (!supportConference) {
+            let host = window.location.host;
+            if (host.indexOf('wildfirechat.cn') === -1 && host.indexOf('localhost') === -1) {
+                for (const ice of Config.ICE_SERVERS) {
+                    if (ice[0].indexOf('turn.wildfirechat.net') >= 0) {
+                        // 显示自行部署 turn 提示
+                        this.showWebrtcTip = true;
+                        setTimeout(() => {
+                            this.showWebrtcTip = false;
+                        }, 10 * 1000)
+                        break
+                    }
+                }
+            }
+        }
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();
