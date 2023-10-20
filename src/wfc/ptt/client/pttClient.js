@@ -27,12 +27,12 @@ export class PttClient {
     static SINGLE_CHAT_SEND_VOICE_MESSAGE = true;
     static GROUP_CHAT_SEND_VOICE_MESSAGE = true;
     /**
-     * 单位是毫秒
+     * 单位是秒
      */
     static SINGLE_CHAT_MAX_SPEAK_TIME = 60;
 
     /**
-     * 单位是毫秒
+     * 单位是秒
      */
     static GROUP_CHAT_MAX_SPEAK_TIME = 60;
 

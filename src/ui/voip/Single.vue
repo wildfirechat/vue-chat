@@ -517,4 +517,12 @@ export default {
     height: 100%;
 }
 
+.webrtc-tip {
+    position: absolute;
+    color: red;
+    left: 0;
+    top: 0;
+    z-index: 999;
+}
+
 </style>

@@ -1058,12 +1058,14 @@ i:hover {
     width: 120px;
 }
 
-</style>
-
-<style lang="css">
 .input img {
     width: auto;
     max-width: 100px;
     max-height: 100px;
+}
+
+>>> .emoji-picker {
+    box-shadow: 5px 5px 20px 0 #C0C0C0;
+    --ep-color-active: #3f64e4 !important;
 }
 </style>
