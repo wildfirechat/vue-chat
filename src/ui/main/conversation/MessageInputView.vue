@@ -957,6 +957,7 @@ export default {
                 // 其他端更新了草稿
                 // fixme
                 // this.restoreDraft();
+                this.lastConversationInfo = this.conversationInfo;
             }
         },
     },
