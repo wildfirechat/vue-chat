@@ -90,7 +90,9 @@ const helper = {
         return text.replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/ /g, '&nbsp;')
+            // /(^| ) /g 会匹配开头的空格或者前面是空格的空格，并将其替换为前一个匹配到的内容 $1 加上 &nbsp;。
+            // 这样可以确保前一个字符不是空格的空格保持不变，其他情况下的空格都会被替换为 &nbsp;
+            .replace(/(^| ) /g, "$1&nbsp;")
             .replace(/<script/gi, "&lt;script")
             .replace(/<iframe/gi, "&lt;iframe");
     },
