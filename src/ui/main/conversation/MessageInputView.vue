@@ -33,12 +33,12 @@
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
                     </li>
                     <li v-if="enablePtt">
-                        <i id="ptt" @mousedown="requestPttTalk(true)" @mouseup="requestPttTalk(false)"
-                           class="icon-ion-android-radio-button-on"/>
+                        <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
+                           class="icon-ion-android-radio-button-on ptt-icon"/>
                     </li>
                     <li>
-                        <i id="voice" @mousedown="recordAudio(true)" @mouseup="recordAudio(false)"
-                           class="icon-ion-android-microphone"/>
+                        <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
+                           class="icon-ion-android-microphone record-icon"/>
                     </li>
                 </ul>
                 <ul v-if="!inputOptions['disableVoip'] && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
@@ -162,6 +162,8 @@ export default {
             enablePtt: wfc.isCommercialServer() && Config.ENABLE_PTT,
             amrRecorder: null,
             lastTypingMessageTimestamp: 0,
+            isPttTalking: false,
+            isRecording: false,
         }
     },
     methods: {
@@ -794,6 +796,7 @@ export default {
             if (request) {
                 let talkingCallback = new TalkingCallback();
                 talkingCallback.onStartTalking = (conversation) => {
+                    this.isPttTalking = true;
                     console.log('onStartTalking', conversation)
                     this.$notify({
                         text: '请开始说话',
@@ -806,8 +809,15 @@ export default {
                         type: 'error'
                     });
                 }
+                talkingCallback.onTalkingEnd = (conversation, reason) => {
+                    if (conversation.equal(this.conversationInfo.conversation)) {
+                        this.isPttTalking = false;
+                    }
+                }
                 pttClient.requestTalk(this.conversationInfo.conversation, talkingCallback)
+                window.addEventListener('mouseup', this.handleMouseUp)
             } else {
+                this.isPttTalking = false;
                 pttClient.releaseTalk(this.conversationInfo.conversation);
             }
         },
@@ -818,6 +828,7 @@ export default {
                 if (!this.amrRecorder) {
                     this.amrRecorder = new BenzAMRRecorder();
                     this.amrRecorder.initWithRecord().then(() => {
+                        this.isRecording = true;
                         this.amrRecorder.startRecord();
                         this.$notify({
                             text: '请开始说话',
@@ -832,7 +843,9 @@ export default {
                         this.amrRecorder = null;
                     });
                 }
+                window.addEventListener('mouseup', this.handleMouseUp)
             } else {
+                this.isRecording = false;
                 if (this.amrRecorder) {
                     this.amrRecorder.finishRecord().then(() => {
                         let duration = this.amrRecorder.getDuration();
@@ -852,6 +865,14 @@ export default {
                 }
             }
         },
+        handleMouseUp() {
+            if (this.isPttTalking) {
+                this.requestPttTalk(false);
+            } else if (this.isRecording) {
+                this.recordAudio(false);
+            }
+            window.removeEventListener('mouseup', this.handleMouseUp)
+        }
     },
 
     activated() {
@@ -1062,6 +1083,37 @@ i:hover {
     width: auto;
     max-width: 100px;
     max-height: 100px;
+}
+
+@keyframes glow {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.ptt-icon {
+    color: #000b;
+}
+
+.ptt-icon.active {
+    color: red;
+    animation: glow 2s infinite;
+}
+
+
+.record-icon {
+    color: #000b;
+}
+
+.record-icon.active {
+    color: red;
+    animation: glow 2s infinite;
 }
 
 >>> .emoji-picker {
