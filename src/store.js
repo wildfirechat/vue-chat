@@ -693,7 +693,7 @@ let store = {
     _reloadConversation(conversation, insertIfNoExist = true) {
         let conversationInfo = wfc.getConversationInfo(conversation);
         if (conversationInfo) {
-            conversationInfo = this._patchConversationInfo(conversationInfo);
+            conversationInfo = this._patchConversationInfo(conversationInfo, true);
         }
         let index = conversationState.conversationInfoList.findIndex(info => info.conversation.equal(conversation));
         if (index >= 0) {
@@ -730,13 +730,34 @@ let store = {
     },
 
     _reloadSingleConversationIfExist(userInfos) {
+        let cl = conversationState.conversationInfoList
+        if (!cl || cl.length === 0) {
+            return;
+        }
         if (userInfos.length > 10) {
             this._loadDefaultConversationList();
         } else {
-            userInfos.forEach(ui => {
-                let conv = new Conversation(ConversationType.Single, ui.uid, 0);
+            let toReloadConversations = [];
+            if (cl) {
+                let uids = userInfos.map(info => info.uid);
+                cl.forEach(ci => {
+                    let conv = ci.conversation;
+                    if (conv.type === ConversationType.Single) {
+                        if (uids.indexOf(conv.target) >= 0) {
+                            toReloadConversations.push(conv);
+                        }
+                    } else {
+                        let lastMsg = ci.lastMessage;
+                        if (lastMsg && uids.indexOf(lastMsg.from) >= 0
+                            && toReloadConversations.findIndex(c => c.type === conv.type && c.target === conv.target && c.line === conv.line) === -1) {
+                            toReloadConversations.push(conv)
+                        }
+                    }
+                })
+            }
+            for (let conv of toReloadConversations) {
                 this._reloadConversation(conv, false);
-            })
+            }
         }
     },
 
@@ -1036,8 +1057,8 @@ let store = {
                     conversationState.previewMediaIndex = i;
                 }
                 let mediaUrl = msg.messageContent.remotePath;
-                if (!mediaUrl){
-                    if (msg.messageContent.file){
+                if (!mediaUrl) {
+                    if (msg.messageContent.file) {
                         mediaUrl = URL.createObjectURL(msg.messageContent.file)
                     }
                 }
@@ -1050,8 +1071,8 @@ let store = {
         } else {
             conversationState.previewMediaIndex = 0;
             let mediaUrl = message.messageContent.remotePath;
-            if (!mediaUrl){
-                if (message.messageContent.file){
+            if (!mediaUrl) {
+                if (message.messageContent.file) {
                     mediaUrl = URL.createObjectURL(message.messageContent.file)
                 }
             }
@@ -1386,7 +1407,7 @@ let store = {
         if (m.conversation.type === ConversationType.Single) {
             m._from = userInfoMap ? userInfoMap.get(m.from) : wfc.getUserInfo(m.from, false, '');
         }
-        if (!m._from) {
+        if (!m._from || !m._from.updateDt) {
             let u = wfc.getUserInfo(m.from, false, m.conversation.type === ConversationType.Group ? m.conversation.target : '');
             // clone for modify
             // TODO sdk 返回的时候，直接返回 clone copy，而不是直接返回底层的数据，防止上层修改，影响到底层数据模型
@@ -1471,9 +1492,7 @@ let store = {
         // 显示的时候，再 patch
         if (info.lastMessage && info.lastMessage.conversation !== undefined && patchLastMessage) {
             //this._patchMessage(info.lastMessage, 0, userInfoMap)
-            if (!info.lastMessage._from) {
-                info.lastMessage._from = undefined;
-            }
+            info.lastMessage._from = undefined;
         }
 
         if (info.unreadCount) {
@@ -1920,7 +1939,7 @@ let store = {
             successCB && successCB(conversation);
             return;
         }
-     
+
         let groupName = contactState.selfUserInfo.displayName;
         let groupMemberIds = [];
         for (let i = 0; i < users.length; i++) {
