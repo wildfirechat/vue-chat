@@ -8,6 +8,7 @@
 <template>
     <div class="flex-column flex-align-center flex-justify-center">
         <h1 style="display: none">Voip-Multi 运行在新的window，和主窗口数据是隔离的！！</h1>
+
         <p class="webrtc-tip" v-if="showWebrtcTip">
             上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!
         </p>
@@ -149,6 +150,8 @@ export default {
             broadcastMultiCallOngoingTimer: 0,
             autoPlayInterval: 0,
             showWebrtcTip: false,
+
+            ringAudio: null,
         }
     },
     methods: {
@@ -212,6 +215,25 @@ export default {
 
             sessionCallback.didChangeState = (state) => {
                 this.status = state;
+                // 响铃示例代码
+                if (state === CallState.STATUS_OUTGOING) {
+                    console.log('start outgoing ring')
+                    this.ringAudio = new Audio(require("@/assets/audios/outgoing_call_ring.mp3"))
+                    this.ringAudio.loop = true;
+                    this.ringAudio.play();
+                } else if (state === CallState.STATUS_INCOMING) {
+                    // 由于浏览器的限制，web 端，可能不能自动播放！！!
+                    // 另外，微信收到音视频通话邀请时，也没有声音
+                    // this.ringAudio = new Audio(require("@/assets/audios/incoming_call_ring.mp3"))
+                    // this.ringAudio.loop = true;
+                    // this.ringAudio.play();
+                } else {
+                    if (this.ringAudio) {
+                        this.ringAudio.pause();
+                        this.ringAudio = null;
+                    }
+                }
+
                 if (state === CallState.STATUS_CONNECTED) {
                     if (this.startTimestamp === 0) {
                         this.startTimestamp = new Date().getTime();
@@ -323,6 +345,7 @@ export default {
                     this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 200)
                 }
             }
+
             avenginekit.sessionCallback = sessionCallback;
         },
 
@@ -488,7 +511,6 @@ export default {
 
         avenginekit.setup();
         this.setupSessionCallback();
-
         if (!isElectron()) {
             this.$nextTick(() => {
                 const urlParams = new URLSearchParams(window.location.href);

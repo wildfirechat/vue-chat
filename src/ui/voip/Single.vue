@@ -8,6 +8,7 @@
 <template>
     <div class="flex-column flex-align-center flex-justify-center">
         <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
+
         <p class="webrtc-tip" v-if="showWebrtcTip">
             上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!
         </p>
@@ -145,7 +146,9 @@ export default {
             remoteStream: null,
             videoInputDeviceIndex: 0,
             autoPlayInterval: 0,
-            showWebrtcTip: false
+            showWebrtcTip: false,
+
+            ringAudio: null
         }
     },
     methods: {
@@ -201,6 +204,25 @@ export default {
 
             // 可能回调多次
             sessionCallback.didChangeState = (state) => {
+                // 响铃示例代码
+                if (state === CallState.STATUS_OUTGOING) {
+                    console.log('start outgoing ring')
+                    this.ringAudio = new Audio(require("@/assets/audios/incoming_call_ring.mp3"))
+                    this.ringAudio.loop = true;
+                    this.ringAudio.play();
+                } else if (state === CallState.STATUS_INCOMING) {
+                    // 由于浏览器的限制，web 端，可能不能自动播放！！!
+                    // 另外，微信收到音视频通话邀请时，也没有声音
+                    // this.ringAudio = new Audio(require("@/assets/audios/incoming_call_ring.mp3"))
+                    // this.ringAudio.loop = true;
+                    // this.ringAudio.play();
+                } else {
+                    if (this.ringAudio) {
+                        this.ringAudio.pause();
+                        this.ringAudio = null;
+                    }
+                }
+
                 this.status = state;
                 console.log('didChangeState', state)
                 if (state === CallState.STATUS_CONNECTED) {
@@ -248,6 +270,7 @@ export default {
                 console.log('didVideoMuted', userId, muted);
                 this.muted = muted;
             };
+
             sessionCallback.didMediaLostPacket = (media, lostPacket) => {
                 if (lostPacket > 6) {
                     console.log('您的网络不好');
@@ -265,6 +288,7 @@ export default {
                     }
                 }
             };
+
             sessionCallback.didParticipantConnected = (userId) => {
                 console.log('didParticipantConnected', userId)
             }
@@ -272,6 +296,7 @@ export default {
             sessionCallback.didReportAudioVolume = (userId, volume) => {
                 // console.log('didReportAudioVolume', userId, volume)
             }
+
             avenginekit.sessionCallback = sessionCallback;
         },
 
@@ -385,7 +410,6 @@ export default {
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();
-
         if (!isElectron()) {
             this.$nextTick(() => {
                 // 解决弱网，首次可能无法正常音视频通话问题
