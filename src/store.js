@@ -1160,12 +1160,11 @@ let store = {
                 messageContent.imageHeight = ih;
                 break;
             case MessageContentMediaType.Video:
-                let {thumbnail: vt, width: vw, height: vh} = await videoThumbnail(file);
+                let vtr = await videoThumbnail(file);
+                if (vtr) {
+                    let {thumbnail: vt, width: vw, height: vh} = vtr;
                 let duration = await videoDuration(file)
                 duration = Math.ceil(duration * 1000);
-                if (vt === null) {
-                    return false;
-                }
                 if (vt.length > 15 * 1024) {
                     console.warn('generated thumbnail is too large, use default thumbnail', vt.length);
                     vt = Config.DEFAULT_THUMBNAIL_URL;
@@ -1173,11 +1172,14 @@ let store = {
                 messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, vt.split(',')[1]);
                 // TODO width and height
                 break;
+                } else {
+                    // fallback to file message
+                }
             case MessageContentMediaType.File:
+            // do nothing
+            default:
                 messageContent = new FileMessageContent(fileOrLocalPath, remotePath);
                 break;
-            default:
-                return false;
         }
         msg.messageContent = messageContent;
         wfc.sendMessage(msg,
