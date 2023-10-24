@@ -1,5 +1,12 @@
 @import '~vue-context/dist/css/vue-context.css';
 
+.v-context {
+    font-size: 14px;
+}
+
+.v-context > li > a {
+    padding: .4rem 1rem;
+}
 * {
     margin: 0;
     padding: 0;
