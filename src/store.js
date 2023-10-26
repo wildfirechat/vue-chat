@@ -1492,9 +1492,8 @@ let store = {
         }
 
         // 显示的时候，再 patch
-        if (info.lastMessage && info.lastMessage.conversation !== undefined && patchLastMessage) {
-            //this._patchMessage(info.lastMessage, 0, userInfoMap)
-            info.lastMessage._from = undefined;
+        if (patchLastMessage && info.lastMessage && info.lastMessage.conversation !== undefined && (!info.lastMessage._from || !info.lastMessage._from.updateDt)) {
+            this._patchMessage(info.lastMessage, 0, userInfoMap)
         }
 
         if (info.unreadCount) {
