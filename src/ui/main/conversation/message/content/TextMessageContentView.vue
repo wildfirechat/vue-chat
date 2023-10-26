@@ -101,7 +101,7 @@ export default {
 .text-message-container .text {
     color: #050505;
     font-size: 13px;
-    line-height: 25px;
+    line-height: 20px;
     /*max-height: 1000px;*/
     max-width: 400px;
     word-spacing: normal;

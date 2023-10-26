@@ -240,6 +240,7 @@ export default {
                             if (file.type.indexOf('image') !== -1) {
                                 // image
                                 document.execCommand('insertImage', false, URL.createObjectURL(file));
+                                this.styleImageInEditor();
                             } else {
                                 // file
                                 if (isElectron()) {
@@ -274,6 +275,7 @@ export default {
                         if (item.types.includes("image/png")) {
                             const blob = await item.getType("image/png");
                             document.execCommand('insertImage', false, URL.createObjectURL(blob));
+                            this.styleImageInEditor();
                             return;
                         }
                     }
@@ -287,6 +289,13 @@ export default {
             }
         },
 
+        styleImageInEditor() {
+            let imgs = this.$refs.input.getElementsByTagName('img')
+            for (let img of imgs) {
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+            }
+        },
         mention(groupId, memberId) {
             let displayName = wfc.getGroupMemberDisplayName(groupId, memberId);
             this.mentions.push({
@@ -406,7 +415,9 @@ export default {
                 }
             }
             message = input.innerHTML.trim();
-            message = message.replace(/<br>/g, '\n')
+            message = message
+                .replace(/<div><br><\/div>/g, '\n')
+                .replace(/<br>/g, '\n')
                 .replace(/<div>/g, '\n')
                 .replace(/<\/div>/g, '')
                 .replace(/<b>/g, '')
@@ -906,6 +917,7 @@ export default {
                 if (args.filePath) {
                     setTimeout(() => {
                         document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
+                        this.styleImageInEditor();
                     }, 100)
                 }
             });
@@ -1037,9 +1049,14 @@ export default {
     font-size: 13px;
 }
 
+.input * {
+    max-width: 100px;
+    max-height: 100px;
+}
+
 .input:empty:before {
     content: attr(title);
-    color: gray;
+    color: rgb(128, 128, 128);
     font-size: 13px;
 }
 
