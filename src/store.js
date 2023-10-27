@@ -1163,15 +1163,15 @@ let store = {
                 let vtr = await videoThumbnail(file);
                 if (vtr) {
                     let {thumbnail: vt, width: vw, height: vh} = vtr;
-                let duration = await videoDuration(file)
-                duration = Math.ceil(duration * 1000);
-                if (vt.length > 15 * 1024) {
-                    console.warn('generated thumbnail is too large, use default thumbnail', vt.length);
-                    vt = Config.DEFAULT_THUMBNAIL_URL;
-                }
-                messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, vt.split(',')[1]);
-                // TODO width and height
-                break;
+                    let duration = await videoDuration(file)
+                    duration = Math.ceil(duration * 1000);
+                    if (vt.length > 15 * 1024) {
+                        console.warn('generated thumbnail is too large, use default thumbnail', vt.length);
+                        vt = Config.DEFAULT_THUMBNAIL_URL;
+                    }
+                    messageContent = new VideoMessageContent(fileOrLocalPath, remotePath, vt.split(',')[1]);
+                    // TODO width and height
+                    break;
                 } else {
                     // fallback to file message
                 }
@@ -1491,7 +1491,7 @@ let store = {
             info._timeStr = '';
         }
 
-        // 显示的时候，再 patch
+
         if (patchLastMessage && info.lastMessage && info.lastMessage.conversation !== undefined && (!info.lastMessage._from || !info.lastMessage._from.updateDt)) {
             this._patchMessage(info.lastMessage, 0, userInfoMap)
         }

@@ -1,6 +1,10 @@
 <template>
-    <div>
-        <section ref="message-input-container" class="message-input-container" v-if="!sharedConversationState.showChannelMenu">
+    <div ref="message-input-container" class="message-input-container">
+        <div v-if="muted"
+             style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
+            <p style="color: white">群禁言或者你被禁言</p>
+        </div>
+        <section v-else-if="!sharedConversationState.showChannelMenu" style="display: flex; flex-direction: column;">
             <section class="input-action-container">
                 <VEmojiPicker
                     id="emoji"
@@ -88,10 +92,6 @@
                 v-on:cancelQuoteMessage="cancelQuoteMessage"
                 :enable-message-preview="false"
                 :quoted-message="quotedMessage" :show-close-button="true"/>
-            <div v-if="muted"
-                 style="width: 100%; height: 100%; background: lightgrey; position: absolute; display: flex; justify-content: center; align-items: center">
-                <p style="color: white">群禁言或者你被禁言</p>
-            </div>
         </section>
         <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus"
                          :conversation="conversationInfo.conversation"></ChannelMenuView>
@@ -144,6 +144,11 @@ export default {
             type: Object,
             required: false,
             default: () => ({}),
+        },
+        muted: {
+            type: Boolean,
+            required: true,
+            default: false,
         }
     },
     data() {
@@ -162,6 +167,7 @@ export default {
             enablePtt: wfc.isCommercialServer() && Config.ENABLE_PTT,
             amrRecorder: null,
             lastTypingMessageTimestamp: 0,
+
             isPttTalking: false,
             isRecording: false,
         }
@@ -296,6 +302,7 @@ export default {
                 img.style.maxHeight = '100px';
             }
         },
+
         mention(groupId, memberId) {
             let displayName = wfc.getGroupMemberDisplayName(groupId, memberId);
             this.mentions.push({
@@ -426,6 +433,7 @@ export default {
                 .replace(/&gt;/g, '>')
                 .replace(/&nbsp;/g, ' ')
                 .replace(/&amp;/g, '&')
+
 
             //  自行部署表情时，需要手动替换下面的正则
             // TODO 在正则中使用变量，避免手动替换
@@ -883,6 +891,14 @@ export default {
                 this.recordAudio(false);
             }
             window.removeEventListener('mouseup', this.handleMouseUp)
+        },
+
+        setupConversationInput() {
+            this.$refs.input.innerHTML = '';
+            this.restoreDraft();
+            this.initMention(this.conversationInfo.conversation)
+            this.focusInput();
+            this.initEmojiPicker()
         }
     },
 
@@ -956,14 +972,10 @@ export default {
                         this.storeDraft(this.lastConversationInfo);
                     }
 
-                    if (this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
-                        this.$refs.input.innerHTML = '';
-                        this.restoreDraft();
-                        this.initMention(this.conversationInfo.conversation)
+                    if (!this.muted && this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
+                        this.setupConversationInput();
                     }
                     this.lastConversationInfo = this.conversationInfo;
-                    this.focusInput();
-                    this.initEmojiPicker()
                 })
             } else {
                 // 其他端更新了草稿
@@ -972,6 +984,17 @@ export default {
                 this.lastConversationInfo = this.conversationInfo;
             }
         },
+        'muted': {
+            handler(newValue) {
+                if (!newValue) {
+                    this.$nextTick(() => {
+                        this.setupConversationInput();
+                    })
+                } else {
+                    this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
+                }
+            }
+        }
     },
 
     computed: {
@@ -984,20 +1007,7 @@ export default {
         hasInputTextOrImage() {
             // TODO 监听input的输入情况
             return true;
-        },
-        muted() {
-            let target = this.conversationInfo.conversation._target;
-            if (target instanceof GroupInfo) {
-                let groupInfo = target;
-                let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
-                if (groupInfo.mute === 1) {
-                    return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) < 0;
-                } else {
-                    return groupMember && groupMember.type === GroupMemberType.Muted;
-                }
-            }
-            return false;
-        },
+        }
     },
 
     components: {
@@ -1014,8 +1024,6 @@ export default {
 
 <style lang='css' scoped>
 .message-input-container {
-    height: 180px;
-    min-height: 180px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -1033,6 +1041,7 @@ export default {
 
 .input-action-container {
     height: 50px;
+    min-height: 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1041,17 +1050,14 @@ export default {
 
 .input {
     flex: 1 1 auto;
+    min-height: 130px;
+    max-height: 260px;
     outline: none;
     padding: 0 20px;
     overflow: auto;
     user-select: text;
     -webkit-user-select: text;
     font-size: 13px;
-}
-
-.input * {
-    max-width: 100px;
-    max-height: 100px;
 }
 
 .input:empty:before {

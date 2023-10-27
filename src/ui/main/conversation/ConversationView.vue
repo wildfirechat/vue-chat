@@ -90,6 +90,7 @@
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                                   v-show="!sharedConversationState.enableMessageMultiSelection"
                                   :input-options="inputOptions"
+                                  :muted="muted"
                                   ref="messageInputView"/>
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
                 <SingleConversationInfoView
@@ -219,6 +220,7 @@ import Config from "../../../config";
 import IPCEventType from "../../../ipcEventType";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import {imageThumbnail} from "../../util/imageUtil";
+import GroupInfo from "../../../wfc/model/groupInfo";
 
 var amr;
 export default {
@@ -446,6 +448,9 @@ export default {
         },
 
         dragStart() {
+            if (this.muted) {
+                return;
+            }
             this.isHandlerDragging = true;
             console.log('drag start')
         },
@@ -917,7 +922,24 @@ export default {
                 }
             }
             return null;
-        }
+        },
+       
+        muted() {
+            if (!this.conversationInfo) {
+                return false;
+            }
+            let target = this.conversationInfo.conversation._target;
+            if (target instanceof GroupInfo) {
+                let groupInfo = target;
+                let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
+                if (groupInfo.mute === 1) {
+                    return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) < 0;
+                } else {
+                    return groupMember && groupMember.type === GroupMemberType.Muted;
+                }
+            }
+            return false;
+        },
     },
     // watch: {
     //     conversationInfo() {
