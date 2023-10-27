@@ -35,6 +35,7 @@ export default class Config {
     static APP_SERVER = 'https://app.wildfirechat.net';
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
+    // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
     static ORGANIZATION_SERVER = 'https://org.wildfirechat.cn';
     // 野火二维码 scheme，不要修改，如果需要修改的话，所有端都需要一起修改
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
