@@ -2184,7 +2184,8 @@ export class WfcManager {
 const self = new WfcManager();
 if (window.opener) {
     window.__wfc = window.opener.__wfc;
-} else if (window.parent && window.parent.__wfc) {
+    // 处理用 iframe 加载 vue-chat 整个项目时，Uncaught DOMException: Blocked a frame with origin from accessing a cross-origin frame
+} else if (window.location.href.indexOf('/voip') > 0 && window.parent && window.parent.__wfc) {
     window.__wfc = window.parent.__wfc;
 } else {
     window.__wfc = self;
