@@ -84,20 +84,14 @@
             </keep-alive>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
-            <div v-if="!sharedMiscState.isElectron"
-                 v-show="voipProxy.useIframe && voipProxy.callId"
+            <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
                  class="voip-iframe-container"
                  v-draggable="draggableValue"
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
-                <div ref="voip-dragger" class="title">
-                    <i class="icon-ion-arrow-move"></i>
-                    <p> 音视频通话</p>
-                </div>
-                <iframe ref="voip-iframe" class="content"
-                        allow="geolocation; microphone; camera; midi; encrypted-media;">
-                    <!--voip iframe-->
-                </iframe>
+                <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
+                <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
+                <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
             </div>
         </div>
     </div>
@@ -117,7 +111,11 @@ import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
 import {isElectron} from "../../platform";
+import Single from "../voip/Single.vue";
+import Multi from "../voip/Multi.vue";
+import Conference from "../voip/conference/Conference.vue";
 
+var avenginkitSetuped = false;
 export default {
     data() {
         return {
@@ -261,13 +259,15 @@ export default {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         this.onConnectionStatusChange(wfc.getConnectionStatus())
 
+        if (!isElectron() && !avenginkitSetuped) {
+            avenginekit.setup();
+            avenginkitSetuped = true;
+        }
     },
 
     mounted() {
-        if (avenginekitproxy.useIframe) {
-            let voipIframe = this.$refs["voip-iframe"];
-            avenginekitproxy.setVoipIframe(voipIframe)
-            this.draggableValue.handle = this.$refs['voip-dragger'];
+        if (!isElectron()) {
+            this.draggableValue.handle = this.$refs['handle-id'];
             this.draggableValue.boundingElement = this.$refs['home-container']
         }
 
@@ -309,6 +309,9 @@ export default {
     },
 
     components: {
+        Conference,
+        Multi,
+        Single,
         UserCardView,
         ElectronWindowsControlButtonView
     },
@@ -434,8 +437,9 @@ i.active {
 .voip-iframe-container {
     background: #292929;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
 }
@@ -446,13 +450,13 @@ i.active {
 }
 
 .voip-iframe-container.multi {
-    width: 1024px;
-    height: 800px;
+    width: 960px;
+    height: 600px;
 }
 
 .voip-iframe-container.conference {
-    width: 1024px;
-    height: 800px;
+    width: 960px;
+    height: 600px;
 }
 
 .voip-iframe-container .title {

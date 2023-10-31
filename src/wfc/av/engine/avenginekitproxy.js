@@ -3,7 +3,7 @@
  */
 
 import EventType from "../../client/wfcEvent";
-import {BrowserWindow, ipcRenderer, isElectron, PostMessageEventEmitter, remote} from "../../../platform";
+import {BrowserWindow, ipcRenderer, isElectron, remote} from "../../../platform";
 import ConversationType from "../../model/conversationType";
 import MessageContentType from "../../messages/messageContentType";
 import wfc from "../../client/wfc";
@@ -72,6 +72,13 @@ export class AvEngineKitProxy {
         this.event.on(EventType.ReceiveMessage, this.onReceiveMessage);
         this.event.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);
         this.event.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
+        if (!isElectron()) {
+            const EventEmitter = require("events").EventEmitter;
+            this.events = new EventEmitter();
+            this.events.on('voip-message', this.sendVoipListener)
+            this.events.on('conference-request', this.sendConferenceRequestListener);
+            this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
+        }
     }
 
     /**
@@ -280,6 +287,7 @@ export class AvEngineKitProxy {
                     if (content.callId !== this.callId) {
                         return;
                     }
+                    this.callId = null;
                 }
 
                 if (msg.conversation.type === ConversationType.Group
@@ -301,8 +309,8 @@ export class AvEngineKitProxy {
     };
 
     emitToVoip(event, args) {
+        console.log('emitToVoip', event, args)
         if (isElectron()) {
-            console.log('emitToVoip', event, args)
             // renderer/main to renderer
             if (this.callWin) {
                 // fix object of long.js can be send inter-process
@@ -313,19 +321,10 @@ export class AvEngineKitProxy {
             }
         } else {
             if (this.events) {
-                this.events.emit(event, args);
+                this.events.emit(event, event, args);
             } else if (this.queueEvents) {
                 this.queueEvents.push({event, args});
             }
-        }
-    }
-
-    listenMainEvent(event, listener) {
-        if (isElectron()) {
-            // listen for event from main
-            ipcRenderer.on(event, listener);
-        } else {
-            this.events.on(event, listener);
         }
     }
 
@@ -335,18 +334,16 @@ export class AvEngineKitProxy {
             // renderer to main
             ipcRenderer.send(event, args);
         } else {
-            this.events.emit(event, args);
+            this.events.emit(event, event, args);
         }
     }
 
     listenVoipEvent = (event, listener) => {
+        console.log('listenVoipEvent ', event, listener)
         if (isElectron()) {
             // listen for event from renderer
             ipcRenderer.on(event, listener);
         } else {
-            if (!this.events) {
-                this.events = new PostMessageEventEmitter(this.useIframe ? window.parent : window.opener, window.location.origin);
-            }
             this.events.on(event, listener);
         }
     };
@@ -590,57 +587,16 @@ export class AvEngineKitProxy {
 
             this.emitToVoip(options.event, options.args);
         } else {
-            console.log('location', window.location);
-            let hash = window.location.hash;
-            let url = window.location.origin;
-            if (hash) {
-                url += "/#/voip"
-            } else {
-                url += "/voip"
-            }
-            url += '/' + type + '?t=' + new Date().getTime() + '&options=' + encodeURIComponent(JSON.stringify(options, null, ''));
-
-            let win;
-            let iframe = this.iframe;
-            if (iframe) {
-                if (iframe.src) {
-                    iframe.src = url;
-                    iframe.contentWindow.location.reload();
-                }
-                iframe.src = url;
-                win = iframe.contentWindow;
-            } else {
-                win = window.open(url, '_blank', `width=${width},height=${height},left=200,top=200,toolbar=no,menubar=no,resizable=no,location=no,maximizable=no,resizable=no,dialog=yes`);
-            }
-            if (!win) {
-                console.log('can not open voip window');
-                return;
-            }
-            if (iframe) {
-                iframe.onload = () => {
-                    console.log('iframe loaded');
-                    this.onVoipWindowReady(win);
-                }
-            } else {
-                win.addEventListener('load', () => {
-                    this.onVoipWindowReady(win);
-                }, true);
-            }
-
-            win.addEventListener('beforeunload', this.onVoipWindowClose);
-            // for ios
-            win.addEventListener('unload', this.onVoipWindowClose);
-
-            if (!this.events) {
-                this.events = new PostMessageEventEmitter(win, window.location.origin)
-            }
+            this.callWin = window;
             console.log('windowEmitter subscribe events');
-            this.events.on('voip-message', this.sendVoipListener)
-            this.events.on('conference-request', this.sendConferenceRequestListener);
-            this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
-            if (this.useIframe) {
-                this.events.on('close-iframe-window', this.onVoipWindowClose)
-            }
+            this.events.on('close-voip-div', () => {
+                this.callWin = null;
+                this.callId = null;
+            })
+            // 等 voip view mounted
+            setTimeout(() => {
+                this.emitToVoip(options.event, options.args);
+            }, 200)
         }
     }
 
@@ -670,7 +626,7 @@ export class AvEngineKitProxy {
             this.participants = [];
             this.queueEvents = [];
             this.callWin = null;
-            if (this.iframe){
+            if (this.iframe) {
                 this.iframe.src = 'about:blank'
             }
             this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
@@ -678,7 +634,7 @@ export class AvEngineKitProxy {
     }
 
     onVoipWindowReady(win) {
-        if (!this.callId){
+        if (!this.callId) {
             return;
         }
         this.callWin = win;
@@ -744,18 +700,15 @@ export class AvEngineKitProxy {
         if (isElectron()) {
             // renderer
             events.forEach(e => ipcRenderer.removeAllListeners(e));
-        } else {
-            if (this.events) {
-                this.events.stop();
-                this.events = null;
-            }
         }
     }
 
     forceCloseVoipWindow() {
-        if (this.callWin) {
+        if (isElectron() && this.callWin) {
             this.callWin.close();
         }
+        this.callId = null;
+        this.callWin = null;
     }
 
     // 仅 web 端，单人、多人通话有效

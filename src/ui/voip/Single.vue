@@ -242,6 +242,7 @@ export default {
             };
 
             sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos) => {
+                console.log('onInitial')
                 this.session = session;
                 this.audioOnly = session.audioOnly;
                 this.participantUserInfos = [...participantUserInfos];
@@ -391,6 +392,7 @@ export default {
     },
 
     mounted() {
+        console.log('single mounted')
         let supportConference = avenginekit.startConference !== undefined
         if (!supportConference) {
             let host = window.location.host;
@@ -408,34 +410,10 @@ export default {
             }
         }
         // 必须
-        avenginekit.setup();
-        this.setupSessionCallback();
-        if (!isElectron()) {
-            this.$nextTick(() => {
-                // 解决弱网，首次可能无法正常音视频通话问题
-                const urlParams = new URLSearchParams(window.location.href);
-                let options = urlParams.get('options');
-                console.log('parse queries')
-                options = JSON.parse(decodeURIComponent(options));
-                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
-                let listenersSymbol;
-                for (const symbol of symbols) {
-                    if (symbol.description === 'listeners') {
-                        listenersSymbol = symbol;
-                        break;
-                    }
-                }
-                if (listenersSymbol) {
-                    let listeners = avenginekitproxy.events[listenersSymbol];
-                    console.log('listeners', listenersSymbol, listeners);
-                    let ls = listeners[options.event];
-                    for (const l of ls) {
-                        l(options.event, options.args);
-                        console.log('handle voip event', options);
-                    }
-                }
-            })
+        if (isElectron()) {
+            avenginekit.setup();
         }
+        this.setupSessionCallback();
     },
 
     computed: {
@@ -458,8 +436,8 @@ export default {
 <style lang="css" scoped>
 
 .container {
-    width: 100vw;
-    height: 100vh;
+    width: 360px;
+    height: 640px;
     position: relative;
 }
 

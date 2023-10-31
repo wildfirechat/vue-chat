@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center voip-container" ref="rootContainer">
+    <div class="flex-column flex-align-center flex-justify-center voip-container" style="width: 100%; height: 100%" ref="rootContainer">
         <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
             <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
                                               :title="'野火会议'"
@@ -598,7 +598,11 @@ export default {
                 }
             };
 
-            avenginekit.setup(sessionCallback);
+            if (isElectron()) {
+                avenginekit.setup(sessionCallback);
+            } else {
+                avenginekit.sessionCallback = sessionCallback;
+            }
         },
 
 
@@ -1268,32 +1272,6 @@ export default {
         } else {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
         }
-
-        if (!isElectron()) {
-            this.$nextTick(() => {
-                const urlParams = new URLSearchParams(window.location.href);
-                let options = urlParams.get('options');
-                console.log('parse queries')
-                options = JSON.parse(decodeURIComponent(options));
-                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
-                let listenersSymbol;
-                for (const symbol of symbols) {
-                    if (symbol.description === 'listeners') {
-                        listenersSymbol = symbol;
-                        break;
-                    }
-                }
-                if (listenersSymbol) {
-                    let listeners = avenginekitproxy.events[listenersSymbol];
-                    console.log('listeners', listenersSymbol, listeners);
-                    let ls = listeners[options.event];
-                    for (const l of ls) {
-                        l(options.event, options.args);
-                        console.log('handle voip event', options);
-                    }
-                }
-            })
-        }
     },
 
     destroyed() {
@@ -1330,9 +1308,9 @@ i.active {
 }
 
 .main-slider-container {
-    width: 100vw;
+    width: 100%;
     margin-top: var(--conference-container-margin-top);
-    height: calc(100vh - var(--conference-container-margin-top));
+    height: calc(100% - var(--conference-container-margin-top));
     display: flex;
     flex-direction: row;
 }
