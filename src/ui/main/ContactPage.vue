@@ -12,6 +12,9 @@
         <OrganizationDetailView
             v-else-if="sharedContactState.currentOrganization"
             class="contact-detail-container"/>
+        <ChatroomDetailView
+            v-else-if="sharedContactState.currentChatroom"
+            class="contact-detail-container"/>
         <UserDetailView
             v-else-if="sharedContactState.currentFriend"
             :user="sharedContactState.currentFriend"
@@ -36,6 +39,8 @@ import FriendRequestDetailView from "./contact/FrienRequestDetailView.vue";
 import ChannelListView from "./contact/ChannelListView";
 import ChannelDetailView from "./contact/ChannelDetailView";
 import OrganizationDetailView from "./contact/OrganizationTreeView.vue";
+import ChatroomListView from "./contact/ChatroomListView.vue";
+import ChatroomDetailView from "./contact/ChatroomDetailView.vue";
 
 export default {
     name: 'ContactPage',
@@ -45,6 +50,8 @@ export default {
         }
     },
     components: {
+        ChatroomDetailView,
+        ChatroomListView,
         ChannelDetailView,
         ChannelListView,
         FriendRequestDetailView,

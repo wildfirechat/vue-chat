@@ -117,6 +117,7 @@ let store = {
             currentChannel: null,
             currentFriend: null,
             currentOrganization: null,
+            currentChatroom: null,
             currentUser: null,
 
             expandFriendRequestList: false,
@@ -124,13 +125,13 @@ let store = {
             expandGroup: false,
             expandChanel: false,
             expandOrganization: false,
+            expandChatroom: false,
 
             unreadFriendRequestCount: 0,
             friendList: [],
             friendRequestList: [],
             favGroupList: [],
             channelList: [],
-            organizationList: [],
             favContactList: [],
 
             selfUserInfo: null,
@@ -142,6 +143,7 @@ let store = {
                 this.currentChannel = null;
                 this.currentFriend = null;
                 this.currentOrganization = null;
+                this.currentChatroom = null;
                 this.currentUser = null;
 
                 this.expandFriendRequestList = false;
@@ -154,7 +156,6 @@ let store = {
                 this.friendRequestList = [];
                 this.favGroupList = [];
                 this.channelList = [];
-                this.organizationList = [];
                 this.favContactList = [];
 
                 this.selfUserInfo = null;
@@ -329,6 +330,7 @@ let store = {
         });
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, (msg, hasMore) => {
+            console.log('oooo onrece', msg)
             if (miscState.connectionStatus === ConnectionStatus.ConnectionStatusReceiveing) {
                 return;
             }
@@ -339,6 +341,7 @@ let store = {
                 this._reloadConversation(msg.conversation)
             }
             if (conversationState.currentConversationInfo && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                console.log('ooooooooooo')
                 if (msg.messageContent instanceof DismissGroupNotification
                     || (msg.messageContent instanceof KickoffGroupMemberNotification && msg.messageContent.kickedMembers.indexOf(wfc.getUserId()) >= 0)
                     || (msg.messageContent instanceof QuitGroupNotification && msg.messageContent.operator === wfc.getUserId())
@@ -1683,6 +1686,7 @@ let store = {
         contactState.currentFriendRequest = friendRequest;
         contactState.currentFriend = null;
         contactState.currentOrganization = null;
+        contactState.currentChatroom = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
     },
@@ -1691,6 +1695,7 @@ let store = {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = friend;
         contactState.currentOrganization = null;
+        contactState.currentChatroom = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
     },
@@ -1699,6 +1704,7 @@ let store = {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
         contactState.currentOrganization = null;
+        contactState.currentChatroom = null;
         contactState.currentGroup = group;
         contactState.currentChannel = null;
     },
@@ -1707,6 +1713,7 @@ let store = {
         contactState.currentFriendRequest = null;
         contactState.currentFriend = null;
         contactState.currentOrganization = null;
+        contactState.currentChatroom = null;
         contactState.currentGroup = null;
         contactState.currentChannel = channel;
     },
@@ -1716,7 +1723,17 @@ let store = {
         contactState.currentFriend = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
+        contactState.currentChatroom = null;
         contactState.currentOrganization = organization;
+    },
+
+    setCurrentChatroom(chatroom) {
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = null;
+        contactState.currentGroup = null;
+        contactState.currentChannel = null;
+        contactState.currentOrganization = null;
+        contactState.currentChatroom = chatroom;
     },
     toggleGroupList() {
         contactState.expandGroup = !contactState.expandGroup;
@@ -1735,15 +1752,11 @@ let store = {
     },
 
     toggleOrganizationList() {
-        // TEST DATA
-        contactState.organizationList = [
-            {
-                name: '测试公司',
-                portrait: Config.DEFAULT_ORGANIZATION_PORTRAIT_URL,
-
-            }
-        ]
         contactState.expandOrganization = !contactState.expandOrganization;
+    },
+
+    toggleChatroom() {
+        contactState.expandChatroom = !contactState.expandChatroom;
     },
 
     // search actions

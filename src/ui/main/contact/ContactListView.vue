@@ -45,6 +45,16 @@
                 <OrganizationListView v-if="sharedContactState.expandOrganization"/>
             </li>
             <li>
+                <div @click="showChatroom" class="category-item-container">
+                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
+                    <div class="category-item">
+                        <span class="title">聊天室</span>
+                        <span class="desc"></span>
+                    </div>
+                </div>
+                <ChatroomListView v-if="sharedContactState.expandChatroom"/>
+            </li>
+            <li>
                 <div @click="showContacts" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
                     <div class="category-item">
@@ -95,10 +105,12 @@ import ForwardType from "../conversation/message/forward/ForwardType";
 import CardMessageContent from "../../../wfc/messages/cardMessageContent";
 import wfc from "../../../wfc/client/wfc";
 import Message from "../../../wfc/messages/message";
+import ChatroomListView from "./ChatroomListView.vue";
 
 export default {
     name: "ContactListView",
     components: {
+        ChatroomListView,
         OrganizationListView,
         ChannelListView,
         UserListView,
@@ -140,6 +152,11 @@ export default {
         showOrganization() {
             store.toggleOrganizationList();
         },
+
+        showChatroom() {
+            store.toggleChatroom();
+        },
+
         sendMessage(userInfo) {
             let conversation = new Conversation(ConversationType.Single, userInfo.uid, 0);
             store.setCurrentConversation(conversation);
@@ -190,7 +207,7 @@ export default {
             return groupedUsers;
         },
 
-        users(){
+        users() {
             return store.state.contact.favContactList.concat(store.state.contact.friendList);
         },
     }
@@ -204,7 +221,7 @@ export default {
     overflow: auto;
 }
 
-.contact-list::-webkit-scrollbar{
+.contact-list::-webkit-scrollbar {
     width: 0;
 }
 
