@@ -48,8 +48,10 @@
                 <div @click="showChatroom" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
                     <div class="category-item">
-                        <span class="title">聊天室</span>
-                        <span class="desc"></span>
+                        <div>
+                            <span class="title">聊天室</span>
+                            <span class="tip">(野火官方测试聊天室)</span>
+                        </div>
                     </div>
                 </div>
                 <ChatroomListView v-if="sharedContactState.expandChatroom"/>
