@@ -438,8 +438,7 @@ i.active {
     background: #292929;
     position: absolute;
     top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 50px;
     display: flex;
     flex-direction: column;
 }

@@ -129,7 +129,6 @@ import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import MultiCallOngoingMessageContent from "../../wfc/av/messages/multiCallOngoingMessageContent";
 import VideoType from "../../wfc/av/engine/videoType";
 import wfc from "../../wfc/client/wfc";
-import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import Config from "../../config";
 
 export default {
