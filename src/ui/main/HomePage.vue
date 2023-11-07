@@ -86,7 +86,7 @@
             <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
                  class="voip-iframe-container"
-                 v-draggable="draggableValue"
+                 v-draggable
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
                 <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>

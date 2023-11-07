@@ -69,6 +69,7 @@ import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import UserCardView from "../../main/user/UserCardView";
 import conferenceManager from "./conferenceManager";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "ConferenceParticipantListView",
@@ -98,15 +99,11 @@ export default {
             let callSession = this.session;
             let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin)
             console.log('invite', inviteMessageContent);
-            if (isElectron()) {
-                let message = new Message(null, inviteMessageContent);
-                this.$forwardMessage({
-                    forwardType: ForwardType.NORMAL,
-                    messages: [message]
-                });
-            } else {
-                localStorageEmitter.send(LocalStorageIpcEventType.inviteConferenceParticipant, {messagePayload: inviteMessageContent.encode()})
-            }
+            let message = new Message(null, inviteMessageContent);
+            this.$forwardMessage({
+                forwardType: ForwardType.NORMAL,
+                messages: [message]
+            });
             this.showParticipantList = false;
         },
 
@@ -162,7 +159,7 @@ export default {
                 }
             } else if (user.uid === conferenceManager.conferenceInfo.owner) {
                 desc = "主持人"
-            }else if (user._isScreenSharing){
+            } else if (user._isScreenSharing) {
                 desc = '屏幕共享';
             }
             return desc;

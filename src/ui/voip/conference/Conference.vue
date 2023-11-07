@@ -209,7 +209,7 @@
                     :participants="participantUserInfos"
                     :session="session"
                 />
-                <ConversationView v-if="showConversationView"
+                <ConversationView v-if="showConversationView && sharedMiscState.isElectron"
                                   class="conversation-view"
                                   style="height: 100%"
                                   :title="conferenceManager.conferenceInfo.conferenceTitle"
@@ -244,6 +244,11 @@ import ConferenceManageView from "./ConferenceManageView";
 import wfc from "../../../wfc/client/wfc";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import UserInfo from "../../../wfc/model/userInfo";
+import ConversationType from "../../../wfc/model/conversationType";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
+import ChannelInfo from "../../../wfc/model/channelInfo";
+import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
 
 export default {
     name: 'Conference',
@@ -693,8 +698,21 @@ export default {
         },
 
         chat() {
-            this.showConversationView = !this.showConversationView;
-            this.toggleSliderView();
+            if (isElectron()) {
+                this.showConversationView = !this.showConversationView;
+                this.toggleSliderView();
+            } else {
+                let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0)
+                let chatroomInfo = new ChatRoomInfo();
+                chatroomInfo.chatRoomId = this.session.callId;
+                chatroomInfo.title = this.session.title;
+                conversation._target = chatroomInfo;
+                conversation._target._displayName = chatroomInfo.title;
+                let conversationInfo = new ConversationInfo();
+                conversationInfo.conversation = conversation;
+                store.setCurrentConversationInfo(conversationInfo);
+                this.$router.replace('/home');
+            }
         },
 
         hideParticipantList() {
