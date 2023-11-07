@@ -532,6 +532,10 @@ export default {
                     return;
                 }
 
+                if (!userInfo) {
+                    return;
+                }
+
                 if (userInfo._isVideoMuted) {
                     return;
                 }
