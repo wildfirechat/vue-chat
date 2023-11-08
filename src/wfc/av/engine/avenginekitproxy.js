@@ -288,6 +288,7 @@ export class AvEngineKitProxy {
                         return;
                     }
                     this.callId = null;
+                    this.conversation = null;
                 }
 
                 if (msg.conversation.type === ConversationType.Group
@@ -590,13 +591,16 @@ export class AvEngineKitProxy {
             this.callWin = window;
             console.log('windowEmitter subscribe events');
             this.events.on('close-voip-div', () => {
+                this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, false)
                 this.callWin = null;
                 this.callId = null;
+                this.conversation = null;
             })
             // 等 voip view mounted
             setTimeout(() => {
                 this.emitToVoip(options.event, options.args);
             }, 200)
+            this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, true)
         }
     }
 
