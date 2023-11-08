@@ -287,8 +287,6 @@ export class AvEngineKitProxy {
                     if (content.callId !== this.callId) {
                         return;
                     }
-                    this.callId = null;
-                    this.conversation = null;
                 }
 
                 if (msg.conversation.type === ConversationType.Group
