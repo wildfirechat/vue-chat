@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center">
+    <div class="flex-column flex-align-center flex-justify-center" style="width: 100%; height: 100%">
         <h1 style="display: none">Voip-Multi 运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <p class="webrtc-tip" v-if="showWebrtcTip">
@@ -129,7 +129,6 @@ import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import MultiCallOngoingMessageContent from "../../wfc/av/messages/multiCallOngoingMessageContent";
 import VideoType from "../../wfc/av/engine/videoType";
 import wfc from "../../wfc/client/wfc";
-import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import Config from "../../config";
 
 export default {
@@ -509,34 +508,10 @@ export default {
             }
         }
 
-        avenginekit.setup();
-        this.setupSessionCallback();
-        if (!isElectron()) {
-            this.$nextTick(() => {
-                const urlParams = new URLSearchParams(window.location.href);
-                let options = urlParams.get('options');
-                console.log('parse query', decodeURIComponent(options))
-                options = JSON.parse(decodeURIComponent(options));
-                console.log('parse query result', options)
-                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
-                let listenersSymbol;
-                for (const symbol of symbols) {
-                    if (symbol.description === 'listeners') {
-                        listenersSymbol = symbol;
-                        break;
-                    }
-                }
-                if (listenersSymbol) {
-                    let listeners = avenginekitproxy.events[listenersSymbol];
-                    console.log('listeners', listenersSymbol, listeners);
-                    let ls = listeners[options.event];
-                    for (const l of ls) {
-                        l(options.event, options.args);
-                        console.log('handle voip event', options);
-                    }
-                }
-            })
+        if (isElectron()) {
+            avenginekit.setup();
         }
+        this.setupSessionCallback();
     },
 
     destroyed() {
@@ -553,8 +528,8 @@ export default {
 <style lang="css" scoped>
 
 .container {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

@@ -84,20 +84,14 @@
             </keep-alive>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
-            <div v-if="!sharedMiscState.isElectron"
-                 v-show="voipProxy.useIframe && voipProxy.callId"
-                 class="voip-iframe-container"
-                 v-draggable="draggableValue"
+            <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
+                 class="voip-div-container"
+                 v-draggable
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
-                <div ref="voip-dragger" class="title">
-                    <i class="icon-ion-arrow-move"></i>
-                    <p> 音视频通话</p>
-                </div>
-                <iframe ref="voip-iframe" class="content"
-                        allow="geolocation; microphone; camera; midi; encrypted-media;">
-                    <!--voip iframe-->
-                </iframe>
+                <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
+                <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
+                <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
             </div>
         </div>
     </div>
@@ -117,7 +111,11 @@ import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
 import {isElectron} from "../../platform";
+import Single from "../voip/Single.vue";
+import Multi from "../voip/Multi.vue";
+import Conference from "../voip/conference/Conference.vue";
 
+var avenginkitSetuped = false;
 export default {
     data() {
         return {
@@ -128,11 +126,6 @@ export default {
             isSetting: false,
             fileWindow: null,
             voipProxy: avenginekitproxy,
-            draggableValue: {
-                handle: undefined,
-                boundingElement: undefined,
-                resetInitialPos: true,
-            },
         };
     },
 
@@ -254,23 +247,19 @@ export default {
                 }
             }
         }
-
     },
 
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         this.onConnectionStatusChange(wfc.getConnectionStatus())
 
+        if (!isElectron() && !avenginkitSetuped) {
+            avenginekit.setup();
+            avenginkitSetuped = true;
+        }
     },
 
     mounted() {
-        if (avenginekitproxy.useIframe) {
-            let voipIframe = this.$refs["voip-iframe"];
-            avenginekitproxy.setVoipIframe(voipIframe)
-            this.draggableValue.handle = this.$refs['voip-dragger'];
-            this.draggableValue.boundingElement = this.$refs['home-container']
-        }
-
         avenginekitproxy.onVoipCallErrorCallback = (errorCode) => {
             if (errorCode === -1) {
                 this.$notify({
@@ -309,6 +298,9 @@ export default {
     },
 
     components: {
+        Conference,
+        Multi,
+        Single,
         UserCardView,
         ElectronWindowsControlButtonView
     },
@@ -431,31 +423,32 @@ i.active {
     /*box-shadow: 0 0 1px #000;*/
 }
 
-.voip-iframe-container {
+.voip-div-container {
     background: #292929;
     position: absolute;
-    top: 0;
-    right: 0;
+    margin: auto;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     display: flex;
     flex-direction: column;
 }
 
-.voip-iframe-container.single {
+.voip-div-container.single {
     width: 360px;
     height: 640px;
 }
 
-.voip-iframe-container.multi {
-    width: 1024px;
-    height: 800px;
+.voip-div-container.multi {
+    width: 960px;
+    height: 600px;
 }
 
-.voip-iframe-container.conference {
-    width: 1024px;
-    height: 800px;
+.voip-div-container.conference {
+    width: 960px;
+    height: 600px;
 }
 
-.voip-iframe-container .title {
+.voip-div-container .title {
     text-align: center;
     padding: 5px 0;
     background: #b6b6b6;
@@ -464,19 +457,19 @@ i.active {
     align-content: center;
 }
 
-.voip-iframe-container .title i {
+.voip-div-container .title i {
     pointer-events: none;
 }
 
-.voip-iframe-container .title i:hover {
+.voip-div-container .title i:hover {
     color: #868686;
 }
 
-.voip-iframe-container .title i:active {
+.voip-div-container .title i:active {
     color: #868686;
 }
 
-.voip-iframe-container .content {
+.voip-div-container .content {
     flex: 1;
     border: none;
 }

@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center voip-container" ref="rootContainer">
+    <div class="flex-column flex-align-center flex-justify-center voip-container" style="width: 100%; height: 100%" ref="rootContainer">
         <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
             <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
                                               :title="'野火会议'"
@@ -209,7 +209,7 @@
                     :participants="participantUserInfos"
                     :session="session"
                 />
-                <ConversationView v-if="showConversationView"
+                <ConversationView v-if="showConversationView && sharedMiscState.isElectron"
                                   class="conversation-view"
                                   style="height: 100%"
                                   :title="conferenceManager.conferenceInfo.conferenceTitle"
@@ -244,6 +244,11 @@ import ConferenceManageView from "./ConferenceManageView";
 import wfc from "../../../wfc/client/wfc";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import UserInfo from "../../../wfc/model/userInfo";
+import ConversationType from "../../../wfc/model/conversationType";
+import Conversation from "../../../wfc/model/conversation";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
+import ChannelInfo from "../../../wfc/model/channelInfo";
+import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
 
 export default {
     name: 'Conference',
@@ -602,7 +607,11 @@ export default {
                 }
             };
 
-            avenginekit.setup(sessionCallback);
+            if (isElectron()) {
+                avenginekit.setup(sessionCallback);
+            } else {
+                avenginekit.sessionCallback = sessionCallback;
+            }
         },
 
 
@@ -693,8 +702,21 @@ export default {
         },
 
         chat() {
-            this.showConversationView = !this.showConversationView;
-            this.toggleSliderView();
+            if (isElectron()) {
+                this.showConversationView = !this.showConversationView;
+                this.toggleSliderView();
+            } else {
+                let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0)
+                let chatroomInfo = new ChatRoomInfo();
+                chatroomInfo.chatRoomId = this.session.callId;
+                chatroomInfo.title = this.session.title;
+                conversation._target = chatroomInfo;
+                conversation._target._displayName = chatroomInfo.title;
+                let conversationInfo = new ConversationInfo();
+                conversationInfo.conversation = conversation;
+                store.setCurrentConversationInfo(conversationInfo);
+                this.$router.replace('/home');
+            }
         },
 
         hideParticipantList() {
@@ -1272,32 +1294,6 @@ export default {
         } else {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
         }
-
-        if (!isElectron()) {
-            this.$nextTick(() => {
-                const urlParams = new URLSearchParams(window.location.href);
-                let options = urlParams.get('options');
-                console.log('parse queries')
-                options = JSON.parse(decodeURIComponent(options));
-                const symbols = Object.getOwnPropertySymbols(avenginekitproxy.events);
-                let listenersSymbol;
-                for (const symbol of symbols) {
-                    if (symbol.description === 'listeners') {
-                        listenersSymbol = symbol;
-                        break;
-                    }
-                }
-                if (listenersSymbol) {
-                    let listeners = avenginekitproxy.events[listenersSymbol];
-                    console.log('listeners', listenersSymbol, listeners);
-                    let ls = listeners[options.event];
-                    for (const l of ls) {
-                        l(options.event, options.args);
-                        console.log('handle voip event', options);
-                    }
-                }
-            })
-        }
     },
 
     destroyed() {
@@ -1334,9 +1330,9 @@ i.active {
 }
 
 .main-slider-container {
-    width: 100vw;
+    width: 100%;
     margin-top: var(--conference-container-margin-top);
-    height: calc(100vh - var(--conference-container-margin-top));
+    height: calc(100% - var(--conference-container-margin-top));
     display: flex;
     flex-direction: row;
 }
