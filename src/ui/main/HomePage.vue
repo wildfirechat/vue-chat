@@ -85,7 +85,7 @@
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
-                 class="voip-iframe-container"
+                 class="voip-div-container"
                  v-draggable
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
@@ -126,11 +126,6 @@ export default {
             isSetting: false,
             fileWindow: null,
             voipProxy: avenginekitproxy,
-            draggableValue: {
-                handle: undefined,
-                boundingElement: undefined,
-                resetInitialPos: true,
-            },
         };
     },
 
@@ -252,7 +247,6 @@ export default {
                 }
             }
         }
-
     },
 
     created() {
@@ -266,11 +260,6 @@ export default {
     },
 
     mounted() {
-        if (!isElectron()) {
-            this.draggableValue.handle = this.$refs['handle-id'];
-            this.draggableValue.boundingElement = this.$refs['home-container']
-        }
-
         avenginekitproxy.onVoipCallErrorCallback = (errorCode) => {
             if (errorCode === -1) {
                 this.$notify({
@@ -434,33 +423,32 @@ i.active {
     /*box-shadow: 0 0 1px #000;*/
 }
 
-.voip-iframe-container {
+.voip-div-container {
     background: #292929;
     position: absolute;
-    top: 50px;
-    left: 50px;
+    margin: auto;
     border-radius: 5px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     display: flex;
     flex-direction: column;
 }
 
-.voip-iframe-container.single {
+.voip-div-container.single {
     width: 360px;
     height: 640px;
 }
 
-.voip-iframe-container.multi {
+.voip-div-container.multi {
     width: 960px;
     height: 600px;
 }
 
-.voip-iframe-container.conference {
+.voip-div-container.conference {
     width: 960px;
     height: 600px;
 }
 
-.voip-iframe-container .title {
+.voip-div-container .title {
     text-align: center;
     padding: 5px 0;
     background: #b6b6b6;
@@ -469,19 +457,19 @@ i.active {
     align-content: center;
 }
 
-.voip-iframe-container .title i {
+.voip-div-container .title i {
     pointer-events: none;
 }
 
-.voip-iframe-container .title i:hover {
+.voip-div-container .title i:hover {
     color: #868686;
 }
 
-.voip-iframe-container .title i:active {
+.voip-div-container .title i:active {
     color: #868686;
 }
 
-.voip-iframe-container .content {
+.voip-div-container .content {
     flex: 1;
     border: none;
 }
