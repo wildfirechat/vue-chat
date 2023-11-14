@@ -575,9 +575,10 @@ export class AvEngineKitProxy {
         } else {
             this.callWin = window;
             console.log('windowEmitter subscribe events');
-            this.events.on('close-voip-div', () => {
+            this.events.once('close-voip-div', () => {
                 this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, false)
                 this.callWin = null;
+                this.conference = null;
                 this.callId = null;
                 this.conversation = null;
             })
