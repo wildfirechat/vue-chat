@@ -103,7 +103,7 @@
                             <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                             <p>静音</p>
                         </div>
-                        <div class="action">
+                        <div v-if="!session.audioOnly" class="action">
                             <img v-if="!session.videoMuted" @click="muteVideo" class="action-img"
                                  src='@/assets/images/av_conference_video.png'/>
                             <img v-else @click="muteVideo" class="action-img"
