@@ -21,9 +21,6 @@ export class AvEngineKitProxy {
     wfc;
     queueEvents = [];
     callWin;
-    // 默认音视频窗口是在新窗口打开，当需要在同一个窗口，通过iframe处理时，请置为true
-    useIframe = false;
-    iframe;
     type;
 
     conference = false;
@@ -79,16 +76,6 @@ export class AvEngineKitProxy {
             this.events.on('conference-request', this.sendConferenceRequestListener);
             this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
         }
-    }
-
-    /**
-     * 设置渲染音视频通话界面的iframe
-     *
-     * 仅当 {@link useIframe}配置为 true时生效
-     * @param iframe
-     */
-    setVoipIframe(iframe) {
-        this.iframe = iframe;
     }
 
     updateCallStartMessageContentListener = (event, message) => {
@@ -628,9 +615,6 @@ export class AvEngineKitProxy {
             this.participants = [];
             this.queueEvents = [];
             this.callWin = null;
-            if (this.iframe) {
-                this.iframe.src = 'about:blank'
-            }
             this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
         }, 2000);
     }
