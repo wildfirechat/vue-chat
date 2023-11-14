@@ -1,7 +1,6 @@
 import axios from "axios";
 import Config from "../config";
 import {getItem, setItem} from "../ui/util/storageHelper";
-import AppServerError from "./appServerError";
 import wfc from "../wfc/client/wfc";
 import OrganizationServerError from "./organizationServerError";
 import UserInfo from "../wfc/model/userInfo";
@@ -153,7 +152,7 @@ export class OrganizationServerApi {
             if (response.data.code === 0) {
                 return response.data.result
             } else {
-                throw new AppServerError(response.data.code, response.data.message)
+                throw new OrganizationServerError(response.data.code, response.data.message)
             }
         } else {
             throw new Error('request error, status code: ' + response.status)

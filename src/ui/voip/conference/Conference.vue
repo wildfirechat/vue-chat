@@ -488,8 +488,8 @@ export default {
                 this.session = null;
             }
 
-            sessionCallback.onRequestChangeMode = (userId, audience) => {
-                console.log('onRequestChangeMode', userId + ' ' + audience)
+            sessionCallback.onRequestChangeMode = (audience) => {
+                console.log('onRequestChangeMode', audience)
                 if (audience) {
                     this.session.switchAudience(true)
                     return;

@@ -1,5 +1,6 @@
 <template>
     <div id="app"
+         style="width: 100vw; height: 100vh"
          @contextmenu.prevent=""
          @dragenter="$event.preventDefault()"
          @dragover="$event.preventDefault()"

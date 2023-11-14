@@ -979,6 +979,9 @@ export default {
 
 .title-container h1 {
     font-size: 16px;
+    word-wrap: break-word;
+    max-width: 500px;
+    text-overflow: ellipsis;
     font-weight: normal;
 }
 
