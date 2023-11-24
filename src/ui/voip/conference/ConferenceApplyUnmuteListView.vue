@@ -37,12 +37,9 @@ export default {
     computed: {
         applyUnmuteParticipantList() {
             let applyList = this.conferenceManager.applyingUnmuteMembers;
-            let test = store.getUserInfos(applyList)
-            for (let i = 0; i < 50; i++) {
-                test.push(test[0])
-            }
-            console.log('applyList', applyList, test);
-            return test;
+            let users = store.getUserInfos(applyList)
+            console.log('applyList', applyList, users);
+            return users;
         }
     }
 }

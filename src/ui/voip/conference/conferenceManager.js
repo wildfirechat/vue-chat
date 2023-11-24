@@ -46,6 +46,10 @@ class ConferenceManager {
         msg = this._fixLongSerializedIssue(msg)
         if (msg.messageContent.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND) {
             let command = msg.messageContent;
+            if (command.conferenceId !== this.conferenceInfo.conferenceId){
+                console.log('not current conference', command.conferenceId, this.conferenceInfo.conferenceId);
+                return;
+            }
             let senderName;
             switch (command.commandType) {
                 case ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL:
@@ -157,7 +161,7 @@ class ConferenceManager {
             return;
         }
         this.applyingUnmuteMembers = this.applyingUnmuteMembers.filter(uid => uid !== userId);
-        this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE, userId, isAllow);
+        this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE, userId, isAllow);
     }
 
     approveAllUnmute(isAllow) {

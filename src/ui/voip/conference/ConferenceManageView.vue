@@ -84,15 +84,19 @@ export default {
             desc += '正在举手'
             this.handUpTip = desc;
         },
-        updateapplyUnmuteTip() {
+        updateApplyUnmuteTip() {
             let ids = conferenceManager.applyingUnmuteMembers;
-            let userInfos = wfc.getUserInfos(ids, '');
-            let desc = userInfos[0].displayName;
-            if (userInfos.length > 1) {
-                desc += ' 等'
+            if (ids.length > 0) {
+                let userInfos = wfc.getUserInfos(ids, '');
+                let desc = userInfos[0].displayName;
+                if (userInfos.length > 1) {
+                    desc += ' 等'
+                }
+                desc += '正在申请解除静音'
+                this.applyUnmuteTip = desc;
+            } else {
+                this.applyUnmuteTip = '';
             }
-            desc += '正在申请解除静音'
-            this.applyUnmuteTip = desc;
         }
 
     },
@@ -110,7 +114,7 @@ export default {
             this.updateHandUpTip();
         },
         applyingUnmuteMembers() {
-            this.updateapplyUnmuteTip();
+            this.updateApplyUnmuteTip();
         }
     },
 

@@ -42,7 +42,7 @@ export default class ConferenceCommandMessageContent extends MessageContent {
             this.targetUserId = obj.u;
 
         }
-        this.callId = payload.content;
+        this.conferenceId = payload.content;
     }
 
     static ConferenceCommandType = Object.freeze({
