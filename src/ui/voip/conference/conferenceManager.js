@@ -5,6 +5,7 @@ import ConferenceCommandMessageContent from "../../../wfc/av/messages/conference
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
 import wfc from "../../../wfc/client/wfc";
+import {isElectron} from "../../../platform";
 
 class ConferenceManager {
 
@@ -31,6 +32,17 @@ class ConferenceManager {
         avenginekitproxy.listenVoipEvent('message', this.onReceiveMessage);
     }
 
+    destroy() {
+        if (!isElectron()){
+            avenginekitproxy.events.removeListener('message', this.onReceiveMessage);
+        }
+        if (this.conferenceInfo) {
+            wfc.quitChatroom(this.conferenceInfo.conferenceId);
+        }
+        this.vueInstance = null;
+        this.conferenceInfo = null;
+    }
+
     getConferenceInfo(conferenceId) {
         // TODO password
         conferenceApi.queryConferenceInfo(conferenceId, '')
@@ -50,6 +62,7 @@ class ConferenceManager {
                 console.log('not current conference', command.conferenceId, this.conferenceInfo.conferenceId);
                 return;
             }
+            console.log('receive conference command message', msg);
             let senderName;
             switch (command.commandType) {
                 case ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL:

@@ -64,8 +64,6 @@ export default {
             showParticipantList: true,
             showApplyList: false,
             showHandUpList: false,
-            handUpTip: '',
-            applyUnmuteTip: '',
         }
     },
     components: {
@@ -73,8 +71,13 @@ export default {
         ConferenceApplyUnmuteListView,
         ConferenceParticipantListView,
     },
-    methods: {
-        updateHandUpTip() {
+    methods: {},
+    computed: {
+        handUpMembers() {
+            return this.conferenceManager.handUpMembers;
+        },
+
+        handUpTip() {
             let ids = conferenceManager.handUpMembers;
             let userInfos = wfc.getUserInfos(ids, '');
             let desc = userInfos[0].displayName;
@@ -82,9 +85,10 @@ export default {
                 desc += ' 等'
             }
             desc += '正在举手'
-            this.handUpTip = desc;
+            return desc;
         },
-        updateApplyUnmuteTip() {
+
+        applyUnmuteTip() {
             let ids = conferenceManager.applyingUnmuteMembers;
             if (ids.length > 0) {
                 let userInfos = wfc.getUserInfos(ids, '');
@@ -93,30 +97,13 @@ export default {
                     desc += ' 等'
                 }
                 desc += '正在申请解除静音'
-                this.applyUnmuteTip = desc;
+                return desc;
             } else {
-                this.applyUnmuteTip = '';
+                return '';
             }
         }
-
     },
-    computed: {
-        handUpMembers() {
-            return this.conferenceManager.handUpMembers;
-        },
-
-        applyingUnmuteMembers() {
-            return this.conferenceManager.applyingUnmuteMembers;
-        }
-    },
-    watch: {
-        handUpMembers() {
-            this.updateHandUpTip();
-        },
-        applyingUnmuteMembers() {
-            this.updateApplyUnmuteTip();
-        }
-    },
+    watch: {},
 
 }
 </script>

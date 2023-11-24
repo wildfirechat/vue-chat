@@ -13,11 +13,11 @@
         </label>
         <label>
             参与者开启摄像头、麦克风入会
-            <input v-model="audience" type="checkbox">
+            <input v-model="notAudience" type="checkbox">
         </label>
         <label>
             允许参与者自主开启摄像头和麦克风
-            <input :disabled="audience" v-model="allowTurnOnMic" type="checkbox">
+            <input :disabled="notAudience" v-model="allowTurnOnMic" type="checkbox">
         </label>
         <div>
             <label>
@@ -54,7 +54,7 @@ export default {
             title: '',
             desc: '',
             endTime: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000 + 1 * 60 * 60 * 1000).toISOString().split('.')[0],
-            audience: false,
+            notAudience: true,
             advance: false,
             allowTurnOnMic: true,
             enablePassword: false,
@@ -74,7 +74,7 @@ export default {
             info.owner = conferenceManager.selfUserId;
             info.startTime = Math.ceil(new Date().getTime() / 1000);
             info.endTime = Math.ceil(new Date(this.endTime).getTime() / 1000);
-            info.audience = this.audience;
+            info.audience = !this.notAudience;
             info.allowSwitchMode = this.allowTurnOnMic;
             info.advance = this.advance;
 
@@ -125,7 +125,7 @@ export default {
             // 超级会议模式，一般参会人员会很多，但不需要所有人都能发言；互动模式，是允许每个人发言
             // 开启超级会之后，需要再次确认开启互动模式
             if (this.advance) {
-                this.audience = false;
+                this.notAudience = false;
             }
         },
         endTime() {

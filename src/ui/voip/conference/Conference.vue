@@ -1303,6 +1303,7 @@ export default {
         clearInterval(this.refreshUserInfoInternal);
         this.$eventBus.$off('muteVideo');
         this.$eventBus.$off('muteAudio');
+        this.conferenceManager.destroy();
     }
 }
 </script>
