@@ -28,50 +28,49 @@ Vue.config.productionTip = false
 
 // init
 {
-    let href = window.location.href;
-    let path = href.substring(href.indexOf('#') + 1)
-    console.log('init', href, path)
-    // 判断是否是主窗口，请根据实际情况进行调整
-    if (path === '/'/*login*/ || path.startsWith('/home') || href.indexOf('#') === -1) {
-        console.log('init wfc')
-        if (isElectron()) {
+    // pc
+    if (isElectron()) {
+        let href = window.location.href;
+        let path = href.substring(href.indexOf('#') + 1)
+        console.log('init', href, path)
+        if (path === '/'/*login*/ || path.startsWith('/home') || href.indexOf('#') === -1) {
             wfc.init()
             // 双网环境配置
             //     // 设置网络策略
             //     wfc.setBackupAddressStrategy(0)
             //     // 设置备选网络
             //     wfc.setBackupAddress('192.168.10.11', 80)
+            store.init(true);
         } else {
-            wfc.init();
-            // 双网环境配置
-            // 可以根据访问网页的地址，配置是否切换备选网络策略
-            // 比如公网，通过域名访问，采用默认的主网络；内网，通过ip访问，使用备选网络
-            // 需要在wfc.connect之前调用
-            // if (new URL(window.origin).host.startsWith('192.168.2.169')) {
-            //     // 设置备选网络不走WSS
-            //     Config.USE_WSS = false;
-            //     // 设置网络策略
-            //     wfc.setBackupAddressStrategy(2)
-            //     // 设置备选网络
-            //     wfc.setBackupAddress('192.168.10.11', 80)
-            // }
-        }
-        store.init(true);
-    } else {
-        console.error('not home window, not init wfc, 如果此窗口就是主窗口或者应用只有一个窗口，可能会导致功能不正常，请更新上面的主窗口判断逻辑')
-        if (isElectron()) {
             wfc.attach()
+
+            let subWindowLoadDataOptions = {
+                loadFavGroupList: true,
+                loadChannelList: true,
+                loadFriendList: true,
+                loadFavContactList: true,
+                loadFriendRequestList: true,
+                loadDefaultConversationList: true
+            }
+            // TODO 优化，有的窗口并不需要store，或者不需要加载所有默认数据
+            store.init(false, subWindowLoadDataOptions);
         }
-        let subWindowLoadDataOptions = {
-            loadFavGroupList: true,
-            loadChannelList: true,
-            loadFriendList: true,
-            loadFavContactList: true,
-            loadFriendRequestList: true,
-            loadDefaultConversationList: true
-        }
-        // TODO 优化，有的窗口并不需要store，或者不需要加载所有默认数据
-        store.init(false, subWindowLoadDataOptions);
+        // web
+    } else {
+        wfc.init();
+        // 双网环境配置
+        // 可以根据访问网页的地址，配置是否切换备选网络策略
+        // 比如公网，通过域名访问，采用默认的主网络；内网，通过ip访问，使用备选网络
+        // 需要在wfc.connect之前调用
+        // if (new URL(window.origin).host.startsWith('192.168.2.169')) {
+        //     // 设置备选网络不走WSS
+        //     Config.USE_WSS = false;
+        //     // 设置网络策略
+        //     wfc.setBackupAddressStrategy(2)
+        //     // 设置备选网络
+        //     wfc.setBackupAddress('192.168.10.11', 80)
+        // }
+        store.init(true);
     }
 }
 // init end
