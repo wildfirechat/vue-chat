@@ -1,14 +1,14 @@
-import PickUserView from "../main/pick/PickUserView";
 import store from "../../store";
 import ConversationType from "../../wfc/model/conversationType";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import IpcSub from "../../ipc/ipcSub";
+import {isElectron} from "../../platform";
 
 export default {
     install(Vue) {
         Vue.prototype.$startVoipCall = function (options) {
             let {audioOnly, conversation} = options;
-            if (store.state.misc.isMainWindow) {
+            if (store.state.misc.isMainWindow || !isElectron()) {
                 if (conversation.type === ConversationType.Single) {
                     avenginekitproxy.startCall(conversation, audioOnly, [conversation.target])
                 } else {

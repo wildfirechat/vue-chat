@@ -35,7 +35,7 @@
             @close="sharedConversationState.previewMediaIndex = null">
         </CoolLightBox>
         <notifications v-if="sharedMiscState.isMainWindow"/>
-        <IpcMain v-if="sharedMiscState.isMainWindow"/>
+        <IpcMain v-if="sharedMiscState.isMainWindow && sharedMiscState.isElectron"/>
         <router-view id="main-content-container" class="main-content-container"></router-view>
     </div>
 </template>

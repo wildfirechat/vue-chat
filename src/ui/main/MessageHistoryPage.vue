@@ -107,10 +107,7 @@
 <script>
 import MessageContentContainerView from "./conversation/message/MessageContentContainerView";
 import store from "../../store";
-import localStorageEmitter from "../../ipc/localStorageEmitter";
-import LocalStorageIpcEventType from "../../ipc/localStorageIpcEventType";
 import InfiniteLoading from "vue-infinite-loading";
-import ConversationView from "./conversation/ConversationView.vue";
 import IpcSub from "../../ipc/ipcSub";
 
 export default {

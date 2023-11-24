@@ -10,7 +10,6 @@
 <script>
 import Message from "../../../../../wfc/messages/message";
 import CallEndReason from "../../../../../wfc/av/engine/callEndReason";
-import IpcSub from "../../../../../ipc/ipcSub";
 import store from "../../../../../store";
 import {numberValue} from "../../../../../wfc/util/longUtil";
 
@@ -35,11 +34,7 @@ export default {
         startCall() {
             let callStartMsgContent = this.message.messageContent;
             let audioOnly = callStartMsgContent.audioOnly;
-            if (this.sharedMiscState.isMainWindow) {
-                this.$startVoipCall({audioOnly: audioOnly, conversation: this.message.conversation});
-            } else {
-                IpcSub.startVoipCall(this.message.conversation, audioOnly);
-            }
+            this.$startVoipCall({audioOnly: audioOnly, conversation: this.message.conversation});
         },
     },
 

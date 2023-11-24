@@ -547,21 +547,13 @@ export default {
         startAudioCall() {
             console.log(`startAudioCall from mainWindow ${this.sharedMiscState.isMainWindow}`);
             let conversation = this.conversationInfo.conversation;
-            if (this.sharedMiscState.isMainWindow) {
-                this.$startVoipCall({audioOnly: true, conversation: conversation});
-            } else {
-                IpcSub.startVoipCall(conversation, true);
-            }
+            this.$startVoipCall({audioOnly: true, conversation: conversation});
         },
 
         startVideoCall() {
             console.log(`startVideoCall from mainWindow ${this.sharedMiscState.isMainWindow}`);
             let conversation = this.conversationInfo.conversation;
-            if (this.sharedMiscState.isMainWindow) {
-                this.$startVoipCall({audioOnly: false, conversation: conversation});
-            } else {
-                IpcSub.startVoipCall(conversation, false);
-            }
+            this.$startVoipCall({audioOnly: false, conversation: conversation});
         },
 
         toggleChannelMenu(toggle = true) {
