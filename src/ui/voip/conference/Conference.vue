@@ -622,7 +622,7 @@ export default {
 
         muteAudio() {
             let enable = this.session.audioMuted ? true : false;
-            if (enable && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
+            if (enable && this.session.audience && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
                 this.requestUnmute(true);
                 return;
             }
@@ -651,7 +651,7 @@ export default {
         },
         muteVideo() {
             let enable = this.session.videoMuted ? true : false;
-            if (enable && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
+            if (enable && this.session.audience && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
                 this.requestUnmute(false);
                 return;
             }
