@@ -36,14 +36,11 @@ const convertToPng = (imgBlob) => {
 export const copyImg = async (src) => {
     const img = await fetch(src);
     const imgBlob = await img.blob();
-    const extension = src.split(".").pop();
-    const supportedToBeConverted = ["jpeg", "jpg", "gif"];
-    if (supportedToBeConverted.indexOf(extension.toLowerCase())) {
+    if (imgBlob.type !== 'image/png') {
         return convertToPng(imgBlob);
-    } else if (extension.toLowerCase() === "png") {
+    } else {
         return copyToClipboard(imgBlob);
     }
-    console.error("Format unsupported");
 };
 
 
