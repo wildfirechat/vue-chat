@@ -70,12 +70,11 @@ export default class WfcAVEngineKit {
 
     /**
      * 高级版音视频 SDK 有效
-     * 是否强制采用 replay 模式
+     * 是否强制采用 relay 模式
      * 具体请参考 {@link https://docs.wildfirechat.cn/blogs/%E9%9F%B3%E8%A7%86%E9%A2%91%E9%AB%98%E7%BA%A7%E7%89%88%E7%9A%84%E5%8D%95%E7%AB%AF%E5%8F%A3%E5%8C%96%E5%92%8C%E5%BC%BA%E5%88%B6TCP%E5%8C%96.html}
      * @type {boolean}
      */
-    static FORCE_REPLAY = false;
-
+    static FORCE_RELAY = false;
 
     // 没有摄像头时的占位视频
     // 200 x 200，1s，无声，黑屏
