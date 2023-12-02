@@ -84,7 +84,9 @@ export default {
             }
             this.close();
             // 跳转到会话列表页
-            this.$router.replace('/home');
+            if (this.$router.currentRoute.path !== '/home'){
+                this.$router.replace('/home');
+            }
         },
         addFriend() {
             this.close();
