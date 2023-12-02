@@ -27,14 +27,17 @@ export default {
             chatroomList: [
                 {
                     chatRoomId: 'chatroom1',
+                    portrait: 'https://static.wildfirechat.net/ic_launcher.png',
                     title: '野火IM聊天室1'
                 },
                 {
                     chatRoomId: 'chatroom2',
+                    portrait: 'https://static.wildfirechat.net/ic_launcher.png',
                     title: '野火IM聊天室2'
                 },
                 {
                     chatRoomId: 'chatroom3',
+                    portrait: 'https://static.wildfirechat.net/ic_launcher.png',
                     title: '野火IM聊天室3'
                 }
             ],
