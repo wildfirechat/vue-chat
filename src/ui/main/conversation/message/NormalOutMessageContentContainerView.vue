@@ -152,7 +152,7 @@ export default {
                     let unreadUserIds = [];
                     groupMembers.forEach(memberId => {
                         let readDt = readEntries ? readEntries.get(memberId) : 0;
-                        if (readDt && gte(readDt, timestamp)) {
+                        if (readDt && gte(readDt, timestamp) || this.message.from === memberId) {
                             readUserIds.push(memberId);
                         } else {
                             unreadUserIds.push(memberId)
@@ -210,7 +210,7 @@ export default {
                     let unreadUserIds = [];
                     groupMembers.forEach(memberId => {
                         let readDt = readEntries ? readEntries.get(memberId) : 0;
-                        if (readDt && gte(readDt, timestamp)) {
+                        if (readDt && gte(readDt, timestamp) || this.message.from === memberId) {
                             readCount++;
                             readUserIds.push(memberId);
                         } else {
