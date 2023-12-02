@@ -320,6 +320,7 @@ export default {
     align-items: center;
     background-color: white;
     border-radius: var(--main-border-radius);
+    overflow: hidden;
 }
 
 .menu-container {
