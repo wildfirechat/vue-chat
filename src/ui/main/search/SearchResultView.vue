@@ -1,7 +1,7 @@
 <template>
     <section class="search-result-container"
-             v-if="sharedSearchState.show"
-             v-bind:class="{active:sharedSearchState.show}"
+             v-if="sharedSearchState.query.length"
+             v-bind:class="{active:sharedSearchState.query}"
              v-click-outside="hideSearchView"
              @click="hideSearchView"
     >
@@ -111,6 +111,7 @@ export default {
 
     mounted() {
         // do nothing
+        store.setSearchQuery(this.query)
     },
 
     beforeDestroy() {
@@ -161,7 +162,7 @@ export default {
 
         hideSearchView(e) {
             if (e.target.id !== 'searchInput') {
-                store.toggleSearchView(false)
+                store.hideSearchView()
             }
         },
 
@@ -171,7 +172,7 @@ export default {
             }
             let conversation = new Conversation(ConversationType.Single, contact.uid, 0);
             store.setCurrentConversation(conversation);
-            store.toggleSearchView(false);
+            store.hideSearchView();
         },
 
         chatToChannel(channel) {
@@ -180,7 +181,7 @@ export default {
             }
             let conversation = new Conversation(ConversationType.Channel, channel.channelId, 0);
             store.setCurrentConversation(conversation);
-            store.toggleSearchView(false);
+            store.hideSearchView();
         },
 
         chatToGroup(group) {
@@ -189,7 +190,7 @@ export default {
             }
             let conversation = new Conversation(ConversationType.Group, group.target, 0);
             store.setCurrentConversation(conversation);
-            store.toggleSearchView(false);
+            store.hideSearchView();
         },
 
         showMessageHistoryPage() {

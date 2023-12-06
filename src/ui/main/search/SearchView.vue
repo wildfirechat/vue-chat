@@ -3,8 +3,7 @@
         <input id="searchInput"
                ref="input"
                autocomplete="off"
-               v-on:focus="onFocus(true)"
-               v-model="sharedSearchState.query"
+               v-model.trim="sharedSearchState.query"
                @keydown.esc="cancel"
                type="text" :placeholder="$t('common.search')"/>
         <i class="icon-ion-ios-search"></i>
@@ -35,9 +34,6 @@ export default {
         };
     },
     methods: {
-        onFocus(focused) {
-            store.toggleSearchView(focused);
-        },
 
         showCreateConversationModal() {
             let successCB = users => {
@@ -54,7 +50,7 @@ export default {
             });
         },
         cancel() {
-            store.toggleSearchView(false);
+            store.hideSearchView();
             this.$refs['input'].blur();
         }
     }

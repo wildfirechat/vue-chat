@@ -5,7 +5,7 @@
             <SearchView :show-add-button="false" :search-type="'fav'"/>
             <div class="panel">
                 <SearchResultView v-bind:query="sharedSearchState.query"
-                                  v-if="sharedSearchState.show"
+                                  v-if="sharedSearchState.query"
                                   class="search-result-container"/>
                 <div class="category-container">
                     <ul>
