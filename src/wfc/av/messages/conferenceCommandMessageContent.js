@@ -45,23 +45,24 @@ export default class ConferenceCommandMessageContent extends MessageContent {
         this.conferenceId = payload.content;
     }
 
-    static ConferenceCommandType = Object.freeze({
+    // TODO Object.freeze
+    static ConferenceCommandType = {
         //全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否允许成员自主解除静音。
-        MUTE_ALL: 0,
+        MUTE_ALL_AUDIO: 0,
         //取消全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否邀请成员解除静音。
-        CANCEL_MUTE_ALL: 1,
+        CANCEL_MUTE_ALL_AUDIO: 1,
 
         //要求某个用户更改静音状态，只有主持人可以操作。带有参数是否静音/解除静音。
-        REQUEST_MUTE: 2,
+        REQUEST_MUTE_AUDIO: 2,
         //拒绝UNMUTE要求。（如果同意不需要通知对方同意)
-        REJECT_UNMUTE_REQUEST: 3,
+        REJECT_UNMUTE_REQUEST_AUDIO: 3,
 
         //普通用户申请解除静音，带有参数是请求，还是取消请求。
-        APPLY_UNMUTE: 4,
+        APPLY_UNMUTE_AUDIO: 4,
         //管理员批准解除静音申请，带有参数是同意，还是拒绝申请。
-        APPROVE_UNMUTE: 5,
+        APPROVE_UNMUTE_AUDIO: 5,
         //管理员批准全部解除静音申请，带有参数是同意，还是拒绝申请。
-        APPROVE_ALL_UNMUTE: 6,
+        APPROVE_ALL_UNMUTE_AUDIO: 6,
 
         //举手，带有参数是举手还是放下举手
         HANDUP: 7,
@@ -77,5 +78,22 @@ export default class ConferenceCommandMessageContent extends MessageContent {
         FOCUS: 11,
         // 取消设置焦点用户
         CANCEL_FOCUS: 12,
-    })
+
+        //全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否允许成员自主解除静音。
+        MUTE_ALL_VIDEO: 13,
+        //取消全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否邀请成员解除静音。
+        CANCEL_MUTE_ALL_VIDEO: 14,
+
+        //要求某个用户更改静音状态，只有主持人可以操作。带有参数是否静音/解除静音。
+        REQUEST_MUTE_VIDEO: 15,
+        //拒绝UNMUTE要求。（如果同意不需要通知对方同意)
+        REJECT_UNMUTE_REQUEST_VIDEO: 16,
+
+        //普通用户申请解除静音，带有参数是请求，还是取消请求。
+        APPLY_UNMUTE_VIDEO: 17,
+        //管理员批准解除静音申请，带有参数是同意，还是拒绝申请。
+        APPROVE_UNMUTE_VIDEO: 18,
+        //管理员批准全部解除静音申请，带有参数是同意，还是拒绝申请。
+        APPROVE_ALL_UNMUTE_VIDEO: 19,
+    }
 }

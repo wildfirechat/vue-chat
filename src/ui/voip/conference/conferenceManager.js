@@ -15,11 +15,16 @@ class ConferenceManager {
     vueInstance;
 
     conferenceInfo = {};
-    applyingUnmuteMembers = [];
-    isApplyingUnmute = false;
+    applyingUnmuteAudioMembers = [];
+    applyingUnmuteVideoMembers = [];
+    isApplyingUnmuteAudio = false;
+    isApplyingUnmuteVideo = false;
     handUpMembers = [];
     isHandUp = false;
     isMuteAll = false;
+
+    allowUnmuteAudio = false;
+    allowUnmuteVideo = false;
 
     currentFocusUser = null;
     localFocusUser = null;
@@ -33,7 +38,7 @@ class ConferenceManager {
     }
 
     destroy() {
-        if (!isElectron()){
+        if (!isElectron()) {
             avenginekitproxy.events.removeListener('message', this.onReceiveMessage);
         }
         if (this.conferenceInfo) {
@@ -58,55 +63,104 @@ class ConferenceManager {
         msg = this._fixLongSerializedIssue(msg)
         if (msg.messageContent.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND) {
             let command = msg.messageContent;
-            if (command.conferenceId !== this.conferenceInfo.conferenceId){
+            if (command.conferenceId !== this.conferenceInfo.conferenceId) {
                 console.log('not current conference', command.conferenceId, this.conferenceInfo.conferenceId);
                 return;
             }
             console.log('receive conference command message', msg);
             let senderName;
             switch (command.commandType) {
-                case ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL:
+                case ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL_AUDIO:
                     this._reloadCurrentConferenceInfo();
-                    this.onMuteAll();
+                    this.onMuteAll(true);
+                    this.allowUnmuteAudio = command.boolValue;
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.CANCEL_MUTE_ALL:
+                case ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL_VIDEO:
                     this._reloadCurrentConferenceInfo();
-                    this.onCancelMuteAll(command.boolValue);
+                    this.onMuteAll(false);
+                    this.allowUnmuteVideo = command.boolValue;
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.REQUEST_MUTE:
+                case ConferenceCommandMessageContent.ConferenceCommandType.CANCEL_MUTE_ALL_AUDIO:
+                    this._reloadCurrentConferenceInfo();
+                    this.onCancelMuteAll(true, command.boolValue);
+                    break;
+                case ConferenceCommandMessageContent.ConferenceCommandType.CANCEL_MUTE_ALL_VIDEO:
+                    this._reloadCurrentConferenceInfo();
+                    this.onCancelMuteAll(false, command.boolValue);
+                    break;
+                case ConferenceCommandMessageContent.ConferenceCommandType.REQUEST_MUTE_AUDIO:
                     if (command.targetUserId === this.selfUserId) {
-                        this.onRequestMute(command.boolValue);
+                        this.onRequestMute(true, command.boolValue);
                     }
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST:
+                case ConferenceCommandMessageContent.ConferenceCommandType.REQUEST_MUTE_VIDEO:
+                    if (command.targetUserId === this.selfUserId) {
+                        this.onRequestMute(false, command.boolValue);
+                    }
+                    break;
+                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_AUDIO:
                     this.vueInstance.$notify({
                         text: '主持人拒绝了你的发言请求',
                         type: 'info'
                     });
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE:
-                    senderName = wfc.getUserDisplayName(msg.from);
+                case ConferenceCommandMessageContent.ConferenceCommandType.REJECT_UNMUTE_REQUEST_VIDEO:
                     this.vueInstance.$notify({
-                        text: senderName + '请求发言',
+                        text: '主持人拒绝了你的打开摄像头请求',
                         type: 'info'
                     });
+                    break;
+                case ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE_AUDIO:
+                    senderName = wfc.getUserDisplayName(msg.from);
                     if (command.boolValue) {
-                        this.applyingUnmuteMembers.filter(uid => uid !== msg.from)
+                        this.applyingUnmuteAudioMembers.filter(uid => uid !== msg.from)
                     } else {
-                        let index = this.applyingUnmuteMembers.findIndex(uid => uid === msg.from);
+                        let index = this.applyingUnmuteAudioMembers.findIndex(uid => uid === msg.from);
                         if (index === -1) {
-                            this.applyingUnmuteMembers.push(msg.from);
+                            this.applyingUnmuteAudioMembers.push(msg.from);
                         }
+                        this.vueInstance.$notify({
+                            text: senderName + '请求发言',
+                            type: 'info'
+                        });
                     }
                     break;
-                case ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE:
-                case ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_ALL_UNMUTE:
-                    if (this.isApplyingUnmute) {
-                        this.isApplyingUnmute = false;
+                case ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE_VIDEO:
+                    senderName = wfc.getUserDisplayName(msg.from);
+                    if (command.boolValue) {
+                        this.applyingUnmuteVideoMembers.filter(uid => uid !== msg.from)
+                    } else {
+                        let index = this.applyingUnmuteVideoMembers.findIndex(uid => uid === msg.from);
+                        if (index === -1) {
+                            this.applyingUnmuteVideoMembers.push(msg.from);
+                        }
+                        this.vueInstance.$notify({
+                            text: senderName + '请求打开摄像头',
+                            type: 'info'
+                        });
+                    }
+                    break;
+                case ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE_AUDIO:
+                case ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_AUDIO:
+                    if (this.isApplyingUnmuteAudio) {
+                        this.isApplyingUnmuteAudio = false;
                         if (command.boolValue) {
                             this.vueInstance.$eventBus.$emit('muteAudio', false);
                             this.vueInstance.$notify({
                                 text: '主持人已同意了你的发言请求',
+                                type: 'info'
+                            });
+                        }
+                    }
+                    break;
+                case ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE_VIDEO:
+                case ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_VIDEO:
+                    if (this.isApplyingUnmuteVideo) {
+                        this.isApplyingUnmuteVideo = false;
+                        if (command.boolValue) {
+                            this.vueInstance.$eventBus.$emit('muteVideo', false);
+                            this.vueInstance.$notify({
+                                text: '主持人已同意了你的打开摄像头请求',
                                 type: 'info'
                             });
                         }
@@ -164,36 +218,79 @@ class ConferenceManager {
         }
     }
 
-    applyUnmute(isCancel) {
-        this.isApplyingUnmute = !isCancel;
-        this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE, null, isCancel);
+    /**
+     * 申请解除打开麦克风或摄摄像头
+     * @param {boolean} audio true，麦克风；false，摄像头
+     * @param isCancel true，取消之前的申请；false，发起申请
+     */
+    applyUnmute(audio, isCancel) {
+        if (audio) {
+            this.isApplyingUnmuteAudio = !isCancel;
+        } else {
+            this.isApplyingUnmuteVideo = !isCancel;
+        }
+        let type = audio ? ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE_AUDIO : ConferenceCommandMessageContent.ConferenceCommandType.APPLY_UNMUTE_VIDEO;
+        this._sendCommandMessage(type, null, isCancel);
     }
 
-    approveUnmute(userId, isAllow) {
+    /**
+     * 批准用户打开麦克风/摄像头请求
+     * @param {string} userId 用户 id
+     * @param {boolean} audio true，麦克风；false，摄像头
+     * @param {boolean} isAllow 是否批准
+     */
+    approveUnmute(userId, audio, isAllow) {
         if (!this.isOwner()) {
             return;
         }
-        this.applyingUnmuteMembers = this.applyingUnmuteMembers.filter(uid => uid !== userId);
-        this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE, userId, isAllow);
+        if (audio) {
+            this.applyingUnmuteAudioMembers = this.applyingUnmuteAudioMembers.filter(uid => uid !== userId);
+        } else {
+            this.applyingUnmuteVideoMembers = this.applyingUnmuteVideoMembers.filter(uid => uid !== userId);
+        }
+        let type = audio ? ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE_AUDIO : ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_UNMUTE_VIDEO;
+        this._sendCommandMessage(type, userId, isAllow);
     }
 
-    approveAllUnmute(isAllow) {
+    /**
+     * 批准所有打开麦克风/摄像头请求
+     * @param {boolean} audio true，麦克风；false，摄像头
+     * @param {boolean} isAllow 是否批准
+     */
+    approveAllUnmute(audio, isAllow) {
         if (!this.isOwner()) {
             return;
         }
-        this.applyingUnmuteMembers.length = 0;
-        this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_ALL_UNMUTE, null, isAllow);
+        if (audio) {
+            this.applyingUnmuteAudioMembers.length = 0;
+        } else {
+            this.applyingUnmuteVideoMembers.length = 0;
+        }
+        let type = audio ? ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_AUDIO : ConferenceCommandMessageContent.ConferenceCommandType.APPROVE_ALL_UNMUTE_VIDEO;
+        this._sendCommandMessage(type, null, isAllow);
     }
 
-    requestMemberMute(userId, mute) {
+    /**
+     * 主持人邀请打开/关闭麦克风或摄像
+     * @param {string} userId
+     * @param {boolean} audio true，麦克风；false，摄像头
+     * @param {boolean} mute true，打开；false，关闭
+     */
+    requestMemberMute(userId, audio, mute) {
         if (!this.isOwner()) {
             return;
         }
 
-        this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.REQUEST_MUTE, userId, mute);
+        let type = audio ? ConferenceCommandMessageContent.ConferenceCommandType.REQUEST_MUTE_AUDIO : ConferenceCommandMessageContent.ConferenceCommandType.REQUEST_MUTE_VIDEO;
+        this._sendCommandMessage(type, userId, mute);
     }
 
-    requestMuteAll(allowMemberUnmute) {
+    /**
+     * 主持人关闭所有人的麦克风或摄像头
+     * @param {boolean} audio true 麦克风， false 摄像头
+     * @param {boolean} allowMemberUnmute 允许成员主动开启麦克风或摄像头
+     */
+    requestMuteAll(audio, allowMemberUnmute) {
         if (!this.isOwner()) {
             return;
         }
@@ -202,14 +299,20 @@ class ConferenceManager {
         this.conferenceInfo.allowSwitchMode = allowMemberUnmute;
         conferenceApi.updateConference(this.conferenceInfo)
             .then(r => {
-                this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL, null, allowMemberUnmute);
+                let type = audio ? ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL_AUDIO : ConferenceCommandMessageContent.ConferenceCommandType.MUTE_ALL_VIDEO;
+                this._sendCommandMessage(type, null, allowMemberUnmute);
             })
             .catch(err => {
                 console.log('updateConference error', err)
             })
     }
 
-    requestUnmuteAll(unmute) {
+    /**
+     * 主持人取消所有人关闭麦克风或摄像头
+     * @param {boolean} audio true 麦克风， false 摄像头
+     * @param {boolean} unmute 是否提示成员打开麦克风或摄像头
+     */
+    requestUnmuteAll(audio, unmute) {
         if (!this.isOwner()) {
             return;
         }
@@ -219,13 +322,18 @@ class ConferenceManager {
         this.conferenceInfo.allowSwitchMode = true;
         conferenceApi.updateConference(this.conferenceInfo)
             .then(r => {
-                this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.CANCEL_MUTE_ALL, null, unmute);
+                let type = audio ? ConferenceCommandMessageContent.ConferenceCommandType.CANCEL_MUTE_ALL_AUDIO : ConferenceCommandMessageContent.ConferenceCommandType.CANCEL_MUTE_ALL_VIDEO
+                this._sendCommandMessage(type, null, unmute);
             })
             .catch(err => {
                 console.log('updateConference error', err)
             })
     }
 
+    /**
+     * 举手
+     * @param {boolean} isHandUp
+     */
     handUp(isHandUp) {
         this.isHandUp = isHandUp;
         this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.HANDUP, null, isHandUp);
@@ -235,7 +343,11 @@ class ConferenceManager {
         });
     }
 
-    putMemberHnadDown(memberId) {
+    /**
+     * 主持人放下成员举手
+     * @param {string} memberId
+     */
+    putMemberHandDown(memberId) {
         if (!this.isOwner()) {
             return;
         }
@@ -243,6 +355,9 @@ class ConferenceManager {
         this._sendCommandMessage(ConferenceCommandMessageContent.ConferenceCommandType.PUT_HAND_DOWN, memberId, false);
     }
 
+    /**
+     * 主持人放下所有人举手
+     */
     putAllHandDown() {
         if (!this.isOwner()) {
             return;
@@ -264,6 +379,10 @@ class ConferenceManager {
             });
     }
 
+    /**
+     * 主持人设置焦点用户
+     * @param {string} userId
+     */
     requestFocus(userId) {
         if (!this.isOwner()) {
             return;
@@ -281,55 +400,86 @@ class ConferenceManager {
         this.requestFocus(null);
     }
 
-    onMuteAll() {
-        this.vueInstance.$eventBus.$emit('muteVideo', true);
-        this.vueInstance.$eventBus.$emit('muteAudio', true);
+    /**
+     * 主任任请求全员静音
+     */
+    onMuteAll(audio) {
+        let desc;
+        if (audio) {
+            desc = '管理员将全体成员静音了';
+            this.vueInstance.$eventBus.$emit('muteAudio', true);
+        } else {
+            desc = '管理员关闭了所有人的摄像头';
+            this.vueInstance.$eventBus.$emit('muteVideo', true);
+        }
         this.vueInstance.$notify({
-            text: '管理员将全体成员静音了',
+            text: desc,
             type: 'info'
         });
     }
 
-    onCancelMuteAll(requestUnmute) {
+    /**
+     * 主持人取消全员静音
+     * @param audio
+     * @param requestUnmute
+     */
+    onCancelMuteAll(audio, requestUnmute) {
         if (requestUnmute && this.vueInstance.selfUserInfo._isAudience) {
             this.vueInstance.$alert({
                 showIcon: false,
-                content: '主持人关闭了全员静音，是否要打开麦克风',
-                confirmText: '开启麦克风',
+                content: audio ? '主持人关闭了全员静音，是否要打开麦克风' : '管理员取消了全体成员关闭摄像头，是否打开摄像头',
+                confirmText: '打开',
                 cancelCallback: () => {
                     // do nothing
                 },
                 confirmCallback: () => {
-                    this.vueInstance.$eventBus.$emit('muteAudio', false);
+                    if (audio) {
+                        this.vueInstance.$eventBus.$emit('muteAudio', false);
+                    } else {
+                        this.vueInstance.$eventBus.$emit('muteVideo', false);
+                    }
                 }
             })
 
         }
+        let desc = audio ? '管理员取消了全体成员静音' : '管理员取消了全体成员关闭摄像'
         this.vueInstance.$notify({
-            text: '管理员将取消了全体成员静音',
+            text: desc,
             type: 'info'
         });
     }
 
-    onRequestMute(mute) {
+    /**
+     * 主持人请求 mute 操作
+     * @param audio
+     * @param mute
+     */
+    onRequestMute(audio, mute) {
         if (!mute) {
             this.vueInstance.$alert({
                 showIcon: false,
-                content: '主持人邀请你发言',
+                content: audio ? '主持人邀请你发言' : '主持人邀请你打开摄像头',
                 confirmText: '接受',
                 cancelCallback: () => {
                     // do nothing
                 },
                 confirmCallback: () => {
-                    this.vueInstance.$eventBus.$emit('muteAudio', false);
+                    if (audio) {
+                        this.vueInstance.$eventBus.$emit('muteAudio', false);
+                    } else {
+                        this.vueInstance.$eventBus.$emit('muteVideo', false);
+                    }
                 }
             })
         } else {
-            this.vueInstance.$eventBus.$emit('muteVideo', true);
-            this.vueInstance.$eventBus.$emit('muteAudio', true);
+            if (audio) {
+                this.vueInstance.$eventBus.$emit('muteAudio', true);
+            } else {
+                this.vueInstance.$eventBus.$emit('muteVideo', true);
+            }
 
             this.vueInstance.$notify({
-                text: '管理员关闭了你的发言',
+                text: audio ? '管理员关闭了你的发言' : '管理员关闭了你的摄像头',
                 type: 'info'
             });
         }

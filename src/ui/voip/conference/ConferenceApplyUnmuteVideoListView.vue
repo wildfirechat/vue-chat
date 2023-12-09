@@ -7,16 +7,16 @@
                         <img class="avatar" :src="participant.portrait" alt="">
                         <p class="single-line name"> {{ participant._displayName }}</p>
                         <div class="action-container">
-                            <button @click="conferenceManager.approveUnmute(participant.uid, true)">同意</button>
-                            <button @click="conferenceManager.approveUnmute(participant.uid, false)">拒绝</button>
+                            <button @click="conferenceManager.approveUnmute(participant.uid,false, true)">同意</button>
+                            <button @click="conferenceManager.approveUnmute(participant.uid, false, false)">拒绝</button>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
-        <div class="action-all-container">
-            <button @click="conferenceManager.approveAllUnmute(true)">全部同意</button>
-            <button @click="conferenceManager.approveAllUnmute(false)">全部拒绝</button>
+        <div class="action-all-container" v-if="false">
+            <button @click="conferenceManager.approveAllUnmute(false, true)">全部同意</button>
+            <button @click="conferenceManager.approveAllUnmute(false, false)">全部拒绝</button>
         </div>
     </div>
 
@@ -27,7 +27,7 @@ import conferenceManager from "./conferenceManager";
 import store from "../../../store";
 
 export default {
-    name: "ConferenceApplyUnmuteListView",
+    name: "ConferenceApplyUnmuteAudioListView",
     data() {
         return {
             conferenceManager: conferenceManager,
@@ -36,7 +36,7 @@ export default {
 
     computed: {
         applyUnmuteParticipantList() {
-            let applyList = this.conferenceManager.applyingUnmuteMembers;
+            let applyList = this.conferenceManager.applyingUnmuteVideoMembers;
             let users = store.getUserInfos(applyList)
             console.log('applyList', applyList, users);
             return users;

@@ -2,19 +2,21 @@
     <div class="apply-unmute-container">
         <div class="apply-participant-list-container">
             <ul>
-                <li v-for="(participant, i) in handUpParticipantList" :key="i">
+                <li v-for="(participant, i) in applyUnmuteParticipantList" :key="i">
                     <div class="participant-user">
                         <img class="avatar" :src="participant.portrait" alt="">
                         <p class="single-line name"> {{ participant._displayName }}</p>
                         <div class="action-container">
-                            <button @click="conferenceManager.putMemberHandDown(participant.uid)">放下</button>
+                            <button @click="conferenceManager.approveUnmute(participant.uid,true, true)">同意</button>
+                            <button @click="conferenceManager.approveUnmute(participant.uid, true, false)">拒绝</button>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
-        <div class="action-all-container">
-            <button @click="conferenceManager.putAllHandDown()">全部放下</button>
+        <div class="action-all-container" v-if="false">
+            <button @click="conferenceManager.approveAllUnmute(true, true)">全部同意</button>
+            <button @click="conferenceManager.approveAllUnmute(true, false)">全部拒绝</button>
         </div>
     </div>
 
@@ -25,7 +27,7 @@ import conferenceManager from "./conferenceManager";
 import store from "../../../store";
 
 export default {
-    name: "ConferenceApplyUnmuteListView",
+    name: "ConferenceApplyUnmuteAudioListView",
     data() {
         return {
             conferenceManager: conferenceManager,
@@ -33,9 +35,11 @@ export default {
     },
 
     computed: {
-        handUpParticipantList() {
-            let applyList = this.conferenceManager.handUpMembers;
-            return store.getUserInfos(applyList)
+        applyUnmuteParticipantList() {
+            let applyList = this.conferenceManager.applyingUnmuteAudioMembers;
+            let users = store.getUserInfos(applyList)
+            console.log('applyList', applyList, users);
+            return users;
         }
     }
 }

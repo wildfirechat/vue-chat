@@ -51,7 +51,7 @@
             </li>
         </ul>
 
-        <div class="action-container">
+        <div class="action-container" v-if="conferenceManager.isOwner()">
             <button :disabled="conferenceManager.isMuteAll" @click="requestMuteAll">全员静音</button>
             <button :disabled="!conferenceManager.isMuteAll" @click="requestUnMuteAll">取消全员静音</button>
         </div>
@@ -257,14 +257,14 @@ export default {
                         items.push({
                             title: '邀请发言',
                             handler: () => {
-                                conferenceManager.requestMemberMute(participant.uid, false)
+                                conferenceManager.requestMemberMute(participant.uid, true, false)
                             },
                         })
                     } else {
                         items.push({
                             title: '取消发言',
                             handler: () => {
-                                conferenceManager.requestMemberMute(participant.uid, true)
+                                conferenceManager.requestMemberMute(participant.uid, true, true)
                             },
                         })
                     }
@@ -330,13 +330,13 @@ export default {
         requestMuteAll() {
             // TODO dialog
             let allowMemberUnmute = true;
-            this.conferenceManager.requestMuteAll(allowMemberUnmute);
+            this.conferenceManager.requestMuteAll(true, allowMemberUnmute);
         },
 
         requestUnMuteAll() {
             // TODO dialog
             let unmute = true;
-            this.conferenceManager.requestUnmuteAll(unmute);
+            this.conferenceManager.requestUnmuteAll(true, unmute);
         }
     }
 }
