@@ -14,7 +14,7 @@
                 </li>
             </ul>
         </div>
-        <div class="action-all-container" v-if="false">
+        <div class="action-all-container">
             <button @click="conferenceManager.approveAllUnmute(true, true)">全部同意</button>
             <button @click="conferenceManager.approveAllUnmute(true, false)">全部拒绝</button>
         </div>
