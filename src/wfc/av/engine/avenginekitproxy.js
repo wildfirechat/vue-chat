@@ -12,6 +12,7 @@ import DetectRTC from 'detectrtc';
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
+
 import CallEndReason from "./callEndReason";
 import CallByeMessageContent from "../messages/callByeMessageContent";
 
@@ -21,6 +22,7 @@ export class AvEngineKitProxy {
     wfc;
     queueEvents = [];
     callWin;
+    isVoipWindowReady = false;
     type;
 
     conference = false;
@@ -76,6 +78,7 @@ export class AvEngineKitProxy {
             this.events.on('conference-request', this.sendConferenceRequestListener);
             this.events.on('update-call-start-message', this.updateCallStartMessageContentListener)
         }
+
     }
 
     updateCallStartMessageContentListener = (event, message) => {
@@ -154,6 +157,7 @@ export class AvEngineKitProxy {
     onConnectionStatusChange = (status) => {
         this.emitToVoip('connectionStatus', status);
     }
+
     // 收到消息时，timestamp已经过修正，后面使用时，不用考虑和服务器的时间差
     onReceiveMessage = (msg) => {
         if (!Config.ENABLE_MULTI_VOIP_CALL && msg.conversation.type === ConversationType.Group) {
@@ -231,16 +235,14 @@ export class AvEngineKitProxy {
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
                     if (!this.callWin) {
-                        setTimeout(() => {
-                            if (this.conversation) {
-                                this.showCallUI(msg.conversation, false, {
-                                    event: 'message',
-                                    args: msg
-                                });
-                            } else {
-                                console.log('call ended')
-                            }
-                        }, 200)
+                        if (this.conversation) {
+                            this.showCallUI(msg.conversation, false, {
+                                event: 'message',
+                                args: msg
+                            });
+                        } else {
+                            console.log('call ended')
+                        }
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
                     let participantIds = [...content.participants];
@@ -259,16 +261,14 @@ export class AvEngineKitProxy {
                     participantUserInfos = wfc.getUserInfos(participantIds, msg.conversation.target);
 
                     if (!this.callWin && content.participants.indexOf(selfUserInfo.uid) > -1) {
-                        setTimeout(() => {
-                            if (this.conversation) {
-                                this.showCallUI(msg.conversation, false, {
-                                    event: 'message',
-                                    args: msg
-                                });
-                            } else {
-                                console.log('call ended')
-                            }
-                        }, 200)
+                        if (this.conversation) {
+                            this.showCallUI(msg.conversation, false, {
+                                event: 'message',
+                                args: msg
+                            });
+                        } else {
+                            console.log('call ended')
+                        }
                     }
                 } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
                     if (content.callId !== this.callId) {
@@ -287,7 +287,8 @@ export class AvEngineKitProxy {
                 msg.participantUserInfos = participantUserInfos;
                 msg.selfUserInfo = selfUserInfo;
                 msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
-                if (this.callWin) {
+                // 这两条消息，显示 ui 的时候，会传过去，这儿就不用再次传了
+                if (this.callWin && [MessageContentType.VOIP_CONTENT_TYPE_START, MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT].indexOf(msg.messageContent.type) === -1) {
                     this.emitToVoip("message", msg);
                 }
             }
@@ -298,7 +299,7 @@ export class AvEngineKitProxy {
         console.log('emitToVoip', event, args)
         if (isElectron()) {
             // renderer/main to renderer
-            if (this.callWin) {
+            if (this.isVoipWindowReady) {
                 // fix object of long.js can be send inter-process
                 args = JSON.stringify(args)
                 this.callWin.webContents.send(event, args);
@@ -542,6 +543,8 @@ export class AvEngineKitProxy {
                     },
                 }
             );
+            this.callWin = win;
+            this.isVoipWindowReady = false;
             // const remoteMain = require("@electron/remote").require("@electron/remote/main");
             const remoteMain = remote.require("@electron/remote/main");
             remoteMain.enable(win.webContents);
@@ -570,7 +573,6 @@ export class AvEngineKitProxy {
             console.log('voip windows url', url)
             win.show();
             win.removeMenu();
-
             this.emitToVoip(options.event, options.args);
         } else {
             this.callWin = window;
@@ -578,12 +580,18 @@ export class AvEngineKitProxy {
             this.events.once('close-voip-div', () => {
                 this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, false)
                 this.callWin = null;
-                this.conference = null;
+                this.isVoipWindowReady = false;
+                if (this.conference) {
+                    wfc.quitChatroom(this.callId);
+                    this.conference = false;
+                }
+                this.conference = false;
                 this.callId = null;
                 this.conversation = null;
             })
             // 等 voip view mounted
             setTimeout(() => {
+                this.isVoipWindowReady = true;
                 this.emitToVoip(options.event, options.args);
             }, 200)
             this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, true)
@@ -600,10 +608,6 @@ export class AvEngineKitProxy {
         if (!this.callWin) {
             return;
         }
-        if (!isElectron()) {
-            this.callWin.removeEventListener('beforeunload', this.onVoipWindowClose)
-            this.callWin.removeEventListener('unload', this.onVoipWindowClose)
-        }
         setTimeout(() => {
             this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
             this.conversation = null;
@@ -616,15 +620,16 @@ export class AvEngineKitProxy {
             this.participants = [];
             this.queueEvents = [];
             this.callWin = null;
+            this.isVoipWindowReady = false;
             this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
         }, 2000);
     }
 
-    onVoipWindowReady(win) {
+    onVoipWindowReady() {
         if (!this.callId) {
             return;
         }
-        this.callWin = win;
+        this.isVoipWindowReady = true;
         console.log('onVoipWindowReady', this.onVoipCallStatusCallback)
         this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, true);
         if (!isElectron()) {
