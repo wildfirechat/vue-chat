@@ -41,6 +41,7 @@ export default class CallStartMessageContent extends MessageContent {
     encode() {
         let payload = super.encode();
         payload.content = this.callId;
+        payload.pushContent = '音视频通话邀请';
 
         let obj = {
             c: this.connectTime,
