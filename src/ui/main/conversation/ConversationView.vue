@@ -854,7 +854,7 @@ export default {
         // 切换到新的会话
         if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
             this.showConversationInfo = false;
-            this.ongoingCalls = null;
+            this.ongoingCalls = [];
             if (this.ongoingCallTimer) {
                 clearInterval(this.ongoingCallTimer);
                 this.ongoingCallTimer = 0;
