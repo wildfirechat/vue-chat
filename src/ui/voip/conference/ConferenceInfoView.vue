@@ -12,7 +12,7 @@
             </div>
             <div class="item">
                 <p class="title">会议号</p>
-                <p class="desc">{{ conferenceInfo.conferenceId }}</p>
+                <p class="desc" @click="copyConferenceId">{{ conferenceInfo.conferenceId }}</p>
             </div>
             <div class="item">
                 <p class="title">二维码</p>
@@ -66,6 +66,7 @@ import wfc from "../../../wfc/client/wfc";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import conferenceApi from "../../../api/conferenceApi";
 import conferenceManager from "./conferenceManager";
+import {copyText} from "../../util/clipboard";
 
 export default {
     name: "ConferenceInfoView",
@@ -104,6 +105,13 @@ export default {
             avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', audience, info.advance, !this.enableAudio, !this.enableVideo);
             this.$modal.hide('conference-info-modal');
         },
+        copyConferenceId(){
+            copyText(this.conferenceInfo.conferenceId)
+            this.$notify({
+                text: '会议号已复制',
+                type: 'info'
+            });
+        }
     },
     computed: {
         startTime() {
