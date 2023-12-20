@@ -738,7 +738,10 @@ export default {
         },
 
         onReceiveMessage(message, hasMore) {
-            if (this.conversationInfo && this.conversationInfo.conversation.equal(message.conversation) && message.messageContent instanceof MultiCallOngoingMessageContent) {
+            if (this.conversationInfo && this.conversationInfo.conversation.equal(message.conversation)
+                && message.messageContent instanceof MultiCallOngoingMessageContent
+                && Config.ENABLE_MULTI_CALL_AUTO_JOIN
+            ) {
                 // 自己是不是已经在通话中
                 console.log('MultiCallOngoingMessageContent', message.messageContent)
                 if (message.messageContent.targets.indexOf(wfc.getUserId()) >= 0) {

@@ -263,7 +263,7 @@ export default {
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
                 this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
 
-                if (selfUserInfo.uid === initiatorUserInfo.uid) {
+                if (Config.ENABLE_MULTI_CALL_AUTO_JOIN && selfUserInfo.uid === initiatorUserInfo.uid) {
                     this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 1000)
                 }
             };
