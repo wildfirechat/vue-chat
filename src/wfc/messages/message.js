@@ -6,32 +6,32 @@
  *
  message in json format
  {
-        "conversation":{
-            "conversationType": 0,
-            "target": "UZUWUWuu",
-            "line": 0,
-        }
-        "from": "UZUWUWuu",
-        "content": {
-            "type": 1,
-            "searchableContent": "1234",
-            "pushContent": "",
-            "content": "",
-            "binaryContent": "",
-            "localContent": "",
-            "mediaType": 0,
-            "remoteMediaUrl": "",
-            "localMediaPath": "",
-            "mentionedType": 0,
-            "mentionedTargets": [ ]
-        },
-        "messageId": 52,
-        "direction": 1,
-        "status": 5,
-        "messageUid": 75735276990792720,
-        "timestamp": 1550849394256,
-        "to": ""
-    }
+ "conversation":{
+ "conversationType": 0,
+ "target": "UZUWUWuu",
+ "line": 0,
+ }
+ "from": "UZUWUWuu",
+ "content": {
+ "type": 1,
+ "searchableContent": "1234",
+ "pushContent": "",
+ "content": "",
+ "binaryContent": "",
+ "localContent": "",
+ "mediaType": 0,
+ "remoteMediaUrl": "",
+ "localMediaPath": "",
+ "mentionedType": 0,
+ "mentionedTargets": [ ]
+ },
+ "messageId": 52,
+ "direction": 1,
+ "status": 5,
+ "messageUid": 75735276990792720,
+ "timestamp": 1550849394256,
+ "to": ""
+ }
  */
 import Conversation from '../model/conversation'
 import NotificationMessageContent from './notification/notificationMessageContent'
@@ -208,6 +208,75 @@ export default class Message {
         }
 
         return content;
+    }
+
+    static fromOutputMessageData(obj) {
+        let msg = new Message();
+        msg.from = obj.sender;
+        msg.content = obj.payload;
+        msg.messageUid = obj.messageId;
+        msg.timestamp = obj.timestamp;
+        let contentClazz = MessageConfig.getMessageContentClazz(obj.payload.type);
+        if (contentClazz) {
+            let content = new contentClazz();
+            try {
+                // outputMessageData.payload.base64edData 已经是base64 格式
+                obj.payload.binaryContent = obj.payload.base64edData;
+                delete obj.payload.base64edData;
+                content.decode(obj.payload);
+                content.extra = obj.payload.extra;
+                if (content instanceof NotificationMessageContent) {
+                    content.fromSelf = msg.from === wfc.getUserId();
+                }
+            } catch (error) {
+                console.error('decode message payload failed, fallback to unkownMessage', obj.payload, error);
+                let flag = MessageConfig.getMessageContentPersitFlag(obj.payload.type);
+                if (PersistFlag.Persist === flag || PersistFlag.Persist_And_Count === flag) {
+                    content = new UnknownMessageContent(obj.payload);
+                } else {
+                    return null;
+                }
+            }
+            msg.messageContent = content;
+
+            if (content instanceof UnknownMessageContent) {
+                console.log('unknownMessage Content', obj)
+            }
+        } else {
+            console.error('message content not register', obj);
+        }
+
+
+        if (msg.from === wfc.getUserId()) {
+            msg.conversation = new Conversation(obj.conv.type, obj.conv.target, obj.conv.line);
+            // out
+            msg.direction = 0;
+            msg.status = MessageStatus.Sent;
+        } else {
+            if (obj.conv.type === ConversationType.Single) {
+                msg.conversation = new Conversation(obj.conv.type, obj.fromUser, obj.conv.line);
+            } else {
+                msg.conversation = new Conversation(obj.conv.type, obj.conv.target, obj.conv.line);
+            }
+
+            // in
+            msg.direction = 1;
+
+            // 无法计算已读状态
+            // msg.status = MessageStatus.Unread;
+            //
+            // if (msg.content.mentionedType === 2) {
+            //     msg.status = MessageStatus.AllMentioned;
+            // } else if (msg.content.mentionedType === 1) {
+            //     for (const target of msg.content.mentionedTarget) {
+            //         if (target === wfc.getUserId()) {
+            //             msg.status = MessageStatus.Mentioned;
+            //             break;
+            //         }
+            //     }
+            // }
+        }
+        return msg;
     }
 
     static toMessagePayload(message) {
