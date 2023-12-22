@@ -100,12 +100,13 @@ import InfiniteLoading from "vue-infinite-loading";
 import store from "../../../store";
 import {ipcRenderer} from "../../../platform";
 import FavItem from "../../../wfc/model/favItem";
-import {isElectron, currentWindow} from "../../../platform";
+import {isElectron} from "../../../platform";
 import {_reverseToJsLongString} from "../../../wfc/util/longUtil";
 import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
 import Config from "../../../config";
 import IpcEventType from "../../../ipcEventType";
 import appServerApi from "../../../api/appServerApi";
+import {downloadFile} from "../../../platformHelper";
 
 export default {
     name: "FavListView",
@@ -226,6 +227,11 @@ export default {
                         ipcRenderer.send(IpcEventType.SHOW_COMPOSITE_MESSAGE_WINDOW, {
                             url: url,
                         });
+                    } else {
+                        this.$notify({
+                            text: '暂不支持预览，请手机端或者 PC 端查看',
+                            type: 'info'
+                        })
                     }
                     break;
                 case MessageContentType.Image:
@@ -233,15 +239,8 @@ export default {
                     store.previewMedia(favItem.url, favItem.thumbUrl, favItem.data && favItem.data.thumb ? favItem.data.thumb : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
                     break;
                 case MessageContentType.File:
-                    if (isElectron()) {
-                        ipcRenderer.send(IpcEventType.DOWNLOAD_FILE, {
-                            // TODO -1时，不通知进度
-                            messageId: -1,
-                            remotePath: favItem.url,
-                            fileName: favItem.title,
-                            windowId: currentWindow.getMediaSourceId(),
-                        });
-                    }
+                    let fi = Object.assign(new FavItem(), favItem);
+                    downloadFile(fi.toMessage())
                     break;
                 case MessageContentType.Composite_Message:
                     if (isElectron()) {
@@ -256,6 +255,11 @@ export default {
                         ipcRenderer.send(IpcEventType.SHOW_COMPOSITE_MESSAGE_WINDOW, {
                             url: url,
                         });
+                    } else {
+                        this.$notify({
+                            text: '暂不支持预览，请手机端或者 PC 端查看',
+                            type: 'info'
+                        })
                     }
                     break;
                 default:
@@ -359,7 +363,7 @@ export default {
             let items = this.favItems.filter(fi => fi.type === MessageContentType.Image || fi.type === MessageContentType.Video)
             let groupedItems = [];
 
-            let months = [this.$t('common.month_1'), this.$t('common.month_1'), this.$t('common.month_2'), this.$t('common.month_3'), this.$t('common.month_4'), this.$t('common.month_5'), this.$t('common.month_6'), this.$t('common.month_7'), this.$t('common.month_8'), this.$t('common.month_9'), this.$t('common.month_10'), this.$t('common.month_11'), this.$t('common.month_12'), ];
+            let months = [this.$t('common.month_1'), this.$t('common.month_1'), this.$t('common.month_2'), this.$t('common.month_3'), this.$t('common.month_4'), this.$t('common.month_5'), this.$t('common.month_6'), this.$t('common.month_7'), this.$t('common.month_8'), this.$t('common.month_9'), this.$t('common.month_10'), this.$t('common.month_11'), this.$t('common.month_12'),];
 
             let map = new Map();
             items.forEach(item => {

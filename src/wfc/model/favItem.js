@@ -108,76 +108,81 @@ export default class FavItem {
                 }
                 favItem.data = JSON.stringify(data);
                 break;
-        // TODO
+            // TODO
             // case MessageContentType.Link:
             //     break
             default:
                 break;
         }
-        if (Config.urlRedirect){
+        if (Config.urlRedirect) {
             favItem.url = Config.urlRedirect(favItem.url);
         }
         return favItem;
     }
 
     toMessage() {
-        if (this.messageUid){
+        if (this.messageUid) {
             let msg = wfc.getMessageByUid(this.messageUid);
-            if (msg){
+            if (msg) {
                 return msg;
             }
         }
         let content;
         try {
-        switch (this.favType) {
-            case MessageContentType.Text:
-                content = new TextMessageContent(this.title);
-                break;
-            case MessageContentType.Image:
+            let type = this.favType ? this.favType : this.type;
+            switch (type) {
+                case MessageContentType.Text:
+                    content = new TextMessageContent(this.title);
+                    break;
+                case MessageContentType.Image:
                     content = new ImageMessageContent(null, this.url, Config.DEFAULT_THUMBNAIL_URL.split(',')[1]);
-                if (this.data) {
-                    content.thumbnail = this.data.thumb;
-                }
-                break;
-            case MessageContentType.Video:
+                    if (this.data) {
+                        content.thumbnail = this.data.thumb;
+                    }
+                    break;
+                case MessageContentType.Video:
                     content = new VideoMessageContent(null, this.url, Config.DEFAULT_THUMBNAIL_URL.split(',')[1]);
-                if (this.data) {
-                    content.thumbnail = this.data.thumb;
-                }
-                break;
-            case MessageContentType.File:
-                content = new FileMessageContent(null, this.url, this.title);
-                if (this.data) {
-                    content.size = this.data.size;
-                }
-                break;
-            case MessageContentType.Composite_Message:
-                content = new CompositeMessageContent();
-                content.title = this.title;
-                if (this.data) {
+                    if (this.data) {
+                        content.thumbnail = this.data.thumb;
+                    }
+                    break;
+                case MessageContentType.File:
+                    content = new FileMessageContent(null, this.url, this.title);
+                    if (this.data) {
+                        content.size = this.data.size;
+                    }
+                    break;
+                case MessageContentType.Composite_Message:
+                    content = new CompositeMessageContent();
+                    content.title = this.title;
                     let payload = new MessagePayload();
-                    //let payloadBytes = wfc.b64_to_utf8(this.data)
                     payload.type = this.favType;
                     payload.content = this.title;
-                    payload.binaryContent = this.data;
-                        let obj = JSON.parse(this.data);
-                        payload.remoteMediaUrl = obj['remote_url'];
+                    if (this.data) {
+                        //let payloadBytes = wfc.b64_to_utf8(this.data)
+                        payload.binaryContent = this.data;
+                        try {
+                            let obj = JSON.parse(this.data);
+                            payload.remoteMediaUrl = obj['remote_url'];
+                            payload.binaryContent = null;
+                        } catch (e) {
+                        }
+                    }
                     content.decode(payload)
-                }
-                break;
-            case MessageContentType.Voice:
-                content = new SoundMessageContent(null, this.url)
-                if (this.data) {
-                    content.duration = this.data.duration;
-                }
-                break;
-        // TODO
-            // case MessageContentType.Link:
-            //     break
-            default:
-                break;
-        }
-        }catch (e) {
+                    break;
+                case MessageContentType.Voice:
+                    content = new SoundMessageContent(null, this.url)
+                    if (this.data) {
+                        content.duration = this.data.duration;
+                    }
+                    break;
+                // TODO
+                // case MessageContentType.Link:
+                //     break
+                default:
+                    break;
+            }
+        } catch (e) {
             console.log('toMessage Error', e)
             content = new UnknownMessageContent();
         }
