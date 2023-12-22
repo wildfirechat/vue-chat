@@ -309,13 +309,16 @@ export default {
             }
 
             sessionCallback.didVideoMuted = (userId, muted) => {
-                this.participantUserInfos.forEach(u => {
-                    if (u.uid === userId) {
-                        let client = this.session.getSubscriber(userId);
-                        u._isVideoMuted = client.videoMuted;
-                        console.log('didMuteStateChanged', client.videoMuted, client.audioMuted)
-                    }
-                })
+                console.log('didVideoMuted', userId, muted)
+                if (userId === this.selfUserInfo.uid) {
+                    this.selfUserInfo._isVideoMuted = muted;
+                } else {
+                    this.participantUserInfos.forEach(u => {
+                        if (u.uid === userId) {
+                            u._isVideoMuted = muted;
+                        }
+                    })
+                }
             };
 
             sessionCallback.didMediaLostPacket = (media, lostPacket) => {
