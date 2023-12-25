@@ -2179,6 +2179,10 @@ export class WfcManager {
         return `${Config.APP_SERVER}/avatar/group?request=${encodeURIComponent(req)}`
         //return `http://localhost:8888/avatar/group?request=${encodeURIComponent(req)}`
     }
+
+    connectedToMainNetwork() {
+        return impl.connectedToMainNetwork();
+    }
 }
 
 const self = new WfcManager();
