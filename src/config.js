@@ -160,23 +160,10 @@ export default class Config {
         }
         // 示例代码
         // 双网环境时，将媒体文件地址切到备选网络
-        // if (Config.isUseBackupAddress()) {
+        // if (!wfc.connectedToMainNetwork()) {
         //     url = url.replace('oss.xxxx.com', '192.168.2.19');
         // }
         return url;
-    }
-
-    /**
-     * 双网环境时，判断是否是备选网络
-     * @return {boolean}
-     */
-    static isUseBackupAddress() {
-        //示例代码
-        let host = wfc.getHost();
-        if (host === '192.168.2.169'/* backupHost */) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -188,7 +175,7 @@ export default class Config {
         let emojiBaseUrl = 'https://static.wildfirechat.net/twemoji/assets/';
         // 实例代码
         // 双网环境时，将表情地址切换到备选网络
-        // if (Config.isUseBackupAddress()) {
+        // if (!wfc.connectedToMainNetwork()) {
         //     emojiBaseUrl = 'https://192.168.2.169/twemoji/assets/';
         // }
         return emojiBaseUrl;
@@ -203,7 +190,7 @@ export default class Config {
         let stickerBaseUrl = 'https://static.wildfirechat.net/sticker/';
         // 实例代码
         // 双网环境时，将动态表情地址切换到备选网络
-        // if (Config.isUseBackupAddress()) {
+        // if (!wfc.connectedToMainNetwork()) {
         //     stickerBaseUrl = 'https://192.168.2.169/sticker/';
         // }
         return stickerBaseUrl;
