@@ -376,7 +376,12 @@ let store = {
                 }
                 this._patchMessage(msg, lastTimestamp);
                 let msgIndex = conversationState.currentConversationMessageList.findIndex(m => {
-                    return m.messageId === msg.messageId || (gt(m.messageUid, 0) && eq(m.messageUid, msg.messageUid));
+                    return m.messageId === msg.messageId
+                        || (gt(m.messageUid, 0) && eq(m.messageUid, msg.messageUid))
+                        || (m.messageContent.type === MessageContentType.Streaming_Text_Generating
+                            && (msg.messageContent.type === MessageContentType.Streaming_Text_Generating || msg.messageContent.type === MessageContentType.Streaming_Text_Generated)
+                            && m.messageContent.streamId === msg.messageContent.streamId
+                        )
                 });
                 if (msgIndex > -1) {
                     // FYI: https://v2.vuejs.org/v2/guide/reactivity#Change-Detection-Caveats
@@ -631,7 +636,7 @@ let store = {
 
     _isDisplayMessage(message) {
         // return [PersistFlag.Persist, PersistFlag.Persist_And_Count].indexOf(MessageConfig.getMessageContentPersitFlag(message.messageContent.type)) > -1;
-        return message.messageId !== 0;
+        return message.messageId !== 0 || message.messageContent.type === MessageContentType.Streaming_Text_Generating;
     },
 
     _loadDefaultConversationList() {

@@ -22,6 +22,10 @@ export default class MessageContentType {
     static Rich_Notification = 12;
     static Articles = 13;
 
+    //流式文本正在生成消息
+    static Streaming_Text_Generating = 14;
+    //流式文本消息
+    static Streaming_Text_Generated = 15;
     static Mark_Unread_Sync = 31;
 
     static StartSecretChat_Notification = 40;
