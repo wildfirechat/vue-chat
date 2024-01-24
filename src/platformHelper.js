@@ -32,6 +32,7 @@ export function downloadFile(message) {
             let anchor = document.createElement('a');
             anchor.download = filename;
             anchor.href = fileHref;
+            anchor.target = 'about:blank'
             anchor.click();
         }
     }
