@@ -46,7 +46,7 @@
             </li>
             <li>
                 <div @click="showChatroom" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
+                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandChatroom}"></i>
                     <div class="category-item">
                         <div>
                             <span class="title">聊天室</span>
