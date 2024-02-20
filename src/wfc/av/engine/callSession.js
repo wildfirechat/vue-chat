@@ -257,8 +257,17 @@ export default class CallSession {
     }
 
     /**
+     * 仅会议版有效
+     * 设置输入 MediaStream
+     * @param {MediaStream} stream
+     */
+    setInputStream(stream){
+
+    }
+
+    /**
      * 切换摄像头，手机端有效
-     * @return true，支持切换摄像头，正在切换；false，不支持切换摄像头
+     * @return boolean true，支持切换摄像头，正在切换；false，不支持切换摄像头
      */
     switchCamera() {
 
