@@ -1,9 +1,8 @@
 <template>
     <section class="channel-menu-container">
-        <template v-for="(menu, index) in menus">
+        <template v-for="(menu, index) in menus" :key="index" >
             <tippy
                 v-if="menu.subMenus && menu.subMenus.length > 0"
-                :key="'_tippy_' + index"
                 :to="'menu_' + index"
                 interactive
                 :animate-fill="false"
@@ -18,7 +17,7 @@
                     {{ sm.name }}
                 </div>
             </tippy>
-            <div :key="index" :name="'menu_' + index" class="menu-item" @click="openChannelMenu($event, menu)">
+            <div :name="'menu_' + index" class="menu-item" @click="openChannelMenu($event, menu)">
                 <p>
                     {{ menuTile(menu) }}
                 </p>

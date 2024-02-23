@@ -10,13 +10,15 @@
   },
   "dependencies": {
     "@imndx/v-emoji-picker": "^2.3.7",
+    "@vue/compat": "^3.4.19",
     "anchorme": "^2.1.2",
     "atob": "^2.1.2",
     "axios": "^0.20.0",
     "base64-arraybuffer": "^0.2.0",
     "benz-amr-recorder": "^1.1.5",
     "btoa": "^1.2.1",
-    "core-js": "^3.6.5",
+    "buffer": "^6.0.3",
+    "core-js": "^3.36.0",
     "detectrtc": "^1.4.1",
     "draggable-vue-directive": "^2.1.0",
     "events": "^3.2.0",
@@ -28,7 +30,7 @@
     "resize-image": "^0.1.0",
     "tributejs": "^5.1.3",
     "twemoji": "^13.1.1",
-    "vue": "2.6.14",
+    "vue": "3.4.19",
     "vue-click-outside": "^1.1.0",
     "vue-context": "^6.0.0",
     "vue-cool-lightbox": "^2.6.9",
@@ -45,15 +47,17 @@
     "xss": "^1.0.14"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "@vue/compiler-sfc": "^3.4.19",
+    "@vue/preload-webpack-plugin": "^2.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "fs": "0.0.1-security",
-    "tmp": "^0.2.1",
-    "vue-template-compiler": "2.6.14"
+    "process": "^0.11.10",
+    "tmp": "^0.2.1"
   },
   "eslintConfig": {
     "root": true,

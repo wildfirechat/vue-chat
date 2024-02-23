@@ -1,10 +1,14 @@
 const path = require('path');
+const webpack = require('webpack')
+const PreloadPlugin = require('@vue/preload-webpack-plugin')
+
 function resolve(dir) {
     return path.join(__dirname, dir);
 }
+
 module.exports = {
     devServer: {
-        disableHostCheck: true,
+        // disableHostCheck: true,
         port: 8013
     },
     publicPath: '/',
@@ -17,20 +21,39 @@ module.exports = {
         // it can be accessed in index.html to inject the correct title.
         resolve: {
             alias: {
-                '@': resolve('src')
+                '@': resolve('src'),
+            },
+            fallback: {
+                'path': false,
+                'fs': false,
+                "assert": false,
+                //"assert": require.resolve("assert/")
+                "util": false,
+                //"util": require.resolve("util/")
+                "os": false,
+                //"os": require.resolve("os-browserify/browser")
+                "crypto": false,
+                //"crypto": require.resolve("crypto-browserify")
+
+                "buffer": require.resolve("buffer/")
             }
-        }
+        },
+        plugins: [
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+                Buffer: 'buffer'
+            })],
     },
     chainWebpack(config) {
-        config.plugin('preload').tap(() => [
-            {
-                rel: 'preload',
-                // to ignore runtime.js
-                // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
-                fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
-                include: 'initial'
-            }
-        ]);
+        // config.plugin('preload').use(PreloadPlugin).tap(() => [
+        //     {
+        //         rel: 'preload',
+        //         // to ignore runtime.js
+        //         // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
+        //         fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
+        //         include: 'initial'
+        //     }
+        // ]);
         config.plugins.delete('prefetch');
         config.when(process.env.NODE_ENV !== 'development', config => {
             config.optimization.splitChunks({
@@ -67,19 +90,26 @@ module.exports = {
                 .end();
         });
 
+        config.resolve.alias.set('vue', '@vue/compat')
         config.module
             .rule("vue")
             .use("vue-loader")
             .loader("vue-loader")
             .tap(options => {
-                options.compilerOptions.directives = {
-                    html(node, directiveMeta) {
-                        (node.props || (node.props = [])).push({
-                            name: "innerHTML",
-                            value: `xss(_s(${directiveMeta.value}), xssOptions())`
-                        });
+                // TODO
+                // options.compilerOptions.directives = {
+                //     html(node, directiveMeta) {
+                //         (node.props || (node.props = [])).push({
+                //             name: "innerHTML",
+                //             value: `xss(_s(${directiveMeta.value}), xssOptions())`
+                //         });
+                //     }
+                // };
+                options.compilerOptions = {
+                    compatConfig: {
+                        MODE: 2
                     }
-                };
+                }
                 return options;
             });
 
