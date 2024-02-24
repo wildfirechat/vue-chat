@@ -1306,7 +1306,7 @@ export default {
         }
     },
 
-    destroyed() {
+    unmounted() {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.participantUserInfos.forEach(m => this.$set(m, "_stream", null))

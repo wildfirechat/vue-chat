@@ -61,7 +61,7 @@ export default {
     //         }
     //     }
     // },
-    // destroyed() {
+    // unmounted() {
     //     console.log('------------- videoView destroyed', this.$parent.currentLayout, this.layoutMode, this.participant.uid);
     //     // fixme
     //     // 切换布局时，不取消订阅视频流

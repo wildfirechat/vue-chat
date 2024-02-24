@@ -67,7 +67,7 @@ export default {
             this.screenShareActiveTime = this.$refs.screenShareVideo.currentTime;
         }, 1000)
     },
-    beforeDestroy() {
+    beforeUnmount() {
         clearInterval(this.screenShareCheckIntervalId);
     },
 

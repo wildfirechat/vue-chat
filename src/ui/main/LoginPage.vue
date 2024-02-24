@@ -146,7 +146,7 @@ export default {
         }
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
     },
 
@@ -396,7 +396,7 @@ export default {
         }
     },
 
-    destroyed() {
+    unmounted() {
         if (this.qrCodeTimer) {
             clearInterval(this.qrCodeTimer)
         }

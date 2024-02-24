@@ -148,7 +148,7 @@ export default {
         this.scrollActiveElementCenter();
     },
 
-    destroyed() {
+    unmounted() {
         if (!this.clickUserItemFunc) {
             this.tippyStyleReset()
         }

@@ -54,7 +54,7 @@ export default {
     mounted() {
         this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
     },
 }

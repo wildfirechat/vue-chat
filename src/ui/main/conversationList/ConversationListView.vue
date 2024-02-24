@@ -63,7 +63,7 @@ export default {
         });
     },
 
-    destroyed() {
+    unmounted() {
         this.$eventBus.$off('showConversationContextMenu');
     },
 

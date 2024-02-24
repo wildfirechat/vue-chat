@@ -11,7 +11,7 @@ import store from "../../store";
 
 export default {
     name: "ConversationFloatPage",
-    destroyed() {
+    unmounted() {
         console.log('conversation float page destroyed')
     },
     mounted() {

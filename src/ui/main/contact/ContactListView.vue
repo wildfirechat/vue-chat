@@ -131,7 +131,7 @@ export default {
             this.showContactContextMenu(event, userInfo);
         });
     },
-    destroyed() {
+    unmounted() {
         this.$eventBus.$off('showContactContextMenu');
     },
     methods: {

@@ -54,7 +54,7 @@ export default {
         messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
     },
 
-    destroyed() {
+    unmounted() {
         console.log('setCurrentConversation null')
         store.setCurrentConversation(null);
         clearInterval(this.filterInternal)

@@ -114,7 +114,7 @@ export default {
         store.setSearchQuery(this.query)
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         store.setSearchQuery('')
     },
 

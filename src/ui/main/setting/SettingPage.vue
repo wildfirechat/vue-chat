@@ -267,7 +267,7 @@ export default {
     mounted() {
         window.addEventListener('blur', this.blurListener)
     },
-    beforeDestroy() {
+    beforeUnmount() {
         window.removeEventListener('blur', this.blurListener)
     },
     computed: {

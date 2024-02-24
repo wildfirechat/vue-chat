@@ -517,7 +517,7 @@ export default {
         this.setupSessionCallback();
     },
 
-    destroyed() {
+    unmounted() {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))

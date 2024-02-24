@@ -939,7 +939,7 @@ export default {
         wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
     },
 
-    destroyed() {
+    unmounted() {
         if (isElectron()) {
             ipcRenderer.removeAllListeners('screenshots-ok');
         }

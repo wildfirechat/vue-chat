@@ -292,7 +292,7 @@ export default {
             }
         }
     },
-    destroyed() {
+    unmounted() {
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange);
         console.log('home destroy')
     },

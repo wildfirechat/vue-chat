@@ -121,7 +121,7 @@ export default {
         }
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
     },
 
