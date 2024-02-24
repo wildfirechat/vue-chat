@@ -1,6 +1,6 @@
-import Vue from 'vue'
+import Vue, {createApp} from 'vue'
 import App from './App.vue'
-import VueRouter from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 import routers from './routers'
 
 import wfc from './wfc/client/wfc'
@@ -21,8 +21,9 @@ import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
 import Forward from "./ui/common/Forward";
 import Voip from "./ui/common/Voip";
-import VirtualList from "vue-virtual-scroll-list/src";
+import VirtualList from "vue3-virtual-scroll-list";
 import xss from "xss";
+import mitt from 'mitt'
 
 Vue.config.productionTip = false
 
@@ -75,60 +76,74 @@ Vue.config.productionTip = false
 }
 // init end
 
-Vue.use(VueRouter)
+const app = createApp(App)
+// app.use(router)
+// app.use(i18n)
+// app.use(VueRouter)
 
-Vue.use(VueTippy);
-Vue.component("tippy", TippyComponent);
+app.use(VueTippy);
+app.component("tippy", TippyComponent);
 
-Vue.use(VueContext);
-Vue.component("vue-context", VueContext)
-Vue.component('virtual-list', VirtualList);
+app.use(VueContext);
+app.component("vue-context", VueContext)
+app.component('virtual-list', VirtualList);
 
-Vue.use(VModal);
+// app.use(VModal);
 
-Vue.use(visibility);
+app.use(visibility);
 
-Vue.use(VueI18n)
-Vue.use(Alert)
-Vue.use(Picker)
-Vue.use(Forward)
-Vue.use(Voip)
+// app.use(VueI18n)
+app.use(Alert)
+app.use(Picker)
+app.use(Forward)
+app.use(Voip)
 
-const i18n = new VueI18n({
-    // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态
-    locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
-    messages: {
-        'zh-CN': require('@/assets/lang/zh-CN.json'),
-        'zh-TW': require('@/assets/lang/zh-TW.json'),
-        'en': require('@/assets/lang/en.json')
-    }
-})
+// const i18n = new VueI18n({
+//     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态
+//     locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
+//     messages: {
+//         'zh-CN': require('@/assets/lang/zh-CN.json'),
+//         'zh-TW': require('@/assets/lang/zh-TW.json'),
+//         'en': require('@/assets/lang/en.json')
+//     }
+// })
+// app.use(i18n)
+// TODO i18n
+app.config.globalProperties.$t = (str) => str
 
-Vue.use(Notifications)
-const router = new VueRouter({
-    mode: 'hash',
+app.use(Notifications)
+const router = createRouter({
+    // mode: 'hash',
+    history: createWebHashHistory(),
     routes: routers,
 })
-Vue.prototype.$eventBus = new Vue();
-Vue.prototype.xss = xss;
-Vue.prototype.xssOptions = () => {
-    let whiteList = xss.getDefaultWhiteList();
-    window.__whiteList = whiteList;
-    //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
-    //这儿配置保留 img 标签的style、class、src、alt、id 属性
-    whiteList.img = ["style", "class", "src", "alt", "id"];
-    return {
-        whiteList
-    };
-};
+app.use(router)
 
-var vm = new Vue({
-    el: '#app',
-    router,
-    i18n,
-    render: h => h(App),
-})
-vm.store = store.state;
+// app.prototype.$eventBus = mitt();
+const eventBus = mitt()
+eventBus.$on = eventBus.on
+eventBus.$off = eventBus.off
+eventBus.$emit = eventBus.emit
+app.config.globalProperties.$eventBus = eventBus
+// app.prototype.xss = xss;
+// app.prototype.xssOptions = () => {
+//     let whiteList = xss.getDefaultWhiteList();
+//     window.__whiteList = whiteList;
+//     //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
+//     //这儿配置保留 img 标签的style、class、src、alt、id 属性
+//     whiteList.img = ["style", "class", "src", "alt", "id"];
+//     return {
+//         whiteList
+//     };
+// };
+app.mount('#app')
 
-window.vm = vm;
-
+// var vm = new Vue({
+//     el: '#app',
+//     router,
+//     i18n,
+//     render: h => h(App),
+// })
+// vm.store = store.state;
+//
+// window.vm = vm;

@@ -79,9 +79,11 @@
                     </ul>
                 </nav>
             </section>
-            <keep-alive>
-                <router-view :key="$route.fullPath"></router-view>
-            </keep-alive>
+            <router-view v-slot="{ Component, route }">
+                <keep-alive>
+                    <component :is="Component" :key="route.path"/>
+                </keep-alive>
+            </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
             <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
