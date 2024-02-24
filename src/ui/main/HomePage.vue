@@ -116,7 +116,6 @@ import {isElectron} from "../../platform";
 import Single from "../voip/Single.vue";
 import Multi from "../voip/Multi.vue";
 import Conference from "../voip/conference/Conference.vue";
-import {Tippy} from "vue-tippy";
 import 'tippy.js/dist/tippy.css' // optional for styling
 
 var avenginkitSetuped = false;
@@ -303,7 +302,6 @@ export default {
     },
 
     components: {
-        Tippy,
         Conference,
         Multi,
         Single,

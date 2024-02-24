@@ -6,7 +6,7 @@
                  v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
                 <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                        class="checkbox"
-                       :value="message" placeholder="" v-model="sharedPickState.messages">
+                       placeholder="" v-model="sharedPickState.messages">
 
                 <div class="message-avatar-content-container">
                     <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
@@ -28,7 +28,7 @@
                     </div>
 
                     <tippy
-                        :to="'infoTrigger' + this.message.messageId"
+                        :to="'#infoTrigger' + this.message.messageId"
                         interactive
                         :animate-fill="false"
                         placement="left"
@@ -37,11 +37,13 @@
                         animation="fade"
                         trigger="click"
                     >
+                        <template #content>
                         <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+                        </template>
                     </tippy>
 
                     <img ref="userCardTippy"
-                         :name="'infoTrigger' + this.message.messageId"
+                         :id="'infoTrigger' + this.message.messageId"
                          class="avatar"
                          @click="onClickUserPortrait(message.from)"
                          draggable="false"

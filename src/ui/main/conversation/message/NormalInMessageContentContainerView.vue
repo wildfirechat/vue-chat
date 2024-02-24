@@ -6,7 +6,7 @@
             <div class="message-avatar-content-container">
                 <tippy
                     v-if="enableClickMessageSenderPortrait"
-                    :to="'infoTrigger' + this.message.messageId"
+                    :to="'#infoTrigger' + this.message.messageId"
                     interactive
                     :animate-fill="false"
                     placement="left"
@@ -15,15 +15,17 @@
                     animation="fade"
                     trigger="click"
                 >
-                    <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target"/>
-                    <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from"/>
+                    <template #content>
+                        <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target"/>
+                        <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from"/>
+                    </template>
                 </tippy>
                 <div class="avatar-container">
                     <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                            :value="message"
                            v-model="sharedPickState.messages"/>
                     <img ref="userCardTippy"
-                         :name="'infoTrigger' + this.message.messageId"
+                         :id="'infoTrigger' + this.message.messageId"
                          @click="onClickUserPortrait(message.from)"
                          @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
                          class="avatar"
