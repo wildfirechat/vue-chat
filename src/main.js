@@ -1,6 +1,7 @@
 import Vue, {createApp} from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
+import {createPinia} from 'pinia'
 import routers from './routers'
 
 import wfc from './wfc/client/wfc'
@@ -28,6 +29,10 @@ import xss from "xss";
 import mitt from 'mitt'
 
 Vue.config.productionTip = false
+
+const app = createApp(App)
+const pinia = createPinia()
+app.use(pinia)
 
 // init
 {
@@ -78,7 +83,6 @@ Vue.config.productionTip = false
 }
 // init end
 
-const app = createApp(App)
 // app.use(router)
 // app.use(i18n)
 // app.use(VueRouter)
@@ -152,6 +156,7 @@ app.config.globalProperties.$eventBus = eventBus
 //         whiteList
 //     };
 // };
+
 app.mount('#app')
 
 // var vm = new Vue({
