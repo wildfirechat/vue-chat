@@ -11,9 +11,9 @@
   "dependencies": {
     "@imndx/v-emoji-picker": "^2.3.7",
     "@vue/compat": "^3.4.19",
-    "anchorme": "^2.1.2",
+    "anchorme": "3.0.5",
     "atob": "^2.1.2",
-    "axios": "^0.20.0",
+    "axios": "1.6.7",
     "base64-arraybuffer": "^0.2.0",
     "benz-amr-recorder": "^1.1.5",
     "btoa": "^1.2.1",

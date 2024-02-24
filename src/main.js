@@ -4,7 +4,9 @@ import {createRouter, createWebHashHistory} from 'vue-router'
 import routers from './routers'
 
 import wfc from './wfc/client/wfc'
-import VueTippy, {TippyComponent} from "vue-tippy";
+import VueTippy from 'vue-tippy'
+import 'tippy.js/dist/tippy.css' // optional for styling
+
 import VueContext from 'vue-context';
 
 import VModal from 'vue-js-modal'
@@ -81,8 +83,22 @@ const app = createApp(App)
 // app.use(i18n)
 // app.use(VueRouter)
 
-app.use(VueTippy);
-app.component("tippy", TippyComponent);
+// app.use(VueTippy);
+// app.component("tippy", TippyComponent);
+app.use(
+    VueTippy,
+    // optional
+    {
+        directive: 'tippy', // => v-tippy
+        component: 'tippy', // => <tippy/>
+        componentSingleton: 'tippy-singleton', // => <tippy-singleton/>,
+        defaultProps: {
+            theme: 'light',
+            placement: 'auto-end',
+            allowHTML: true,
+        }, // => Global default options * see all props
+    }
+)
 
 app.use(VueContext);
 app.component("vue-context", VueContext)

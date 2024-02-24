@@ -5,30 +5,30 @@
         <div class="home">
             <section class="menu-container">
                 <div>
-                    <!-- todo tippy example -->
                     <tippy
-                        to="infoTrigger"
+                        to="#infoTrigger"
                         interactive
                         :animate-fill="false"
-                        placement="right"
                         distant="7"
                         theme="light"
                         animation="fade"
                         trigger="click"
-                        arrow
+                        :arrow="true"
                     >
-                        <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
-                                      :enable-update-portrait="true"
-                                      :user-info="sharedContactState.selfUserInfo"/>
+                        <template #content>
+                            <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
+                                          :enable-update-portrait="true"
+                                          :user-info="sharedContactState.selfUserInfo"/>
+                        </template>
                     </tippy>
 
                     <a href="#"><img
                         v-if="sharedContactState.selfUserInfo"
                         ref="userCardTippy"
-                        name="infoTrigger"
+                        id="infoTrigger"
                         class="avatar"
                         draggable="false"
-                        @click="onClickPortrait()"
+                        @click="onClickPortrait"
                         :src="sharedContactState.selfUserInfo.portrait"
                         alt=""
                     /></a>
@@ -116,6 +116,8 @@ import {isElectron} from "../../platform";
 import Single from "../voip/Single.vue";
 import Multi from "../voip/Multi.vue";
 import Conference from "../voip/conference/Conference.vue";
+import {Tippy} from "vue-tippy";
+import 'tippy.js/dist/tippy.css' // optional for styling
 
 var avenginkitSetuped = false;
 export default {
@@ -132,7 +134,8 @@ export default {
     },
 
     methods: {
-        onClickPortrait() {
+        onClickPortrait(event) {
+            event.preventDefault()
             wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
         },
         go2Conversation() {
@@ -300,6 +303,7 @@ export default {
     },
 
     components: {
+        Tippy,
         Conference,
         Multi,
         Single,
