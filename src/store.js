@@ -369,11 +369,11 @@ let store = {
                 return;
             }
             let msg = conversationState.currentConversationMessageList[index];
-            Object.assign(msg, message)
+            msg = Object.assign(msg, message)
+            conversationState.currentConversationMessageList.splice(index, 1, msg)
 
             if (conversationState.currentConversationInfo.lastMessage && conversationState.currentConversationInfo.lastMessage.messageId === message.messageId) {
                 Object.assign(conversationState.currentConversationInfo.lastMessage, message);
-
             }
         });
 
