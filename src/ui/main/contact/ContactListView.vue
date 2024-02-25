@@ -65,7 +65,7 @@
                     </div>
                 </div>
                 <UserListView
-                    v-if="sharedContactState.expandFriendList && users.length < 100"
+                    v-if="sharedContactState.expandFriendList && users.length < 100 || true"
                     :enable-pick="false"
                     :users="users"
                     :click-user-item-func="setCurrentUser"
