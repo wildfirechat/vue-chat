@@ -12,7 +12,7 @@
                     v-if="showEmojiDialog"
                     labelSearch="Search"
                     lang="pt-BR"
-                    v-click-outside="hideEmojiView"
+                    v-on-click-outside="hideEmojiView"
                     :customEmojis="emojis"
                     :customCategories="emojiCategories"
                     @select="onSelectEmoji"
@@ -103,7 +103,6 @@ import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
 import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker"
-import ClickOutside from "vue-click-outside";
 import Tribute from "tributejs";
 import '../../../tribute.css'
 import ConversationType from "../../../wfc/model/conversationType";
@@ -123,7 +122,6 @@ import {copyText} from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
 import IpcEventType from "../../../ipcEventType";
 import ChannelMenuView from "./ChannelMenuView";
-import IpcSub from "../../../ipc/ipcSub";
 import pttClient from "../../../wfc/ptt/client/pttClient";
 import TalkingCallback from "../../../wfc/ptt/client/talkingCallback";
 import Config from "../../../config";
@@ -131,6 +129,7 @@ import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
+import { vOnClickOutside } from '@vueuse/core'
 
 export default {
     name: "MessageInputView",
@@ -1008,7 +1007,7 @@ export default {
         VEmojiPicker
     },
     directives: {
-        ClickOutside,
+        vOnClickOutside,
         focus,
     }
 };

@@ -2,7 +2,7 @@
     <section class="search-result-container"
              v-if="sharedSearchState.query.length"
              v-bind:class="{active:sharedSearchState.query}"
-             v-click-outside="hideSearchView"
+             v-v-on-click-outside="hideSearchView"
              @click="hideSearchView"
     >
         <div class="search-result">
@@ -84,7 +84,6 @@
 </template>
 
 <script>
-import ClickOutside from "vue-click-outside";
 import store from "../../../store";
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
@@ -92,6 +91,7 @@ import FriendRequestView from "../contact/FriendRequestView.vue";
 import IpcEventType from "../../../ipcEventType";
 import {ipcRenderer} from "../../../platform";
 import wfc from "../../../wfc/client/wfc";
+import {vOnClickOutside} from '@vueuse/components'
 
 export default {
     name: "SearchResultView",
@@ -214,7 +214,7 @@ export default {
             return !this.shouldShowAllUser && this.sharedSearchState.userSearchResult.length > 5 ? this.sharedSearchState.userSearchResult.slice(0, 4) : this.sharedSearchState.userSearchResult;
         },
         toShowChannelList: function () {
-            return !this.shouldShowAllChannel&& this.sharedSearchState.channelSearchResult.length > 5 ? this.sharedSearchState.channelSearchResult.slice(0, 4) : this.sharedSearchState.channelSearchResult;
+            return !this.shouldShowAllChannel && this.sharedSearchState.channelSearchResult.length > 5 ? this.sharedSearchState.channelSearchResult.slice(0, 4) : this.sharedSearchState.channelSearchResult;
         },
         toShowContactList: function () {
             return !this.shouldShowAllContact && this.sharedSearchState.contactSearchResult.length > 5 ? this.sharedSearchState.contactSearchResult.slice(0, 4) : this.sharedSearchState.contactSearchResult;
@@ -225,7 +225,7 @@ export default {
     },
 
     directives: {
-        ClickOutside
+        vOnClickOutside
     },
 
 }

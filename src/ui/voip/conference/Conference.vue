@@ -43,14 +43,14 @@
                     </div>
                 </header>
                 <div v-if="showConferenceSimpleInfoView"
-                     v-click-outside="hideConferenceSimpleInfoView"
+                     v-on-click-outside="hideConferenceSimpleInfoView"
                      style="position: absolute; left: 10px; top: 50px; z-index: 1000">
                     <ConferenceSimpleInfoView
                         :session="session"
                     />
                 </div>
                 <div v-if="showChooseLayoutView"
-                     v-click-outside="hideChooseLayoutView"
+                     v-on-click-outside="hideChooseLayoutView"
                      style="position: absolute; right: 10px; top: 50px; z-index: 1000">
                     <ChooseConferenceLayoutView
                         :current-layout="computedCurrentLayout"
@@ -223,7 +223,6 @@
 import avenginekit from "../../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../../wfc/av/engine/callSessionCallback";
 import CallState from "../../../wfc/av/engine/callState";
-import ClickOutside from 'vue-click-outside'
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import {currentWindow, isElectron} from "../../../platform";
 import ScreenOrWindowPicker from "../ScreenOrWindowPicker";
@@ -249,6 +248,8 @@ import Conversation from "../../../wfc/model/conversation";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
+import { vOnClickOutside } from '@vueuse/core'
+
 
 export default {
     name: 'Conference',
@@ -1254,7 +1255,7 @@ export default {
     },
 
     directives: {
-        ClickOutside
+        vOnClickOutside
     },
 
     created() {
