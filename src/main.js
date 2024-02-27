@@ -18,7 +18,7 @@ import store from "./store";
 import visibility from 'vue-visibility-change';
 import {isElectron} from "./platform";
 import {getItem} from "./ui/util/storageHelper";
-import VueI18n from 'vue-i18n'
+import {createI18n} from 'vue-i18n'
 import Notifications from 'vue-notification'
 import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
@@ -118,18 +118,17 @@ app.use(Picker)
 app.use(Forward)
 app.use(Voip)
 
-// const i18n = new VueI18n({
-//     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态
-//     locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
-//     messages: {
-//         'zh-CN': require('@/assets/lang/zh-CN.json'),
-//         'zh-TW': require('@/assets/lang/zh-TW.json'),
-//         'en': require('@/assets/lang/en.json')
-//     }
-// })
-// app.use(i18n)
-// TODO i18n
-app.config.globalProperties.$t = (str) => str
+const i18n = createI18n({
+    // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态
+    locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
+    allowComposition: true,
+    messages: {
+        'zh-CN': require('@/assets/lang/zh-CN.json'),
+        'zh-TW': require('@/assets/lang/zh-TW.json'),
+        'en': require('@/assets/lang/en.json')
+    }
+})
+app.use(i18n)
 
 app.use(Notifications)
 const router = createRouter({
