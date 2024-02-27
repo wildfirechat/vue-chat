@@ -43,14 +43,14 @@
                     </div>
                 </header>
                 <div v-if="showConferenceSimpleInfoView"
-                     v-on-click-outside="hideConferenceSimpleInfoView"
+                     v-v-on-click-outside="hideConferenceSimpleInfoView"
                      style="position: absolute; left: 10px; top: 50px; z-index: 1000">
                     <ConferenceSimpleInfoView
                         :session="session"
                     />
                 </div>
                 <div v-if="showChooseLayoutView"
-                     v-on-click-outside="hideChooseLayoutView"
+                     v-v-on-click-outside="hideChooseLayoutView"
                      style="position: absolute; right: 10px; top: 50px; z-index: 1000">
                     <ChooseConferenceLayoutView
                         :current-layout="computedCurrentLayout"
@@ -248,7 +248,7 @@ import Conversation from "../../../wfc/model/conversation";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
-import { vOnClickOutside } from '@vueuse/core'
+import { vOnClickOutside } from '@vueuse/components'
 
 
 export default {

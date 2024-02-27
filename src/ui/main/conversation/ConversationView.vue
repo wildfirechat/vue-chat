@@ -95,14 +95,14 @@
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
                 <SingleConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
-                    v-on-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
                 />
                 <GroupConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 1"
-                    v-on-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
@@ -110,7 +110,7 @@
 
                 <SecretConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 5"
-                    v-on-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
@@ -118,7 +118,7 @@
 
                 <ChannelConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 3"
-                    v-on-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
@@ -220,7 +220,7 @@ import IPCEventType from "../../../ipcEventType";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import {imageThumbnail} from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
-import { vOnClickOutside } from '@vueuse/core'
+import { vOnClickOutside } from '@vueuse/components'
 
 
 var amr;

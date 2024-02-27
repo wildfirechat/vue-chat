@@ -12,7 +12,7 @@
                     v-if="showEmojiDialog"
                     labelSearch="Search"
                     lang="pt-BR"
-                    v-on-click-outside="hideEmojiView"
+                    v-v-on-click-outside="hideEmojiView"
                     :customEmojis="emojis"
                     :customCategories="emojiCategories"
                     @select="onSelectEmoji"
@@ -129,7 +129,7 @@ import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
-import { vOnClickOutside } from '@vueuse/core'
+import { vOnClickOutside } from '@vueuse/components'
 
 export default {
     name: "MessageInputView",
