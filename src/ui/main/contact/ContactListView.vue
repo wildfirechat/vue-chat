@@ -127,7 +127,7 @@ export default {
         }
     },
     created() {
-        this.$eventBus.$on('showContactContextMenu', (event, userInfo) => {
+        this.$eventBus.$on('showContactContextMenu', ([event, userInfo]) => {
             this.showContactContextMenu(event, userInfo);
         });
     },

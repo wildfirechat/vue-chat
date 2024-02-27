@@ -133,7 +133,7 @@ export default {
         },
         showContactContextMenu(event, user) {
             if (this.enableContactContextMenu) {
-                this.$eventBus.$emit('showContactContextMenu', event, user);
+                this.$eventBus.$emit('showContactContextMenu', [event, user]);
             }
         }
     },

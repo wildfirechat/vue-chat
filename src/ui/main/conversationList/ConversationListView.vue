@@ -61,7 +61,7 @@ export default {
     },
 
     created() {
-        this.$eventBus.$on('showConversationContextMenu', (event, conversationInfo) => {
+        this.$eventBus.$on('showConversationContextMenu', ([event, conversationInfo]) => {
             this.showConversationItemContextMenu(event, conversationInfo);
         });
     },

@@ -122,7 +122,7 @@ export default {
             // this.refreshGroupPortrait();
         },
         showConversationInfoContextMenu(event) {
-            this.$eventBus.$emit('showConversationContextMenu', event, this.source);
+            this.$eventBus.$emit('showConversationContextMenu', [event, this.source]);
         },
     },
     computed: {
