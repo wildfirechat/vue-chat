@@ -90,6 +90,7 @@ let store = {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             console.log('store ConnectionStatusChanged', status)
             miscState.connectionStatus = status;
+            miscState.isCommercialServer = wfc.isCommercialServer();
             try {
                 if (status === ConnectionStatus.ConnectionStatusConnected) {
                     this._loadDefaultData();
@@ -2068,6 +2069,7 @@ let store = {
     },
 
     updateVoipStatus(conversation, isOngoing) {
+        miscState.isVoipOngoing = isOngoing;
         conversationState.conversationInfoList.forEach(ci => {
             if (ci.conversation.equal(conversation)) {
                 ci._isVoipOngoing = isOngoing;

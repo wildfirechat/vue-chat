@@ -3,7 +3,6 @@ import {ref} from "vue";
 import ConnectionStatus from "./wfc/client/connectionStatus";
 import {getItem} from "./ui/util/storageHelper";
 import {isElectron} from "./platform";
-import wfc from "./wfc/client/wfc";
 import Config from "./config";
 
 export const pstore = defineStore('store-p', () => {
@@ -162,7 +161,8 @@ export const pstore = defineStore('store-p', () => {
         isElectronWindowsOrLinux: process && (process.platform === 'win32' || process.platform === 'linux'),
         isMainWindow: false,
         linuxUpdateTitleInterval: 0,
-        wfc: wfc,
+        isCommercialServer: false,
+        isVoipOngoing: false,
         config: Config,
         userOnlineStateMap: new Map(),
         enableOpenWorkSpace: !!(Config.OPEN_PLATFORM_WORK_SPACE_URL),
@@ -179,7 +179,7 @@ export const pstore = defineStore('store-p', () => {
             this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
             // this.isMainWindow = false;
             this.linuxUpdateTitleInterval = 0;
-            this.wfc = wfc;
+            this.isVoipOngoing = false;
             this.config = Config;
             this.userOnlineStateMap = new Map();
         }

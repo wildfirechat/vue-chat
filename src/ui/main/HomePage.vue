@@ -56,7 +56,7 @@
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/fav'}"
                                @click="go2Fav"></i>
                         </li>
-                        <li v-if="sharedMiscState.isElectron && sharedMiscState.wfc.isCommercialServer()">
+                        <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <i class="icon-ion-ios-folder"
                                v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
                                @click="go2Files"></i>
@@ -86,7 +86,7 @@
             </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
-            <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
+            <div v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
                  class="voip-div-container"
                  v-draggable
                  v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
