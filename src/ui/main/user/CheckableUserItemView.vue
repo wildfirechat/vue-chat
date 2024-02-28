@@ -33,6 +33,10 @@ export default {
             type: Object,
             required: true,
         },
+        users: {
+            type: Array,
+            required: true,
+        },
         initialCheckedUsers: {
             type: Array,
             required: false,
