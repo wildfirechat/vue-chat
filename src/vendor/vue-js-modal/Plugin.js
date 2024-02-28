@@ -8,7 +8,6 @@ const Plugin = {
       return
     }
 
-    console.log('xxxxxxxxx install vmodal plugin');
     const plugin = PluginCore(app, options)
 
     Object.defineProperty(app.config.globalProperties, '$modal', {

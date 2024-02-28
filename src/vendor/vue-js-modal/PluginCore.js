@@ -2,7 +2,7 @@ import { UNSUPPORTED_ARGUMENT_ERROR } from './utils/errors'
 import { createDivInBody } from './utils'
 import ModalsContainer from './components/ModalsContainer.vue'
 import emitter from 'tiny-emitter/instance'
-import {createVNode, render} from 'vue'
+import {createVNode, markRaw, render} from 'vue'
 
 const PluginCore = (app, options = {}) => {
   const subscription = {
@@ -36,8 +36,8 @@ const PluginCore = (app, options = {}) => {
     const defaults = options.dynamicDefaults || {}
 
     container?.add(
-      component,
-      componentProps,
+      markRaw(component),
+      markRaw(componentProps),
       componentSlots,
       { ...defaults, ...modalProps },
       modalEvents
@@ -58,17 +58,11 @@ const PluginCore = (app, options = {}) => {
     const vnode = createVNode(ModalsContainer)
     vnode.appContext = app._context
     render(vnode, element)
-
-    // createApp({
-    //   parent,
-    //   render: h => h(ModalsContainer)
-    // }).mount(element)
   })
 
   const show = (...args) => {
     const [modal] = args
 
-    console.log('xxxxxx show', args)
     switch (typeof modal) {
       case 'string':
         showStaticModal(...args)
@@ -85,7 +79,6 @@ const PluginCore = (app, options = {}) => {
   }
 
   const hide = (name, params) => {
-    console.log('xxxxxxx hide', name, params)
     subscription.$emit('toggle', name, false, params)
   }
 
