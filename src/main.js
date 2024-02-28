@@ -137,6 +137,7 @@ const router = createRouter({
     routes: routers,
 })
 app.use(router)
+app.config.globalProperties.$router = router
 
 // app.prototype.$eventBus = mitt();
 const eventBus = mitt()

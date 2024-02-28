@@ -33,7 +33,7 @@
             </label>
             <label v-if="sharedMiscState.isCommercialServer">
                 {{ $t('setting.sync_draft') }}
-                <input type="checkbox" :checked="!sharedMiscState.wfc.isDisableSyncDraft()"
+                <input type="checkbox" :checked="!sharedMiscState.isDisableSyncDraft"
                        @change="sharedMiscState.wfc.setDisableSyncDraft(!$event.target.checked)">
             </label>
             <div>

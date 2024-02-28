@@ -91,6 +91,7 @@ let store = {
             console.log('store ConnectionStatusChanged', status)
             miscState.connectionStatus = status;
             miscState.isCommercialServer = wfc.isCommercialServer();
+            miscState.isDisableSyncDraft = wfc.isDisableSyncDraft();
             try {
                 if (status === ConnectionStatus.ConnectionStatusConnected) {
                     this._loadDefaultData();

@@ -162,6 +162,7 @@ export const pstore = defineStore('store-p', () => {
         isMainWindow: false,
         linuxUpdateTitleInterval: 0,
         isCommercialServer: false,
+        isDisableSyncDraft: false,
         isVoipOngoing: false,
         config: Config,
         userOnlineStateMap: new Map(),
@@ -179,6 +180,8 @@ export const pstore = defineStore('store-p', () => {
             this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
             // this.isMainWindow = false;
             this.linuxUpdateTitleInterval = 0;
+            this.isCommercialServer = false;
+            this.isDisableSyncDraft = false;
             this.isVoipOngoing = false;
             this.config = Config;
             this.userOnlineStateMap = new Map();
