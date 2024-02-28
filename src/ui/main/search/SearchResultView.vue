@@ -139,6 +139,7 @@ export default {
                 {
                     userInfo: user,
                 },
+                null,
                 {
                     name: 'friend-request-modal',
                     width: 600,

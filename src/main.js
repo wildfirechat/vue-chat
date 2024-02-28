@@ -10,7 +10,7 @@ import 'tippy.js/dist/tippy.css' // optional for styling
 
 import VueContext from 'vue-context';
 
-import VModal from 'vue-js-modal'
+import VModal from './vendor/vue-js-modal'
 import './global.css'
 import './wfc.css'
 import './assets/fonts/icomoon/style.css'
@@ -108,7 +108,7 @@ app.use(VueContext);
 app.component("vue-context", VueContext)
 app.component('virtual-list', VirtualList);
 
-// app.use(VModal);
+app.use(VModal);
 
 app.use(visibility);
 

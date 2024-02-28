@@ -363,7 +363,7 @@ export default {
                     };
                     this.$modal.show(
                         ScreenOrWindowPicker,
-                        {}, {
+                        {}, null, {
                             width: 360,
                             height: 620,
                             name: 'screen-window-picker-modal',

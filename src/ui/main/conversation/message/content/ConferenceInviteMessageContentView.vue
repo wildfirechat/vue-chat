@@ -84,7 +84,7 @@ export default {
                 ConferenceInfoView,
                 {
                     conferenceInfo: info,
-                }, {
+                }, null, {
                     name: 'conference-info-modal',
                     width: 320,
                     height: 600,

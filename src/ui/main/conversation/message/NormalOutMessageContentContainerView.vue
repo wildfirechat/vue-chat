@@ -168,7 +168,7 @@ export default {
                         {
                             readUsers: readUsers,
                             unreadUsers: unreadUsers,
-                        }, {
+                        }, null, {
                             name: 'message-receipt-detail-modal',
                             width: 480,
                             height: 300,

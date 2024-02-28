@@ -94,7 +94,7 @@ export default {
                 FriendRequestView,
                 {
                     userInfo: this.userInfo,
-                },
+                },null,
                 {
                     name: 'friend-request-modal',
                     width: 600,

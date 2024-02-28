@@ -37,7 +37,7 @@ export default {
                 ListView,
                 {
                     list: ['不销毁', '3秒', '10秒', '30秒', '1 分钟', '10 分钟'],
-                }, {
+                }, null, {
                     name: 'list-item-modal',
                     width: 320,
                     height: 320,

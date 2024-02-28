@@ -148,12 +148,15 @@ export default {
             };
             this.$modal.show(
                 ChangePasswordView,
-                {}, {
+                {},
+                null,
+                {
                     name: 'change-password-modal',
                     width: 320,
                     height: 400,
                     clickToClose: true,
-                }, {
+                },
+                {
                     'before-open': beforeOpen,
                     'before-close': beforeClose,
                     'closed': closed,
@@ -172,7 +175,7 @@ export default {
             };
             this.$modal.show(
                 ResetPasswordView,
-                {}, {
+                {}, null, {
                     name: 'rest-password-modal',
                     width: 320,
                     height: 400,

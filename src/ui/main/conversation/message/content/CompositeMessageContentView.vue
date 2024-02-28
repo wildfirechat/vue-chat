@@ -92,7 +92,7 @@ export default {
                     {
                         message: this.message,
                         isInCompositeView:true,
-                    }, {
+                    }, null, {
                         name: 'show-composite-message-modal' + '-' + stringValue(this.message.messageUid),
                         width: 800,
                         height: 600,

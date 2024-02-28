@@ -58,24 +58,24 @@
                         <template slot="no-results">{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
                     <div v-for="(message) in sharedConversationState.currentConversationMessageList"
-                            :key="message.messageId">
-                            <!--todo 不同的消息类型 notification in out-->
+                         :key="message.messageId">
+                        <!--todo 不同的消息类型 notification in out-->
 
-                            <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-                            <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
-                            <ContextableNotificationMessageContentContainerView
-                                v-else-if="isContextableNotificationMessage(message)"
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                                :message="message"
-                            />
-                            <NormalOutMessageContentView
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                                :message="message"
-                                v-else-if="message.direction === 0"/>
-                            <NormalInMessageContentView
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                                :message="message"
-                                v-else/>
+                        <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
+                        <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
+                        <ContextableNotificationMessageContentContainerView
+                            v-else-if="isContextableNotificationMessage(message)"
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                            :message="message"
+                        />
+                        <NormalOutMessageContentView
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                            :message="message"
+                            v-else-if="message.direction === 0"/>
+                        <NormalInMessageContentView
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
+                            :message="message"
+                            v-else/>
                     </div>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
@@ -220,7 +220,7 @@ import IPCEventType from "../../../ipcEventType";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import {imageThumbnail} from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
-import { vOnClickOutside } from '@vueuse/components'
+import {vOnClickOutside} from '@vueuse/components'
 
 
 var amr;
@@ -366,6 +366,7 @@ export default {
                     {
                         userInfo: this.conversationInfo.conversation._target,
                     },
+                    null,
                     {
                         name: 'friend-request-modal',
                         width: 600,
@@ -532,7 +533,7 @@ export default {
 
                     let fromGroupMember = wfc.getGroupMember(message.conversation.target, message.from);
                     let groupMember = wfc.getGroupMember(message.conversation.target, selfUserId);
-                    if (!fromGroupMember || !groupMember){
+                    if (!fromGroupMember || !groupMember) {
                         return false;
                     }
                     if (groupMember.type === GroupMemberType.Manager && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(fromGroupMember.type) === -1) {
@@ -919,7 +920,7 @@ export default {
             }
             return null;
         },
-       
+
         muted() {
             if (!this.conversationInfo) {
                 return false;

@@ -420,7 +420,7 @@ export default {
                     };
                     this.$modal.show(
                         ScreenOrWindowPicker,
-                        {}, {
+                        {}, null, {
                             width: 800,
                             height: 600,
                             name: 'screen-window-picker-modal',
