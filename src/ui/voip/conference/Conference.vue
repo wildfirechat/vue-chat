@@ -21,23 +21,23 @@
              v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="main">
                 <header style="background: white; height: 20px; display: flex; justify-content: space-between">
-                    <a href="#">
+                    <a href="#" @click.prevent>
                         <i class="icon-ion-information" style="padding: 0 10px"
                            id="info-icon"
                            v-bind:class="{active:showConferenceSimpleInfoView}"
-                           @click="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
+                           @click.prevent="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
                     </a>
                     <p style="flex: 1"></p>
                     <p style="padding-right: 10px">{{ duration }}</p>
                     <div>
-                        <a v-if="!audioOnly" href="#">
+                        <a v-if="!audioOnly" href="#" @click.prevent>
                             <i class="icon-ion-grid" style="padding: 0 10px"
                                id="grid-icon"
                                v-bind:class="{active:showChooseLayoutView}"
-                               @click="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
+                               @click.prevent="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
                         </a>
                         <!--                        TODO 条件显示，展示聊天界面，或者参与者列表界面时，才展示-->
-                        <a href="#" v-if="showSlider">
+                        <a href="#" v-if="showSlider" @click.prevent>
                             <i :class="showSlider? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'" style="padding: 0 10px" @click="toggleSliderView"></i>
                         </a>
                     </div>

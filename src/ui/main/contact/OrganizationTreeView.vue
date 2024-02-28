@@ -8,7 +8,7 @@
         <nav class="breadcrumb">
             <ul>
                 <li v-for="org in currentOrganizationPathList" :key="org.id">
-                    <a href="#" @click="loadAndShowOrganization(org)">{{ org.name }}</a>
+                    <a href="#" @click.prevent="loadAndShowOrganization(org)">{{ org.name }}</a>
                 </li>
             </ul>
         </nav>

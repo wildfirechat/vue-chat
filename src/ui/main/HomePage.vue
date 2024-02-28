@@ -22,13 +22,13 @@
                         </template>
                     </tippy>
 
-                    <a href="#"><img
+                    <a href="#" @click.prevent><img
                         v-if="sharedContactState.selfUserInfo"
                         ref="userCardTippy"
                         id="infoTrigger"
                         class="avatar"
                         draggable="false"
-                        @click="onClickPortrait"
+                        @click.prevent="onClickPortrait"
                         :src="sharedContactState.selfUserInfo.portrait"
                         alt=""
                     /></a>
@@ -134,7 +134,6 @@ export default {
 
     methods: {
         onClickPortrait(event) {
-            event.preventDefault()
             wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
         },
         go2Conversation() {

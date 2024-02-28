@@ -13,19 +13,19 @@
                     <div
                         v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
                     >
-                        <a v-if="sharedMiscState.isElectron" href="#">
+                        <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
                             <i class="icon-ion-pin"
                                style="display: inline-block"
                                v-bind:class="{active : isWindowAlwaysTop}"
-                               @click="setWindowAlwaysTop"
+                               @click.prevent="setWindowAlwaysTop"
                             />
                         </a>
-                        <a href="#">
+                        <a href="#" @click.prevent>
                             <i class="icon-ion-ios-settings-strong"
                                style="display: inline-block"
                                ref="setting"
                                v-bind:class="{active : showConversationInfo}"
-                               @click="toggleConversationInfo"
+                               @click.prevent="toggleConversationInfo"
                             />
                         </a>
                     </div>

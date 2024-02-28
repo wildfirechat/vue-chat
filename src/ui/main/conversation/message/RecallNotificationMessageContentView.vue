@@ -1,7 +1,7 @@
 <template>
     <div class="notification-container">
         <p class="notification">{{ message.messageContent.digest(message) }}</p>
-        <a v-if="isReeditable(message)" href="#" @click="reedit">重新编辑</a>
+        <a v-if="isReeditable(message)" href="#" @click.prevent="reedit">重新编辑</a>
     </div>
 </template>
 
