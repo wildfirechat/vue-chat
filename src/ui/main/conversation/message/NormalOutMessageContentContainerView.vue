@@ -29,7 +29,6 @@
 
                     <tippy
                         :to="'#infoTrigger' + this.message.messageId"
-                        interactive
                         :animate-fill="false"
                         placement="left"
                         distant="7"
@@ -38,7 +37,7 @@
                         trigger="click"
                     >
                         <template #content>
-                        <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+                            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
                         </template>
                     </tippy>
 
@@ -94,6 +93,9 @@ export default {
         // TextMessageContentView,
 
     },
+    updated() {
+        // console.log('updated', this.message.messageId, this.message.status)
+    },
     mounted() {
         this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
 
@@ -132,6 +134,7 @@ export default {
             wfc.sendMessage(this.message);
         },
         openMessageContextMenu(event, message) {
+            console.log('xxxxxxx me', message)
             this.$parent.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
         },

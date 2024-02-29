@@ -14,7 +14,7 @@
             <li v-for="participant in participants" :key="participant.uid + participant._isScreenSharing">
                 <tippy
                     v-if="!participant._isScreenSharing"
-                    :to="'user-' + participant.uid"
+                    :to="'#user-' + participant.uid"
                     interactive
                     theme="light"
                     :animate-fill="false"
@@ -23,13 +23,15 @@
                     animation="fade"
                     trigger="manual"
                 >
-                    <UserCardView :user-info="participant"/>
+                    <template #content>
+                        <UserCardView :user-info="participant"/>
+                    </template>
                 </tippy>
                 <div class="participant-user"
                      @click.stop.prevent="showContextMenu($event, participant)"
                      :ref="'userCardTippy-'+participant.uid"
                      v-bind:class="{active: participant.uid === currentParticipant.uid && participant._isScreenSharing === currentParticipant._isScreenSharing}"
-                     :name="'user-'+participant.uid">
+                     :id="'user-'+participant.uid">
                     <div class="avatar-container">
                         <img class="avatar" :src="participant.portrait" alt="">
                         <div v-if=" selfUserId === session.host && !participant._isHost" @click.stop="kickoff(participant)"

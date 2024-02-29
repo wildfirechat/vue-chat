@@ -6,7 +6,8 @@ import routers from './routers'
 
 import wfc from './wfc/client/wfc'
 import VueTippy from 'vue-tippy'
-import 'tippy.js/dist/tippy.css' // optional for styling
+import 'tippy.js/dist/tippy.css'
+import 'tippy.js/themes/light.css'
 
 import VueContext from 'vue-context';
 
