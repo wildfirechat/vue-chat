@@ -28,12 +28,14 @@ import Voip from "./ui/common/Voip";
 import VirtualList from "vue3-virtual-scroll-list";
 import xss from "xss";
 import mitt from 'mitt'
+// import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 
-Vue.config.productionTip = false
+// Vue.config.productionTip = false
 
 const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
+// app.use(CoolLightBox)
 
 // init
 {
