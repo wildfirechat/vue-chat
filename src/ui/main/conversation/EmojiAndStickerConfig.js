@@ -1,4 +1,4 @@
-import {Category, Emoji, emojisDefault} from "@imndx/v-emoji-picker";
+import {Category, Emoji, emojisDefault} from "@imndx/v-emoji-picker-vue3";
 import Config from "../../../config";
 
 // 如何修改、添加自定义动态表情
