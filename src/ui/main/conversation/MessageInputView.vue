@@ -102,7 +102,8 @@
 import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
-import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker"
+import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker-vue3"
+import '@imndx/v-emoji-picker-vue3/lib/v-emoji-picker.esm.css'
 import Tribute from "tributejs";
 import '../../../tribute.css'
 import ConversationType from "../../../wfc/model/conversationType";

@@ -9,7 +9,7 @@ import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/light.css'
 
-import VueContext from 'vue-context';
+import VueContext from '@madogai/vue-context';
 
 import VModal from './vendor/vue-js-modal'
 import './global.css'
@@ -20,7 +20,7 @@ import visibility from 'vue-visibility-change';
 import {isElectron} from "./platform";
 import {getItem} from "./ui/util/storageHelper";
 import {createI18n} from 'vue-i18n'
-import Notifications from 'vue-notification'
+import Notifications from '@kyvg/vue3-notification'
 import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
 import Forward from "./ui/common/Forward";
@@ -28,14 +28,14 @@ import Voip from "./ui/common/Voip";
 import VirtualList from "vue3-virtual-scroll-list";
 import xss from "xss";
 import mitt from 'mitt'
-// import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
+import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 
 // Vue.config.productionTip = false
 
 const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
-// app.use(CoolLightBox)
+app.use(CoolLightBox)
 
 // init
 {
