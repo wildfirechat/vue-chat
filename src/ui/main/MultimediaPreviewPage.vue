@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
+import '../../vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import wfc from "../../wfc/client/wfc";
 import {currentWindow, ipcRenderer, screen} from "../../platform";
 import MessageContentType from "../../wfc/messages/messageContentType";
