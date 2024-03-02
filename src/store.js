@@ -1441,7 +1441,8 @@ let store = {
             // 在 将 object 和 ui 绑定之前， 向 object 中新增的属性是 reactive 的，但绑定之后，才新增的属性，不是 reactive 的，
             // 故需要通过下面这种方法，让其成为 reactive 的属性
             // conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = userOnlineStatus.desc();
-            Vue.set(conversationState.currentConversationInfo.conversation, '_targetOnlineStateDesc', this.getUserOnlineState(convInfo.conversation.target))
+            // Vue.set(conversationState.currentConversationInfo.conversation, '_targetOnlineStateDesc', this.getUserOnlineState(convInfo.conversation.target))
+            conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = this.getUserOnlineState(convInfo.conversation.target);
         } else {
             //TODO
         }
