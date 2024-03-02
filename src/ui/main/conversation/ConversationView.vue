@@ -66,15 +66,21 @@
                         <ContextableNotificationMessageContentContainerView
                             v-else-if="isContextableNotificationMessage(message)"
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
                             :message="message"
                         />
                         <NormalOutMessageContentView
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
                             :message="message"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
                             v-else-if="message.direction === 0"/>
                         <NormalInMessageContentView
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
                             :message="message"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
                             v-else/>
                     </div>
                 </div>
@@ -486,7 +492,7 @@ export default {
         },
 
         onMenuClose() {
-            this.$emit('contextMenuClosed')
+            this.$eventBus.$emit('contextMenuClosed')
         },
         onMessageSenderContextMenuClose() {
             console.log('onMessageSenderContextMenuClose')
@@ -787,6 +793,17 @@ export default {
                 store.clearConversationUnreadStatus(info.conversation);
                 // this.unreadMessageCount = 0;
             }
+        },
+
+        openMessageContextMenu(event, message){
+            this.$refs.menu.open(event, message);
+        },
+
+        openMessageSenderContextMenu(event, message) {
+            // 目前只支持群会话里面，消息发送者右键@
+            if (message.conversation.type === ConversationType.Group) {
+                this.$refs.messageSenderContextMenu.open(event, message);
+            }
         }
     },
 
@@ -794,17 +811,6 @@ export default {
         this.popupItem = this.$refs['setting'];
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
-
-        this.$on('openMessageContextMenu', (event, message) => {
-            this.$refs.menu.open(event, message);
-        });
-
-        this.$on('openMessageSenderContextMenu', (event, message) => {
-            // 目前只支持群会话里面，消息发送者右键@
-            if (message.conversation.type === ConversationType.Group) {
-                this.$refs.messageSenderContextMenu.open(event, message);
-            }
-        });
 
         this.$eventBus.$on('send-file', args => {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
@@ -826,8 +832,6 @@ export default {
         document.removeEventListener('mousemove', this.drag);
         this.$eventBus.$off('send-file');
         this.$eventBus.$off('forward-fav');
-        this.$off('openMessageContextMenu')
-        this.$off('openMessageSenderContextMenu')
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 

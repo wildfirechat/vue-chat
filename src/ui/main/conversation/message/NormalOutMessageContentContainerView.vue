@@ -97,7 +97,7 @@ export default {
         // console.log('updated', this.message.messageId, this.message.status)
     },
     mounted() {
-        this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
+        this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
 
         if (this.message.messageContent.quoteInfo) {
             let messageUid = this.message.messageContent.quoteInfo.messageUid;
@@ -115,7 +115,7 @@ export default {
         }
     },
     beforeUnmount() {
-        this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
+        this.$eventBus.$off('contextMenuClosed', this.onContextMenuClosed);
     },
 
     methods: {
@@ -134,8 +134,7 @@ export default {
             wfc.sendMessage(this.message);
         },
         openMessageContextMenu(event, message) {
-            console.log('xxxxxxx me', message)
-            this.$parent.$emit('openMessageContextMenu', event, message)
+            this.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
         },
 

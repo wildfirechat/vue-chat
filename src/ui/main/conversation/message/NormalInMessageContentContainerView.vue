@@ -93,11 +93,11 @@ export default {
             this.$refs["userCardTippy"]._tippy.hide();
         },
         openMessageContextMenu(event, message) {
-            this.$parent.$emit('openMessageContextMenu', event, message)
+            this.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
         },
         openMessageSenderContextMenu(event, message) {
-            this.$parent.$emit('openMessageSenderContextMenu', event, message)
+            this.$emit('openMessageSenderContextMenu', event, message)
         },
 
         onContextMenuClosed() {
@@ -105,7 +105,7 @@ export default {
         }
     },
     mounted() {
-        this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
+        this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
 
         if (this.message.messageContent.quoteInfo) {
             let messageUid = this.message.messageContent.quoteInfo.messageUid;
@@ -124,7 +124,7 @@ export default {
     },
 
     beforeUnmount() {
-        this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
+        this.$eventBus.$off('contextMenuClosed', this.onContextMenuClosed);
     },
 
     computed: {
