@@ -47,11 +47,10 @@ const PluginCore = (app, options = {}) => {
   /**
    * Creates a container for modals in the root Vue component.
    *
-   * @param {Vue} parent
    * @param {Vue} app
    */
-  const setDynamicModalContainer = ((parent, app) => {
-    context.root = parent
+  const setDynamicModalContainer = ((app) => {
+    context.root = app
 
     const element = createDivInBody()
 
