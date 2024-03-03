@@ -191,7 +191,7 @@ import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import {numberValue} from "../../../wfc/util/longUtil";
-import InfiniteLoading from 'vue-infinite-loading';
+import InfiniteLoading from '@imndx/vue-infinite-loading';
 import MultiSelectActionView from "../../main/conversation/MessageMultiSelectActionView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "../../main/conversation/message/forward/ForwardType";

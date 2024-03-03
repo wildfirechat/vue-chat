@@ -107,7 +107,7 @@
 
 <script>
 import store from "../../store";
-import InfiniteLoading from "vue-infinite-loading";
+import InfiniteLoading from "@imndx/vue-infinite-loading";
 import {ipcRenderer, isElectron, currentWindow} from "../../platform";
 import UserListView from "../main/user/UserListView.vue";
 import IpcEventType from "../../ipcEventType";

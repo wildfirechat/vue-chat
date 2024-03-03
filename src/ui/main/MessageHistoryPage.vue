@@ -107,7 +107,7 @@
 <script>
 import MessageContentContainerView from "./conversation/message/MessageContentContainerView";
 import store from "../../store";
-import InfiniteLoading from "vue-infinite-loading";
+import InfiniteLoading from "@imndx/vue-infinite-loading";
 import IpcSub from "../../ipc/ipcSub";
 
 export default {
