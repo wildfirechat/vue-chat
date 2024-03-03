@@ -78,19 +78,19 @@ module.exports = {
             config.optimization.runtimeChunk('single');
         });
         config.optimization.runtimeChunk('single');
-        // 注入全局sacc变量
-        const oneOfsMap = config.module.rule('scss').oneOfs.store;
-        oneOfsMap.forEach(item => {
-            item
-                .use('sass-resources-loader')
-                .loader('sass-resources-loader')
-                .options({
-                    resources: './src/stylesheet/variables.scss'
-                })
-                .end();
-        });
+        // // 注入全局sacc变量
+        // const oneOfsMap = config.module.rule('scss').oneOfs.store;
+        // oneOfsMap.forEach(item => {
+        //     item
+        //         .use('sass-resources-loader')
+        //         .loader('sass-resources-loader')
+        //         .options({
+        //             resources: './src/stylesheet/variables.scss'
+        //         })
+        //         .end();
+        // });
 
-        config.resolve.alias.set('vue', '@vue/compat')
+        // config.resolve.alias.set('vue', '@vue/compat')
         config.module
             .rule("vue")
             .use("vue-loader")
@@ -107,7 +107,8 @@ module.exports = {
                 // };
                 options.compilerOptions = {
                     compatConfig: {
-                        MODE: 2
+                        //MODE: 2
+                        MODE: 3
                     }
                 }
                 return options;
