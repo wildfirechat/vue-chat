@@ -81,6 +81,7 @@
                 v-if="getMediaType(itemIndex) === 'image'" key="image" :style="imgWrapperStyle" class="cool-lightbox__slide__img">
               <img v-if="!isItemPicture(itemIndex)"
                 :data-src="getItemSrc(itemIndex)"
+                :src="getItemSrc(itemIndex)"
                 :data-srcset="getItemSrcSet(itemIndex)"
                 :data-sizes="getItemSizes(itemIndex)"
                 :key="'img-' + itemIndex"
@@ -109,6 +110,7 @@
                 >
                 <img
                      :data-src="getItemSrc(itemIndex)"
+                     :src="getItemSrc(itemIndex)"
                      :data-srcset="getItemSrcSet(itemIndex)"
                      :data-sizes="getItemSizes(itemIndex)"
                      draggable="false"
