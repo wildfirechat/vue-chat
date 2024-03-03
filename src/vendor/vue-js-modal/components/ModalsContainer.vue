@@ -10,8 +10,8 @@
       <component
         :is="modal.component"
         v-bind="modal.componentAttrs"
-        v-on="$listeners"
-        @close="$modal.hide(modal.modalAttrs.name, $event)"
+        v-on="modal.modalListeners"
+        @close="modal.hide(modal.modalAttrs.name, $event)"
       >
         <template v-for="(slot, key) in modal.componentSlots" #[key]="scope">
           <VNode :node="slot" :key="key" :scope="scope" />
