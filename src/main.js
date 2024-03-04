@@ -16,7 +16,7 @@ import './global.css'
 import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "./store";
-import visibility from 'vue-visibility-change';
+import visibility from './vendor/vue-visibility-change';
 import {isElectron} from "./platform";
 import {getItem} from "./ui/util/storageHelper";
 import {createI18n} from 'vue-i18n'
@@ -115,7 +115,6 @@ app.use(VModal);
 
 app.use(visibility);
 
-// app.use(VueI18n)
 app.use(Alert)
 app.use(Picker)
 app.use(Forward)

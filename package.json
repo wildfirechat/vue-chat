@@ -44,7 +44,6 @@
     "vue-router": "^4.3.0",
     "vue-spinner": "^1.0.4",
     "vue-tippy": "^6.4.1",
-    "vue-visibility-change": "^1.2.1",
     "vue3-virtual-scroll-list": "^0.2.1",
     "xss": "^1.0.14"
   },
