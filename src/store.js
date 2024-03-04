@@ -2022,6 +2022,7 @@ let store = {
                 // TODO 下面好像不生效，更新成图片链接
                 icon: icon,
                 timeout: 4000,
+                requireInteraction: true,
                 onClick: () => {
                     if (isElectron()) {
                         ipcRenderer.send(IPCEventType.CLICK_NOTIFICATION, currentWindow.getMediaSourceId())
@@ -2031,6 +2032,8 @@ let store = {
                     }
                     this.setCurrentConversation(msg.conversation)
                 }
+            }).catch(e => {
+                console.error('Please enable notification')
             });
         }
     },
