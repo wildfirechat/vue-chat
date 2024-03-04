@@ -29,5 +29,9 @@ export const BrowserWindow = null;
 export const AppPath = null;
 export const desktopCapturer = null;
 
+export const app = null;
+export const screen = null
+export const shell = null
+
 // for web
-export const PostMessageEventEmitter = require('./windowEmitter');
+// export const PostMessageEventEmitter = require('./windowEmitter');

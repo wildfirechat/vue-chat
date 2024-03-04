@@ -34,3 +34,5 @@ module.exports.STYLE_TONE2 = Pinyin.STYLE_TONE2;
 module.exports.STYLE_TO3NE = Pinyin.STYLE_TO3NE;
 module.exports.STYLE_INITIALS = Pinyin.STYLE_INITIALS;
 module.exports.STYLE_FIRST_LETTER = Pinyin.STYLE_FIRST_LETTER;
+
+export default pinyin.convert.bind(pinyin)

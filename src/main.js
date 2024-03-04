@@ -1,4 +1,4 @@
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
 import {createPinia} from 'pinia'
@@ -31,6 +31,12 @@ import mitt from 'mitt'
 import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 
 // Vue.config.productionTip = false
+
+import generated from "@/assets/lang/zh-CN.json";
+
+import generated0 from "@/assets/lang/zh-TW.json";
+
+import generated01 from "@/assets/lang/en.json";
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -125,9 +131,9 @@ const i18n = createI18n({
     locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
     allowComposition: true,
     messages: {
-        'zh-CN': require('@/assets/lang/zh-CN.json'),
-        'zh-TW': require('@/assets/lang/zh-TW.json'),
-        'en': require('@/assets/lang/en.json')
+        'zh-CN': generated,
+        'zh-TW': generated0,
+        'en': generated01
     }
 })
 app.use(i18n)

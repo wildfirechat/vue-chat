@@ -22,4 +22,4 @@ const IpcEventType = {
     STOP_SCREEN_SHARE: 'stop-screen-share',
 }
 
-module.exports = IpcEventType
+export default IpcEventType

@@ -50,7 +50,7 @@
             </div>
             <div v-else-if="loginType === 1" class="login-form-container">
                 <!--            密码登录-->
-                <img class="logo" :src="require(`@/assets/images/icon.png`)" alt="">
+                <img class="logo" :src="`/src/assets/images/icon.png`" alt="">
                 <p class="title">密码登录</p>
                 <div class="item">
                     <input v-model.trim="mobile" class="text-input" type="number" placeholder="请输入手机号">
@@ -67,7 +67,7 @@
             </div>
             <div v-else class="login-form-container">
                 <!--            验证码登录-->
-                <img class="logo" :src="require(`@/assets/images/icon.png`)" alt="">
+                <img class="logo" :src="`@/assets/images/icon.png`" alt="">
                 <p class="title">验证码登录</p>
                 <div class="item">
                     <input v-model.trim="mobile" class="text-input" type="number" placeholder="请输入手机号">

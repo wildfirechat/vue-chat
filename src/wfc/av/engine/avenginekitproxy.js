@@ -15,6 +15,7 @@ import Conversation from "../../../wfc/model/conversation";
 
 import CallEndReason from "./callEndReason";
 import CallByeMessageContent from "../messages/callByeMessageContent";
+import {EventEmitter} from "events";
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -72,7 +73,7 @@ export class AvEngineKitProxy {
         this.event.on(EventType.ConferenceEvent, this.onReceiveConferenceEvent);
         this.event.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
         if (!isElectron()) {
-            const EventEmitter = require("events").EventEmitter;
+            // const EventEmitter = require("events").EventEmitter;
             this.events = new EventEmitter();
             this.events.on('voip-message', this.sendVoipListener)
             this.events.on('conference-request', this.sendConferenceRequestListener);

@@ -1,4 +1,4 @@
-@import '~@madogai/vue-context/dist/css/vue-context.css';
+@import '@madogai/vue-context/dist/css/vue-context.css';
 
 .v-context {
     font-size: 14px;

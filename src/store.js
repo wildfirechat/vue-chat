@@ -1,11 +1,11 @@
 import ConnectionStatus from "./wfc/client/connectionStatus";
-import Vue from 'vue'
 import wfc from "./wfc/client/wfc";
 import EventType from "./wfc/client/wfcEvent";
 import ConversationType from "./wfc/model/conversationType";
 import {eq, gt, numberValue} from "./wfc/util/longUtil";
 import helper from "./ui/util/helper";
-import convert from './vendor/pinyin'
+// import convert from './vendor/pinyin'
+const convert = (str) => str
 import GroupType from "./wfc/model/groupType";
 import {imageThumbnail, videoDuration, videoThumbnail} from "./ui/util/imageUtil";
 import MessageContentMediaType from "./wfc/messages/messageContentMediaType";

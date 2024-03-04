@@ -1,6 +1,6 @@
 import {EventEmitter} from "events";
 import wfc from "../../client/wfc";
-import PttClientImpl from "../internal/ptt.min";
+// import PttClientImpl from "../internal/ptt.min";
 import PttErrorCode from "./pttErrorCode";
 import ConversationType from "../../model/conversationType";
 import GroupMemberType from "../../model/groupMemberType";
