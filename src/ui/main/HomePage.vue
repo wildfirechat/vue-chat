@@ -86,15 +86,17 @@
             </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
-            <div v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
-                 class="voip-div-container"
-                 v-draggable
-                 v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
+            <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
+                          class="voip-div-container"
+                          draggable="true"
+                          :initial-value="{x:'50%', y:'50%'}"
+                          :prevent-default="true"
+                          v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
                 <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
                 <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
                 <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
-            </div>
+            </UseDraggable>
         </div>
     </div>
 </template>
@@ -110,13 +112,13 @@ import {removeItem} from "../util/storageHelper";
 import {ipcRenderer} from "../../platform";
 import avenginekit from "../../wfc/av/internal/engine.min";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
-import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
 import {isElectron} from "../../platform";
 import Single from "../voip/Single.vue";
 import Multi from "../voip/Multi.vue";
 import Conference from "../voip/conference/Conference.vue";
 import 'tippy.js/dist/tippy.css' // optional for styling
+import {UseDraggable} from '@vueuse/components'
 
 var avenginkitSetuped = false;
 export default {
@@ -305,10 +307,10 @@ export default {
         Multi,
         Single,
         UserCardView,
-        ElectronWindowsControlButtonView
+        ElectronWindowsControlButtonView,
+        UseDraggable
     },
     directives: {
-        Draggable,
     }
 };
 </script>
@@ -429,7 +431,7 @@ i.active {
 
 .voip-div-container {
     background: #292929;
-    position: absolute;
+    position: fixed;
     margin: auto;
     border-radius: 5px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
