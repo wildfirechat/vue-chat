@@ -57,8 +57,7 @@
                     </li>
                 </ul>
             </section>
-            <div @keydown.13="send($event)"
-                 @keydown.229="()=>{}"
+            <div @keydown.enter="send($event)"
                  ref="input" class="input"
                  @paste="handlePaste"
                  draggable="false"
@@ -338,6 +337,9 @@ export default {
         },
 
         async send(e) {
+            if (e.keyCode === 229){
+                return
+            }
             if (this.tribute && this.tribute.isActive) {
                 this.tributeReplaced = false;
                 return;
@@ -904,7 +906,7 @@ export default {
     deactivated() {
         if (!this.sharedConversationState.showChannelMenu) {
             this.storeDraft(this.lastConversationInfo);
-            this.$refs['input'].innerHTML = '';
+            // this.$refs['input'].innerHTML = '';
         }
     },
 
