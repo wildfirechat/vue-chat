@@ -2075,6 +2075,9 @@ let store = {
 
     updateVoipStatus(conversation, isOngoing) {
         miscState.isVoipOngoing = isOngoing;
+        if (!conversation) {
+            return
+        }
         conversationState.conversationInfoList.forEach(ci => {
             if (ci.conversation.equal(conversation)) {
                 ci._isVoipOngoing = isOngoing;
