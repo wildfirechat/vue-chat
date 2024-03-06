@@ -152,4 +152,6 @@ app.config.globalProperties.$eventBus = eventBus
 //     };
 // };
 
+app.config.globalProperties.$set = (obj, key, value) => obj[key] = value
+
 app.mount('#app')

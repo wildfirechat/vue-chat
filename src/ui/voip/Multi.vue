@@ -258,7 +258,6 @@ export default {
                 this.participantUserInfos = [...participantUserInfos];
                 this.groupMemberUserInfos = groupMemberUserInfos;
 
-                // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null)
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
                 this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
