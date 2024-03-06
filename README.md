@@ -62,6 +62,11 @@
 ![](http://static.wildfirechat.cn/web-multi-video-call.png)
 ![](http://static.wildfirechat.cn/web-multi-audio-call.png)
 
+## 分支说明
+
+1. `master`：基于`Vue 3`开发，是未来的开发重心
+2. `vue2`：基于`Vue 2`开发，进入维护模式，不在开发新功能，鉴于`Vue 2`已经终止支持且不再维护，建议客户升级到`Vue 3`版本
+
 ## 开发、打包依赖
 
 1. nodejs v14.18.X
