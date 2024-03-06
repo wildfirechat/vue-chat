@@ -1,4 +1,4 @@
-import Vue, {createApp} from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
 import {createPinia} from 'pinia'
@@ -86,12 +86,6 @@ app.use(CoolLightBox)
 }
 // init end
 
-// app.use(router)
-// app.use(i18n)
-// app.use(VueRouter)
-
-// app.use(VueTippy);
-// app.component("tippy", TippyComponent);
 app.use(
     VueTippy,
     // optional
@@ -141,7 +135,6 @@ const router = createRouter({
 app.use(router)
 app.config.globalProperties.$router = router
 
-// app.prototype.$eventBus = mitt();
 const eventBus = mitt()
 eventBus.$on = eventBus.on
 eventBus.$off = eventBus.off
@@ -160,13 +153,3 @@ app.config.globalProperties.$eventBus = eventBus
 // };
 
 app.mount('#app')
-
-// var vm = new Vue({
-//     el: '#app',
-//     router,
-//     i18n,
-//     render: h => h(App),
-// })
-// vm.store = store.state;
-//
-// window.vm = vm;
