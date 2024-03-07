@@ -5,8 +5,8 @@ import IpcSub from "../../ipc/ipcSub";
 import {isElectron} from "../../platform";
 
 export default {
-    install(Vue) {
-        Vue.prototype.$startVoipCall = function (options) {
+    install(app, options) {
+        app.config.globalProperties.$startVoipCall = function (options) {
             let {audioOnly, conversation} = options;
             if (store.state.misc.isMainWindow || !isElectron()) {
                 if (conversation.type === ConversationType.Single) {

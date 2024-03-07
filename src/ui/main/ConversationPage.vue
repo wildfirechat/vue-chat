@@ -11,7 +11,7 @@ import ConversationListPanel from "./ConversationListPanel.vue";
 
 export default {
     name: "ConversationPage",
-    destroyed() {
+    unmounted() {
         console.log('conversation page destroyed')
     },
 

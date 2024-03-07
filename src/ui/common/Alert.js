@@ -1,8 +1,8 @@
 import AlertView from "./AlertView.vue";
 
 export default {
-    install(Vue) {
-        Vue.prototype.$alert = function (options) {
+    install(app) {
+        app.config.globalProperties.$alert = function (options) {
             let beforeOpen = () => {
                 console.log('Opening...')
             };
@@ -30,6 +30,7 @@ export default {
                     cancelText: options.cancelText,
                     confirmText: options.confirmText,
                 },
+                null,
                 {
                     name: 'alert-modal',
                     clickToClose: true,

@@ -3,8 +3,8 @@ import ForwardMessageByPickConversationView from "../main/conversation/message/f
 import ForwardMessageByCreateConversationView from "../main/conversation/message/forward/ForwardMessageByCreateConversationView";
 
 export default {
-    install(Vue) {
-        Vue.prototype.$forwardMessage = function (options) {
+    install(app, options) {
+        app.config.globalProperties.$forwardMessage = function (options) {
             const pickConversationAndForwardMessage = (forwardType, messages) => {
                 return new Promise(((resolve, reject) => {
                     let beforeClose = (event) => {
@@ -31,7 +31,7 @@ export default {
                         {
                             forwardType: forwardType,
                             messages: messages
-                        }, {
+                        },null, {
                             name: 'forward-by-pick-conversation-modal',
                             width: 600,
                             height: 480,
@@ -67,7 +67,7 @@ export default {
                             forwardType: forwardType,
                             messages: messages,
                             users: store.state.contact.friendList,
-                        }, {
+                        }, null, {
                             name: 'forward-by-create-conversation-modal',
                             width: 600,
                             height: 480,

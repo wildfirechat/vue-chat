@@ -27,7 +27,7 @@ const routers = [
         component: HomePage,
         children: [
             {
-                path: '/',
+                path: '',
                 name: 'conversation',
                 component: ConversationPage,
             },

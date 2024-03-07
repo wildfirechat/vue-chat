@@ -258,7 +258,6 @@ export default {
                 this.participantUserInfos = [...participantUserInfos];
                 this.groupMemberUserInfos = groupMemberUserInfos;
 
-                // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null)
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
                 this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))
@@ -420,7 +419,7 @@ export default {
                     };
                     this.$modal.show(
                         ScreenOrWindowPicker,
-                        {}, {
+                        {}, null, {
                             width: 800,
                             height: 600,
                             name: 'screen-window-picker-modal',
@@ -517,7 +516,7 @@ export default {
         this.setupSessionCallback();
     },
 
-    destroyed() {
+    unmounted() {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))

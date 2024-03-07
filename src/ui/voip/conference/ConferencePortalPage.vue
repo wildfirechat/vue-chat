@@ -113,7 +113,7 @@ export default {
             };
             this.$modal.show(
                 JoinConferenceView,
-                {}, {
+                {}, null, {
                     name: 'join-conference-modal',
                     width: 320,
                     height: 300,
@@ -137,7 +137,7 @@ export default {
             };
             this.$modal.show(
                 CreateConferenceView,
-                {}, {
+                {}, null,{
                     name: 'create-conference-modal',
                     width: 320,
                     height: 500,
@@ -161,7 +161,7 @@ export default {
             };
             this.$modal.show(
                 OrderConferenceView,
-                {}, {
+                {},null, {
                     name: 'order-conference-modal',
                     width: 320,
                     height: 500,
@@ -187,7 +187,7 @@ export default {
                 ConferenceInfoView,
                 {
                     conferenceInfo: info,
-                }, {
+                }, null,{
                     name: 'conference-info-modal',
                     width: 320,
                     height: 580,

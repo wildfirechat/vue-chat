@@ -9,7 +9,7 @@
         <div v-else>
             <tippy
                 v-if="!clickUserItemFunc"
-                :to="'user-' + source.uid"
+                :to="'#user-' + source.uid"
                 interactive
                 theme="light"
                 :animate-fill="false"
@@ -19,11 +19,13 @@
                 trigger="click"
                 :style="tippyStyleFix"
             >
-                <UserCardView :user-info="source" v-on:close="closeUserCard(source)"/>
+                <template #content>
+                    <UserCardView :user-info="source" v-on:close="closeUserCard(source)"/>
+                </template>
             </tippy>
             <div class="content"
                  :ref="'userCardTippy-'+source.uid"
-                 :name="'user-'+source.uid"
+                 :id="'user-'+source.uid"
                  :style="paddingStyle"
                  v-bind:class="{active: (sharedContactState.currentFriend
                         && source._category === sharedContactState.currentFriend._category
@@ -114,7 +116,7 @@ export default {
         },
         showContactContextMenu(event, user) {
             if (this.enableContactContextMenu) {
-                this.$eventBus.$emit('showContactContextMenu', event, user);
+                this.$eventBus.$emit('showContactContextMenu', [event, user]);
             }
         }
     },
@@ -129,7 +131,7 @@ export default {
         this.scrollActiveElementCenter();
     },
 
-    destroyed() {
+    unmounted() {
         if (!this.clickUserItemFunc) {
             this.tippyStyleReset()
         }

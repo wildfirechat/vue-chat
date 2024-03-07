@@ -12,7 +12,7 @@
                     v-if="showEmojiDialog"
                     labelSearch="Search"
                     lang="pt-BR"
-                    v-click-outside="hideEmojiView"
+                    v-v-on-click-outside="hideEmojiView"
                     :customEmojis="emojis"
                     :customCategories="emojiCategories"
                     @select="onSelectEmoji"
@@ -57,8 +57,7 @@
                     </li>
                 </ul>
             </section>
-            <div @keydown.13="send($event)"
-                 @keydown.229="()=>{}"
+            <div @keydown.enter="send($event)"
                  ref="input" class="input"
                  @paste="handlePaste"
                  draggable="false"
@@ -102,8 +101,8 @@
 import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
-import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker"
-import ClickOutside from "vue-click-outside";
+import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker-vue3"
+import '@imndx/v-emoji-picker-vue3/lib/v-emoji-picker.esm.css'
 import Tribute from "tributejs";
 import '../../../tribute.css'
 import ConversationType from "../../../wfc/model/conversationType";
@@ -123,7 +122,6 @@ import {copyText} from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
 import IpcEventType from "../../../ipcEventType";
 import ChannelMenuView from "./ChannelMenuView";
-import IpcSub from "../../../ipc/ipcSub";
 import pttClient from "../../../wfc/ptt/client/pttClient";
 import TalkingCallback from "../../../wfc/ptt/client/talkingCallback";
 import Config from "../../../config";
@@ -131,6 +129,7 @@ import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
+import { vOnClickOutside } from '@vueuse/components'
 
 export default {
     name: "MessageInputView",
@@ -338,6 +337,9 @@ export default {
         },
 
         async send(e) {
+            if (e.keyCode === 229){
+                return
+            }
             if (this.tribute && this.tribute.isActive) {
                 this.tributeReplaced = false;
                 return;
@@ -904,7 +906,7 @@ export default {
     deactivated() {
         if (!this.sharedConversationState.showChannelMenu) {
             this.storeDraft(this.lastConversationInfo);
-            this.$refs['input'].innerHTML = '';
+            // this.$refs['input'].innerHTML = '';
         }
     },
 
@@ -939,7 +941,7 @@ export default {
         wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
     },
 
-    destroyed() {
+    unmounted() {
         if (isElectron()) {
             ipcRenderer.removeAllListeners('screenshots-ok');
         }
@@ -1008,7 +1010,7 @@ export default {
         VEmojiPicker
     },
     directives: {
-        ClickOutside,
+        vOnClickOutside,
         focus,
     }
 };

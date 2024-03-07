@@ -84,7 +84,7 @@ export default {
         wfc.eventEmitter.on(EventType.FriendRequestUpdate, this.onFriendRequestUpdate);
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         this.isActive = false;
         wfc.eventEmitter.removeListener(EventType.FriendRequestUpdate, this.onFriendRequestUpdate);
     }

@@ -8,27 +8,27 @@
             <div v-if="showOrganization" class="pick-source-container">
                 <div v-if="pickSource" class="pick-source-nav">
                     <ul>
-                        <li @click="pickSource = null">
-                            <a href="#">联系人</a>
+                        <li @click.prevent="pickSource = null">
+                            <a href="#" @click.prevent>联系人</a>
                         </li>
                         <li v-if="pickSource === 'friend'">
-                            <a href="#">好友</a>
+                            <a href="#" @click.prevent>好友</a>
                         </li>
                         <li v-for="org in organizationPathList" :key="org.id">
-                            <a href="#" @click="loadAndShowOrganization(org)">{{ org.name }}</a>
+                            <a href="#" @click.prevent="loadAndShowOrganization(org)">{{ org.name }}</a>
                         </li>
                     </ul>
                 </div>
                 <div class="pick-source-list">
                     <ul v-if="!pickSource">
                         <li @click="pickSource = 'friend'; organizationPathList = []">
-                            <a href="#">
+                            <a href="#" @click.prevent>
                                 <i class="icon-ion-android-contacts"/>
                                 选择好友
                             </a>
                         </li>
                         <li @click="pickSource = 'organization'">
-                            <a href="#">
+                            <a href="#" @click.prevent>
                                 <i class="icon-ion-android-document"/>
                                 选择组织联系人
                             </a>
@@ -166,6 +166,7 @@ export default {
         },
 
         cancel() {
+            console.log('xxxxxxxxxx cancel');
             this.sharedPickState.users.length = 0
             this.sharedPickState.organizations.length = 0;
             this.$modal.hide('pick-user-modal', {confirm: false})

@@ -8,7 +8,7 @@
         <nav class="breadcrumb">
             <ul>
                 <li v-for="org in currentOrganizationPathList" :key="org.id">
-                    <a href="#" @click="loadAndShowOrganization(org)">{{ org.name }}</a>
+                    <a href="#" @click.prevent="loadAndShowOrganization(org)">{{ org.name }}</a>
                 </li>
             </ul>
         </nav>
@@ -23,7 +23,7 @@
                 </li>
                 <li v-for="(employee, index) in employees" :key="employee.employeeId">
                     <tippy
-                        :to="'infoTrigger-' + employee.employeeId"
+                        :to="'#infoTrigger-' + employee.employeeId"
                         interactive
                         :animate-fill="false"
                         placement="right"
@@ -32,12 +32,14 @@
                         animation="fade"
                         trigger="manual"
                     >
-                        <UserCardView
-                            v-on:close="closeUserCard"
-                            :enable-update-portrait="false"
-                            :user-info="employeeToUserInfo(employee)"/>
+                        <template #content>
+                            <UserCardView
+                                v-on:close="closeUserCard"
+                                :enable-update-portrait="false"
+                                :user-info="employeeToUserInfo(employee)"/>
+                        </template>
                     </tippy>
-                    <div :ref="'ref-employee-' + employee.employeeId" class="organization-item" :name="'infoTrigger-' + employee.employeeId"
+                    <div :ref="'ref-employee-' + employee.employeeId" class="organization-item" :id="'infoTrigger-' + employee.employeeId"
                          @click="showUserCardView(employee)"
                     >
                         <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">

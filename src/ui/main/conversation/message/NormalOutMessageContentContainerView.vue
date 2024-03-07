@@ -6,7 +6,7 @@
                  v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
                 <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                        class="checkbox"
-                       :value="message" placeholder="" v-model="sharedPickState.messages">
+                       placeholder="" v-model="sharedPickState.messages">
 
                 <div class="message-avatar-content-container">
                     <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
@@ -28,8 +28,7 @@
                     </div>
 
                     <tippy
-                        :to="'infoTrigger' + this.message.messageId"
-                        interactive
+                        :to="'#infoTrigger' + this.message.messageId"
                         :animate-fill="false"
                         placement="left"
                         distant="7"
@@ -37,11 +36,13 @@
                         animation="fade"
                         trigger="click"
                     >
-                        <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+                        <template #content>
+                            <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
+                        </template>
                     </tippy>
 
                     <img ref="userCardTippy"
-                         :name="'infoTrigger' + this.message.messageId"
+                         :id="'infoTrigger' + this.message.messageId"
                          class="avatar"
                          @click="onClickUserPortrait(message.from)"
                          draggable="false"
@@ -92,8 +93,11 @@ export default {
         // TextMessageContentView,
 
     },
+    updated() {
+        // console.log('updated', this.message.messageId, this.message.status)
+    },
     mounted() {
-        this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
+        this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
 
         if (this.message.messageContent.quoteInfo) {
             let messageUid = this.message.messageContent.quoteInfo.messageUid;
@@ -110,8 +114,8 @@ export default {
             }
         }
     },
-    beforeDestroy() {
-        this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
+    beforeUnmount() {
+        this.$eventBus.$off('contextMenuClosed', this.onContextMenuClosed);
     },
 
     methods: {
@@ -130,7 +134,7 @@ export default {
             wfc.sendMessage(this.message);
         },
         openMessageContextMenu(event, message) {
-            this.$parent.$emit('openMessageContextMenu', event, message)
+            this.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
         },
 
@@ -166,7 +170,7 @@ export default {
                         {
                             readUsers: readUsers,
                             unreadUsers: unreadUsers,
-                        }, {
+                        }, null, {
                             name: 'message-receipt-detail-modal',
                             width: 480,
                             height: 300,

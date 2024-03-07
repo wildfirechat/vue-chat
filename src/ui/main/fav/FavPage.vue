@@ -55,7 +55,7 @@ import SearchView from "../search/SearchView.vue";
 
 export default {
     name: "FavPage",
-    destroyed() {
+    unmounted() {
         console.log('conversation page destroyed')
     },
     data() {

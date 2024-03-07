@@ -21,36 +21,36 @@
              v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="main">
                 <header style="background: white; height: 20px; display: flex; justify-content: space-between">
-                    <a href="#">
+                    <a href="#" @click.prevent>
                         <i class="icon-ion-information" style="padding: 0 10px"
                            id="info-icon"
                            v-bind:class="{active:showConferenceSimpleInfoView}"
-                           @click="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
+                           @click.prevent="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
                     </a>
                     <p style="flex: 1"></p>
                     <p style="padding-right: 10px">{{ duration }}</p>
                     <div>
-                        <a v-if="!audioOnly" href="#">
+                        <a v-if="!audioOnly" href="#" @click.prevent>
                             <i class="icon-ion-grid" style="padding: 0 10px"
                                id="grid-icon"
                                v-bind:class="{active:showChooseLayoutView}"
-                               @click="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
+                               @click.prevent="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
                         </a>
                         <!--                        TODO 条件显示，展示聊天界面，或者参与者列表界面时，才展示-->
-                        <a href="#" v-if="showSlider">
+                        <a href="#" v-if="showSlider" @click.prevent>
                             <i :class="showSlider? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'" style="padding: 0 10px" @click="toggleSliderView"></i>
                         </a>
                     </div>
                 </header>
                 <div v-if="showConferenceSimpleInfoView"
-                     v-click-outside="hideConferenceSimpleInfoView"
+                     v-v-on-click-outside="hideConferenceSimpleInfoView"
                      style="position: absolute; left: 10px; top: 50px; z-index: 1000">
                     <ConferenceSimpleInfoView
                         :session="session"
                     />
                 </div>
                 <div v-if="showChooseLayoutView"
-                     v-click-outside="hideChooseLayoutView"
+                     v-v-on-click-outside="hideChooseLayoutView"
                      style="position: absolute; right: 10px; top: 50px; z-index: 1000">
                     <ChooseConferenceLayoutView
                         :current-layout="computedCurrentLayout"
@@ -223,7 +223,6 @@
 import avenginekit from "../../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../../wfc/av/engine/callSessionCallback";
 import CallState from "../../../wfc/av/engine/callState";
-import ClickOutside from 'vue-click-outside'
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import {currentWindow, isElectron} from "../../../platform";
 import ScreenOrWindowPicker from "../ScreenOrWindowPicker";
@@ -249,6 +248,8 @@ import Conversation from "../../../wfc/model/conversation";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
+import {vOnClickOutside} from '@vueuse/components'
+
 
 export default {
     name: 'Conference',
@@ -380,7 +381,9 @@ export default {
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
 
                 this.session = session;
-                document.title = session.title;
+                if (isElectron()) {
+                    document.title = session.title;
+                }
 
                 conferenceManager.getConferenceInfo(session.callId);
             };
@@ -846,7 +849,7 @@ export default {
                     };
                     this.$modal.show(
                         ScreenOrWindowPicker,
-                        {}, {
+                        {}, null, {
                             width: 800,
                             height: 600,
                             name: 'screen-window-picker-modal',
@@ -1254,11 +1257,13 @@ export default {
     },
 
     directives: {
-        ClickOutside
+        vOnClickOutside
     },
 
     created() {
-        document.title = '在线会议';
+        if (isElectron()) {
+            document.title = '在线会议';
+        }
         conferenceManager.setVueInstance(this);
         this.refreshUserInfoInternal = setInterval(() => {
             this.refreshUserInfos();
@@ -1306,7 +1311,7 @@ export default {
         }
     },
 
-    destroyed() {
+    unmounted() {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.participantUserInfos.forEach(m => this.$set(m, "_stream", null))

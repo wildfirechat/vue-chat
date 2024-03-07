@@ -42,6 +42,9 @@ import {genGroupPortrait} from "./ui/util/imageUtil";
 import IPCEventType from "./ipcEventType";
 import NullChannelInfo from "./wfc/model/NullChannelInfo";
 import ModifyGroupSettingNotification from "./wfc/messages/notification/modifyGroupSettingNotification";
+import {storeToRefs} from 'pinia'
+import {pstore} from './pstore'
+
 
 /**
  * 一些说明
@@ -50,197 +53,45 @@ import ModifyGroupSettingNotification from "./wfc/messages/notification/modifyGr
  * _开头的函数，是内部函数
  * 外部不直接更新字段，而是通过提供各种action方法更新
  */
+
+let conversationState;
+let contactState;
+let searchState;
+let pickState;
+let miscState;
+
 let store = {
     debug: true,
     state: {
-        conversation: {
-            _wfc: wfc,
-            currentConversationInfo: null,
-            conversationInfoList: [],
-            currentConversationMessageList: [],
-            currentConversationOldestMessageId: 0,
-            currentConversationOldestMessageUid: 0,
-
-            currentConversationRead: null,
-
-            // TODO 调用setUserEnableReceipt时，需要更新
-            isMessageReceiptEnable: false,
-
-            inputtingUser: null,
-            inputClearHandler: null,
-
-            shouldAutoScrollToBottom: true,
-
-            previewMediaItems: [],
-            previewMediaIndex: null,
-
-            enableMessageMultiSelection: false,
-            showChannelMenu: false,
-            quotedMessage: null,
-
-            // 为什么不用 map？
-            // map 里面的元素并不是 reactive 的
-            downloadingMessages: [],
-            sendingMessages: [],
-            floatingConversations: [],
-
-            currentVoiceMessage: null,
-            contextMenuConversationInfo: null,
-
-            _reset() {
-                this.currentConversationInfo = null;
-                this.conversationInfoList = []
-                this.currentConversationMessageList = [];
-                this.currentConversationOldestMessageId = 0;
-                this.currentConversationOldestMessageUid = 0;
-                this.currentConversationRead = null;
-                this.isMessageReceiptEnable = false;
-                this.inputtingUser = null;
-                this.inputClearHandler = null;
-                this.shouldAutoScrollToBottom = true;
-                this.previewMediaItems = [];
-                this.previewMediaIndex = null;
-                this.enableMessageMultiSelection = false;
-                this.showChannelMenu = false;
-                this.quotedMessage = null;
-                this.downloadingMessages = [];
-                this.sendingMessages = [];
-                this.floatingConversations = [];
-                this.currentVoiceMessage = null;
-                this.contextMenuConversationInfo = null;
-            }
-        },
-
-        contact: {
-            currentFriendRequest: null,
-            currentGroup: null,
-            currentChannel: null,
-            currentFriend: null,
-            currentOrganization: null,
-            currentChatroom: null,
-            currentUser: null,
-
-            expandFriendRequestList: false,
-            expandFriendList: true,
-            expandGroup: false,
-            expandChanel: false,
-            expandOrganization: false,
-            expandChatroom: false,
-
-            unreadFriendRequestCount: 0,
-            friendList: [],
-            friendRequestList: [],
-            favGroupList: [],
-            channelList: [],
-            favContactList: [],
-
-            selfUserInfo: null,
-            contextMenuUserInfo: null,
-
-            _reset() {
-                this.currentFriendRequest = null;
-                this.currentGroup = null;
-                this.currentChannel = null;
-                this.currentFriend = null;
-                this.currentOrganization = null;
-                this.currentChatroom = null;
-                this.currentUser = null;
-
-                this.expandFriendRequestList = false;
-                this.expandFriendList = true;
-                this.expandGroup = false;
-                this.expandChanel = false;
-
-                this.unreadFriendRequestCount = 0;
-                this.friendList = [];
-                this.friendRequestList = [];
-                this.favGroupList = [];
-                this.channelList = [];
-                this.favContactList = [];
-
-                this.selfUserInfo = null;
-                this.contextMenuUserInfo = null;
-            }
-        },
-
-        search: {
-            query: null,
-            userSearchResult: [],
-            channelSearchResult: [],
-            contactSearchResult: [],
-            groupSearchResult: [],
-            conversationSearchResult: [],
-            messageSearchResult: [],
-
-            _reset() {
-                this.query = null;
-                this.userSearchResult = [];
-                this.channelSearchResult = [];
-                this.contactSearchResult = [];
-                this.groupSearchResult = [];
-                this.conversationSearchResult = [];
-                this.messageSearchResult = [];
-
-            }
-        },
-
-        pick: {
-            users: [],
-            organizations: [],
-            conversations: [],
-            messages: [],
-
-            _reset() {
-                this.users = [];
-                this.organizations = [];
-                this.conversations = [];
-                this.messages = [];
-
-            }
-        },
-
-        misc: {
-            connectionStatus: ConnectionStatus.ConnectionStatusUnconnected,
-            isPageHidden: false,
-            enableNotification: true,
-            enableMinimize: getItem('minimizable') === '1',
-            enableNotificationMessageDetail: true,
-            enableCloseWindowToExit: false,
-            enableAutoLogin: false,
-            isElectron: isElectron(),
-            isElectronWindowsOrLinux: process && (process.platform === 'win32' || process.platform === 'linux'),
-            isMainWindow: false,
-            linuxUpdateTitleInterval: 0,
-            wfc: wfc,
-            config: Config,
-            userOnlineStateMap: new Map(),
-            enableOpenWorkSpace: !!(Config.OPEN_PLATFORM_WORK_SPACE_URL),
-
-            _reset() {
-                this.connectionStatus = ConnectionStatus.ConnectionStatusUnconnected;
-                this.isPageHidden = false;
-                this.enableNotification = true;
-                this.enableMinimize = getItem('minimizable') === '1';
-                this.enableNotificationMessageDetail = true;
-                this.enableCloseWindowToExit = false;
-                this.enableAutoLogin = false;
-                this.isElectron = isElectron();
-                this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
-                // this.isMainWindow = false;
-                this.linuxUpdateTitleInterval = 0;
-                this.wfc = wfc;
-                this.config = Config;
-                this.userOnlineStateMap = new Map();
-            }
-        },
+        conversation: null,
+        contact: null,
+        search: null,
+        pick: null,
+        misc: null,
     },
 
     init(isMainWindow, subWindowLoadDataOptions) {
         console.log('init store')
+
+        const {conversationStore, contactStore, pickStore, searchStore, miscStore} = storeToRefs(pstore())
+        conversationState = conversationStore.value;
+        contactState = contactStore.value;
+        searchState = searchStore.value;
+        pickState = pickStore.value;
+        miscState = miscStore.value;
+
+        store.state.conversation = conversationState;
+        store.state.contact = contactState;
+        store.state.search = searchState;
+        store.state.pick = pickState;
+        store.state.misc = miscState;
+
         miscState.connectionStatus = wfc.getConnectionStatus();
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             console.log('store ConnectionStatusChanged', status)
             miscState.connectionStatus = status;
+            miscState.isCommercialServer = wfc.isCommercialServer();
+            miscState.isDisableSyncDraft = wfc.isDisableSyncDraft();
             try {
                 if (status === ConnectionStatus.ConnectionStatusConnected) {
                     this._loadDefaultData();
@@ -520,11 +371,11 @@ let store = {
                 return;
             }
             let msg = conversationState.currentConversationMessageList[index];
-            Object.assign(msg, message)
+            msg = Object.assign(msg, message)
+            conversationState.currentConversationMessageList.splice(index, 1, msg)
 
             if (conversationState.currentConversationInfo.lastMessage && conversationState.currentConversationInfo.lastMessage.messageId === message.messageId) {
                 Object.assign(conversationState.currentConversationInfo.lastMessage, message);
-
             }
         });
 
@@ -1590,7 +1441,8 @@ let store = {
             // 在 将 object 和 ui 绑定之前， 向 object 中新增的属性是 reactive 的，但绑定之后，才新增的属性，不是 reactive 的，
             // 故需要通过下面这种方法，让其成为 reactive 的属性
             // conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = userOnlineStatus.desc();
-            Vue.set(conversationState.currentConversationInfo.conversation, '_targetOnlineStateDesc', this.getUserOnlineState(convInfo.conversation.target))
+            // Vue.set(conversationState.currentConversationInfo.conversation, '_targetOnlineStateDesc', this.getUserOnlineState(convInfo.conversation.target))
+            conversationState.currentConversationInfo.conversation._targetOnlineStateDesc = this.getUserOnlineState(convInfo.conversation.target);
         } else {
             //TODO
         }
@@ -2170,6 +2022,7 @@ let store = {
                 // TODO 下面好像不生效，更新成图片链接
                 icon: icon,
                 timeout: 4000,
+                requireInteraction: true,
                 onClick: () => {
                     if (isElectron()) {
                         ipcRenderer.send(IPCEventType.CLICK_NOTIFICATION, currentWindow.getMediaSourceId())
@@ -2179,6 +2032,8 @@ let store = {
                     }
                     this.setCurrentConversation(msg.conversation)
                 }
+            }).catch(e => {
+                console.error('Please enable notification')
             });
         }
     },
@@ -2219,6 +2074,10 @@ let store = {
     },
 
     updateVoipStatus(conversation, isOngoing) {
+        miscState.isVoipOngoing = isOngoing;
+        if (!conversation) {
+            return
+        }
         conversationState.conversationInfoList.forEach(ci => {
             if (ci.conversation.equal(conversation)) {
                 ci._isVoipOngoing = isOngoing;
@@ -2230,18 +2089,13 @@ let store = {
 
 }
 
-let conversationState = store.state.conversation;
-let contactState = store.state.contact;
-let searchState = store.state.search;
-let pickState = store.state.pick;
-let miscState = store.state.misc;
-
 function _reset() {
-    conversationState._reset();
-    contactState._reset();
-    searchState._reset();
-    pickState._reset();
-    miscState._reset();
+    // TODO
+    // conversationState._reset();
+    // contactState._reset();
+    // searchState._reset();
+    // pickState._reset();
+    // miscState._reset();
 }
 
 window.__store = store;

@@ -5,30 +5,30 @@
         <div class="home">
             <section class="menu-container">
                 <div>
-                    <!-- todo tippy example -->
                     <tippy
-                        to="infoTrigger"
+                        to="#infoTrigger"
                         interactive
                         :animate-fill="false"
-                        placement="right"
                         distant="7"
                         theme="light"
                         animation="fade"
                         trigger="click"
-                        arrow
+                        :arrow="true"
                     >
-                        <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
-                                      :enable-update-portrait="true"
-                                      :user-info="sharedContactState.selfUserInfo"/>
+                        <template #content>
+                            <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
+                                          :enable-update-portrait="true"
+                                          :user-info="sharedContactState.selfUserInfo"/>
+                        </template>
                     </tippy>
 
-                    <a href="#"><img
+                    <a href="#" @click.prevent><img
                         v-if="sharedContactState.selfUserInfo"
                         ref="userCardTippy"
-                        name="infoTrigger"
+                        id="infoTrigger"
                         class="avatar"
                         draggable="false"
-                        @click="onClickPortrait()"
+                        @click.prevent="onClickPortrait"
                         :src="sharedContactState.selfUserInfo.portrait"
                         alt=""
                     /></a>
@@ -38,7 +38,7 @@
                         <li>
                             <div class="menu-item">
                                 <i class="icon-ion-ios-chatboxes"
-                                   v-bind:class="{active : this.$router.currentRoute.path === '/home'}"
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home'}"
                                    @click="go2Conversation"></i>
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
@@ -46,53 +46,57 @@
                         <li>
                             <div class="menu-item">
                                 <i class="icon-ion-android-contact"
-                                   v-bind:class="{active : this.$router.currentRoute.path === '/home/contact'}"
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/contact'}"
                                    @click="go2Contact"></i>
                                 <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
                         <li>
                             <i class="icon-ion-android-favorite"
-                               v-bind:class="{active : this.$router.currentRoute.path === '/home/fav'}"
+                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"
                                @click="go2Fav"></i>
                         </li>
-                        <li v-if="sharedMiscState.isElectron && sharedMiscState.wfc.isCommercialServer()">
+                        <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <i class="icon-ion-ios-folder"
-                               v-bind:class="{active : this.$router.currentRoute.path === '/home/files'}"
+                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/files'}"
                                @click="go2Files"></i>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.enableOpenWorkSpace">
                             <i class="icon-ion-code-working"
-                               v-bind:class="{active : this.$router.currentRoute.path === '/home/workspace'}"
+                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/workspace'}"
                                @click="go2Workspace"></i>
                         </li>
                         <li v-if="supportConference">
                             <i class="icon-ion-speakerphone"
-                               v-bind:class="{active : this.$router.currentRoute.path === '/home/conference'}"
+                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/conference'}"
                                @click="go2Conference"></i>
                         </li>
                         <li>
                             <i class="icon-ion-android-settings"
-                               v-bind:class="{active : this.$router.currentRoute.path === '/home/setting'}"
+                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/setting'}"
                                @click="go2Setting"></i>
                         </li>
                     </ul>
                 </nav>
             </section>
-            <keep-alive>
-                <router-view :key="$route.fullPath"></router-view>
-            </keep-alive>
+            <router-view v-slot="{ Component, route }">
+                <keep-alive>
+                    <component :is="Component" :key="route.path"/>
+                </keep-alive>
+            </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
-            <div v-if="!sharedMiscState.isElectron && voipProxy.callId"
-                 class="voip-div-container"
-                 v-draggable
-                 v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
+            <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
+                          class="voip-div-container"
+                          draggable="true"
+                          :initial-value="{x:'50%', y:'50%'}"
+                          :prevent-default="true"
+                          v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
                 <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
                 <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
                 <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
-            </div>
+            </UseDraggable>
         </div>
     </div>
 </template>
@@ -108,12 +112,13 @@ import {removeItem} from "../util/storageHelper";
 import {ipcRenderer} from "../../platform";
 import avenginekit from "../../wfc/av/internal/engine.min";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
-import {Draggable} from 'draggable-vue-directive'
 import IpcEventType from "../../ipcEventType";
 import {isElectron} from "../../platform";
 import Single from "../voip/Single.vue";
 import Multi from "../voip/Multi.vue";
 import Conference from "../voip/conference/Conference.vue";
+import 'tippy.js/dist/tippy.css' // optional for styling
+import {UseDraggable} from '@vueuse/components'
 
 var avenginkitSetuped = false;
 export default {
@@ -130,7 +135,7 @@ export default {
     },
 
     methods: {
-        onClickPortrait() {
+        onClickPortrait(event) {
             wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
         },
         go2Conversation() {
@@ -292,7 +297,7 @@ export default {
             }
         }
     },
-    destroyed() {
+    unmounted() {
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange);
         console.log('home destroy')
     },
@@ -302,10 +307,10 @@ export default {
         Multi,
         Single,
         UserCardView,
-        ElectronWindowsControlButtonView
+        ElectronWindowsControlButtonView,
+        UseDraggable
     },
     directives: {
-        Draggable,
     }
 };
 </script>
@@ -426,7 +431,7 @@ i.active {
 
 .voip-div-container {
     background: #292929;
-    position: absolute;
+    position: fixed;
     margin: auto;
     border-radius: 5px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);

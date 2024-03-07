@@ -53,16 +53,16 @@
                 <img class="logo" :src="require(`@/assets/images/icon.png`)" alt="">
                 <p class="title">密码登录</p>
                 <div class="item">
-                    <input v-model="mobile" class="text-input" type="number" placeholder="请输入手机号">
+                    <input v-model.trim="mobile" class="text-input" type="number" placeholder="请输入手机号">
                 </div>
                 <div class="item">
-                    <input v-model="password" class="text-input" @keydown.enter="loginWithPassword" type="password" placeholder="请输入密码">
+                    <input v-model.trim="password" class="text-input" @keydown.enter="loginWithPassword" type="password" placeholder="请输入密码">
                 </div>
                 <div v-if="loginStatus === 0" style="display: flex; justify-content: space-between; width: 100%; ">
                     <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
                     <p class="tip" @click="register">注册</p>
                 </div>
-                <button class="login-button" :disabled="mobile.trim() === '' || password.trim() === ''" ref="loginWithPasswordButton" @click="loginWithPassword">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
+                <button class="login-button" :disabled="mobile === '' || !password || password === ''" ref="loginWithPasswordButton" @click="loginWithPassword">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
                 <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'" :width="'80px'"/>
             </div>
             <div v-else class="login-form-container">
@@ -70,14 +70,14 @@
                 <img class="logo" :src="require(`@/assets/images/icon.png`)" alt="">
                 <p class="title">验证码登录</p>
                 <div class="item">
-                    <input v-model="mobile" class="text-input" type="number" placeholder="请输入手机号">
+                    <input v-model.trim="mobile" class="text-input" type="number" placeholder="请输入手机号">
                 </div>
                 <div class="item">
-                    <input v-model="authCode" class="text-input" type="number" placeholder="验证码">
-                    <button :disabled="mobile.trim().length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
+                    <input v-model.trim="authCode" class="text-input" type="number" placeholder="验证码">
+                    <button :disabled="mobile.length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
                 </div>
                 <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
-                <button class="login-button" :disabled="mobile.trim() === '' || authCode.trim() === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
+                <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
                 <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'"/>
             </div>
             <div v-if="loginStatus === 0" class="switch-login-type-container">
@@ -146,7 +146,7 @@ export default {
         }
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
     },
 
@@ -396,7 +396,7 @@ export default {
         }
     },
 
-    destroyed() {
+    unmounted() {
         if (this.qrCodeTimer) {
             clearInterval(this.qrCodeTimer)
         }

@@ -13,19 +13,19 @@
                     <div
                         v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
                     >
-                        <a v-if="sharedMiscState.isElectron" href="#">
+                        <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
                             <i class="icon-ion-pin"
                                style="display: inline-block"
                                v-bind:class="{active : isWindowAlwaysTop}"
-                               @click="setWindowAlwaysTop"
+                               @click.prevent="setWindowAlwaysTop"
                             />
                         </a>
-                        <a href="#">
+                        <a href="#" @click.prevent>
                             <i class="icon-ion-ios-settings-strong"
                                style="display: inline-block"
                                ref="setting"
                                v-bind:class="{active : showConversationInfo}"
-                               @click="toggleConversationInfo"
+                               @click.prevent="toggleConversationInfo"
                             />
                         </a>
                     </div>
@@ -58,24 +58,30 @@
                         <template slot="no-results">{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
                     <div v-for="(message) in sharedConversationState.currentConversationMessageList"
-                            :key="message.messageId">
-                            <!--todo 不同的消息类型 notification in out-->
+                         :key="message.messageId">
+                        <!--todo 不同的消息类型 notification in out-->
 
-                            <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-                            <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
-                            <ContextableNotificationMessageContentContainerView
-                                v-else-if="isContextableNotificationMessage(message)"
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                                :message="message"
-                            />
-                            <NormalOutMessageContentView
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                                :message="message"
-                                v-else-if="message.direction === 0"/>
-                            <NormalInMessageContentView
-                                @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                                :message="message"
-                                v-else/>
+                        <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
+                        <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
+                        <ContextableNotificationMessageContentContainerView
+                            v-else-if="isContextableNotificationMessage(message)"
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
+                            :message="message"
+                        />
+                        <NormalOutMessageContentView
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                            :message="message"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
+                            v-else-if="message.direction === 0"/>
+                        <NormalInMessageContentView
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
+                            :message="message"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
+                            v-else/>
                     </div>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
@@ -95,14 +101,14 @@
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
                 <SingleConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
-                    v-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
                 />
                 <GroupConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 1"
-                    v-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
@@ -110,7 +116,7 @@
 
                 <SecretConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 5"
-                    v-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
@@ -118,7 +124,7 @@
 
                 <ChannelConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 3"
-                    v-click-outside="hideConversationInfo"
+                    v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
                     v-bind:class="{ active: showConversationInfo }"
                     class="conversation-info-container"
@@ -176,7 +182,6 @@ import SingleConversationInfoView from "../../main/conversation/SingleConversati
 import SecretConversationInfoView from "../../main/conversation/SecretConversationInfoView";
 import GroupConversationInfoView from "../../main/conversation/GroupConversationInfoView";
 import MessageInputView from "../../main/conversation/MessageInputView";
-import ClickOutside from 'vue-click-outside'
 import NormalOutMessageContentView from "../../main/conversation/message/NormalOutMessageContentContainerView";
 import NormalInMessageContentView from "../../main/conversation/message/NormalInMessageContentContainerView";
 import NotificationMessageContentView from "../../main/conversation/message/NotificationMessageContentView";
@@ -186,7 +191,7 @@ import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import {numberValue} from "../../../wfc/util/longUtil";
-import InfiniteLoading from 'vue-infinite-loading';
+import InfiniteLoading from '@imndx/vue-infinite-loading';
 import MultiSelectActionView from "../../main/conversation/MessageMultiSelectActionView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "../../main/conversation/message/forward/ForwardType";
@@ -221,6 +226,8 @@ import IPCEventType from "../../../ipcEventType";
 import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import {imageThumbnail} from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
+import {vOnClickOutside} from '@vueuse/components'
+
 
 var amr;
 export default {
@@ -365,6 +372,7 @@ export default {
                     {
                         userInfo: this.conversationInfo.conversation._target,
                     },
+                    null,
                     {
                         name: 'friend-request-modal',
                         width: 600,
@@ -484,7 +492,7 @@ export default {
         },
 
         onMenuClose() {
-            this.$emit('contextMenuClosed')
+            this.$eventBus.$emit('contextMenuClosed')
         },
         onMessageSenderContextMenuClose() {
             console.log('onMessageSenderContextMenuClose')
@@ -531,7 +539,7 @@ export default {
 
                     let fromGroupMember = wfc.getGroupMember(message.conversation.target, message.from);
                     let groupMember = wfc.getGroupMember(message.conversation.target, selfUserId);
-                    if (!fromGroupMember || !groupMember){
+                    if (!fromGroupMember || !groupMember) {
                         return false;
                     }
                     if (groupMember.type === GroupMemberType.Manager && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(fromGroupMember.type) === -1) {
@@ -785,6 +793,17 @@ export default {
                 store.clearConversationUnreadStatus(info.conversation);
                 // this.unreadMessageCount = 0;
             }
+        },
+
+        openMessageContextMenu(event, message){
+            this.$refs.menu.open(event, message);
+        },
+
+        openMessageSenderContextMenu(event, message) {
+            // 目前只支持群会话里面，消息发送者右键@
+            if (message.conversation.type === ConversationType.Group) {
+                this.$refs.messageSenderContextMenu.open(event, message);
+            }
         }
     },
 
@@ -792,17 +811,6 @@ export default {
         this.popupItem = this.$refs['setting'];
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
-
-        this.$on('openMessageContextMenu', (event, message) => {
-            this.$refs.menu.open(event, message);
-        });
-
-        this.$on('openMessageSenderContextMenu', (event, message) => {
-            // 目前只支持群会话里面，消息发送者右键@
-            if (message.conversation.type === ConversationType.Group) {
-                this.$refs.messageSenderContextMenu.open(event, message);
-            }
-        });
 
         this.$eventBus.$on('send-file', args => {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
@@ -819,13 +827,11 @@ export default {
         wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         document.removeEventListener('mouseup', this.dragEnd);
         document.removeEventListener('mousemove', this.drag);
         this.$eventBus.$off('send-file');
         this.$eventBus.$off('forward-fav');
-        this.$off('openMessageContextMenu')
-        this.$off('openMessageSenderContextMenu')
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
@@ -918,7 +924,7 @@ export default {
             }
             return null;
         },
-       
+
         muted() {
             if (!this.conversationInfo) {
                 return false;
@@ -943,7 +949,7 @@ export default {
     // },
 
     directives: {
-        ClickOutside
+        vOnClickOutside
     },
 };
 </script>

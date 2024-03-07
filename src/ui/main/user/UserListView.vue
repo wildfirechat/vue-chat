@@ -11,21 +11,22 @@
                     <li v-for="(user) in groupedUser.users" :key="user.uid">
                         <tippy
                             v-if="!clickUserItemFunc"
-                            :to="'user-' + user.uid"
-                            interactive
+                            :to="'#user-' + user.uid"
                             theme="light"
                             :animate-fill="false"
-                            placement="left"
                             distant="7"
                             animation="fade"
                             trigger="click"
+                            placement="left-start"
                             :style="tippyStyleFix"
                         >
-                            <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
+                            <template #content>
+                                <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
+                            </template>
                         </tippy>
                         <div class="content"
-                             :ref="'userCardTippy-'+user.uid"
-                             :name="'user-'+user.uid"
+                             :ref="'userCardTippy-' + user.uid"
+                             :id="'user-' + user.uid"
                              :style="paddingStyle"
                              v-bind:class="{active: (sharedContactState.currentFriend
                         && user._category === sharedContactState.currentFriend._category
@@ -133,7 +134,7 @@ export default {
         },
         showContactContextMenu(event, user) {
             if (this.enableContactContextMenu) {
-                this.$eventBus.$emit('showContactContextMenu', event, user);
+                this.$eventBus.$emit('showContactContextMenu', [event, user]);
             }
         }
     },
@@ -148,7 +149,7 @@ export default {
         this.scrollActiveElementCenter();
     },
 
-    destroyed() {
+    unmounted() {
         if (!this.clickUserItemFunc) {
             this.tippyStyleReset()
         }

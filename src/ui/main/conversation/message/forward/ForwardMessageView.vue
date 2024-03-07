@@ -52,7 +52,7 @@ export default {
                 case ForwardType.NORMAL:
                     str = !firstMsg._from ? '' : firstMsg._from._displayName + ':';
                     if ([MessageContentType.Image, MessageContentType.Video].indexOf(firstMsg.messageContent.type) < 0) {
-                        str += firstMsg.messageContent.digest(this.quotedMessage);
+                        str += firstMsg.messageContent.digest(firstMsg);
                     }
                     break;
                 case ForwardType.ONE_BY_ONE:

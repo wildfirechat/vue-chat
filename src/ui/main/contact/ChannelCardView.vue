@@ -18,9 +18,9 @@
             </ul>
         </div>
         <div class="action">
-            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>
-            <a v-if="isSubscribed" href="#"><i class="icon-ion-minus" @click="subscribe(false)"></i></a>
-            <a v-else href="#"><i class="icon-ion-android-add" @click="subscribe(true)"></i></a>
+            <a href="#" @click.prevent><i class="icon-ion-ios-shuffle" @click.prevent="share"></i></a>
+            <a v-if="isSubscribed" href="#" @click.prevent><i class="icon-ion-minus" @click.prevent="subscribe(false)"></i></a>
+            <a v-else href="#" @click.prevent><i class="icon-ion-android-add" @click.prevent="subscribe(true)"></i></a>
         </div>
     </section>
 </template>

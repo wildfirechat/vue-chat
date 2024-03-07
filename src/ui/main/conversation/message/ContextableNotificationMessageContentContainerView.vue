@@ -44,7 +44,7 @@ export default {
     },
     methods: {
         openMessageContextMenu(event, message) {
-            this.$parent.$emit('openMessageContextMenu', event, message)
+            this.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
         },
         onContextMenuClosed() {
@@ -52,10 +52,10 @@ export default {
         },
     },
     mounted() {
-        this.$parent.$on('contextMenuClosed', this.onContextMenuClosed);
+        this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
     },
-    beforeDestroy() {
-        this.$parent.$off('contextMenuClosed', this.onContextMenuClosed);
+    beforeUnmount() {
+        this.$eventBus.$off('contextMenuClosed', this.onContextMenuClosed);
     },
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div ref="userCardTippy"
-         :name="'userCardInfoTrigger' + message.messageId"
+         :id="'#userCardInfoTrigger' + message.messageId"
          class="user-card-content-container">
         <div class="portrait-name-container">
             <img :src="message.messageContent.portrait">
@@ -8,7 +8,7 @@
         </div>
         <p class="desc single-line">个人名片</p>
         <tippy
-            :to="'userCardInfoTrigger' + message.messageId"
+            :to="'#userCardInfoTrigger' + message.messageId"
             interactive
             :animate-fill="false"
             placement="left"
@@ -17,7 +17,9 @@
             animation="fade"
             trigger="click"
         >
-            <UserCardView v-on:close="closeUserCard" :user-info="userInfo()"/>
+            <template #content>
+                <UserCardView v-on:close="closeUserCard" :user-info="userInfo()"/>
+            </template>
         </tippy>
     </div>
 </template>

@@ -44,7 +44,7 @@ export default {
             e.target.src = Config.DEFAULT_PORTRAIT_URL;
         },
         showContactContextMenu(event) {
-            this.$eventBus.$emit('showContactContextMenu', event, this.source);
+            this.$eventBus.$emit('showContactContextMenu', [event, this.source]);
         }
     }
 }

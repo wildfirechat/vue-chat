@@ -1,29 +1,32 @@
 <template>
     <section class="channel-menu-container">
-        <template v-for="(menu, index) in menus">
+        <div v-for="(menu, index) in menus" :key="index">
             <tippy
                 v-if="menu.subMenus && menu.subMenus.length > 0"
-                :key="'_tippy_' + index"
-                :to="'menu_' + index"
-                interactive
+                :to="'#menu_' + index"
                 :animate-fill="false"
                 placement="top"
                 distant="7"
+                interactive
                 theme="light"
                 animation="fade"
                 trigger="click"
                 arrow
             >
-                <div v-for="(sm, si) in menu.subMenus" :key="si" class="sub-menu-item" @click="openChannelMenu($event, sm)">
-                    {{ sm.name }}
-                </div>
+                <template #content>
+                    <div v-for="(sm, si) in menu.subMenus" :key="si" class="sub-menu-item" @click="openChannelMenu($event, sm)">
+                        {{ sm.name }}
+                    </div>
+                </template>
             </tippy>
-            <div :key="index" :name="'menu_' + index" class="menu-item" @click="openChannelMenu($event, menu)">
+            <div :id="'menu_' + index"
+                 class="menu-item"
+                 @click="openChannelMenu($event, menu)">
                 <p>
                     {{ menuTile(menu) }}
                 </p>
             </div>
-        </template>
+        </div>
         <div>
             <i @click="toggleMessageInput" class="icon-ion-ios-heart"></i>
         </div>
@@ -106,10 +109,14 @@ export default {
     padding: 0 20px;
 }
 
-.menu-item {
+.channel-menu-container > div:not(:last-child) {
     flex: 1;
     height: 100%;
+}
+
+.menu-item {
     display: flex;
+    height: 100%;
     justify-content: center;
     align-items: center;
     color: black;

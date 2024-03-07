@@ -43,8 +43,8 @@
 <script>
 import store from "./store";
 import {isElectron} from "./platform";
-import CoolLightBox from 'vue-cool-lightbox'
-import 'vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
+import CoolLightBox from './vendor/vue-cool-lightbox'
+import './vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import IpcMain from "./ipc/ipcMain";
 import {currentWindow} from "./platform";
 import wfc from "./wfc/client/wfc";
@@ -120,7 +120,7 @@ export default {
             }
         })
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$eventBus.$off('uploadFile');
         window.removeEventListener('blur', this.onblur)
         window.removeEventListener('focus', this.onfocus)

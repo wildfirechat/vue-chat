@@ -35,8 +35,8 @@
         </div>
         <div class="action">
             <!--            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>-->
-            <a href="#"><i class="icon-ion-ios-chatboxes" @click="chat"></i></a>
-            <a v-if="!isFriend" href="#"><i class="icon-ion-person-add" @click="addFriend"></i></a>
+            <a href="#" @click.prevent><i class="icon-ion-ios-chatboxes" @click.prevent="chat"></i></a>
+            <a v-if="!isFriend" href="#" @click.prevent><i class="icon-ion-person-add" @click.prevent="addFriend"></i></a>
         </div>
     </section>
 </template>
@@ -94,7 +94,7 @@ export default {
                 FriendRequestView,
                 {
                     userInfo: this.userInfo,
-                },
+                },null,
                 {
                     name: 'friend-request-modal',
                     width: 600,

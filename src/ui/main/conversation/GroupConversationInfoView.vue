@@ -118,7 +118,7 @@ export default {
         this.groupAlias = userInfo.groupAlias ? userInfo.groupAlias : userInfo.displayName;
     },
 
-    beforeDestroy() {
+    beforeUnmount() {
         wfc.eventEmitter.removeListener(EventType.UserInfosUpdate, this.onUserInfosUpdate);
         wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onUserInfosUpdate);
     },

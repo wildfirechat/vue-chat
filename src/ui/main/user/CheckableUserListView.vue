@@ -37,6 +37,7 @@
         :extra-props="{
                 enablePick: enablePick,
                 initialCheckedUsers: initialCheckedUsers,
+                users:users,
                 uncheckableUsers: uncheckableUsers,
                 showCategoryLabel: showCategoryLabel,
                 enableCategoryLabelSticky: enableCategoryLabelSticky,

@@ -1,30 +1,41 @@
-import Vue from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
-import VueRouter from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
+import {createPinia} from 'pinia'
 import routers from './routers'
 
 import wfc from './wfc/client/wfc'
-import VueTippy, {TippyComponent} from "vue-tippy";
-import VueContext from 'vue-context';
+import VueTippy from 'vue-tippy'
+import 'tippy.js/dist/tippy.css'
+import 'tippy.js/themes/light.css'
 
-import VModal from 'vue-js-modal'
+import VueContext from '@madogai/vue-context';
+
+import VModal from './vendor/vue-js-modal'
 import './global.css'
 import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "./store";
-import visibility from 'vue-visibility-change';
+import visibility from './vendor/vue-visibility-change';
 import {isElectron} from "./platform";
 import {getItem} from "./ui/util/storageHelper";
-import VueI18n from 'vue-i18n'
-import Notifications from 'vue-notification'
+import {createI18n} from 'vue-i18n'
+import Notifications from '@kyvg/vue3-notification'
 import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
 import Forward from "./ui/common/Forward";
 import Voip from "./ui/common/Voip";
-import VirtualList from "vue-virtual-scroll-list/src";
+import VirtualList from "vue3-virtual-scroll-list";
 import xss from "xss";
+import mitt from 'mitt'
+import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 
-Vue.config.productionTip = false
+// Vue.config.productionTip = false
+
+const app = createApp(App)
+const pinia = createPinia()
+app.use(pinia)
+app.use(CoolLightBox)
 
 // init
 {
@@ -75,60 +86,72 @@ Vue.config.productionTip = false
 }
 // init end
 
-Vue.use(VueRouter)
+app.use(
+    VueTippy,
+    // optional
+    {
+        directive: 'tippy', // => v-tippy
+        component: 'tippy', // => <tippy/>
+        componentSingleton: 'tippy-singleton', // => <tippy-singleton/>,
+        defaultProps: {
+            theme: 'light',
+            placement: 'auto-end',
+            allowHTML: true,
+        }, // => Global default options * see all props
+    }
+)
 
-Vue.use(VueTippy);
-Vue.component("tippy", TippyComponent);
+app.use(VueContext);
+app.component("vue-context", VueContext)
+app.component('virtual-list', VirtualList);
 
-Vue.use(VueContext);
-Vue.component("vue-context", VueContext)
-Vue.component('virtual-list', VirtualList);
+app.use(VModal);
 
-Vue.use(VModal);
+app.use(visibility);
 
-Vue.use(visibility);
+app.use(Alert)
+app.use(Picker)
+app.use(Forward)
+app.use(Voip)
 
-Vue.use(VueI18n)
-Vue.use(Alert)
-Vue.use(Picker)
-Vue.use(Forward)
-Vue.use(Voip)
-
-const i18n = new VueI18n({
+const i18n = createI18n({
     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态
     locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
+    allowComposition: true,
     messages: {
         'zh-CN': require('@/assets/lang/zh-CN.json'),
         'zh-TW': require('@/assets/lang/zh-TW.json'),
         'en': require('@/assets/lang/en.json')
     }
 })
+app.use(i18n)
 
-Vue.use(Notifications)
-const router = new VueRouter({
-    mode: 'hash',
+app.use(Notifications)
+const router = createRouter({
+    // mode: 'hash',
+    history: createWebHashHistory(),
     routes: routers,
 })
-Vue.prototype.$eventBus = new Vue();
-Vue.prototype.xss = xss;
-Vue.prototype.xssOptions = () => {
-    let whiteList = xss.getDefaultWhiteList();
-    window.__whiteList = whiteList;
-    //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
-    //这儿配置保留 img 标签的style、class、src、alt、id 属性
-    whiteList.img = ["style", "class", "src", "alt", "id"];
-    return {
-        whiteList
-    };
-};
+app.use(router)
+app.config.globalProperties.$router = router
 
-var vm = new Vue({
-    el: '#app',
-    router,
-    i18n,
-    render: h => h(App),
-})
-vm.store = store.state;
+const eventBus = mitt()
+eventBus.$on = eventBus.on
+eventBus.$off = eventBus.off
+eventBus.$emit = eventBus.emit
+app.config.globalProperties.$eventBus = eventBus
+// app.prototype.xss = xss;
+// app.prototype.xssOptions = () => {
+//     let whiteList = xss.getDefaultWhiteList();
+//     window.__whiteList = whiteList;
+//     //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
+//     //这儿配置保留 img 标签的style、class、src、alt、id 属性
+//     whiteList.img = ["style", "class", "src", "alt", "id"];
+//     return {
+//         whiteList
+//     };
+// };
 
-window.vm = vm;
+app.config.globalProperties.$set = (obj, key, value) => obj[key] = value
 
+app.mount('#app')
