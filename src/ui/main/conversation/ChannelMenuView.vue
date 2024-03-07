@@ -28,7 +28,7 @@
             </div>
         </div>
         <div>
-            <i @click="toggleMessageInput" class="icon-ion-ios-heart"></i>
+            <i @click="toggleMessageInput" class="icon-ion-chatboxes"></i>
         </div>
     </section>
 
