@@ -45,13 +45,15 @@
                            class="icon-ion-android-microphone record-icon"/>
                     </li>
                 </ul>
-                <ul v-if="!inputOptions['disableVoip'] && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
-                    <li v-if="!inputOptions['disableAudioCall']">
-                        <i @click="startAudioCall" class="icon-ion-ios-telephone"/>
-                    </li>
-                    <li v-if="!inputOptions['disableVideoCall']">
-                        <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
-                    </li>
+                <ul>
+                    <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
+                        <li v-if="!inputOptions['disableAudioCall']">
+                            <i @click="startAudioCall" class="icon-ion-ios-telephone"/>
+                        </li>
+                        <li v-if="!inputOptions['disableVideoCall']">
+                            <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
+                        </li>
+                    </template>
                     <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
                         <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
                     </li>
@@ -129,7 +131,7 @@ import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
-import { vOnClickOutside } from '@vueuse/components'
+import {vOnClickOutside} from '@vueuse/components'
 
 export default {
     name: "MessageInputView",
@@ -337,7 +339,7 @@ export default {
         },
 
         async send(e) {
-            if (e.keyCode === 229){
+            if (e.keyCode === 229) {
                 return
             }
             if (this.tribute && this.tribute.isActive) {
