@@ -7,6 +7,7 @@
                 :animate-fill="false"
                 placement="top"
                 distant="7"
+                interactive
                 theme="light"
                 animation="fade"
                 trigger="click"
@@ -108,10 +109,14 @@ export default {
     padding: 0 20px;
 }
 
-.menu-item {
+.channel-menu-container > div:not(:last-child) {
     flex: 1;
     height: 100%;
+}
+
+.menu-item {
     display: flex;
+    height: 100%;
     justify-content: center;
     align-items: center;
     color: black;
