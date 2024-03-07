@@ -112,7 +112,9 @@ export default {
 
                     if (this.compositeMessage) {
                         store._patchMessage(this.compositeMessage, 0);
-                        document.title = this.compositeMessage.messageContent.title;
+                        if (isElectron()) {
+                            document.title = this.compositeMessage.messageContent.title;
+                        }
                         this.loadMediaCompositeMessage(this.compositeMessage);
                     }
                 }, err => {
@@ -132,7 +134,9 @@ export default {
         }
         if (this.compositeMessage) {
             store._patchMessage(this.compositeMessage, 0);
-            document.title = this.compositeMessage.messageContent.title;
+            if (isElectron()) {
+                document.title = this.compositeMessage.messageContent.title;
+            }
             this.loadMediaCompositeMessage(this.compositeMessage);
         }
     },
@@ -160,7 +164,7 @@ export default {
             }
 
         },
-        previewCompositeMessage(focusMessageUid){
+        previewCompositeMessage(focusMessageUid) {
             store.previewCompositeMessage(this.compositeMessage, focusMessageUid)
         }
     },

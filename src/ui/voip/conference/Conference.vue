@@ -248,7 +248,7 @@ import Conversation from "../../../wfc/model/conversation";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
-import { vOnClickOutside } from '@vueuse/components'
+import {vOnClickOutside} from '@vueuse/components'
 
 
 export default {
@@ -381,7 +381,9 @@ export default {
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
 
                 this.session = session;
-                document.title = session.title;
+                if (isElectron()) {
+                    document.title = session.title;
+                }
 
                 conferenceManager.getConferenceInfo(session.callId);
             };
@@ -1259,7 +1261,9 @@ export default {
     },
 
     created() {
-        document.title = '在线会议';
+        if (isElectron()) {
+            document.title = '在线会议';
+        }
         conferenceManager.setVueInstance(this);
         this.refreshUserInfoInternal = setInterval(() => {
             this.refreshUserInfos();
