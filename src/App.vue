@@ -1,5 +1,5 @@
 <template>
-    <div id="app"
+    <div id="app-main"
          style="width: 100vw; height: 100vh"
          @contextmenu.prevent=""
          @dragenter="$event.preventDefault()"
@@ -99,13 +99,13 @@ export default {
     mounted() {
         let href = window.location.href;
         if (href.indexOf('voip') >= 0 || href.indexOf('files') >= 0) {
-            let app = document.getElementById("app");
-            let el = document.getElementById("blur-container");
+            let app = document.getElementById("app-main");
+            let el;
+            el = document.getElementById("blur-container");
             el && app.removeChild(el)
             el = document.getElementById('styled_video_container');
             el && app.removeChild(el)
-            el = document.getElementById('main-content-container');
-            el.style.backgroundColor = '#292929'
+            app.style.backgroundColor = '#292929'
         }
         this.$eventBus.$on('uploadFile', file => {
             if (!file) {

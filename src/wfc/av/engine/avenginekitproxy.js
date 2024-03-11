@@ -303,7 +303,10 @@ export class AvEngineKitProxy {
             if (this.isVoipWindowReady) {
                 // fix object of long.js can be send inter-process
                 args = JSON.stringify(args)
-                this.callWin.webContents.send(event, args);
+
+                if (!this.callWin.isDestroyed()){
+                    this.callWin.webContents.send(event, args);
+                }
             } else if (this.queueEvents) {
                 this.queueEvents.push({event, args});
             }

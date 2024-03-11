@@ -63,7 +63,7 @@
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.enableOpenWorkSpace">
                             <i class="icon-ion-code-working"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/workspace'}"
+                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}"
                                @click="go2Workspace"></i>
                         </li>
                         <li v-if="supportConference">
@@ -174,10 +174,11 @@ export default {
             console.log('show-file-window', url)
         },
         go2Workspace() {
-            if (this.$router.currentRoute.path === '/home/workspace') {
+            // /workspace 和 /home/workspace 同时存在时，router 无法正确处理
+            if (this.$router.currentRoute.path === '/home/h-wp') {
                 return;
             }
-            this.$router.replace("/home/workspace");
+            this.$router.replace("/home/h-wp");
             this.isSetting = false;
         },
         go2Conference() {

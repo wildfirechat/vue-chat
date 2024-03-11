@@ -4,12 +4,10 @@
             <tippy
                 v-if="menu.subMenus && menu.subMenus.length > 0"
                 :to="'#menu_' + index"
-                :animate-fill="false"
                 placement="top"
                 distant="7"
                 interactive
                 theme="light"
-                animation="fade"
                 trigger="click"
                 arrow
             >

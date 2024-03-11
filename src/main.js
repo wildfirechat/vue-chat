@@ -9,7 +9,7 @@ import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/light.css'
 
-import VueContext from '@madogai/vue-context';
+import VueContext from '@madogai/vue-context/dist/vue-context';
 
 import VModal from './vendor/vue-js-modal'
 import './global.css'
@@ -140,6 +140,8 @@ eventBus.$on = eventBus.on
 eventBus.$off = eventBus.off
 eventBus.$emit = eventBus.emit
 app.config.globalProperties.$eventBus = eventBus
+
+
 // app.prototype.xss = xss;
 // app.prototype.xssOptions = () => {
 //     let whiteList = xss.getDefaultWhiteList();

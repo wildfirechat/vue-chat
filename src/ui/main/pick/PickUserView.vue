@@ -166,7 +166,6 @@ export default {
         },
 
         cancel() {
-            console.log('xxxxxxxxxx cancel');
             this.sharedPickState.users.length = 0
             this.sharedPickState.organizations.length = 0;
             this.$modal.hide('pick-user-modal', {confirm: false})
