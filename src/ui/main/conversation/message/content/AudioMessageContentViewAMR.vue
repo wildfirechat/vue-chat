@@ -80,7 +80,7 @@ export default {
     width: 100%;
     align-items: center;
     --voice-width: 200px;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 
 .audio-message-container audio {
