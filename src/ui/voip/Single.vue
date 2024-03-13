@@ -161,11 +161,21 @@ export default {
                 this.autoPlayInterval = setInterval(() => {
                     try {
                         if (this.$refs.localVideo && this.$refs.localVideo.paused) {
-                            this.$refs.localVideo.play();
+                            let p = this.$refs.localVideo.play();
+                            if (p !== undefined) {
+                                p.catch(err => {
+                                    // do nothing
+                                })
+                            }
                             console.log('can play local');
                         }
                         if (this.$refs.remoteVideo && this.$refs.remoteVideo.paused) {
-                            this.$refs.remoteVideo.play();
+                            let p = this.$refs.remoteVideo.play();
+                            if (p !== undefined) {
+                                p.catch(err => {
+                                    // do nothing
+                                })
+                            }
                             console.log('can play remote');
                         }
                     } catch (e) {

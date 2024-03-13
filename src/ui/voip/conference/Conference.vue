@@ -329,7 +329,12 @@ export default {
 
                         for (const video of videos) {
                             if (video.paused) {
-                                video.play();
+                                let p = video.play();
+                                if (p !== undefined) {
+                                    p.catch(err => {
+                                        // do nothing
+                                    })
+                                }
                             }
                         }
                     } catch (e) {
@@ -1110,7 +1115,7 @@ export default {
         },
 
         conferenceFocusUser() {
-            if (!conferenceManager || !conferenceManager.conferenceInfo){
+            if (!conferenceManager || !conferenceManager.conferenceInfo) {
                 return null
             }
             let focus = conferenceManager.conferenceInfo.focus;
