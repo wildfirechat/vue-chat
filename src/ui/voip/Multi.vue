@@ -181,7 +181,12 @@ export default {
 
                         for (const video of videos) {
                             if (video.paused) {
-                                video.play();
+                                let p = video.play();
+                                if (p !== undefined) {
+                                    p.catch(err => {
+                                        // do nothing
+                                    })
+                                }
                             }
                         }
                     } catch (e) {
@@ -258,7 +263,6 @@ export default {
                 this.participantUserInfos = [...participantUserInfos];
                 this.groupMemberUserInfos = groupMemberUserInfos;
 
-                // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null)
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
                 this.groupMemberUserInfos.forEach(m => this.$set(m, "_stream", null))

@@ -93,9 +93,6 @@ export default {
         // TextMessageContentView,
 
     },
-    updated() {
-        // console.log('updated', this.message.messageId, this.message.status)
-    },
     mounted() {
         this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
 
@@ -186,21 +183,16 @@ export default {
             let conversation = this.message.conversation;
             let timestamp = this.message.timestamp;
             let receiptDesc = ''
-            let deliveries = this.sharedConversationState.currentConversationDeliveries;
             let readEntries = this.sharedConversationState.currentConversationRead;
 
             if (conversation.type === ConversationType.Single) {
                 let readDt = readEntries ? readEntries.get(conversation.target) : 0
                 readDt = readDt ? readDt : 0;
-                let recvDt = deliveries ? deliveries.get(conversation.target) : 0;
-                recvDt = recvDt ? recvDt : 0;
 
                 if (gte(readDt, timestamp)) {
                     receiptDesc = "已读";
-                } else if (gte(recvDt, timestamp)) {
-                    receiptDesc = "已送达";
                 } else {
-                    receiptDesc = "未送达";
+                    receiptDesc = "未读";
                 }
             } else {
                 let groupMembers = wfc.getGroupMemberIds(conversation.target, false);

@@ -304,7 +304,14 @@ export class AvEngineKitProxy {
             if (this.isVoipWindowReady) {
                 // fix object of long.js can be send inter-process
                 args = JSON.stringify(args)
-                this.callWin.webContents.send(event, args);
+                if (!this.callWin.isDestroyed()){
+                    try {
+                        this.callWin.webContents.send(event, args);
+                    }catch (e) {
+                        // ignore, do nothing
+                        // Object has been destroyed
+                    }
+                }
             } else if (this.queueEvents) {
                 this.queueEvents.push({event, args});
             }
@@ -583,8 +590,8 @@ export class AvEngineKitProxy {
             this.callWin = window;
             console.log('windowEmitter subscribe events');
             this.events.once('close-voip-div', () => {
-                console.log('xxxxxxx on close-voip-div', this.conversation, this.onVoipCallStatusCallback)
-                this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, false)
+                console.log('on close-voip-div', this.conversation, this.onVoipCallStatusCallback)
+                this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false)
                 this.callWin = null;
                 this.isVoipWindowReady = false;
                 if (this.conference) {
@@ -602,7 +609,7 @@ export class AvEngineKitProxy {
                 this.isVoipWindowReady = true;
                 this.emitToVoip(options.event, options.args);
             }, 200)
-            this.onVoipCallStatusCallback && this.conversation && this.onVoipCallStatusCallback(this.conversation, true)
+            this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, true)
         }
     }
 

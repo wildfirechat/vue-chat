@@ -1,6 +1,6 @@
 <template>
     <section class="conversation-list">
-        <virtual-list v-if="false" :data-component="conversationItemView" :data-sources="conversationInfoList" :data-key="conversationInfoKey"
+        <virtual-list v-if="true" :data-component="conversationItemView" :data-sources="conversationInfoList" :data-key="conversationInfoKey"
                       :estimate-size="30"
                       style="height: 100%; overflow-y: auto;"/>
 
@@ -49,6 +49,7 @@ import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import IpcEventType from "../../../ipcEventType";
 import {ipcRenderer} from "../../../platform";
+import {markRaw} from "vue";
 
 export default {
     name: 'ConversationListView',
@@ -56,7 +57,7 @@ export default {
         return {
             sharedConversationState: store.state.conversation,
             sharedMiscState: store.state.misc,
-            conversationItemView: ConversationItemView,
+            conversationItemView: markRaw(ConversationItemView),
         };
     },
 

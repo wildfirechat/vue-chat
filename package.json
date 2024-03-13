@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "serve": "vue-cli-service serve --skip-plugins @vue/cli-plugin-eslint --open",
+    "serve-https": "vue-cli-service serve --https true --skip-plugins @vue/cli-plugin-eslint",
+    "build": "vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@imndx/v-emoji-picker-vue3": "^3.0.2",
@@ -22,18 +22,18 @@
     "benz-amr-recorder": "^1.1.5",
     "body-scroll-lock": "^4.0.0-beta.0",
     "btoa": "^1.2.1",
+    "buffer": "^6.0.3",
+    "core-js": "^3.36.0",
     "detectrtc": "^1.4.1",
-    "draggable-vue-directive": "^2.1.0",
+    "events": "^3.2.0",
     "jr-qrcode": "^1.1.4",
     "js-base64": "^3.4.5",
     "long": "^4.0.0",
     "mitt": "^3.0.1",
-    "object-assign": "^4.1.1",
     "pinia": "^2.1.7",
     "push.js": "^1.0.12",
     "resize-image": "^0.1.0",
     "resize-observer-polyfill": "^1.5.1",
-    "rollup-plugin-node-builtins": "^2.1.2",
     "tributejs": "^5.1.3",
     "twemoji": "^13.1.1",
     "universal-emoji-parser": "^1.0.125",
@@ -47,18 +47,17 @@
     "xss": "^1.0.14"
   },
   "devDependencies": {
-    "@rollup/plugin-inject": "^5.0.5",
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
     "@vue/compiler-sfc": "^3.4.19",
     "@vue/preload-webpack-plugin": "^2.0.0",
-    "buffer": "^6.0.3",
     "eslint": "^7.32.0",
     "fs": "0.0.1-security",
     "process": "^0.11.10",
     "sass": "^1.71.1",
-    "tmp": "^0.2.1",
-    "vite": "^5.1.4",
-    "vite-plugin-node-polyfills": "^0.21.0"
+    "sass-loader": "^14.1.1",
+    "tmp": "^0.2.1"
   },
   "eslintConfig": {
     "root": true,

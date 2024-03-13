@@ -62,10 +62,15 @@
 ![](http://static.wildfirechat.cn/web-multi-video-call.png)
 ![](http://static.wildfirechat.cn/web-multi-audio-call.png)
 
+## 分支说明
+
+1. `master`：基于`Vue 3`开发，是未来的开发重心
+2. `vue2`：基于`Vue 2`开发，进入维护模式，不在开发新功能，鉴于`Vue 2`已经终止支持且不再维护，建议客户升级到`Vue 3`版本
+
 ## 开发、打包依赖
 
-1. nodejs v14.18.X
-2. npm 6.14.15
+1. nodejs v18.19.0
+2. npm 10.2.3
 
 > 注意避免使用`cnpm`，我们使用`cnpm`出现过一些奇怪问题的情况。如果您使用`cnpm`当遇到问题时请切换到`npm`试一下。
 
@@ -74,7 +79,7 @@
 ```
 npm install
 npm run serve
-浏览器访问: http://localhost:5000
+浏览器访问: http://localhost:8013
 
 // 如果需要 https 访问的话(要求 app-server 和 im-server 都配置了 https)，请执行：
 npm run serve-https 

@@ -22,6 +22,8 @@ import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import {gt} from "../../../wfc/util/longUtil";
+import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
+import ConversationInfo from "../../../wfc/model/conversationInfo";
 
 export default {
     name: "ConferenceConversationFloatingView",
@@ -43,7 +45,15 @@ export default {
     created() {
         let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
         console.log('setCurrentConversation ', conversation)
-        store.setCurrentConversation(conversation);
+        let chatroomInfo = new ChatRoomInfo();
+        chatroomInfo.chatRoomId = this.session.callId;
+        chatroomInfo.title = this.session.title;
+        conversation._target = chatroomInfo;
+        conversation._target._displayName = chatroomInfo.title;
+        let conversationInfo = new ConversationInfo();
+        conversationInfo.conversation = conversation;
+        store.setCurrentConversationInfo(conversationInfo);
+
         this.filterInternal = setInterval(() => {
             this.filterMessage();
         }, 1 * 1000);

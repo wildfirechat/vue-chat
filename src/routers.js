@@ -42,8 +42,8 @@ const routers = [
                 component: FavPage,
             },
             {
-                name: 'workspace',
-                path: 'workspace',
+                name: 'h-wp',
+                path: 'h-wp',
                 component: WorkspacePage,
             },
             {

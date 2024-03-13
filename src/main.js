@@ -9,7 +9,7 @@ import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/light.css'
 
-import VueContext from '@madogai/vue-context';
+import VueContext from '@madogai/vue-context/dist/vue-context';
 
 import VModal from './vendor/vue-js-modal'
 import './global.css'
@@ -92,12 +92,6 @@ app.use(CoolLightBox)
 }
 // init end
 
-// app.use(router)
-// app.use(i18n)
-// app.use(VueRouter)
-
-// app.use(VueTippy);
-// app.component("tippy", TippyComponent);
 app.use(
     VueTippy,
     // optional
@@ -147,12 +141,13 @@ const router = createRouter({
 app.use(router)
 app.config.globalProperties.$router = router
 
-// app.prototype.$eventBus = mitt();
 const eventBus = mitt()
 eventBus.$on = eventBus.on
 eventBus.$off = eventBus.off
 eventBus.$emit = eventBus.emit
 app.config.globalProperties.$eventBus = eventBus
+
+
 // app.prototype.xss = xss;
 // app.prototype.xssOptions = () => {
 //     let whiteList = xss.getDefaultWhiteList();
@@ -165,14 +160,6 @@ app.config.globalProperties.$eventBus = eventBus
 //     };
 // };
 
-app.mount('#app')
+app.config.globalProperties.$set = (obj, key, value) => obj[key] = value
 
-// var vm = new Vue({
-//     el: '#app',
-//     router,
-//     i18n,
-//     render: h => h(App),
-// })
-// vm.store = store.state;
-//
-// window.vm = vm;
+app.mount('#app')

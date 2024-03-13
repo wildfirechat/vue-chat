@@ -18,7 +18,7 @@
                     interactive
                     theme="light"
                     :animate-fill="false"
-                    placement="left"
+                    placement="bottom"
                     distant="7"
                     animation="fade"
                     trigger="manual"
@@ -57,7 +57,7 @@
             <button :disabled="conferenceManager.isMuteAll" @click="requestMuteAll">全员静音</button>
             <button :disabled="!conferenceManager.isMuteAll" @click="requestUnMuteAll">取消全员静音</button>
         </div>
-        <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true">
+        <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true" v-on:close="onContextMenuClose">
             <li v-for="(item,i) in buildParticipantContextMenu(participant)" :key="i">
                 <a @click.prevent="item.handler" v-bind:style="item.styleObject">{{ item.title }}</a>
             </li>
@@ -178,12 +178,13 @@ export default {
                 return items;
             }
 
-            items.push({
-                title: '查看用户信息',
-                handler: () => {
-                    this.showUserCard(participant);
-                }
-            })
+            // TODO 临时屏蔽，查看用户信息，并和该用户聊天时，界面处理的有问题，应当是在主窗口去聊天
+            // items.push({
+            //     title: '查看用户信息',
+            //     handler: () => {
+            //         this.showUserCard(participant);
+            //     }
+            // })
 
             if (selfUid === participant.uid) {
                 // TODO 临时屏蔽，现在不支持同时开视频和音频
@@ -332,14 +333,14 @@ export default {
             }
             ne.clientY = event.clientY - this.$refs.rootContainer.offsetTop;
             this.$refs.menu.open(ne, participant);
-            this.$refs.menu.$once('close', () => {
-                this.isContextMenuShow = false;
-                this.currentParticipant = {};
-            })
             this.isContextMenuShow = true;
             this.currentParticipant = participant;
-        }
-        ,
+        },
+
+        onContextMenuClose() {
+            this.isContextMenuShow = false;
+            this.currentParticipant = {};
+        },
         showUserCard(p) {
             this.$refs['userCardTippy-' + p.uid][0]._tippy.show();
         },

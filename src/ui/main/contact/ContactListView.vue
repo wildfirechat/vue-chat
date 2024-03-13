@@ -65,7 +65,7 @@
                     </div>
                 </div>
                 <UserListView
-                    v-if="sharedContactState.expandFriendList && users.length < 100 || true"
+                    v-if="sharedContactState.expandFriendList && users.length < 100 && false"
                     :enable-pick="false"
                     :users="users"
                     :click-user-item-func="setCurrentUser"
@@ -108,6 +108,7 @@ import CardMessageContent from "../../../wfc/messages/cardMessageContent";
 import wfc from "../../../wfc/client/wfc";
 import Message from "../../../wfc/messages/message";
 import ChatroomListView from "./ChatroomListView.vue";
+import {markRaw} from "vue";
 
 export default {
     name: "ContactListView",
@@ -122,7 +123,7 @@ export default {
     data() {
         return {
             sharedContactState: store.state.contact,
-            contactItemView: ContactItemView,
+            contactItemView: markRaw(ContactItemView),
             rootOrganizations: [],
         }
     },
