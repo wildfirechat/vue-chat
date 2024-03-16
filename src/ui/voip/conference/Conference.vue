@@ -98,6 +98,7 @@
                                 <ConferenceParticipantVideoView v-for="(participant) in participantUserInfos"
                                                                 :key="participant.uid + '-' + participant._isScreenSharing"
                                                                 :participant="participant"
+                                                                 @setLocalFocusUser="setLocalFocusUser"
                                                                 :session="session">
                                 </ConferenceParticipantVideoView>
                             </div>
@@ -290,6 +291,8 @@ export default {
 
             showConferenceSimpleInfoView: false,
             showChooseLayoutView: false,
+
+            localFocusUser:null,
         }
     },
     components: {
@@ -1021,6 +1024,10 @@ export default {
                 return;
             }
             this.showChooseLayoutView = false;
+        },
+
+        setLocalFocusUser(userInfo){
+            this.localFocusUser = userInfo;
         }
     },
 
@@ -1099,10 +1106,10 @@ export default {
         },
 
         conferenceFocusUser() {
-            if (!conferenceManager || !conferenceManager.conferenceInfo) {
+            if (!this.conferenceManager || !this.conferenceManager.conferenceInfo) {
                 return null
             }
-            let focus = conferenceManager.conferenceInfo.focus;
+            let focus = this.conferenceManager.conferenceInfo.focus;
             if (!focus) {
                 return null;
             }
@@ -1111,9 +1118,6 @@ export default {
                 focusUser = this.participantUserInfos.find(u => u.uid === focus);
             }
             return focusUser;
-        },
-        conferenceLocalFocusUser() {
-            return conferenceManager.localFocusUser;
         },
 
         // 以用户手动选择的为准
@@ -1133,10 +1137,10 @@ export default {
             let sp;
             if (this.conferenceFocusUser && !this.conferenceFocusUser._isVideoMuted) {
                 sp = this.conferenceFocusUser;
-            } else if (this.conferenceLocalFocusUser && !this.conferenceLocalFocusUser._isVideoMuted) {
-                sp = this.conferenceLocalFocusUser;
-            } else if (this.speakingVideoParticipant) {
-                sp = this.speakingVideoParticipant;
+            } else if (this.localFocusUser && !this.localFocusUser._isVideoMuted) {
+                sp = this.localFocusUser;
+                // } else if (this.speakingVideoParticipant) {
+                //     sp = this.speakingVideoParticipant;
             } else {
                 sp = this.participantUserInfos.find(u => !u._isAudience && !u._isVideoMuted && u._isScreenSharing === true);
                 if (!sp) {
@@ -1212,7 +1216,7 @@ export default {
             }
         },
         currentPageParticipants: {
-            deep: true,
+            deep: false,
             handler(newCurrentPageParticipants, oldCurrentPagePariticipants) {
                 if (this.audioOnly) {
                     return;
@@ -1239,23 +1243,23 @@ export default {
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
-                }
 
-                if (oldCurrentPagePariticipants) {
-                    oldCurrentPagePariticipants.forEach(u => {
-                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                            return
-                        }
-                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
-                    })
-                }
-                if (newCurrentPageParticipants) {
-                    newCurrentPageParticipants.forEach(u => {
-                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                            return
-                        }
-                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
-                    })
+                    if (oldCurrentPagePariticipants) {
+                        oldCurrentPagePariticipants.forEach(u => {
+                            if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                                return
+                            }
+                            this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
+                        })
+                    }
+                    if (newCurrentPageParticipants) {
+                        newCurrentPageParticipants.forEach(u => {
+                            if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                                return
+                            }
+                            this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
+                        })
+                    }
                 }
             }
         },

@@ -47,6 +47,9 @@ export default {
             required: true,
         }
     },
+    emits:[
+        'setLocalFocusUser'
+    ],
     data() {
         return {
             status: CallState.STATUS_CONNECTING,
@@ -79,6 +82,7 @@ export default {
         onDbClickVideo() {
             if (conferenceManager.isOwner()) {
                 conferenceManager.requestFocus(this.participant.uid);
+                this.$emit('setLocalFocusUser', this.participant);
             } else {
                 if (conferenceManager.conferenceInfo.focus) {
                     this.$notify({
@@ -87,6 +91,7 @@ export default {
                     });
                 } else {
                     conferenceManager.localFocusUser = this.participant;
+                    this.$emit('setLocalFocusUser', this.participant);
                 }
             }
         },
