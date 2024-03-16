@@ -22,7 +22,7 @@ export default {
                             resolve();
                         } else {
                             console.log('cancel')
-                            reject();
+                            resolve();
                         }
                     };
 

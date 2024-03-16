@@ -105,7 +105,7 @@ export default {
             el && app.removeChild(el)
             el = document.getElementById('styled_video_container');
             el && app.removeChild(el)
-            app.style.backgroundColor = '#292929'
+            // app.style.backgroundColor = 'red'
         }
         this.$eventBus.$on('uploadFile', file => {
             if (!file) {

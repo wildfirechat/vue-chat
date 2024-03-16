@@ -21,10 +21,10 @@
                  @dblclick="share($event, source)"
             >
                 <div class="thumbnail">
-                    <img :src="source.thumbnail.toDataURL()" alt="">
+                    <img :src="toRaw(source).thumbnail.toDataURL()" alt="">
                 </div>
                 <div class="source-icon-name-container">
-                    <img class="icon" v-if="source.appIcon" :src="source.appIcon.toDataURL()" alt="">
+                    <img class="icon" v-if="source.appIcon" :src="toRaw(source).appIcon.toDataURL()" alt="">
                     <p class="name single-line">{{ source.name }}</p>
                 </div>
             </div>
@@ -43,6 +43,7 @@
 <!--only for electron-->
 <script>
 import {desktopCapturer} from "../../platform";
+import {toRaw} from "vue";
 
 export default {
     name: "ScreenOrWindowPicker",
@@ -62,6 +63,7 @@ export default {
     },
 
     methods: {
+        toRaw,
         selectSource(source) {
             console.log('select', source)
             this.selectedSource = source;

@@ -250,6 +250,7 @@ import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
 import {vOnClickOutside} from '@vueuse/components'
 
+import {markRaw} from "vue";
 
 export default {
     name: 'Conference',
@@ -853,7 +854,7 @@ export default {
                         }
                     };
                     this.$modal.show(
-                        ScreenOrWindowPicker,
+                        markRaw(ScreenOrWindowPicker),
                         {}, null, {
                             width: 800,
                             height: 600,
