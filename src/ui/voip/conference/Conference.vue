@@ -1090,23 +1090,6 @@ export default {
 
             let start = this.currentGridPageIndex * this.participantCountPerGridPage;
             let end = start + this.participantCountPerGridPage > sortedParticipantUserInfos.length ? sortedParticipantUserInfos.length : (start + this.participantCountPerGridPage);
-            // side effect
-            // TODO 优化
-            // 相邻页切换时，不能理解取消订阅，可能还切换回去，那样的话，就会有一小段时间，不显示视频流
-            for (let i = 0; i < sortedParticipantUserInfos.length; i++) {
-                let u = sortedParticipantUserInfos[i];
-                if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                    continue;
-                }
-                if (i >= start && i < end) {
-                    console.log('set video type big', u.uid)
-                    this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
-                } else {
-                    console.log('set video type none', u.uid)
-                    this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
-                }
-            }
-            // side effect
             return sortedParticipantUserInfos.slice(start, end);
         },
 
@@ -1142,7 +1125,7 @@ export default {
 
         // TODO 可以缓存到 conferenceManager 里面
         computedFocusVideoParticipant() {
-            if (this.currentLayout === 0) {
+            if (!this.session || this.currentLayout === 0) {
                 console.log('computedSpeakingParticipant null')
                 return null;
             }
@@ -1160,18 +1143,14 @@ export default {
                 }
             }
 
-            if (conferenceManager.currentFocusUser) {
-                this.session.setParticipantVideoType(conferenceManager.currentFocusUser.uid, conferenceManager.currentFocusUser._isScreenSharing, VideoType.SMALL_STREAM);
-            }
             if (sp) {
                 conferenceManager.currentFocusUser = sp;
-                this.session.setParticipantVideoType(conferenceManager.currentFocusUser.uid, conferenceManager.currentFocusUser._isScreenSharing, VideoType.BIG_STREAM);
             } else {
                 if (this.session.screenSharing) {
                     sp = this.selfUserInfo;
                 }
             }
-            console.log('computedSpeakingParticipant', sp)
+            console.log('computedFocusVideoParticipant', sp)
             return sp;
         }
     },
@@ -1233,7 +1212,7 @@ export default {
         },
         currentPageParticipants: {
             deep: true,
-            handler(infos) {
+            handler(newCurrentPageParticipants, oldCurrentPagePariticipants) {
                 if (this.audioOnly) {
                     return;
                 }
@@ -1260,8 +1239,34 @@ export default {
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
                 }
+
+                if (oldCurrentPagePariticipants) {
+                    oldCurrentPagePariticipants.forEach(u => {
+                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                            return
+                        }
+                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
+                    })
+                }
+                if (newCurrentPageParticipants) {
+                    newCurrentPageParticipants.forEach(u => {
+                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                            return
+                        }
+                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
+                    })
+                }
             }
-        }
+        },
+
+        computedFocusVideoParticipant(newFocusParticipant, oldFocusParticipant) {
+            if (newFocusParticipant && newFocusParticipant.uid !== this.selfUserInfo.uid) {
+                this.session.setParticipantVideoType(newFocusParticipant.uid, newFocusParticipant._isScreenSharing, VideoType.BIG_STREAM);
+            }
+            if (oldFocusParticipant && oldFocusParticipant.uid !== this.selfUserInfo.uid) {
+                this.session.setParticipantVideoType(oldFocusParticipant.uid, oldFocusParticipant._isScreenSharing, VideoType.SMALL_STREAM);
+            }
+        },
     },
 
     directives: {
