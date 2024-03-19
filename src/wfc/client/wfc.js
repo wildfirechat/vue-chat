@@ -2186,5 +2186,6 @@ export class WfcManager {
 }
 
 const self = new WfcManager();
+window.__wfc = self
 export default self;
 
