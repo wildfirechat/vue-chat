@@ -28,6 +28,3 @@ export const currentWindow = null;
 export const BrowserWindow = null;
 export const AppPath = null;
 export const desktopCapturer = null;
-
-// for web
-export const PostMessageEventEmitter = require('./windowEmitter');
