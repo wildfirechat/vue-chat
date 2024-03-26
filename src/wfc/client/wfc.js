@@ -773,7 +773,7 @@ export class WfcManager {
      * @return 群备注
      */
     getGroupRemark(groupId) {
-        return impl.setGroupRemark(groupId);
+        return impl.getGroupRemark(groupId);
     }
 
     /**
