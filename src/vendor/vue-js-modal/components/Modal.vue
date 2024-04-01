@@ -135,6 +135,10 @@ export default {
       type: Boolean,
       default: true
     },
+    escToClose: {
+        type: Boolean,
+        default: true
+    },
     classes: {
       type: [String, Array],
       default: () => []
@@ -246,7 +250,7 @@ export default {
       )
     }
 
-    if (this.clickToClose) {
+    if (this.clickToClose || this.escToClose) {
       window.addEventListener('keyup', this.onEscapeKeyUp)
     }
   },
@@ -270,7 +274,7 @@ export default {
     window.removeEventListener('resize', this.onWindowResize)
     window.removeEventListener('orientationchange', this.onWindowResize)
 
-    if (this.clickToClose) {
+    if (this.clickToClose || this.escToClose) {
       window.removeEventListener('keyup', this.onEscapeKeyUp)
     }
     /**

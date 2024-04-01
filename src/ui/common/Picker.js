@@ -5,6 +5,9 @@ export default {
     install(app, options) {
         app.config.globalProperties.$pickContact = function (options) {
             let beforeClose = (event) => {
+                if (!event.params) {
+                    return;
+                }
                 if (event.params.confirm) {
                     let users = event.params.users;
                     options.successCB && options.successCB(users);
@@ -28,6 +31,7 @@ export default {
                     width: 600,
                     height: 480,
                     clickToClose: false,
+                    escToClose: true,
                 }, {
                     // 'before-open': this.beforeOpen,
                     'before-close': beforeClose,

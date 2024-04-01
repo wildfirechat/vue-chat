@@ -2,7 +2,7 @@
     <div ref="message-input-container" class="message-input-container">
         <div v-if="muted"
              style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
-            <p style="color: white">群禁言或者你被禁言</p>
+            <p style="color: white">群禁言或者群已被解散</p>
         </div>
         <section v-else-if="!sharedConversationState.showChannelMenu" style="display: flex; flex-direction: column;">
             <section class="input-action-container">

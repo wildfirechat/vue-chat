@@ -598,7 +598,7 @@ export default {
         download(message) {
             if (!store.isDownloadingMessage(message.messageId)) {
                 downloadFile(message)
-                store.addDownloadingMessage(message.messageId)
+                store.addDownloadingMessage(message.messageUid)
             } else {
                 // TODO toast 下载中
                 console.log('file isDownloading')
@@ -629,13 +629,20 @@ export default {
         },
 
         delMessage(message) {
+            let target = this.conversationInfo.conversation._target;
+            let isSuperGroup = false
+            if (target instanceof GroupInfo) {
+                isSuperGroup = target.superGroup === 1;
+            }
             this.$alert({
                 title: ' 删除消息',
                 content: '确定删除消息？',
                 confirmText: '本地删除',
-                cancelText: '远程删除',
+                cancelText: isSuperGroup ? '取消' : '远程删除',
                 cancelCallback: () => {
-                    wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
+                    if (!isSuperGroup) {
+                    	wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
+                    }
                 },
                 confirmCallback: () => {
                     wfc.deleteMessage(message.messageId);
@@ -935,6 +942,8 @@ export default {
                 let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
                 if (groupInfo.mute === 1) {
                     return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) < 0;
+                } else if (groupInfo.deleted) {
+                    return true;
                 } else {
                     return groupMember && groupMember.type === GroupMemberType.Muted;
                 }

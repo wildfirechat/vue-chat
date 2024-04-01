@@ -6,6 +6,7 @@
                  v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
                 <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                        class="checkbox"
+                       :value="message"
                        placeholder="" v-model="sharedPickState.messages">
 
                 <div class="message-avatar-content-container">

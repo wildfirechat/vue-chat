@@ -45,7 +45,7 @@ export default {
                 } else {
                     if (!this.isDownloading()) {
                         downloadFile(this.message)
-                        store.addDownloadingMessage(this.message.messageId)
+                        store.addDownloadingMessage(this.message.messageUid)
                     } else {
                         this.$notify({
                             title: '下载中',
@@ -85,7 +85,7 @@ export default {
         },
 
         downloadStats() {
-            let dm = store.getDownloadingMessageStatus(this.message.messageId);
+            let dm = store.getDownloadingMessageStatus(this.message.messageUid);
             return dm;
         },
         sendStats() {

@@ -116,9 +116,9 @@ export default {
                 if (localPath && fs.existsSync(localPath)) {
                     shell.openPath(localPath);
                 } else {
-                    if (!store.isDownloadingMessage(quotedFileMessage.messageId)) {
+                    if (!store.isDownloadingMessage(quotedFileMessage.messageUid)) {
                         downloadFile(quotedFileMessage)
-                        store.addDownloadingMessage(quotedFileMessage.messageId)
+                        store.addDownloadingMessage(quotedFileMessage.messageUid)
                     } else {
                         // TODO toast 下载中
                         console.log('file isDownloading')

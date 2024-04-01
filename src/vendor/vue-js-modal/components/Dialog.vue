@@ -48,6 +48,10 @@ export default {
       type: Boolean,
       default: true
     },
+    escToClose: {
+        type: Boolean,
+        default: true
+    },
     transition: {
       type: String
     }

@@ -36,8 +36,10 @@ export default class GroupInfo {
     //是否运行群中普通成员私聊。0 允许，1不允许
     privateChat = 0;
 
-    //是否是超级群组
+    //是否是超级群组，0 普通群组；1 超级群组。超级群组不支持服务器端删除。
     superGroup = 0;
+    //群组是否被解散，0 没有被解散；1 已经被解散。
+    deleted = 0;
 
     //是否可以搜索到该群，功能暂未实现
     searchable
