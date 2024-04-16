@@ -288,8 +288,8 @@ export class AvEngineKitProxy {
                 msg.participantUserInfos = participantUserInfos;
                 msg.selfUserInfo = selfUserInfo;
                 msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
-                // 这两条消息，显示 ui 的时候，会传过去，这儿就不用再次传了
-                if (this.callWin && [MessageContentType.VOIP_CONTENT_TYPE_START, MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT].indexOf(msg.messageContent.type) === -1) {
+                // start消息，显示 ui 的时候，会传过去，这儿就不用再次传了
+                if (this.callWin && [MessageContentType.VOIP_CONTENT_TYPE_START].indexOf(msg.messageContent.type) === -1) {
                     this.emitToVoip("message", msg);
                 }
             }
