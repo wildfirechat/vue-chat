@@ -259,24 +259,27 @@ let store = {
             this._reloadConversationByMessageUidIfExist(messageUid);
             if (conversationState.currentConversationInfo) {
                 let msg = wfc.getMessageByUid(messageUid);
-                if (msg && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
-                    if (conversationState.currentConversationMessageList) {
-                        let lastTimestamp = 0;
-                        conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.map(msg => {
-                            if (eq(msg.messageUid, messageUid)) {
-                                let newMsg = wfc.getMessageByUid(messageUid);
-                                this._patchMessage(newMsg, lastTimestamp);
-                                return newMsg;
-                            }
-                            lastTimestamp = msg.timestamp;
-                            return msg;
-                        });
+                if (msg) {
+                    if (msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                        if (conversationState.currentConversationMessageList) {
+                            let lastTimestamp = 0;
+                            conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.map(msg => {
+                                if (eq(msg.messageUid, messageUid)) {
+                                    let newMsg = wfc.getMessageByUid(messageUid);
+                                    this._patchMessage(newMsg, lastTimestamp);
+                                    return newMsg;
+                                }
+                                lastTimestamp = msg.timestamp;
+                                return msg;
+                            });
+                        }
                     }
+                } else {
+                    conversationState.currentConversationMessageList = conversationState.currentConversationMessageList.filter(m => !eq(m.messageUid, messageUid));
                 }
             }
             this.updateTray();
         });
-
         wfc.eventEmitter.on(EventType.UserOnlineEvent, (userOnlineStatus) => {
             userOnlineStatus.forEach(e => {
                 miscState.userOnlineStateMap.set(e.userId, e);
