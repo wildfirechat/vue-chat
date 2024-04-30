@@ -288,9 +288,17 @@ export class AvEngineKitProxy {
                 msg.participantUserInfos = participantUserInfos;
                 msg.selfUserInfo = selfUserInfo;
                 msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
-                // start消息，显示 ui 的时候，会传过去，这儿就不用再次传了
-                if (this.callWin && [MessageContentType.VOIP_CONTENT_TYPE_START].indexOf(msg.messageContent.type) === -1) {
-                    this.emitToVoip("message", msg);
+                if (this.callWin) {
+                    let ignore = false;
+                    // start,add消息，显示 ui 的时候，会传过去，这儿就不用再次传了
+                    if (MessageContentType.VOIP_CONTENT_TYPE_START === msg.messageContent.type) {
+                        ignore = true
+                    } else if (MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT === msg.messageContent.type && content.participants.indexOf(wfc.getUserId()) >= 0) {
+                        ignore = true
+                    }
+                    if (!ignore) {
+                        this.emitToVoip("message", msg);
+                    }
                 }
             }
         }
@@ -303,10 +311,10 @@ export class AvEngineKitProxy {
             if (this.isVoipWindowReady) {
                 // fix object of long.js can be send inter-process
                 args = JSON.stringify(args)
-                if (!this.callWin.isDestroyed()){
+                if (!this.callWin.isDestroyed()) {
                     try {
                         this.callWin.webContents.send(event, args);
-                    }catch (e) {
+                    } catch (e) {
                         // ignore, do nothing
                         // Object has been destroyed
                     }

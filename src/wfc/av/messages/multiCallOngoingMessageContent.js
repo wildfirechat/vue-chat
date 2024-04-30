@@ -30,7 +30,7 @@ export default class MultiCallOngoingMessageContent extends MessageContent {
 
         let obj = {
             initiator: this.initiator,
-            audioOnly: this.audioOnly,
+            audioOnly: this.audioOnly ? 1 : 0,
             targets: this.targets
         }
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
@@ -43,7 +43,7 @@ export default class MultiCallOngoingMessageContent extends MessageContent {
         let json = wfc.b64_to_utf8(payload.binaryContent);
         let obj = JSON.parse(json);
         this.initiator = obj.initiator;
-        this.audioOnly = obj.audioOnly;
+        this.audioOnly = obj.audioOnly === 1;
         this.targets = obj.targets;
     }
 }
