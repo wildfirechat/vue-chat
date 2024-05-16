@@ -22,7 +22,7 @@
                         </template>
                     </tippy>
 
-                    <a href="#" @click.prevent><img
+                    <img
                         v-if="sharedContactState.selfUserInfo"
                         ref="userCardTippy"
                         id="infoTrigger"
@@ -31,7 +31,7 @@
                         @click.prevent="onClickPortrait"
                         :src="sharedContactState.selfUserInfo.portrait"
                         alt=""
-                    /></a>
+                    />
                 </div>
                 <nav class="menu">
                     <ul>
@@ -311,8 +311,7 @@ export default {
         ElectronWindowsControlButtonView,
         UseDraggable
     },
-    directives: {
-    }
+    directives: {}
 };
 </script>
 
