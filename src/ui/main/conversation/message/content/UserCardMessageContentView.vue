@@ -48,7 +48,7 @@ export default {
         },
         userInfo() {
             let userCard = this.message.messageContent;
-            if (userCard.cardType === 0) {
+            if (userCard.cardType === 0 || !userCard.cardType) {
                 return wfc.getUserInfo(userCard.target)
             }
         }

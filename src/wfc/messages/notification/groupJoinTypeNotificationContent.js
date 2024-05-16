@@ -50,7 +50,7 @@ export default class GroupJoinTypeNotificationContent extends GroupNotificationC
             n: (this.joinType + '')
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
-        return super.encode();
+        return payload;
     }
 
     decode(payload) {
