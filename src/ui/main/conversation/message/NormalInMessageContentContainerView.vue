@@ -112,7 +112,7 @@ export default {
             let msg = store.getMessageByUid(messageUid);
             if (!msg) {
                 wfc.loadRemoteMessage(messageUid, (ms) => {
-                    msg = store._patchMessage(ms[0]);
+                    msg = store._patchMessage(ms);
                     this.quotedMessage = msg;
                 }, err => {
                     console.log('load remote message error', messageUid, err)
