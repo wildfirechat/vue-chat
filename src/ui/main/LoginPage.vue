@@ -45,7 +45,7 @@
 
                 <!--      开发调试时，自动登录-->
                 <div v-else-if="loginStatus === 4">
-                    <p>数据同步中...</p>
+                    <p>数据同步中，可能需要数分钟...</p>
                 </div>
             </div>
             <div v-else-if="loginType === 1" class="login-form-container">
@@ -62,7 +62,7 @@
                     <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
                     <p class="tip" @click="register">注册</p>
                 </div>
-                <button class="login-button" :disabled="mobile === '' || !password || password === ''" ref="loginWithPasswordButton" @click="loginWithPassword">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
+                <button class="login-button" :disabled="mobile === '' || !password || password === ''" ref="loginWithPasswordButton" @click="loginWithPassword">{{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}</button>
                 <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'" :width="'80px'"/>
             </div>
             <div v-else class="login-form-container">
@@ -77,7 +77,7 @@
                     <button :disabled="mobile.toString().length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
                 </div>
                 <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
-                <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中...' : '登录' }}</button>
+                <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}</button>
                 <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'"/>
             </div>
             <div v-if="loginStatus === 0" class="switch-login-type-container">
@@ -355,10 +355,10 @@ export default {
             }
             if (status === ConnectionStatus.ConnectionStatusReceiveing) {
                 if (this.$refs.loginWithAuthCodeButton) {
-                    this.$refs.loginWithAuthCodeButton.textContent = '数据同步中...';
+                    this.$refs.loginWithAuthCodeButton.textContent = '数据同步中，可能需要数分钟...';
                 }
                 if (this.$refs.loginWithPasswordButton) {
-                    this.$refs.loginWithPasswordButton.textContent = '数据同步中...';
+                    this.$refs.loginWithPasswordButton.textContent ='数据同步中，可能需要数分钟...';
                 }
             }
 

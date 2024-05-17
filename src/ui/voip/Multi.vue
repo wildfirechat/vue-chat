@@ -481,9 +481,11 @@ export default {
         },
 
         broadcastMultiCallOngoing() {
-            let participants = this.participantUserInfos.map(pu => pu.uid).filter(uid => uid !== this.selfUserInfo.uid)
-            let ongoing = new MultiCallOngoingMessageContent(this.session.callId, this.session.initiatorId, this.session.audioOnly, participants);
-            wfc.sendConversationMessage(this.session.conversation, ongoing);
+            if (this.status === CallState.STATUS_CONNECTED){
+                let participants = this.participantUserInfos.map(pu => pu.uid).filter(uid => uid !== this.selfUserInfo.uid)
+                let ongoing = new MultiCallOngoingMessageContent(this.session.callId, this.session.initiatorId, this.session.audioOnly, participants);
+                wfc.sendConversationMessage(this.session.conversation, ongoing);
+            }
         }
     },
 

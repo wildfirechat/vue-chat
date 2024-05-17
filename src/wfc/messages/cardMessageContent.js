@@ -16,7 +16,7 @@ export default class CardMessageContent extends MessageContent {
     /**
      * 0，用户；1，群组；2，聊天室；3，频道
      */
-    cardType;
+    cardType = 0;
     target;
     name;
     displayName;

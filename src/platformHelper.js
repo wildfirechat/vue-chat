@@ -5,12 +5,13 @@ import IpcEventType from "./ipcEventType";
 import store from "./store";
 import ImageMessageContent from "./wfc/messages/imageMessageContent";
 import {scaleDown} from "./ui/util/imageUtil";
+import {toRaw} from "vue";
 
 export function downloadFile(message) {
     let file = message.messageContent;
     if (isElectron()) {
         ipcRenderer.send(IPCEventType.DOWNLOAD_FILE, {
-            messageId: message.messageId,
+            messageUid: stringValue(message.messageUid),
             remotePath: file.remotePath,
             fileName: file.name,
             windowId: remote.getCurrentWindow().getMediaSourceId(),
@@ -61,7 +62,7 @@ export function previewMM(message) {
         }
         ipcRenderer.send(IpcEventType.SHOW_MULTIMEDIA_PREVIEW_WINDOW, {
             url: url,
-            messageUid: message.messageUid,
+            messageUid: toRaw(message.messageUid),
             size,
         });
         console.log('show-multimedia-preview-window', url)

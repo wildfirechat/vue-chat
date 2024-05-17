@@ -117,26 +117,10 @@ export default {
             });
         },
         close() {
-            if (process.platform === 'linux') {
-                this.$alert({
-                    content: '确定退出野火 IM？',
-                    cancelCallback: () => {
-                        // do nothing
-                    },
-                    confirmCallback: () => {
-                        wfc.disconnect();
-                        setTimeout(()=> {
-                            app.exit(0)
-                        }, 1000)
-                    }
-                })
-
-            } else {
                 const win = remote.getCurrentWindow();
                 win.close();
                 if (!wfc.isLogin() && this.sharedMiscState.isMainWindow) {
                     app.exit(0)
-                }
             }
         },
         toggleMaxRestoreButtons() {

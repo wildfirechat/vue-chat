@@ -611,7 +611,6 @@ export default {
             if (this.conversationInfo.conversation.type === ConversationType.SecretChat) {
                 this.emojiCategories = config.emojiCategories.filter(c => !c.name.startsWith('Sticker'));
                 this.emojis = config.emojis.filter(c => !c.category.startsWith('Sticker'));
-                this.$refs.emojiPicker.changeCategory({name: 'Peoples'});
             } else {
                 this.emojiCategories = config.emojiCategories;
                 this.emojis = config.emojis;
