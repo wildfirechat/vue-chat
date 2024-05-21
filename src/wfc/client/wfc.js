@@ -210,23 +210,24 @@ export class WfcManager {
      * 获取用户在群里面的displayName
      * @param {string} groupId 群id
      * @param {string} userId 用户id
+     * @param {boolean} ignoreFriendAlias 是否忽略好友备注
      * @returns {string} 用户在群里面的displayName
      */
-    getGroupMemberDisplayName(groupId, userId) {
+    getGroupMemberDisplayName(groupId, userId, ignoreFriendAlias = false) {
         let userInfo = this.getUserInfo(userId, false, groupId);
         if (!userInfo) {
             return '<' + userId + '>';
         }
 
-        return userInfo.groupAlias ? userInfo.groupAlias : (userInfo.friendAlias ? userInfo.friendAlias : (userInfo.displayName ? userInfo.displayName : '<' + userId + '>'))
+        return userInfo.groupAlias ? userInfo.groupAlias : (userInfo.friendAlias && !ignoreFriendAlias ? userInfo.friendAlias : (userInfo.displayName ? userInfo.displayName : '<' + userId + '>'))
     }
 
     getUserDisplayNameEx(userInfo) {
         return userInfo.friendAlias ? userInfo.friendAlias : (userInfo.displayName ? userInfo.displayName : '<' + userInfo.uid + '>');
     }
 
-    getGroupMemberDisplayNameEx(userInfo) {
-        return userInfo.groupAlias ? userInfo.groupAlias : (userInfo.friendAlias ? userInfo.friendAlias : (userInfo.displayName ? userInfo.displayName : '<' + userInfo.uid + '>'))
+    getGroupMemberDisplayNameEx(userInfo, ignoreFriendAlias = false) {
+        return userInfo.groupAlias ? userInfo.groupAlias : (userInfo.friendAlias && !ignoreFriendAlias ? userInfo.friendAlias : (userInfo.displayName ? userInfo.displayName : '<' + userInfo.uid + '>'))
     }
 
     /**
@@ -261,10 +262,10 @@ export class WfcManager {
      * @param {function ([UserInfo])} successCB 成功回调
      * @param {function (Number)} failCB 失败回调
      */
-    getUserInfosEx(userIds,  successCB, failCB) {
+    getUserInfosEx(userIds, successCB, failCB) {
         impl.getUserInfosEx(userIds, userInfos => {
-            userInfos.forEach((u)=>{
-                if(!u.portrait || u.portrait.startsWith(Config.APP_SERVER)){
+            userInfos.forEach((u) => {
+                if (!u.portrait || u.portrait.startsWith(Config.APP_SERVER)) {
                     u.portrait = this.defaultUserPortrait(u);
                 }
             });
@@ -300,7 +301,7 @@ export class WfcManager {
      * @returns {Promise<void>}
      */
     async searchUser(keyword, searchType, page, successCB, failCB) {
-        impl.searchUser(keyword, searchType, page, (keyword, userInfos )=> {
+        impl.searchUser(keyword, searchType, page, (keyword, userInfos) => {
             userInfos.forEach((u) => {
                 if (!u.portrait || u.portrait.startsWith(Config.APP_SERVER)) {
                     u.portrait = this.defaultUserPortrait(u)

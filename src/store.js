@@ -397,7 +397,7 @@ let store = {
             if (isMainWindow) {
                 ipcRenderer.on('deep-link', (event, args) => {
                     console.log('deep-link', args)
-                    if (!wfc.isLogin()){
+                    if (!wfc.isLogin()) {
                         return;
                     }
                     // 下面是示例
@@ -1477,6 +1477,7 @@ let store = {
         userInfos = userInfos.map(u => {
             if (groupId) {
                 u._displayName = wfc.getGroupMemberDisplayNameEx(u);
+                u._displayNameIgnoreFriendAlias = wfc.getGroupMemberDisplayNameEx(u, true);
             } else {
                 u._displayName = wfc.getUserDisplayNameEx(u);
             }

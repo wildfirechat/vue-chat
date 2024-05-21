@@ -305,7 +305,7 @@ export default {
         },
 
         mention(groupId, memberId) {
-            let displayName = wfc.getGroupMemberDisplayName(groupId, memberId);
+            let displayName = wfc.getGroupMemberDisplayName(groupId, memberId, true);
             this.mentions.push({
                 key: displayName,
                 value: '@' + memberId,
@@ -644,6 +644,7 @@ export default {
             groupMemberUserInfos.forEach((e) => {
                 mentionMenuItems.push({
                     key: e._displayName,
+                    keyIgnoreFriendAlias: e._displayNameIgnoreFriendAlias,
                     value: '@' + e.uid,
                     avatar: e.portrait,
                     searchKey: e._displayName + e._pinyin + e._firstLetters,
@@ -659,7 +660,7 @@ export default {
                     // }
                     this.mentions.push({key: item.original.key, value: item.original.value});
 
-                    return '@' + item.original.key;
+                    return '@' + item.original.keyIgnoreFriendAlias;
                 },
                 menuItemTemplate: function (item) {
                     return '<img width="24" height="24" src="' + item.original.avatar + ' "> ' + item.original.key;
