@@ -98,7 +98,7 @@
                                   :input-options="inputOptions"
                                   :muted="muted"
                                   ref="messageInputView"/>
-                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"/>
+                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo"/>
                 <SingleConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
                     v-v-on-click-outside="hideConversationInfo"
@@ -277,6 +277,7 @@ export default {
             messageInputViewResized: false,
             unreadMessageCount: 0,
             isWindowAlwaysTop: currentWindow && currentWindow.isAlwaysOnTop(),
+            enableLoadRemoteHistoryMessage: !store.state.misc.isElectron, // web 端，本地没有消息存储，所以默认开启加载远程消息
         };
     },
 
@@ -634,22 +635,27 @@ export default {
             if (target instanceof GroupInfo) {
                 isSuperGroup = target.superGroup === 1;
             }
+
             this.$alert({
                 title: ' 删除消息',
                 content: '确定删除消息？',
-                confirmText: '本地删除',
-                cancelText: isSuperGroup ? '取消' : '远程删除',
+                confirmText: this.sharedPickState.isElectron ? '本地删除' : '删除',
+                cancelText: isSuperGroup || !this.sharedPickState.isElectron ? '取消' : '远程删除',
                 cancelCallback: () => {
-                    if (!isSuperGroup) {
-                    	wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
+                    if (!(isSuperGroup || !this.sharedPickState.isElectron)) {
+                        wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
                     }
                 },
                 confirmCallback: () => {
-                    wfc.deleteMessage(message.messageId);
+                    if (this.sharedPickState.isElectron) {
+                        wfc.deleteMessage(message.messageId);
+                    } else {
+                        wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
+                    }
                 }
             })
         },
-
+                
         forward(message) {
             return this.$forwardMessage({
                 forwardType: ForwardType.NORMAL,
@@ -714,14 +720,16 @@ export default {
         infiniteHandler($state) {
             console.log('to load more message');
             store.loadConversationHistoryMessages(() => {
-                console.log('loaded')
-                $state.loaded();
+                console.log('loaded', this.enableLoadRemoteHistoryMessage)
+                $state.loaded(!this.enableLoadRemoteHistoryMessage);
+                this.enableLoadRemoteHistoryMessage = true;
             }, () => {
                 console.log('complete')
                 $state.complete()
-            });
+                this.enableLoadRemoteHistoryMessage = true;
+            }, this.enableLoadRemoteHistoryMessage);
         },
-
+     
         playVoice(message) {
             if (amr) {
                 amr.stop();
@@ -870,6 +878,7 @@ export default {
         // 切换到新的会话
         if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
             this.showConversationInfo = false;
+            this.enableLoadRemoteHistoryMessage = !isElectron()
             this.ongoingCalls = [];
             if (this.ongoingCallTimer) {
                 clearInterval(this.ongoingCallTimer);

@@ -271,6 +271,7 @@ export default {
         },
 
         clearConversationHistory() {
+            this.$parent.enableLoadRemoteHistoryMessage = !this.sharedMiscState.isElectron;
             wfc.clearMessages(this.conversationInfo.conversation);
         },
 

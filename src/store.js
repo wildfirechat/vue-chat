@@ -800,14 +800,18 @@ let store = {
         }
     },
 
-    deleteSelectedMessages() {
+    deleteSelectedMessages(deleteRemoteMessages = false) {
         conversationState.enableMessageMultiSelection = false;
         if (pickState.messages.length < 1) {
             return;
         }
         pickState.messages.sort((m1, m2) => m1.messageId - m2.messageId);
         pickState.messages.forEach(m => {
-            wfc.deleteMessage(m.messageId);
+            if (deleteRemoteMessages) {
+                wfc.deleteRemoteMessageByUid(m.messageUid);
+            } else {
+                wfc.deleteMessage(m.messageId);
+            }
         });
         pickState.messages.length = 0;
     },
@@ -1162,7 +1166,7 @@ let store = {
         return loadNewMsg;
     },
 
-    loadConversationHistoryMessages(loadedCB, completeCB) {
+    loadConversationHistoryMessages(loadedCB, completeCB, enableLoadRemoteHistoryMessage = true) {
         if (!conversationState.currentConversationInfo) {
             return;
         }
@@ -1206,13 +1210,21 @@ let store = {
                 }
                 this._onloadConversationMessages(conversation, lmsgs)
                 if (lmsgs.length === 0) {
-                    loadRemoteHistoryMessageFunc();
+                    if (enableLoadRemoteHistoryMessage) {
+                        loadRemoteHistoryMessageFunc();
+                    } else {
+                        completeCB();
+                    }
                 } else {
                     // loadedCB();
                     setTimeout(() => loadedCB(), 200)
                 }
             } else {
-                loadRemoteHistoryMessageFunc();
+                if (enableLoadRemoteHistoryMessage) {
+                    loadRemoteHistoryMessageFunc();
+                } else {
+                    completeCB();
+                }
             }
         }, err => {
             completeCB();
@@ -1221,7 +1233,7 @@ let store = {
 
     setConversationTop(conversation, top) {
         wfc.setConversationTop(conversation, top,
-            () => {
+        () => {
                 this._reloadConversation(conversation);
             },
             (err) => {
