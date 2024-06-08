@@ -42,6 +42,10 @@
         <UnknownMessageContentView :message="message"
                                    v-else
                                    v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <TestCustomMessageContentView :message="message"
+                                      v-if="message.messageContent.type === CustomMessageContentType.MESSAGE_CONTENT_TYPE_CUSTOM_MESSAGE_TEST"
+                                      :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
+                                      v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     </div>
 </template>
 
@@ -66,9 +70,16 @@ import ConferenceInviteMessageContentView from "./content/ConferenceInviteMessag
 import UnknownMessageContentView from "./content/UnknownMessageContentView";
 import LinkMessageContentView from "./content/LinkMessageContentView";
 import StreamingTextMessageContentView from "./content/StreamingTextMessageContentView.vue";
+import CustomMessageContentType from "../../../../wfc_custom_message/customMessageContentType";
+import TestCustomMessageContentView from "./content/TestCustomMessageContentView.vue";
 
 export default {
     name: "MessageContentContainerView",
+    computed: {
+        CustomMessageContentType() {
+            return CustomMessageContentType
+        }
+    },
     props: {
         message: {
             type: Message,
@@ -76,6 +87,7 @@ export default {
         }
     },
     components: {
+        TestCustomMessageContentView,
         LinkMessageContentView,
         UnknownMessageContentView,
         ConferenceInviteMessageContentView,
