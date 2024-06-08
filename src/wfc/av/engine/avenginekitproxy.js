@@ -569,7 +569,7 @@ export class AvEngineKitProxy {
             remoteMain.enable(win.webContents);
 
             win.webContents.on('did-finish-load', () => {
-                this.onVoipWindowReady(win);
+                this.onVoipWindowReady();
             });
 
             if (localStorage.getItem("enable_voip_debug")) {

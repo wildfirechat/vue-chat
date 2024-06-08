@@ -346,9 +346,12 @@ export default {
                 }
             };
             sessionCallback.didChangeInitiator = (initiator) => {
+              
                 this.initiatorUserInfo = wfc.getUserInfo(initiator);
-                if (!this.broadcastMultiCallOngoingTimer) {
-                    this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 200)
+                if (this.selfUserInfo.uid === initiator) {
+                    if (!this.broadcastMultiCallOngoingTimer) {
+                        this.broadcastMultiCallOngoingTimer = setInterval(this.broadcastMultiCallOngoing, 200)
+                    }
                 }
             }
 
