@@ -12,8 +12,12 @@ export default class LocationMessageContent extends MessageContent {
     lat;
     long;
 
-    constructor() {
+    constructor(title, thumbnail, lat, long) {
         super(MessageContentType.Location);
+        this.title = title;
+        this.thumbnail = thumbnail;
+        this.lat = lat;
+        this.long = long;
     }
 
     digest() {
