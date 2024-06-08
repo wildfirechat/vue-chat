@@ -1,6 +1,6 @@
 <template>
     <div ref="message-input-container" class="message-input-container">
-        <div v-if="muted"
+        <div v-if="convMuted"
              style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
             <p style="color: white">群禁言或者群已被解散</p>
         </div>
@@ -168,6 +168,7 @@ export default {
             enablePtt: wfc.isCommercialServer() && Config.ENABLE_PTT,
             amrRecorder: null,
             lastTypingMessageTimestamp: 0,
+            convMuted: this.muted,
 
             isPttTalking: false,
             isRecording: false,
@@ -618,9 +619,10 @@ export default {
         },
 
         initMention(conversation) {
-            // TODO group, channel
-
-            if (this.tribute) {
+            if (this.convMuted) {
+                return;
+            }
+            if (this.tribute && this.$refs['input']) {
                 this.tribute.detach(this.$refs['input']);
                 this.tribute = null;
             }
@@ -673,7 +675,10 @@ export default {
                 },
                 menuContainer: document.getElementById('conversation-content'),
             });
-            this.tribute.attach(this.$refs['input']);
+
+            if (this.$refs["input"]) {
+                this.tribute.attach(this.$refs['input']);
+            }
         },
 
         handleMention(text) {
@@ -799,11 +804,11 @@ export default {
             if (this.conversationInfo
                 && this.conversationInfo.conversation.type === ConversationType.Group
                 && this.conversationInfo.conversation.target === groupId) {
-                this.initMention(this.conversationInfo.conversation);
                 let groupMember = wfc.getGroupMember(groupId, wfc.getUserId());
                 if (groupMember && groupMember.type === GroupMemberType.Muted) {
-                    this.muted = true;
+                    this.convMuted = true;
                 }
+                this.initMention(this.conversationInfo.conversation);
             }
         },
 
@@ -968,7 +973,7 @@ export default {
                         this.storeDraft(this.lastConversationInfo);
                     }
 
-                    if (!this.muted && this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
+                    if (!this.convMuted && this.conversationInfo && (!this.lastConversationInfo || !this.conversationInfo.conversation.equal(this.lastConversationInfo.conversation))) {
                         this.setupConversationInput();
                     }
                     this.lastConversationInfo = this.conversationInfo;
@@ -982,6 +987,7 @@ export default {
         },
         'muted': {
             handler(newValue) {
+                this.convMuted = newValue;
                 if (!newValue) {
                     this.$nextTick(() => {
                         this.setupConversationInput();
