@@ -11,7 +11,10 @@
          @contextmenu.prevent="showContactContextMenu">
         <img class="avatar" :src="source.portrait" alt="" @error="imgUrlAlt">
         <div style="padding-left: 10px">
-            <p class="single-line"> {{ source._displayName }}</p>
+            <div style="display: flex; align-items: center; ">
+                <p class="single-line">{{ source._displayName }}</p>
+                <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+            </div>
             <p v-if="source._userOnlineStatusDesc" class="single-line user-online-status"> {{ source._userOnlineStatusDesc }}</p>
         </div>
     </div>
@@ -20,6 +23,9 @@
 <script>
 import store from "../../../store";
 import Config from "../../../config";
+import ConversationType from "../../../wfc/model/conversationType";
+import WfcUtil from "../../../wfc/util/wfcUtil";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "ContactItemView",
@@ -46,6 +52,22 @@ export default {
         showContactContextMenu(event) {
             this.$eventBus.$emit('showContactContextMenu', [event, this.source]);
         }
+    },
+    computed: {
+        isExternalDomainUser() {
+            let user = this.source;
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName() {
+            let user = this.source;
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
+        },
     }
 }
 </script>

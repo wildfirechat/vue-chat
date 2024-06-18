@@ -45,6 +45,16 @@
                 <OrganizationListView v-if="sharedContactState.expandOrganization"/>
             </li>
             <li>
+                <div @click="showExternalDomains" class="category-item-container">
+                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandExternalDomain}"></i>
+                    <div class="category-item">
+                        <span class="title">外部单位</span>
+                        <span class="desc"></span>
+                    </div>
+                </div>
+                <ExternalDomainListView v-if="sharedContactState.expandExternalDomain"/>
+            </li>
+            <li>
                 <div @click="showChatroom" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandChatroom}"></i>
                     <div class="category-item">
@@ -109,10 +119,12 @@ import wfc from "../../../wfc/client/wfc";
 import Message from "../../../wfc/messages/message";
 import ChatroomListView from "./ChatroomListView.vue";
 import {markRaw} from "vue";
+import ExternalDomainListView from "./ExternalDomainListView.vue";
 
 export default {
     name: "ContactListView",
     components: {
+        ExternalDomainListView,
         ChatroomListView,
         OrganizationListView,
         ChannelListView,
@@ -154,6 +166,9 @@ export default {
 
         showOrganization() {
             store.toggleOrganizationList();
+        },
+        showExternalDomains() {
+            store.toggleExternalDomainList();
         },
 
         showChatroom() {

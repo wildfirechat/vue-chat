@@ -1233,7 +1233,7 @@ let store = {
 
     setConversationTop(conversation, top) {
         wfc.setConversationTop(conversation, top,
-        () => {
+            () => {
                 this._reloadConversation(conversation);
             },
             (err) => {
@@ -1562,6 +1562,7 @@ let store = {
         contactState.currentChatroom = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
+        contactState.currentExternalDomain = null;
     },
 
     setCurrentFriend(friend) {
@@ -1571,6 +1572,7 @@ let store = {
         contactState.currentChatroom = null;
         contactState.currentGroup = null;
         contactState.currentChannel = null;
+        contactState.currentExternalDomain = null;
     },
 
     setCurrentGroup(group) {
@@ -1580,6 +1582,7 @@ let store = {
         contactState.currentChatroom = null;
         contactState.currentGroup = group;
         contactState.currentChannel = null;
+        contactState.currentExternalDomain = null;
     },
 
     setCurrentChannel(channel) {
@@ -1589,6 +1592,7 @@ let store = {
         contactState.currentChatroom = null;
         contactState.currentGroup = null;
         contactState.currentChannel = channel;
+        contactState.currentExternalDomain = null;
     },
 
     setCurrentOrganization(organization) {
@@ -1598,6 +1602,17 @@ let store = {
         contactState.currentChannel = null;
         contactState.currentChatroom = null;
         contactState.currentOrganization = organization;
+        contactState.currentExternalDomain = null;
+    },
+
+    setCurrentExternalDomain(domainInfo) {
+        contactState.currentFriendRequest = null;
+        contactState.currentFriend = null;
+        contactState.currentGroup = null;
+        contactState.currentChannel = null;
+        contactState.currentChatroom = null;
+        contactState.currentOrganization = null;
+        contactState.currentExternalDomain = domainInfo;
     },
 
     setCurrentChatroom(chatroom) {
@@ -1607,6 +1622,7 @@ let store = {
         contactState.currentChannel = null;
         contactState.currentOrganization = null;
         contactState.currentChatroom = chatroom;
+        contactState.currentExternalDomain = null;
     },
     toggleGroupList() {
         contactState.expandGroup = !contactState.expandGroup;
@@ -1628,6 +1644,10 @@ let store = {
         contactState.expandOrganization = !contactState.expandOrganization;
     },
 
+    toggleExternalDomainList() {
+        contactState.expandExternalDomain = !contactState.expandExternalDomain;
+    },
+
     toggleChatroom() {
         contactState.expandChatroom = !contactState.expandChatroom;
     },
@@ -1641,21 +1661,29 @@ let store = {
         searchState.query = query;
         if (query) {
             console.log('search', query)
-            searchState.contactSearchResult = this.filterContact(query);
-            searchState.groupSearchResult = this.filterGroupConversation(query);
-            searchState.conversationSearchResult = this.filterConversation(query);
-            // searchState.messageSearchResult = this.searchMessage(query);
-            this.searchUser(query);
-            this.searchChannel(query);
+            if (searchState.searchDomainInfo) {
+                this.searchUser(query, searchState.searchDomainInfo.domainId);
+            } else {
+                searchState.contactSearchResult = this.filterContact(query);
+                searchState.groupSearchResult = this.filterGroupConversation(query);
+                searchState.conversationSearchResult = this.filterConversation(query);
+                // searchState.messageSearchResult = this.searchMessage(query);
+                this.searchUser(query);
+                this.searchChannel(query);
+            }
 
         } else {
             searchState._reset();
         }
     },
 
-    searchUser(query) {
+    setSearchDomainInfo(domainInfo) {
+        searchState.searchDomainInfo = domainInfo;
+    },
+
+    searchUser(query, domainId = '') {
         console.log('search user', query)
-        wfc.searchUser(query, SearchType.General, 0, ((keyword, userInfos) => {
+        wfc.searchUserEx(domainId, query, SearchType.General, 0, ((keyword, userInfos) => {
             console.log('search user result', query, userInfos)
             if (searchState.query === keyword) {
                 searchState.userSearchResult = userInfos.filter(u => !wfc.isMyFriend(u.uid));

@@ -9,7 +9,10 @@
                         <img class="avatar" :src="friendRequest._target.portrait">
                         <div class="info">
                             <div class="name-action">
-                                <span class="name single-line">{{ friendRequest._target.displayName }}</span>
+                                <div style="display: flex; align-items: center; ">
+                                    <span class="name single-line">{{ friendRequest._target.displayName }}</span>
+                                    <p v-if="isExternalDomainUser(friendRequest._target)" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(friendRequest._target) }}</p>
+                                </div>
                                 <span v-if="friendRequest.status === 1" class="status">{{
                                         $t('friend_request.accepted')
                                     }}</span>
@@ -39,6 +42,7 @@
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import EventType from "../../../wfc/client/wfcEvent";
+import WfcUtil from "../../../wfc/util/wfcUtil";
 
 export default {
     name: "NewFriendListView",
@@ -66,6 +70,18 @@ export default {
             if (this.isActive) {
                 wfc.clearUnreadFriendRequestStatus();
             }
+        },
+        isExternalDomainUser(user) {
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName(user) {
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
         },
     },
 

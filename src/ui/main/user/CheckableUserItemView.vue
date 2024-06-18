@@ -15,16 +15,18 @@
                    type="checkbox"
                    :checked="isUserChecked(source)">
             <img class="avatar" :src="source.portrait" alt="">
-            <span
-                class="single-line"> {{
-                    source._displayName || (source.groupAlias ? source.groupAlias : (source.friendAlias ? source.friendAlias : (source.displayName ? source.displayName : '用户')))
-                }}</span>
+            <div style="display: flex; align-items: center; ">
+                <p class="single-line">{{ source._displayName || (source.groupAlias ? source.groupAlias : (source.friendAlias ? source.friendAlias : (source.displayName ? source.displayName : '用户'))) }}</p>
+                <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import store from "../../../store";
+import WfcUtil from "../../../wfc/util/wfcUtil";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "CheckableUserItemView",
@@ -106,6 +108,20 @@ export default {
                 paddingLeft: this.paddingLeft
             }
         },
+        isExternalDomainUser() {
+            let user = this.source;
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName() {
+            let user = this.source;
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
+        },
     },
 }
 </script>
@@ -125,6 +141,7 @@ ul {
     width: 40px;
     height: 40px;
     border-radius: 3px;
+    margin-right: 10px;
 }
 
 .checkbox {

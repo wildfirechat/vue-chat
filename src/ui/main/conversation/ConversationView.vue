@@ -9,6 +9,7 @@
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
                         <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
+                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc" >{{ domainName }}</p>
                     </div>
                     <div
                         v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
@@ -227,6 +228,7 @@ import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import {imageThumbnail} from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
 import {vOnClickOutside} from '@vueuse/components'
+import WfcUtil from "../../../wfc/util/wfcUtil";
 
 
 var amr;
@@ -904,6 +906,23 @@ export default {
                 return '会话';
             }
         },
+
+        isExternalDomainSingleConversation() {
+            let info = this.sharedConversationState.currentConversationInfo;
+            if (info.conversation.type === ConversationType.Single && WfcUtil.isExternal(info.conversation.target)) {
+                return true;
+            }
+            return false;
+        },
+        domainName() {
+            let info = this.sharedConversationState.currentConversationInfo;
+            if (info.conversation.type === ConversationType.Single && WfcUtil.isExternal(info.conversation.target)) {
+                let domainId = WfcUtil.getExternalDomainId(info.conversation.target);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
+        },
         targetUserOnlineStateDesc() {
             let info = this.sharedConversationState.currentConversationInfo;
             if (info.conversation.type === ConversationType.Single && info.conversation.target !== Config.FILE_HELPER_ID) {
@@ -1153,6 +1172,11 @@ export default {
 
 .user-online-status {
     color: gray;
+    font-size: 10px;
+}
+
+.domain-desc {
+    color: #F0A040;
     font-size: 10px;
 }
 

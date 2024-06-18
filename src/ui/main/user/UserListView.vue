@@ -11,7 +11,7 @@
                     <li v-for="(user) in groupedUser.users" :key="user.uid">
                         <tippy
                             v-if="!clickUserItemFunc"
-                            :to="'#user-' + user.uid"
+                            :to="'#user-' + user.uid.replace('@', '-').replace('.', '-')"
                             theme="light"
                             :animate-fill="false"
                             distant="7"
@@ -25,8 +25,8 @@
                             </template>
                         </tippy>
                         <div class="content"
-                             :ref="'userCardTippy-' + user.uid"
-                             :id="'user-' + user.uid"
+                             :ref="'userCardTippy-' + user.uid.replace('@', '#')"
+                             :id="'user-' + user.uid.replace('@', '-').replace('.', '-')"
                              :style="paddingStyle"
                              v-bind:class="{active: (sharedContactState.currentFriend
                         && user._category === sharedContactState.currentFriend._category
@@ -35,7 +35,10 @@
                              @contextmenu.prevent="showContactContextMenu($event, user)">
                             <img class="avatar" :src="user.portrait" alt="" @error="imgUrlAlt">
                             <div style="padding-left: 10px">
-                                <p class="single-line"> {{ user._displayName }}</p>
+                                <div style="display: flex; align-items: center; ">
+                                    <p class="single-line">{{ user._displayName }}</p>
+                                    <p v-if="isExternalDomainUser(user)" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
+                                </div>
                                 <p v-if="user._userOnlineStatusDesc" class="single-line user-online-status"> {{ user._userOnlineStatusDesc }}</p>
                             </div>
                         </div>
@@ -65,6 +68,8 @@ import store from "../../../store";
 import UserCardView from "./UserCardView.vue";
 import Config from "../../../config";
 import UserItemView from "./UserItemView.vue";
+import WfcUtil from "../../../wfc/util/wfcUtil";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "UserListView",
@@ -127,7 +132,7 @@ export default {
             root.style.setProperty('--tippy-right', '0');
         },
         closeUserCard(user) {
-            this.$refs["userCardTippy-" + user.uid][0]._tippy.hide();
+            this.$refs["userCardTippy-" + user.uid.replace('@', '#')][0]._tippy.hide();
         },
         imgUrlAlt(e) {
             e.target.src = Config.DEFAULT_PORTRAIT_URL;
@@ -136,7 +141,19 @@ export default {
             if (this.enableContactContextMenu) {
                 this.$eventBus.$emit('showContactContextMenu', [event, user]);
             }
-        }
+        },
+        isExternalDomainUser(user) {
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName(user) {
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
+        },
     },
 
     mounted() {

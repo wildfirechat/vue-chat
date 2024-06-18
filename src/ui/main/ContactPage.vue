@@ -12,6 +12,9 @@
         <OrganizationDetailView
             v-else-if="sharedContactState.currentOrganization"
             class="contact-detail-container"/>
+        <DomainInfoView
+            v-else-if="sharedContactState.currentExternalDomain"
+            class="contact-detail-container"/>
         <ChatroomDetailView
             v-else-if="sharedContactState.currentChatroom"
             class="contact-detail-container"/>
@@ -41,6 +44,7 @@ import ChannelDetailView from "./contact/ChannelDetailView";
 import OrganizationDetailView from "./contact/OrganizationTreeView.vue";
 import ChatroomListView from "./contact/ChatroomListView.vue";
 import ChatroomDetailView from "./contact/ChatroomDetailView.vue";
+import DomainInfoView from "./contact/DomainInfoView.vue";
 
 export default {
     name: 'ContactPage',
@@ -50,6 +54,7 @@ export default {
         }
     },
     components: {
+        DomainInfoView,
         ChatroomDetailView,
         ChatroomListView,
         ChannelDetailView,
