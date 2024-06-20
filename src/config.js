@@ -30,6 +30,9 @@ export default class Config {
     // 是否关闭日志，web和小程序有效
     static DISABLE_LOG = false;
 
+    // 是否开启自动登录，开启之后，登录成功之后，会记录登录状态；刷新页面时，会自动登录
+    static ENABLE_AUTO_LOGIN = true;
+
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
     static APP_SERVER = 'https://app.wildfirechat.net';
@@ -213,7 +216,7 @@ export default class Config {
         if (Config.USE_WSS) {
             console.warn('已启用WSS，请确认服务端已配置支持https，配置方法请参考：https://docs.wildfirechat.cn/faq/web/https.html');
         }
-        if (Config.APP_SERVER.startsWith('https:') && !Config.USE_WSS){
+        if (Config.APP_SERVER.startsWith('https:') && !Config.USE_WSS) {
             throw new Error('https 站点，不能使用 ws，请配置wss, 配置方法请参考：https://docs.wildfirechat.cn/faq/web/https.html');
         }
         if (Config.USE_WSS && Config.ROUTE_PORT !== 443) {

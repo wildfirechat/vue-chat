@@ -24,7 +24,7 @@
                 <div v-else-if="loginStatus === 1" class="scanned">
                     <p>{{ userName + $t('login.scan_qr_success') }}</p>
                     <p>{{ $t('login.confirm_login_tip') }}</p>
-                    <label>
+                    <label style="display: none">
                         {{ $t('login.remember_me') }}
                         <input type="checkbox" v-model="enableAutoLogin">
                     </label>
@@ -116,7 +116,7 @@ export default {
             appToken: '',
             lastAppToken: '',
             loginType: 0, // 0 扫码登录，1 密码登录，2 验证码登录
-            enableAutoLogin: false,
+            enableAutoLogin: Config.ENABLE_AUTO_LOGIN,
             mobile: '',
             password: '',
             authCode: '',
@@ -358,7 +358,7 @@ export default {
                     this.$refs.loginWithAuthCodeButton.textContent = '数据同步中，可能需要数分钟...';
                 }
                 if (this.$refs.loginWithPasswordButton) {
-                    this.$refs.loginWithPasswordButton.textContent ='数据同步中，可能需要数分钟...';
+                    this.$refs.loginWithPasswordButton.textContent = '数据同步中，可能需要数分钟...';
                 }
             }
 
