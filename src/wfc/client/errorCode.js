@@ -21,6 +21,7 @@ export default class ErrorCode {
     static kEcServerFriendRequestOvertime = 19;
     static kEcServerNotInChatroom = 20;
     static kEcServerNotLicensed = 22;
+    static kEcWebsocketNotConfigured= 28;
     static kEcServerTimeInconsistent = 30;
     static kEcServerUserIsBlocked = 245;
     static kEcServerInBlacklist = 246;
