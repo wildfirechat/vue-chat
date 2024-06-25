@@ -44,7 +44,7 @@
                 </div>
                 <OrganizationListView v-if="sharedContactState.expandOrganization"/>
             </li>
-            <li>
+            <li v-if="sharedContactState.isEnableMesh">
                 <div @click="showExternalDomains" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandExternalDomain}"></i>
                     <div class="category-item">

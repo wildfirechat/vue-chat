@@ -89,6 +89,7 @@ let store = {
         miscState.connectionStatus = wfc.getConnectionStatus();
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
             console.log('store ConnectionStatusChanged', status)
+            contactState.isEnableMesh = wfc.isEnableMesh();
             miscState.connectionStatus = status;
             miscState.isCommercialServer = wfc.isCommercialServer();
             miscState.isDisableSyncDraft = wfc.isDisableSyncDraft();

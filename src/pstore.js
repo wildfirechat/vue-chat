@@ -91,6 +91,7 @@ export const pstore = defineStore('store-p', () => {
         selfUserInfo: null,
         contextMenuUserInfo: null,
 
+        isEnableMesh: false,
 
         _reset() {
             this.currentFriendRequest = null;
@@ -115,6 +116,7 @@ export const pstore = defineStore('store-p', () => {
 
             this.selfUserInfo = null;
             this.contextMenuUserInfo = null;
+            this.isEnableMesh = false;
         }
     })
 
