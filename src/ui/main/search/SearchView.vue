@@ -5,7 +5,7 @@
                autocomplete="off"
                v-model.trim="sharedSearchState.query"
                @keydown.esc="cancel"
-               type="text" :placeholder="$t('common.search')"/>
+               type="text" :placeholder="placeHolder"/>
         <i class="icon-ion-ios-search"></i>
         <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
     </div>
@@ -14,6 +14,7 @@
 <script>
 import store from "../../../store";
 import Config from "../../../config";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "SearchView",
@@ -31,10 +32,10 @@ export default {
         return {
             sharedSearchState: store.state.search,
             sharedContactState: store.state.contact,
+            searchTip: '在测试单位搜索用户',
         };
     },
     methods: {
-
         showCreateConversationModal() {
             let successCB = users => {
                 store.createConversation(users);
@@ -52,6 +53,27 @@ export default {
         cancel() {
             store.hideSearchView();
             this.$refs['input'].blur();
+        }
+    },
+
+    computed: {
+        placeHolder() {
+            if (this.sharedSearchState.searchDomainInfo) {
+                return `在 ${this.sharedContactState.currentExternalDomain.name} 搜索用户`
+            } else {
+                return '搜索'
+            }
+        }
+    },
+
+    watch: {
+        'sharedSearchState.searchDomainInfo': {
+            deep: true,
+            handler(newValue, oldView) {
+                if (newValue) {
+                    this.$refs.input.focus();
+                }
+            }
         }
     }
 }

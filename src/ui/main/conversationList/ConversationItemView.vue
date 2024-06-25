@@ -25,6 +25,10 @@
                         <h2 class="title single-line">{{ conversationTitle }}</h2>
                         <p class="single-line" style="background: #3f64e4; border-radius: 2px; color: white; padding: 1px 2px; font-size: 9px">官方</p>
                     </div>
+                    <div v-else-if="isExternalDomainSingleConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
+                        <h2 class="title single-line">{{ conversationTitle }}</h2>
+                        <p class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                    </div>
                     <h2 v-else class="title single-line">{{ conversationTitle }}</h2>
                     <p class="time single-line">{{ source._timeStr }}</p>
                 </div>
@@ -52,6 +56,7 @@ import NotificationMessageContent from "../../../wfc/messages/notification/notif
 import Config from "../../../config";
 import ConversationType from "../../../wfc/model/conversationType";
 import GroupType from "../../../wfc/model/groupType";
+import WfcUtil from "../../../wfc/util/wfcUtil";
 
 export default {
     name: "ConversationItemView",
@@ -140,6 +145,23 @@ export default {
                 return true;
             }
             return false;
+        },
+
+        isExternalDomainSingleConversation() {
+            let info = this.source;
+            if (info.conversation.type === ConversationType.Single && WfcUtil.isExternal(info.conversation.target)) {
+                return true;
+            }
+            return false;
+        },
+        domainName() {
+            let info = this.source;
+            if (info.conversation.type === ConversationType.Single && WfcUtil.isExternal(info.conversation.target)) {
+                let domainId = WfcUtil.getExternalDomainId(info.conversation.target);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
         },
         shouldShowDraft() {
             if (this.shareConversationState.currentConversationInfo && this.shareConversationState.currentConversationInfo.conversation.equal(this.source.conversation)) {
@@ -326,7 +348,6 @@ export default {
     color: #262626;
     font-style: normal;
     font-weight: normal;
-    padding-right: 10px;
     flex: 1;
 }
 
@@ -354,7 +375,7 @@ export default {
     padding-right: 5px;
 }
 
-.conversation-item-container.top .content .last-message-desc{
+.conversation-item-container.top .content .last-message-desc {
     color: #949494;
 }
 

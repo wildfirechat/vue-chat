@@ -8,7 +8,7 @@
         <div class="search-result">
             <ul>
                 <li class="category-item" v-if="sharedSearchState.userSearchResult.length > 0">
-                    <label>{{ $t('search.new_user') }}</label>
+                    <label>{{ sharedSearchState.searchDomainInfo ? `在 ${sharedSearchState.searchDomainInfo.name} 中的搜索结果` : $t('search.new_user') }}</label>
                     <ul>
                         <li v-for="(user, index) in toShowUserList" :key="index">
                             <div class="search-result-item contact" @click.stop="chatToContact(user)">

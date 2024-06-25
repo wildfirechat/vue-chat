@@ -65,7 +65,10 @@
                         <img class="avatar" :src="user.portrait" alt="">
                         <button @click="onPickUser(user)" class="unpick-button">X</button>
                     </div>
-                    <span class="name single-line">{{ user.displayName }}</span>
+                    <div style="display: flex; align-items: center; ">
+                        <p class="name single-line">{{ user._displayName }}</p>
+                        <p v-if="isExternalDomainUser(user)" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
+                    </div>
                 </div>
                 <div class="picked-user-container" v-for="(org, index) in sharedPickState.organizations" :key="org.id">
                     <div class="picked-user">
@@ -92,6 +95,8 @@ import CheckableOrganizationTreeView from "./CheckableOrganizationTreeView.vue";
 import Config from "../../../config";
 import organizationServerApi from "../../../api/organizationServerApi";
 import UserInfo from "../../../wfc/model/userInfo";
+import WfcUtil from "../../../wfc/util/wfcUtil";
+import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "PickUserView",
@@ -201,6 +206,19 @@ export default {
             } else {
                 this.$modal.hide('pick-user-modal', {confirm: true, users: users})
             }
+        },
+
+        isExternalDomainUser(user) {
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName(user) {
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+            }
+            return '';
         },
     },
 

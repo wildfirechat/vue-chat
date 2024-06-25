@@ -69,6 +69,7 @@ export const pstore = defineStore('store-p', () => {
         currentChannel: null,
         currentFriend: null,
         currentOrganization: null,
+        currentExternalDomain: null,
         currentChatroom: null,
         currentUser: null,
 
@@ -77,6 +78,7 @@ export const pstore = defineStore('store-p', () => {
         expandGroup: false,
         expandChanel: false,
         expandOrganization: false,
+        expandExternalDomain: false,
         expandChatroom: false,
 
         unreadFriendRequestCount: 0,
@@ -89,6 +91,7 @@ export const pstore = defineStore('store-p', () => {
         selfUserInfo: null,
         contextMenuUserInfo: null,
 
+        isEnableMesh: false,
 
         _reset() {
             this.currentFriendRequest = null;
@@ -113,6 +116,7 @@ export const pstore = defineStore('store-p', () => {
 
             this.selfUserInfo = null;
             this.contextMenuUserInfo = null;
+            this.isEnableMesh = false;
         }
     })
 
@@ -124,6 +128,7 @@ export const pstore = defineStore('store-p', () => {
         groupSearchResult: [],
         conversationSearchResult: [],
         messageSearchResult: [],
+        searchDomainInfo: null,
 
         _reset() {
             this.query = null
@@ -133,6 +138,7 @@ export const pstore = defineStore('store-p', () => {
             this.groupSearchResult = [];
             this.conversationSearchResult = [];
             this.messageSearchResult = []
+            this.searchDomainInfo = null;
         }
     })
 
