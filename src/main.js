@@ -29,6 +29,7 @@ import VirtualList from "vue3-virtual-scroll-list";
 import xss from "xss";
 import mitt from 'mitt'
 import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
+import CustomMessageConfig from "./wfc_custom_message/customMessageConfig";
 
 // Vue.config.productionTip = false
 
@@ -46,6 +47,7 @@ app.use(CoolLightBox)
         console.log('init', href, path)
         if (path === '/'/*login*/ || path.startsWith('/home') || href.indexOf('#') === -1) {
             wfc.init()
+            CustomMessageConfig.registerCustomMessages()
             // 双网环境配置
             //     // 设置网络策略
             //     wfc.setBackupAddressStrategy(0)
@@ -69,6 +71,7 @@ app.use(CoolLightBox)
         // web
     } else {
         wfc.init();
+        CustomMessageConfig.registerCustomMessages()
         // 双网环境配置
         // 可以根据访问网页的地址，配置是否切换备选网络策略
         // 比如公网，通过域名访问，采用默认的主网络；内网，通过ip访问，使用备选网络
