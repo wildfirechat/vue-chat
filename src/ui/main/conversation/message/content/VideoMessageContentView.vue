@@ -7,7 +7,7 @@
                controlsList="nodownload"
                disablePictureInPicture
                :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail"
-               :src="message.messageContent.remotePath +'#t=0.1'"/>
+               :src="videoUrl +'#t=0.1'"/>
     </div>
 </template>
 
@@ -40,6 +40,17 @@ export default {
         dragVideo(event) {
             let video = this.message.messageContent;
             event.dataTransfer.setData('URL', video.remotePath)
+        }
+    },
+
+    computed: {
+        videoUrl() {
+            if (this.message.messageContent.file) {
+                return this.message.messageContent.file;
+            } else {
+                return this.message.messageContent.remotePath
+            }
+
         }
     }
 }

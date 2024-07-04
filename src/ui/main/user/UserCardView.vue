@@ -35,8 +35,10 @@
         </div>
         <div class="action">
             <!--            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>-->
-            <a href="#" @click.prevent><i class="icon-ion-ios-chatboxes" @click.prevent="chat"></i></a>
-            <a v-if="!isFriend" href="#" @click.prevent><i class="icon-ion-person-add" @click.prevent="addFriend"></i></a>
+            <a href="#" @click.prevent><i class="icon-ion-ios-chatboxes-outline" @click.prevent="chat"></i></a>
+            <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-telephone-outline" @click.prevent="startAudioCall"></i></a>
+            <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-videocam-outline" @click.prevent="startVideoCall"></i></a>
+            <a v-if="!isFriend" href="#" @click.prevent><i class="icon-ion-ios-personadd-outline" @click.prevent="addFriend"></i></a>
         </div>
     </section>
 </template>
@@ -87,6 +89,17 @@ export default {
             if (this.$router.currentRoute.path !== '/home'){
                 this.$router.replace('/home');
             }
+        },
+        startAudioCall() {
+            this.close();
+            let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
+            this.$startVoipCall({audioOnly: true, conversation: conversation});
+        },
+
+        startVideoCall() {
+            this.close();
+            let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
+            this.$startVoipCall({audioOnly: false, conversation: conversation});
         },
         addFriend() {
             this.close();
@@ -160,6 +173,9 @@ export default {
     computed: {
         isFriend() {
             return wfc.getUserId() === this.userInfo.uid || wfc.isMyFriend(this.userInfo.uid)
+        },
+        isSelf() {
+            return this.userInfo.uid === wfc.getUserId();
         }
     }
 };
@@ -167,6 +183,7 @@ export default {
 
 <style lang="css" scoped>
 .user-info-container {
+    pointer-events: auto !important;
     width: 300px;
     display: flex;
     flex-direction: column;

@@ -2108,10 +2108,11 @@ export class WfcManager {
     /**
      * 获取域信息
      * @param {string} domainId
+     * @param {boolean} refresh 是否刷新用户信息，如果刷新的话，且用户信息有更新，会通过{@link eventEmitter}进行通知，事件的名字是{@link EventType.DomainInfosUpdate }
      * @return {DomainInfo}
      */
-    getDomainInfo(domainId) {
-        return impl.getdomainInfo(domainId);
+    getDomainInfo(domainId, refresh = false) {
+        return impl.getDomainInfo(domainId, refresh);
     }
 
     /**

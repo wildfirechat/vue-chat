@@ -26,6 +26,8 @@ export default class EventType {
     static ConnectionStatusChanged = 'connectionStatusChanged';
     // function (host/ip/port) {}
     static ConnectToServer = 'connectToServer';
+    // function (host/ip/port/mainNw) {}
+    static ConnectedToServer = 'connectedToServer';
     // function (userInfos) {}
     static UserInfosUpdate = 'userInfosUpdate';
     // function (channelInfos) {}

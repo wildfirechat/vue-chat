@@ -21,28 +21,32 @@
                         <p class="button" @click="loadAndShowOrganization(org)">下级</p>
                     </div>
                 </li>
+           
                 <li v-for="(employee, index) in employees" :key="employee.employeeId">
-                    <tippy
-                        :to="'#infoTrigger-' + employee.employeeId"
-                        interactive
-                        :animate-fill="false"
-                        placement="right"
-                        distant="20"
-                        theme="light"
-                        animation="fade"
-                        trigger="manual"
+                    <div class="organization-item"
+                         @click="showUserCardView($event, employee)"
                     >
-                        <template #content>
-                            <UserCardView
-                                v-on:close="closeUserCard"
-                                :enable-update-portrait="false"
-                                :user-info="employeeToUserInfo(employee)"/>
-                        </template>
-                    </tippy>
-                    <div :ref="'ref-employee-' + employee.employeeId" class="organization-item" :id="'infoTrigger-' + employee.employeeId"
-                         @click="showUserCardView(employee)"
-                    >
-                        <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">
+                        <tippy
+                            :to="'#infoTrigger-' + employee.employeeId"
+                            interactive
+                            :animate-fill="false"
+                            placement="right"
+                            distant="20"
+                            :id="employee.employeeId"
+                            theme="light"
+                            animation="fade"
+                            trigger="manual"
+                        >
+                            <template #content>
+                                <UserCardView
+                                    v-on:close="closeUserCard"
+                                    :enable-update-portrait="false"
+                                    :user-info="employeeToUserInfo(employee)"/>
+                            </template>
+                        </tippy>
+                        <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl"
+                             :ref="'ref-employee-' + employee.employeeId"
+                             :id="'infoTrigger-' + employee.employeeId">
                         <p class="name">{{ employee.name }}</p>
                     </div>
                 </li>
@@ -92,11 +96,13 @@ export default {
         employeeToUserInfo(employee) {
             return organizationServerApi.employeeToUserInfo(employee);
         },
-        showUserCardView(employee) {
+        showUserCardView(evt, employee) {
             if (this.activeTippy) {
                 this.activeTippy.hide();
+                if (employee.employeeId === this.activeTippy.id) {
+                    return;
+                }
                 this.activeTippy = null;
-                return;
             }
             let employeeItem = this.$refs['ref-employee-' + employee.employeeId][0];
             this.activeTippy = employeeItem._tippy;
