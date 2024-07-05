@@ -142,7 +142,7 @@ export default {
             }
         } else {
             isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
-            this.createPCLoginSession(null);
+            this.refreshQrCode();
         }
     },
 
@@ -160,6 +160,15 @@ export default {
         },
         switchLoginType(type) {
             this.loginType = type;
+            if (this.loginType === 0) {
+                this.refreshQrCode();
+            } else {
+                if (this.qrCodeTimer) {
+                    clearInterval(this.qrCodeTimer);
+                    this.qrCodeTimer = 0;
+                }
+
+            }
         },
 
         async requestAuthCode() {
@@ -239,13 +248,13 @@ export default {
             }
         },
         async createPCLoginSession(userId) {
+            console.log('createPCLoginSession', userId);
             appServerApi.createPCSession(userId)
                 .then(response => {
                     let session = Object.assign(new PCSession(), response);
                     this.appToken = session.token;
                     if (!userId || session.status === 0/*服务端pc login session不存在*/) {
                         this.qrCode = jrQRCode.getQrBase64(WfcScheme.QR_CODE_PREFIX_PC_SESSION + session.token);
-                        this.refreshQrCode();
                     }
                     this.login();
                 })
@@ -260,6 +269,7 @@ export default {
         },
 
         async refreshQrCode() {
+            this.createPCLoginSession(null);
             if (!this.qrCodeTimer) {
                 this.qrCodeTimer = setInterval(() => {
                     if (this.loginStatus === 3) {
@@ -333,7 +343,6 @@ export default {
             wfc.disconnect();
             clear();
 
-            this.createPCLoginSession(null);
             this.refreshQrCode();
         },
 
@@ -345,13 +354,21 @@ export default {
                 || status === ConnectionStatus.ConnectionStatusNotLicensed
                 || status === ConnectionStatus.ConnectionStatusTimeInconsistent
                 || status === ConnectionStatus.ConnectionStatusServerDown
+                || status === ConnectionStatus.ConnectionStatusUnconnected
                 || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
-                console.error('连接失败', status, ConnectionStatus.desc(status));
-                this.cancel();
-                this.$notify({
-                    text: '连接失败，请打开控制台，查看具体日志',
-                    type: 'error'
-                });
+                this.password = '';
+                this.authCode = '';
+                this.loginStatus = 0;
+                if (this.loginType === 0) {
+                    this.refreshQrCode();
+                }
+                if (status !== ConnectionStatus.ConnectionStatusLogout) {
+                    console.error('连接失败', status, ConnectionStatus.desc(status));
+                    this.$notify({
+                        text: '连接失败，请打开控制台，查看具体日志',
+                        type: 'error'
+                    });
+                }
             }
             if (status === ConnectionStatus.ConnectionStatusReceiveing) {
                 if (this.$refs.loginWithAuthCodeButton) {
