@@ -186,17 +186,18 @@ let store = {
             if (miscState.isMainWindow && !this.isConversationInCurrentWindow(msg.conversation)) {
                 return;
             }
+            if (msg.messageContent instanceof DismissGroupNotification
+                || (msg.messageContent instanceof KickoffGroupMemberNotification && msg.messageContent.kickedMembers.indexOf(wfc.getUserId()) >= 0)
+                || (msg.messageContent instanceof QuitGroupNotification && msg.messageContent.operator === wfc.getUserId())
+            ) {
+                this.setCurrentConversationInfo(null);
+                return;
+            }
+
             if (!hasMore) {
                 this._reloadConversation(msg.conversation)
             }
             if (conversationState.currentConversationInfo && msg.conversation.equal(conversationState.currentConversationInfo.conversation)) {
-                if (msg.messageContent instanceof DismissGroupNotification
-                    || (msg.messageContent instanceof KickoffGroupMemberNotification && msg.messageContent.kickedMembers.indexOf(wfc.getUserId()) >= 0)
-                    || (msg.messageContent instanceof QuitGroupNotification && msg.messageContent.operator === wfc.getUserId())
-                ) {
-                    this.setCurrentConversationInfo(null);
-                    return;
-                }
                 if (msg.messageContent.type === MessageContentType.Typing) {
                     let groupId = msg.conversation.type === 1 ? msg.conversation.target : '';
                     let userInfo = wfc.getUserInfo(msg.from, false, groupId)
@@ -562,7 +563,7 @@ let store = {
         if (index >= 0) {
             Object.assign(conversationState.conversationInfoList[index], conversationInfo);
         } else {
-            if (insertIfNoExist && conversation.type !== ConversationType.ChatRoom) {
+            if (insertIfNoExist && gt(conversationInfo.timestamp, 0) && conversation.type !== ConversationType.ChatRoom) {
                 conversationState.conversationInfoList.push(conversationInfo);
             } else {
                 return conversationInfo;
