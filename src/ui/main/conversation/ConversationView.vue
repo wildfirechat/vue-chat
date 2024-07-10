@@ -55,8 +55,8 @@
                     <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true" direction="top"
                                       @infinite="infiniteHandler">
                         <!--            <template slot="spinner">加载中...</template>-->
-                        <template slot="no-more">{{ $t('conversation.no_more_message') }}</template>
-                        <template slot="no-results">{{ $t('conversation.all_message_load') }}</template>
+                        <template #no-more>{{ $t('conversation.no_more_message') }}</template>
+                        <template #no-results>{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
                     <div v-for="(message) in sharedConversationState.currentConversationMessageList"
                          :key="message.messageId">
