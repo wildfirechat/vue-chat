@@ -18,8 +18,10 @@ export default class CustomMessageConfig {
             type: CustomMessageContentType.MESSAGE_CONTENT_TYPE_CUSTOM_MESSAGE_TEST_NOTIFICATION,
             contentClazz: TestCustomNotificationMessageContent,
         },
+        // 添加更多自定义消息定义
     ];
 
+    // 请勿修改
     static registerCustomMessages() {
         CustomMessageConfig.CustomMessageContents.forEach(cmc => {
             wfc.registerMessageContent(cmc.name, cmc.flag, cmc.type, cmc.contentClazz)
