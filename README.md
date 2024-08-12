@@ -23,6 +23,21 @@
 2. `Web SDK`和`专业版 IM-Server`都支持试用，具体请参考[试用说明](https://docs.wildfirechat.cn/trial/)
 3. 本项目默认只能连接到官方服务，购买或申请试用之后，替换`Web SDK`，即可连到自行部署的服务
 
+## 常见开发问题
+1. 音视频相关问题，请参考以下文档
+    1. [av readme](src/wfc/av/internal/README.MD)
+    2. [音视频常见问题](https://docs.wildfirechat.cn/faq/webrtc.html?h=webrtc)
+
+2. 纯内网环境，不能显示表情
+    1. 将```src/assets/twemoji```目录上传到一个内网能访问的服务器，比如部署```app server```的服务器
+    2. 确保通过```http(s)://base_twemoji_url/72x72/1f1e6.png```能访问到对应表情，此处```1f1e6.png```蓝底白字大写字母A
+    3. 修改```config.js```，将```https://static.wildfirechat.net/twemoji/assets/``` 替换成新部署的```http(s)://base_twemoji_url/```，需要注意，最后一个```/```不能省略
+    4. 动态表情类似处理
+
+3. 想自己部署表情图片
+
+    请常见问题2
+
 ### 联系我们
 
 > 商务合作请优先采用邮箱和我们联系。技术问题请到[野火IM论坛](http://bbs.wildfirechat.cn/) 发帖交流。
