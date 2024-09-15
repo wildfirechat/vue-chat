@@ -12,6 +12,7 @@ import SoundMessageContent from "../messages/soundMessageContent";
 import Long from "long";
 import UnknownMessageContent from "../messages/unknownMessageContent";
 import Config from '../../config'
+import {eq} from "../util/longUtil";
 
 export default class FavItem {
     id;
@@ -123,7 +124,7 @@ export default class FavItem {
     toMessage() {
         if (this.messageUid) {
             let msg = wfc.getMessageByUid(this.messageUid);
-            if (msg) {
+            if (msg && msg.content.type !== MessageContentType.RecallMessage_Notification && eq(this.timestamp, msg.timestamp)) {
                 return msg;
             }
         }

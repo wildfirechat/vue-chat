@@ -193,6 +193,9 @@ export default {
                 return;
             }
 
+            // 特殊用途，请勿打开
+            // 必须在 getClientId 之前调用，createPCLoginSession 会触发调用 getClientId，打开时，需重新设计起逻辑
+            // wfc.setAppName('wfc-' + this.mobile);
             this.$refs.loginWithPasswordButton.disabled = true;
             this.loginStatus = 3;
             appServerApi.loinWithPassword(this.mobile, this.password)
@@ -222,6 +225,7 @@ export default {
 
             this.$refs.loginWithAuthCodeButton.disabled = true;
             this.loginStatus = 3;
+            //wfc.setAppName('wfc-' + this.mobile);
             appServerApi.loginWithAuthCode(this.mobile, this.authCode)
                 .then(res => {
                     const {userId, token, portrait} = res;
@@ -248,7 +252,7 @@ export default {
             }
         },
         async createPCLoginSession(userId) {
-            console.log('createPCLoginSession', userId);
+            //wfc.setAppName('wfc-' + this.mobile);
             appServerApi.createPCSession(userId)
                 .then(response => {
                     let session = Object.assign(new PCSession(), response);
@@ -385,7 +389,7 @@ export default {
                 }
                 this.$router.replace({path: "/home"});
                 if (isElectron() || (Config.CLIENT_ID_STRATEGY === 1 || Config.CLIENT_ID_STRATEGY === 2)) {
-                    isElectron() && ipcRenderer.send(IpcEventType.LOGIN, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
+                    isElectron() && ipcRenderer.send(IpcEventType.LOGIN, {userId: wfc.getUserId(), closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                     if (this.enableAutoLogin) {
                         store.setEnableAutoLogin(this.enableAutoLogin)
                     }

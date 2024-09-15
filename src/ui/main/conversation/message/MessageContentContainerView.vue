@@ -39,12 +39,13 @@
                                     v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
         <UnsupportMessageContentView :message="message"
                                      v-else-if="[/* todo un support message types */].indexOf(message.messageContent.type) >= 0"/>
+        <TestCustomMessageContentView :message="message"
+                                      v-else-if="message.messageContent.type === CustomMessageContentType.MESSAGE_CONTENT_TYPE_CUSTOM_MESSAGE_TEST"
+                                      :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
+                                      v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <!--更多自定义消息，注意 v-else-if -->
         <UnknownMessageContentView :message="message"
                                    v-else
-                                   v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
-        <TestCustomMessageContentView :message="message"
-                                      v-if="message.messageContent.type === CustomMessageContentType.MESSAGE_CONTENT_TYPE_CUSTOM_MESSAGE_TEST"
-                                      :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
                                       v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
     </div>
 </template>

@@ -2,8 +2,11 @@
     <section @click.stop="" class="user-info-container">
         <div class="header">
             <div class="desc">
-                <h2>{{ userInfo.displayName }}</h2>
-                <label>{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
+                <div style="display: flex; align-items: center">
+                    <h2>{{ userInfo.displayName }}</h2>
+                    <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                </div>
+                <label style="max-width: 200px; text-overflow: ellipsis" class="single-line">{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
             </div>
             <div>
                 <img class="avatar" draggable="false" v-bind:src="userInfo.portrait" @click="pickFile"/>
@@ -53,6 +56,7 @@ import MessageContentMediaType from "../../../wfc/messages/messageContentMediaTy
 import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
 import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";
 import IpcSub from "../../../ipc/ipcSub";
+import WfcUtil from "../../../wfc/util/wfcUtil";
 
 export default {
     name: "UserCardView",
@@ -176,7 +180,21 @@ export default {
         },
         isSelf() {
             return this.userInfo.uid === wfc.getUserId();
-        }
+        },
+        isExternalDomainUser() {
+            let user = this.userInfo;
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName() {
+            let user = this.userInfo;
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
+        	}
+            return '';
+        },
     }
 };
 </script>

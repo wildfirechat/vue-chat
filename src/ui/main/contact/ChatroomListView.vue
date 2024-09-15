@@ -15,8 +15,6 @@
 
 <script>
 import store from "../../../store";
-import organizationServerApi from "../../../api/organizationServerApi";
-import Config from "../../../config";
 
 export default {
     name: "ChatroomListView",

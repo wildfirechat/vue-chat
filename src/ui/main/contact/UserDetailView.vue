@@ -6,7 +6,10 @@
                     <img class="avatar" :src="sharedStateContact.currentFriend.portrait">
                 </div>
                 <div class="name">
-                    <h2>{{ name }}</h2>
+                    <div style="display: flex; align-items: center">
+                        <h2>{{ name }}</h2>
+                        <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                    </div>
                     <p>你好，野火</p>
                 </div>
             </div>
@@ -55,6 +58,7 @@ import store from "../../../store";
 import ConversationType from "../../../wfc/model/conversationType";
 import Conversation from "../../../wfc/model/conversation";
 import wfc from "../../../wfc/client/wfc";
+import WfcUtil from "../../../wfc/util/wfcUtil";
 
 export default {
     name: "UserDetailView",
@@ -97,7 +101,7 @@ export default {
         },
     },
     computed: {
-        name: function () {
+        name() {
             let name;
             let friend = this.sharedStateContact.currentFriend;
             if (friend.displayName) {
@@ -110,7 +114,21 @@ export default {
                 wfc.getUserInfo(friend.uid, true)
             })();
             return name;
+        },
+        isExternalDomainUser() {
+            let user = this.sharedStateContact.currentFriend;
+            return WfcUtil.isExternal(user.uid);
+
+        },
+        domainName() {
+            let user = this.sharedStateContact.currentFriend;
+            if (WfcUtil.isExternal(user.uid)) {
+                let domainId = WfcUtil.getExternalDomainId(user.uid);
+                let domainInfo = wfc.getDomainInfo(domainId);
+                return '@' + domainInfo.name;
         }
+            return '';
+        },
     }
 }
 </script>
@@ -155,7 +173,6 @@ export default {
     font-size: 15px;
     font-style: normal;
     font-weight: normal;
-    margin-bottom: 5px;
 }
 
 .header .name p {

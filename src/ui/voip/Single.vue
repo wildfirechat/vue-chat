@@ -128,7 +128,6 @@ import CallState from "../../wfc/av/engine/callState";
 import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import VideoType from "../../wfc/av/engine/videoType";
-import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import Config from "../../config";
 
 export default {

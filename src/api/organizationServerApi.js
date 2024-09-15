@@ -19,7 +19,8 @@ export class OrganizationServerApi {
 //        int ApplicationType_Channel = 1;
 //        int ApplicationType_Admin = 2;
             if (!Config.ORGANIZATION_SERVER) {
-                return Promise.reject(this.serviceUnavailbelError);
+                reject(this.serviceUnavailbelError)
+                return
             }
             wfc.getAuthCode('admin', 2, '', code => {
                 let path = '/api/user_login';
@@ -45,7 +46,7 @@ export class OrganizationServerApi {
 
             }, error => {
                 console.error('getAuthCode error', error);
-                reject(new OrganizationServerError(-1, '未登录，或服务不可用'));
+                reject(this.serviceUnavailbelError)
 
             })
         })

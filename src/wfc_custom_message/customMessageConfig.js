@@ -3,6 +3,7 @@ import CustomMessageContentType from "./customMessageContentType";
 import TestCustomMessageContent from "./testCustomMessageContent";
 import TestCustomNotificationMessageContent from "./testCustomNotificationMessageContent";
 import wfc from "../wfc/client/wfc";
+import UnsupportMessageContent from "../wfc/messages/unsupportMessageConten";
 
 export default class CustomMessageConfig {
     static CustomMessageContents = [
@@ -21,7 +22,20 @@ export default class CustomMessageConfig {
         // 添加更多自定义消息定义
     ];
 
-    // 请勿修改
+    static getMessageContentClazz(type) {
+        for (const content of CustomMessageConfig.CustomMessageContents) {
+            if (content.type === type) {
+                if (content.contentClazz) {
+                    return content.contentClazz;
+                } else {
+                    return UnsupportMessageContent;
+                }
+            }
+        }
+        return undefined;
+    }
+
+    // 请勿修改下面的registerCustomMessages方法
     static registerCustomMessages() {
         CustomMessageConfig.CustomMessageContents.forEach(cmc => {
             wfc.registerMessageContent(cmc.name, cmc.flag, cmc.type, cmc.contentClazz)
