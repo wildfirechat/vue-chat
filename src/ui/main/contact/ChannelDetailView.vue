@@ -23,9 +23,11 @@ export default {
     },
     methods: {
         chat() {
-            let conversation = new Conversation(ConversationType.Channel, this.sharedContactState.currentChannel.channelId, 0);
-            store.setCurrentConversation(conversation);
             this.$router.replace('/home');
+            setTimeout(() => {
+                let conversation = new Conversation(ConversationType.Channel, this.sharedContactState.currentChannel.channelId, 0);
+                store.setCurrentConversation(conversation);
+            })
         }
     }
 
