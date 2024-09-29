@@ -740,20 +740,12 @@ export default {
             if (!this.$refs['input']) {
                 return;
             }
+            let children = this.$refs['input'].children
+            for (let i = 0; i < children.length; i++) {
+                let e = children[i]
+                e.replaceWith(e.alt)
+            }
             let draftText = this.$refs['input'].innerHTML.trim();
-            let p = `" src="${Config.emojiBaseUrl()}72x72\\/[0-9a-z-]+\\.png">`
-            let re = new RegExp(p, 'g');
-            draftText = draftText
-                .replace(/<br>/g, '\n')
-                .replace(/<div>/g, '\n')
-                .replace(/<\/div>/g, '')
-                .replace(/<div><\/div>/g, ' ')
-                .replace(/&nbsp;/g, ' ')
-                .replace(/<img class="emoji" draggable="false" alt="/g, '')
-                .replace(re, '')
-                .replace(/<img src="local-resource:.*">/g, '')
-                .trimStart()
-                .replace(/\s+$/g, ' ');
 
             let mentions = [];
             this.mentions.forEach(e => {
