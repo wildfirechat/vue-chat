@@ -8,7 +8,7 @@ function resolve(dir) {
 
 module.exports = {
     devServer: {
-        // disableHostCheck: true,
+        allowedHosts: 'all',
         port: 8013
     },
     publicPath: '/',
