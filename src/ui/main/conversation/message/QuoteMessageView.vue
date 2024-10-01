@@ -12,7 +12,7 @@
                     :to="'#messagePreview' + this.message.messageId + this.quotedMessage.messageId + enableMessagePreview"
                     interactive
                     :animate-fill="false"
-                    placement="left"
+                    placement="top"
                     distant="7"
                     theme="light"
                     animation="fade"

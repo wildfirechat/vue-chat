@@ -54,8 +54,7 @@ export default {
     },
 
     watch: {
-        sharedContactState: {
-            deep: true,
+        'sharedContactState.currentChatroom': {
             handler(newValue, oldValue) {
                 console.log('watch currentChatroom', oldValue, newValue)
                 let chatroomId = this.sharedContactState.currentChatroom.chatRoomId;

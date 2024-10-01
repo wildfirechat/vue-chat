@@ -1,7 +1,7 @@
 <template>
     <div class="notification-container">
         <p class="notification">{{ message.messageContent.digest(message) }}</p>
-        <a v-if="isReeditable(message)" href="#" @click.prevent="reedit">重新编辑</a>
+        <a v-if="isReeditable" href="#" @click.prevent="reedit">重新编辑</a>
     </div>
 </template>
 
@@ -21,17 +21,36 @@ export default {
             required: true
         }
     },
+    data() {
+        return {
+            checkReeditInterval: 0,
+            isReeditable: false
+        }
+    },
+
+    mounted() {
+        this.checkReeditable()
+    },
+    unmounted() {
+        this.checkReeditInterval && clearInterval(this.checkReeditInterval)
+    },
     methods: {
-        isReeditable() {
+        checkReeditable() {
             let delta = wfc.getServerDeltaTime();
             let now = new Date().getTime();
             let recallMessageContent = this.message.messageContent;
             if (recallMessageContent.originalContentType === MessageContentType.Text
                 && recallMessageContent.fromSelf
                 && now - (numberValue(this.message.timestamp) - delta) < Config.RECALL_REEDIT_TIME_LIMIT * 1000) {
-                return true;
+                if (!this.checkReeditInterval) {
+                    this.checkReeditInterval = setInterval(() => {
+                        this.checkReeditable()
+                    }, 100)
             }
-            return false;
+                this.isReeditable = true
+            } else {
+                this.isReeditable = false
+            }
         },
         reedit() {
             this.$parent.reedit(this.message);
