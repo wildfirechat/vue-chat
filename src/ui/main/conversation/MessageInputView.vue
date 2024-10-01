@@ -426,26 +426,7 @@ export default {
                     img.parentNode.removeChild(img);
                 }
             }
-            message = input.innerHTML.trim();
-            message = message
-                .replace(/<div><br><\/div>/g, '\n')
-                .replace(/<br>/g, '\n')
-                .replace(/<div>/g, '\n')
-                .replace(/<\/div>/g, '')
-                .replace(/<b>/g, '')
-                .replace(/<\/b>/g, '')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&nbsp;/g, ' ')
-                .replace(/&amp;/g, '&')
-
-
-            //  自行部署表情时，需要手动替换下面的正则
-            // TODO 在正则中使用变量，避免手动替换
-            let p = `" src="${Config.emojiBaseUrl()}72x72\\/[0-9a-z-]+\\.png">`
-            let re = new RegExp(p, 'g');
-            message = message.replace(/<img class="emoji" draggable="false" alt="/g, '')
-                .replace(re, '')
+            message = input.innerText.trim();
 
             if (message && message.trim()) {
                 let textMessageContent = this.handleMention(message);
@@ -740,12 +721,13 @@ export default {
             if (!this.$refs['input']) {
                 return;
             }
-            let children = this.$refs['input'].children
+            let clonedInput = this.$refs['input'].cloneNode(true);
+            let children = [...clonedInput.children]
             for (let i = 0; i < children.length; i++) {
                 let e = children[i]
                 e.replaceWith(e.alt)
             }
-            let draftText = this.$refs['input'].innerHTML.trim();
+            let draftText = clonedInput.innerHTML.trim();
 
             let mentions = [];
             this.mentions.forEach(e => {
