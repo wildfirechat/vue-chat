@@ -151,7 +151,7 @@
                     <li v-if="isQuotable(message)">
                         <a @click.prevent="quoteMessage(message)">{{ $t('common.quote') }}</a>
                     </li>
-                    <li>
+                    <li v-if="isMulticheckable(message)">
                         <a @click.prevent="multiSelect(message)">{{ $t('common.multi_select') }}</a>
                     </li>
                     <li v-if="isRecallable(message)">
@@ -230,6 +230,7 @@ import GroupInfo from "../../../wfc/model/groupInfo";
 import {vOnClickOutside} from '@vueuse/components'
 import WfcUtil from "../../../wfc/util/wfcUtil";
 
+import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 
 var amr;
 export default {
@@ -517,7 +518,8 @@ export default {
         },
 
         isForwardable(message) {
-            if (message && message.messageContent instanceof SoundMessageContent) {
+            if (message
+                && ((message.messageContent instanceof SoundMessageContent) || (message.messageContent instanceof CallStartMessageContent))) {
                 return false;
             }
             return true;
@@ -578,7 +580,14 @@ export default {
                 MessageContentType.Video,
                 MessageContentType.Composite_Message,
                 MessageContentType.Articles,
-                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
+                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) === -1;
+        },
+
+        isMulticheckable(message) {
+            if (!message) {
+                return false;
+            }
+            return [MessageContentType.Voice, MessageContentType.VOIP_CONTENT_TYPE_START].indexOf(message.messageContent.type) === -1;
         },
 
         copy(message) {
@@ -641,15 +650,15 @@ export default {
             this.$alert({
                 title: ' 删除消息',
                 content: '确定删除消息？',
-                confirmText: this.sharedPickState.isElectron ? '本地删除' : '删除',
-                cancelText: isSuperGroup || !this.sharedPickState.isElectron ? '取消' : '远程删除',
+                confirmText: this.sharedMiscState.isElectron ? '本地删除' : '删除',
+                cancelText: isSuperGroup || !this.sharedMiscState.isElectron ? '取消' : '远程删除',
                 cancelCallback: () => {
-                    if (!(isSuperGroup || !this.sharedPickState.isElectron)) {
+                    if (!(isSuperGroup || !this.sharedMiscState.isElectron)) {
                         wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
                     }
                 },
                 confirmCallback: () => {
-                    if (this.sharedPickState.isElectron) {
+                    if (this.sharedMiscState.isElectron) {
                         wfc.deleteMessage(message.messageId);
                     } else {
                         wfc.deleteRemoteMessageByUid(message.messageUid, null, null)

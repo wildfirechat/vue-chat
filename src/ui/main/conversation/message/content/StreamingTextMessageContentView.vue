@@ -2,7 +2,7 @@
     <div class="streaming-text-message-container"
          v-bind:class="{out:message.direction === 0}">
         <p class="text" v-html="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
-        <LoadingView v-if="message.messageContent.type === 14"/>
+        <FadeLoader :loading="message.messageContent.type === 14" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
     </div>
 </template>
 
@@ -10,12 +10,12 @@
 import Message from "../../../../../wfc/messages/message";
 import {parser as emojiParse} from "../../../../util/emoji";
 import helper from "../../../../util/helper";
-import LoadingView from "../../../../common/LoadingView.vue";
+import FadeLoader from 'vue-spinner/src/FadeLoader.vue'
 //import {marked} from "marked";
 
 export default {
     name: "StreamingTextMessageContentView",
-    components: {LoadingView},
+    components: {FadeLoader},
     props: {
         message: {
             type: Message,

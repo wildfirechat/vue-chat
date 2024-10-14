@@ -44,6 +44,8 @@ import ModifyGroupSettingNotification from "./wfc/messages/notification/modifyGr
 import {storeToRefs} from 'pinia'
 import {pstore} from './pstore'
 
+import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
+import SoundMessageContent from "./wfc/messages/soundMessageContent";
 
 /**
  * 一些说明
@@ -835,6 +837,7 @@ let store = {
                         })
 
                     } else {
+                        message.messageContent = this._filterFowardMessageContent(message)
                         wfc.sendConversationMessage(conversation, message.messageContent);
                     }
                 });
@@ -2137,7 +2140,17 @@ let store = {
         })
     },
 
+    _filterFowardMessageContent(message) {
+        let content = message.messageContent
+        if (content instanceof CallStartMessageContent) {
+            content = new TextMessageContent(content.digest(message))
+        } else if (content instanceof SoundMessageContent) {
+            content = new TextMessageContent(content.digest(message) + ' ' + content.duration + "''");
+        }
+        return content
+    }
 }
+
 
 function _reset() {
     conversationState._reset();

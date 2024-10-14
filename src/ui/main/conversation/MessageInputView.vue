@@ -402,7 +402,9 @@ export default {
             let imgs = [...input.getElementsByTagName('img')];
             if (imgs) {
                 for (const img of imgs) {
+                    // emoji
                     if (img.className.indexOf('emoji') >= 0) {
+                        img.replaceWith(img.alt)
                         continue;
                     }
                     let src = img.src;
