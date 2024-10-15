@@ -4,9 +4,10 @@ PC端音视频通话功能，分为两个版本：普通版和高级版，两个
 
 ## 前置条件说明
 
-1. 浏览器支持webrtc
-2. 电脑有麦克风，且工作正常
-3. 电脑有扬声器，且工作正常
+1. 由于浏览器限制，页面需要通过 https://im.xxx.yyy 或通过 http://localhost 访问时，才支持音视频通话
+2. 浏览器支持webrtc
+3. 电脑有麦克风，且工作正常
+4. 电脑有扬声器，且工作正常
  
 刷新浏览器时，会有如下日志输出，```console.log(`detectRTC, isWebRTCSupported: ${DetectRTC.isWebRTCSupported}, hasWebcam: ${DetectRTC.hasWebcam}, hasSpeakers: ${DetectRTC.hasSpeakers}, hasMicrophone: ${DetectRTC.hasMicrophone}`, this.isSupportVoip);```
 ， 只有所有输出都为true时，音视频功能才能正常工作。
