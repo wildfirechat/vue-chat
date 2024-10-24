@@ -292,7 +292,7 @@ export default {
                 }
                 this.$notify({
                     title: '不支持音视频通话',
-                    text: '请到手机上接听音视频通话',
+                    text: '请打开控制台查看具体原因',
                     type: 'warn'
                 });
             }
