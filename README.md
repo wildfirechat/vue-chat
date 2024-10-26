@@ -37,6 +37,13 @@
 3. 想自己部署表情图片
 
     请常见问题2
+4. 通过`iframe`加载
+
+   需要通过 https 加载、并允许摄像头和麦克风权限，才能正常进行音视频通话，参考如下：
+   > `<iframe src="https://example.com" allow="camera;microphone"></iframe>`
+
+
+
 
 ### 联系我们
 
