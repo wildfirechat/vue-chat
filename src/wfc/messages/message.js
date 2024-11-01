@@ -134,6 +134,7 @@ export default class Message {
                         if (obj.content.data && obj.content.data.length > 0) {
                             obj.content.binaryContent = encode(obj.content.data);
                         }
+                        delete msg.content.data;
                         content.decode(obj.content);
                         content.extra = obj.content.extra;
                         if (content instanceof NotificationMessageContent) {
