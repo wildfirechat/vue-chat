@@ -127,13 +127,21 @@ export default class Config {
     static ENABLE_MULTI_CALL_AUTO_JOIN = false;
 
     // 需要专业版 im-server 才支持，是否打开语音对讲功能，和对讲机类似的功能，不是发送语音消息
-    static ENABLE_PTT = false;
+    static ENABLE_PTT = true;
+
+    // 是否支持图文混排、文件文本混排，目前之后 pc 端支持，故默认关闭
+    static ENABLE_MIX_MEDIA_MESSAGE = false;
+
+    // 发送日志命令，当发送此文本消息时，会把协议栈日志发送到当前会话中，为空时关闭此功能。
+    static SEND_LOG_COMMAND = '*#marslog#';
 
     static getWFCPlatform() {
         if (isElectron()) {
             if (window.process && window.process.platform === 'darwin') {
                 // osx
                 return 4;
+            } else if (window.process && window.process.platform === 'linux') {
+                return 7;
             } else {
                 // windows
                 return 3;
@@ -165,10 +173,23 @@ export default class Config {
         }
         // 示例代码
         // 双网环境时，将媒体文件地址切到备选网络
-        // if (!wfc.connectedToMainNetwork()) {
-        //     url = url.replace('oss.xxxx.com', '192.168.2.19');
-        // }
+        if (Config.isUseBackupAddress()) {
+            url = url.replace('oss.xxxx.com', '192.168.2.19');
+        }
         return url;
+    }
+
+    /**
+     * 双网环境时，判断是否是备选网络
+     * @return {boolean}
+     */
+    static isUseBackupAddress() {
+        //示例代码
+        let host = wfc.getHost();
+        if (host === '192.168.2.169'/* backupHost */) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -180,7 +201,7 @@ export default class Config {
         let emojiBaseUrl = 'https://static.wildfirechat.net/twemoji/assets/';
         // 实例代码
         // 双网环境时，将表情地址切换到备选网络
-        // if (!wfc.connectedToMainNetwork()) {
+        // if (Config.isUseBackupAddress()) {
         //     emojiBaseUrl = 'https://192.168.2.169/twemoji/assets/';
         // }
         return emojiBaseUrl;
@@ -195,7 +216,7 @@ export default class Config {
         let stickerBaseUrl = 'https://static.wildfirechat.net/sticker/';
         // 实例代码
         // 双网环境时，将动态表情地址切换到备选网络
-        // if (!wfc.connectedToMainNetwork()) {
+        // if (Config.isUseBackupAddress()) {
         //     stickerBaseUrl = 'https://192.168.2.169/sticker/';
         // }
         return stickerBaseUrl;

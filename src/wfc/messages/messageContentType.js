@@ -98,4 +98,6 @@ export default class MessageContentType {
 
     static MESSAGE_CONTENT_TYPE_FEED = 501;
     static MESSAGE_CONTENT_TYPE_COMMENT = 502;
+    static MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT= 510;
+    static MESSAGE_CONTENT_TYPE_MIX_FILE_TEXT= 511;
 }

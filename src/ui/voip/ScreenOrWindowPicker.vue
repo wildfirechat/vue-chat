@@ -42,8 +42,9 @@
 
 <!--only for electron-->
 <script>
-import {desktopCapturer} from "../../platform";
+import {ipcRenderer} from "../../platform";
 import {toRaw} from "vue";
+import IpcEventType from "../../ipcEventType";
 
 export default {
     name: "ScreenOrWindowPicker",
@@ -95,7 +96,7 @@ export default {
 
     mounted() {
         let types = ['screen', 'window'];
-        desktopCapturer.getSources({types: types, thumbnailSize: {width: 200, height: 200}, fetchWindowIcons: true})
+        ipcRenderer.invoke(IpcEventType.GET_SOURCE, {types: types, thumbnailSize: {width: 200, height: 200}, fetchWindowIcons: true})
             .then(sources => {
                 this.screenSources = sources.filter(source => source.id.startsWith('screen'))
                 this.windowSources = sources.filter(source => source.id.startsWith('window'))

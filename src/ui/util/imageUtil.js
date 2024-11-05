@@ -301,16 +301,16 @@ function imageThumbnail(file) {
 function videoThumbnail(file) {
     return new Promise(
         (resolve, reject) => {
-            let video = document.getElementById('bgvid');
+            let video = document.createElement('video');
             video.onplay = () => {
                 console.log('------------ video onplay');
 
-                var canvas = document.createElement("canvas");
+                let canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 canvas.getContext('2d')
                     .drawImage(video, 0, 0, canvas.width, canvas.height);
-                var img = document.createElement("img");
+                let img = document.createElement("img");
                 img.src = canvas.toDataURL();
                 img.onload = () => {
                     let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
@@ -334,13 +334,15 @@ function videoThumbnail(file) {
             video.onerror = () => {
                 resolve(null);
             };
-            _loadVideo(file)
-            console.log('----------', video);
+            _loadVideo(video, file)
         });
 }
 
-function _loadVideo(file) {
-    let video = document.getElementById('bgvid');
+function _loadVideo(videoEl, file) {
+    console.log('----------', videoEl, file);
+    let video = videoEl
+    video.autoplay = true
+    video.muted = true
     if (file.path) {
         if (file.path.startsWith('/')) {
             video.src = 'local-resource://' + (file.path.indexOf(file.name) > -1 ? file.path : file.path + file.name); // local video url
@@ -359,14 +361,14 @@ function _loadVideo(file) {
 function videoDuration(file) {
     return new Promise(
         (resolve, reject) => {
-            let video = document.getElementById('bgvid');
+            let video = document.createElement('video');
             video.onplay = () => {
                 resolve(video.duration);
             };
             video.onerror = () => {
                 resolve(0);
             };
-            _loadVideo(file)
+            _loadVideo(video, file)
             console.log('----------', video);
         });
 }
@@ -412,4 +414,44 @@ function scaleDown(width, height, maxWidth, maxHeight) {
     return {width: Math.ceil(scaledWidth), height: Math.ceil(scaledHeight)};
 }
 
-export {mergeImages, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri, scaleDown};
+// helper to get dimensions of an image
+function imageSize(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image()
+
+        // the following handler will fire after a successful loading of the image
+        img.onload = () => {
+            const {naturalWidth: width, naturalHeight: height} = img
+            resolve({width, height})
+        }
+
+        // and this handler will fire if there was an error with the image (like if it's not really an image or a corrupted one)
+        img.onerror = () => {
+            reject('There was some problem with the image.')
+        }
+
+        img.src = url
+    })
+}
+
+function videoSize(url) {
+    return new Promise(resolve => {
+        // create the video element
+        const video = document.createElement('video');
+
+        // place a listener on it
+        video.addEventListener("loadedmetadata", function () {
+            // retrieve dimensions
+            const height = this.videoHeight;
+            const width = this.videoWidth;
+
+            // send back result
+            resolve({width, height});
+        }, false);
+
+        // start download meta-datas
+        video.src = url;
+    });
+}
+
+export {mergeImages, genGroupPortrait, videoThumbnail, videoDuration, imageThumbnail, fileFromDataUri, scaleDown, imageSize, videoSize};

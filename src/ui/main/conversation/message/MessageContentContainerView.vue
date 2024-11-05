@@ -37,6 +37,10 @@
                                     v-else-if="message.messageContent.type === 10"
                                     :style="{'--out-arrow-color':'white', '--in-arrow-color':'white'}"
                                     v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <MixMultiMediaTextMessageContentView :message="message"
+                                             v-else-if="message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT"/>
+        <MixFileTextMessageContentView :message="message"
+                                       v-else-if="message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_FILE_TEXT"/>
         <UnsupportMessageContentView :message="message"
                                      v-else-if="[/* todo un support message types */].indexOf(message.messageContent.type) >= 0"/>
         <TestCustomMessageContentView :message="message"
@@ -73,10 +77,16 @@ import LinkMessageContentView from "./content/LinkMessageContentView";
 import StreamingTextMessageContentView from "./content/StreamingTextMessageContentView.vue";
 import CustomMessageContentType from "../../../../wfc_custom_message/customMessageContentType";
 import TestCustomMessageContentView from "./content/TestCustomMessageContentView.vue";
+import MixMultiMediaTextMessageContentView from "./content/MixMultiMediaTextMessageContentView.vue";
+import MessageContentType from "../../../../wfc/messages/messageContentType";
+import MixFileTextMessageContentView from "./content/MixFileTextMessageContentView.vue";
 
 export default {
     name: "MessageContentContainerView",
     computed: {
+        MessageContentType() {
+            return MessageContentType
+        },
         CustomMessageContentType() {
             return CustomMessageContentType
         }
@@ -88,6 +98,8 @@ export default {
         }
     },
     components: {
+        MixFileTextMessageContentView,
+        MixMultiMediaTextMessageContentView,
         TestCustomMessageContentView,
         LinkMessageContentView,
         UnknownMessageContentView,

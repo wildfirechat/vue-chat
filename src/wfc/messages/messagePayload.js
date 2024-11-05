@@ -32,4 +32,6 @@ export default class MessagePayload {
     mentionedType = 0;
     mentionedTargets = [];
     extra;
+    // 仅超级群有效，消息是否已完整服务器加载
+    notLoaded = 0;
 }

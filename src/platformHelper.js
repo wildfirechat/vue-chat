@@ -9,16 +9,20 @@ import {toRaw} from "vue";
 
 export function downloadFile(message) {
     let file = message.messageContent;
+    downloadFile2(file.remotePath, file.name, message.messageUid)
+}
+
+export function downloadFile2(url, name, messageUid) {
     if (isElectron()) {
         ipcRenderer.send(IPCEventType.DOWNLOAD_FILE, {
-            messageUid: stringValue(message.messageUid),
-            remotePath: file.remotePath,
-            fileName: file.name,
+            messageUid: stringValue(messageUid),
+            remotePath: url,
+            fileName: name,
             windowId: remote.getCurrentWindow().getMediaSourceId(),
         });
     } else {
-        let fileHref = file.remotePath;
-        let filename = file.name;
+        let fileHref = url;
+        let filename = name;
         if (window.navigator.msSaveBlob) {// ie
             let xhr = new XMLHttpRequest();
             xhr.onloadstart = function () {
@@ -39,7 +43,7 @@ export function downloadFile(message) {
     }
 }
 
-export function previewMM(message) {
+export function previewMM(message, mixMultiMediaItemIndex = 0) {
     if (isElectron()) {
         let hash = window.location.hash;
         let url = window.location.origin;
@@ -49,7 +53,7 @@ export function previewMM(message) {
             url += "/mmpreview"
         }
 
-        url += `?messageUid=${stringValue(message.messageUid)}`
+        url += `?messageUid=${stringValue(message.messageUid)}&mmmIndex=${mixMultiMediaItemIndex}`
         let size;
         if (message.messageContent instanceof ImageMessageContent) {
             let display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())

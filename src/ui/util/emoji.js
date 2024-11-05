@@ -1,5 +1,4 @@
 import anchorme from "anchorme";
-import uEmojiParser from 'universal-emoji-parser'
 import twemoji from 'twemoji'
 import Config from "../../config";
 

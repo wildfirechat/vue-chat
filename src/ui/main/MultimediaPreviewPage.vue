@@ -6,19 +6,19 @@
         <div v-else style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center">
             <img v-show="mediaLoaded === false"
                  alt=""
-                 v-bind:src="'data:video/jpeg;base64,' + message.messageContent.thumbnail">
-            <img v-show="mediaLoaded && message.messageContent.type === 3" @load="onImageLoaded"
+                 v-bind:src="'data:video/jpeg;base64,' + currentMedia.thumbnail">
+            <img v-show="mediaLoaded && currentMedia.type === 'image'" @load="onImageLoaded"
                  draggable="true"
                  alt=""
                  ref="img"
                  @contextmenu.prevent="showContextMenu"
-                 v-bind:src="message.messageContent.remotePath">
-            <video v-show="mediaLoaded && message.messageContent.type === 6" @loadedmetadata="onVideoMetaDataLoaded"
+                 v-bind:src="currentMedia.url">
+            <video v-show="mediaLoaded && currentMedia.type === 'video'" @loadedmetadata="onVideoMetaDataLoaded"
                    controls
                    draggable="true"
                    ref="video"
                    @contextmenu.prevent="showContextMenu"
-                   v-bind:src="message.messageContent.remotePath"/>
+                   v-bind:src="currentMedia.url"/>
             <div v-if="hasMoreOldMediaMessage" class="left-arrow-container">
                 <div class="left-arrow" @click="previewNextMessage(true)">
                     <i class="icon-ion-ios-arrow-left"></i>
@@ -58,8 +58,14 @@ export default {
     name: 'MultimediaPreviewPage',
     data() {
         return {
+            currentMedia: {
+                url: '',
+                thumbnail: '',
+                type: 'image'
+            },
             mediaLoaded: false,
             message: null,
+            currentMixMultiMediaItemIndex: 0,
             hasMoreOldMediaMessage: true,
             hasMoreNewMediaMessage: true,
             minWidth: 480,
@@ -71,16 +77,48 @@ export default {
         document.title = '野火IM消息预览';
         let hash = window.location.hash;
 
-        if (hash.indexOf('messageUid=') >= 0) {
-            let messageUid = hash.substring(hash.indexOf('=') + 1);
+        let query = hash.substring(hash.indexOf('?'));
+        if (query && query.length > 1) {
+            let params = new URLSearchParams(query);
+            let messageUid = params.get('messageUid');
             this.message = wfc.getMessageByUid(messageUid);
+            let value = params.get('mmmIndex');
+            if (value) {
+                this.currentMixMultiMediaItemIndex = Number(value)
+            }
         }
 
         window.addEventListener('keyup', this.handleKeyPress, true);
     },
 
-    methods: {
+    mounted() {
+        this.computeCurrentMedia();
+    },
 
+    methods: {
+        computeCurrentMedia() {
+            if (this.message.messageContent.type === MessageContentType.Image) {
+                this.currentMedia = {
+                    url: this.message.messageContent.remotePath,
+                    thumbnail: this.message.messageContent.thumbnail,
+                    type: 'image'
+                }
+            } else if (this.message.messageContent.type === MessageContentType.Video) {
+                this.currentMedia = {
+                    url: this.message.messageContent.remotePath,
+                    thumbnail: this.message.messageContent.thumbnail,
+                    type: 'video'
+                }
+            } else if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
+                let entries = this.message.messageContent.multiMedias;
+                console.log('xxxxxxxxxxx', entries)
+                this.currentMedia = {
+                    url: entries[this.currentMixMultiMediaItemIndex].url,
+                    thumbnail: entries[this.currentMixMultiMediaItemIndex].thumbnail,
+                    type: entries[this.currentMixMultiMediaItemIndex].type
+                }
+            }
+        },
         resize(width, height) {
             let display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
             let workAreaWith = display.workAreaSize.width;
@@ -132,10 +170,26 @@ export default {
         },
         previewNextMessage(before) {
             this.$refs.menu.close();
-            wfc.getMessagesByTimestampV2(this.message.conversation, [MessageContentType.Image, MessageContentType.Video], this.message.timestamp, before, 1, '', msgs => {
+            if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
+                if (before && this.currentMixMultiMediaItemIndex > 0) {
+                    this.currentMixMultiMediaItemIndex--
+                    this.computeCurrentMedia();
+                    return;
+                } else if (!before && this.currentMixMultiMediaItemIndex < this.message.messageContent.multiMedias.length - 1) {
+                    this.currentMixMultiMediaItemIndex++;
+                    this.computeCurrentMedia();
+                    return
+                }
+            }
+
+            wfc.getMessagesByTimestampV2(this.message.conversation, [MessageContentType.Image, MessageContentType.Video, MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT], this.message.timestamp, before, 1, '', msgs => {
                 if (msgs.length > 0) {
                     this.mediaLoaded = false;
                     this.message = msgs[0];
+                    if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
+                        this.currentMixMultiMediaItemIndex = before ? this.message.messageContent.multiMedias.length - 1 : 0
+                    }
+                    this.computeCurrentMedia();
                     if (before) {
                         this.hasMoreNewMediaMessage = true;
                     } else {
@@ -185,7 +239,6 @@ export default {
 
 .image-content-container {
     position: relative;
-//border: 1px solid #efefef; //border-radius: 5px;
 }
 
 .image-content-container img {

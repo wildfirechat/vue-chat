@@ -20,6 +20,7 @@ const IpcEventType = {
     IS_SUSPEND: 'is-suspend',
     START_SCREEN_SHARE: 'start-screen-share',
     STOP_SCREEN_SHARE: 'stop-screen-share',
+    GET_SOURCE: 'get-source',
 }
 
 module.exports = IpcEventType

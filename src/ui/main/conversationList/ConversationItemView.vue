@@ -57,6 +57,7 @@ import Config from "../../../config";
 import ConversationType from "../../../wfc/model/conversationType";
 import GroupType from "../../../wfc/model/groupType";
 import WfcUtil from "../../../wfc/util/wfcUtil";
+import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 
 export default {
     name: "ConversationItemView",
@@ -85,6 +86,23 @@ export default {
             } else if (v === 'drop') {
                 this.dragAndDropEnterCount--;
                 let length = e.dataTransfer.files.length;
+                if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
+                    this.$modal.show(
+                        SendMixMediaMessageView,
+                        {
+                            conversation: this.source.conversation,
+                            files: [...e.dataTransfer.files],
+                        }, null, {
+                            name: 'send-mix-multi-media-message-modal',
+                            width: 600,
+                            height: 480,
+                            clickToClose: true,
+                        }, {
+                            'before-close': null,
+                        });
+
+                    return
+                }
                 if (length > 0 && length <= 5) {
                     for (let i = 0; i < length; i++) {
                         this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i])

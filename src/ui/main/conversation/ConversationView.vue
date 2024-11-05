@@ -224,13 +224,13 @@ import {currentWindow, ipcRenderer} from "../../../platform";
 import appServerApi from "../../../api/appServerApi";
 import Config from "../../../config";
 import IPCEventType from "../../../ipcEventType";
-import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 import {imageThumbnail} from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
 import {vOnClickOutside} from '@vueuse/components'
 import WfcUtil from "../../../wfc/util/wfcUtil";
 
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
+import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 
 var amr;
 export default {
@@ -320,6 +320,23 @@ export default {
                     }
                 }
 
+                if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
+                    this.$modal.show(
+                        SendMixMediaMessageView,
+                        {
+                            conversation: this.conversationInfo.conversation,
+                            files: [...e.dataTransfer.files],
+                        }, null, {
+                            name: 'send-mix-multi-media-message-modal',
+                            width: 600,
+                            height: 480,
+                            clickToClose: true,
+                        }, {
+                            'before-close': null,
+                        });
+
+                    return
+                }
                 let length = e.dataTransfer.files.length;
                 if (length > 0 && length <= 5) {
                     for (let i = 0; i < length; i++) {

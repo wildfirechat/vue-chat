@@ -46,6 +46,8 @@ import {pstore} from './pstore'
 
 import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
 import SoundMessageContent from "./wfc/messages/soundMessageContent";
+import MixMultiMediaTextMessageContent from "./wfc/messages/mixMultiMediaTextMessageContent";
+import MixFileTextMessageContent from "./wfc/messages/mixFileTextMessageContent";
 
 /**
  * 一些说明
@@ -222,6 +224,13 @@ let store = {
                     return;
                 }
 
+                if (msg.content.notLoaded) {
+                    console.log('message not loaded, reset conversation message list')
+                    conversationState.currentConversationMessageList.length = 0
+                    conversationState.currentConversationOldestMessageId = 0
+                    conversationState.currentConversationOldestMessageUid = 0
+                    return;
+                }
                 // 会把下来加载更多加载的历史消息给清理了
                 let lastTimestamp = 0;
                 let msgListLength = conversationState.currentConversationMessageList.length;
@@ -361,7 +370,7 @@ let store = {
             }
         });
 
-        wfc.eventEmitter.on(EventType.MessageStatusUpdate, (message) => {
+        const messageStatusOrContentUpdateListener = (message) => {
             console.log('message status update', message)
             if (!this._isDisplayMessage(message)) {
                 return;
@@ -383,7 +392,11 @@ let store = {
             if (conversationState.currentConversationInfo.lastMessage && conversationState.currentConversationInfo.lastMessage.messageId === message.messageId) {
                 Object.assign(conversationState.currentConversationInfo.lastMessage, message);
             }
-        });
+        }
+
+        wfc.eventEmitter.on(EventType.MessageStatusUpdate, messageStatusOrContentUpdateListener);
+
+        wfc.eventEmitter.on(EventType.MessageContentUpdate, messageStatusOrContentUpdateListener);
 
         wfc.eventEmitter.on(EventType.MessageRead, (readEntries) => {
             // optimization
@@ -837,7 +850,7 @@ let store = {
                         })
 
                     } else {
-                        message.messageContent = this._filterFowardMessageContent(message)
+                        message.messageContent = this._filterForwardMessageContent(message)
                         wfc.sendConversationMessage(conversation, message.messageContent);
                     }
                 });
@@ -853,7 +866,11 @@ let store = {
                     title = '群的聊天记录';
                 }
                 compositeMessageContent.title = title;
-                compositeMessageContent.setMessages(messages);
+                let msgs = messages.map(m => {
+                    m.messageContent = this._filterForwardMessageContent(m)
+                    return m
+                })
+                compositeMessageContent.setMessages(msgs);
 
                 wfc.sendConversationMessage(conversation, compositeMessageContent);
             }
@@ -971,6 +988,92 @@ let store = {
                 autoplay: true,
             });
         }
+    },
+
+    /**
+     *
+     * @param conversation :Conversation 会话
+     * @param files : File[] 需要发送的媒体文件
+     * @param text : string 描述
+     * @return {Promise<void>}
+     */
+    async sendMixMediaMessage(conversation, files, text) {
+        console.log('sendMixMediaMessage', conversation, files, text);
+        let isAllImageOrVideoFile = true
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].type.indexOf('image') === -1 && files[i].type.indexOf('video') === -1) {
+                isAllImageOrVideoFile = false
+                break
+            }
+        }
+
+        let content;
+        let entries
+        if (isAllImageOrVideoFile) {
+            entries = await Promise.all(
+                files.map(async f => {
+                    let isImg = f.type.indexOf('image') >= 0
+                    let {thumbnail: it, width: iw, height: ih} = isImg ? await imageThumbnail(f) : await videoThumbnail(f);
+                    it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
+                    if (it.length > 15 * 1024) {
+                        console.warn('generated thumbnail is too large, use default thumbnail', it.length);
+                        it = Config.DEFAULT_THUMBNAIL_URL;
+                    }
+                    return {
+                        url: '',
+                        type: isImg ? 'image' : 'video',
+                        thumbnail: it.split(',')[1],
+                        width: iw,
+                        height: ih,
+                        tmpFile: f,
+                    }
+                })
+            )
+
+            content = new MixMultiMediaTextMessageContent(entries, text)
+        } else {
+            entries = files.map(f => {
+                return {
+                    url: '',
+                    name: f.name,
+                    size: f.size,
+                    iv: f.type.indexOf('image') >= 0 || f.type.indexOf('video') >= 0,
+                    tmpFile: f,
+                }
+            })
+            content = new MixFileTextMessageContent(entries, text)
+        }
+        let msg = wfc.insertMessage(conversation, content, MessageStatus.Sending, true)
+
+        let entriesWithUrl = await Promise.all(
+            entries.map(entry => {
+                let file = entry.tmpFile;
+                return new Promise((resolve, reject) => {
+                    wfc.uploadMedia(file.name, file, file.type.indexOf('image') >= 0 ? MessageContentMediaType.Image : MessageContentMediaType.Video, remoteUrl => {
+                        entry.url = remoteUrl
+                        delete entry.tmpFile
+                        resolve(entry)
+                    }, err => {
+                        resolve(entry)
+                        console.error('upload file failed', f, err);
+                    }, (process, total) => {
+
+                    })
+                })
+            })
+        )
+        if (isAllImageOrVideoFile) {
+            content = new MixMultiMediaTextMessageContent(entriesWithUrl, text)
+        } else {
+            content = new MixFileTextMessageContent(entries, text)
+        }
+        wfc.updateMessageContent(msg.messageId, content)
+        msg.messageContent = content
+        wfc.sendSavedMessage(msg, 0, (messageUid, timestamp) => {
+
+        }, err => {
+            console.log('send msg failed', err)
+        })
     },
 
     /**
@@ -1178,24 +1281,28 @@ let store = {
         console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let loadRemoteHistoryMessageFunc = () => {
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
-                (msgs, hasMore) => {
+                (msgs) => {
                     console.log('loadRemoteConversationMessages response', msgs.length);
                     if (msgs.length === 0) {
-                        // 拉回来的消息，本地全都有时，会走到这儿
-                        if (hasMore) {
-                            loadedCB();
-                        } else {
-                            completeCB();
-                        }
+                        completeCB();
                     } else {
                         // 可能拉回来的时候，本地已经切换会话了
                         if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
-                            conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
-                            msgs = msgs.filter(m => m.messageId !== 0);
-                            this._onloadConversationMessages(conversation, msgs);
+                            let filteredMsgs = msgs.filter(m => {
+                                return m.messageId !== 0 && conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid)) === -1
+                            })
+                            if (filteredMsgs.length === 0) {
+                                completeCB()
+                                return;
+                            }
+
+                            conversationState.currentConversationOldestMessageUid = filteredMsgs[0].messageUid;
+                            this._onloadConversationMessages(conversation, filteredMsgs);
+                            loadedCB();
                         }
-                        this._reloadConversation(conversation);
-                        loadedCB();
+                        if (!conversationState.currentConversationInfo.lastMessage) {
+                            this._reloadConversation(conversation);
+                        }
                     }
                 },
                 (error) => {
@@ -2140,7 +2247,7 @@ let store = {
         })
     },
 
-    _filterFowardMessageContent(message) {
+    _filterForwardMessageContent(message) {
         let content = message.messageContent
         if (content instanceof CallStartMessageContent) {
             content = new TextMessageContent(content.digest(message))

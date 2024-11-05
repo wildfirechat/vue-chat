@@ -92,6 +92,7 @@ export default {
                 switch (this.quotedMessage.messageContent.type) {
                     case MessageContentType.Video:
                     case MessageContentType.Image:
+                    case MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT:
                         previewMM(this.quotedMessage)
                         break;
                     case MessageContentType.File:

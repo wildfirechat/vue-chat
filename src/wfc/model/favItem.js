@@ -113,6 +113,7 @@ export default class FavItem {
             // case MessageContentType.Link:
             //     break
             default:
+                favItem.title = message.messageContent.digest(message)
                 break;
         }
         if (Config.urlRedirect) {

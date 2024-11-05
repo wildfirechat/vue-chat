@@ -834,9 +834,9 @@ export default {
                             let source = event.params.source;
                             let desktopShareOptions = {
                                 sourceId: source.id,
-                                minWidth: 1280,
+                                // minWidth: 1280,
                                 maxWidth: 1280,
-                                minHeight: 720,
+                                // minHeight: 720,
                                 maxHeight: 720
                             }
 

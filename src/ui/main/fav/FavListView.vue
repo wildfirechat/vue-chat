@@ -284,6 +284,13 @@ export default {
             if (!favItem) {
                 return;
             }
+            if (favItem.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
+                this.$notify({
+                    text: '此类型，暂不支持转发',
+                    type: 'warn'
+                });
+                return;
+            }
             this.$refs.menu.open(event, favItem);
         },
         onMenuClose() {

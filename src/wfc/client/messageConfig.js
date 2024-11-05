@@ -69,6 +69,8 @@ import LeaveChannelChatMessageContent from "../messages/leaveChannelChatMessageC
 import ModifyGroupSettingNotification from "../messages/notification/modifyGroupSettingNotification";
 import StreamingTextGeneratingMessageContent from "../messages/streamingTextGeneratingMessageContent";
 import StreamingTextGeneratedMessageContent from "../messages/streamingTextGeneratedMessageContent";
+import MixMultiMediaTextMessageContent from "../messages/mixMultiMediaTextMessageContent";
+import MixFileTextMessageContent from "../messages/mixFileTextMessageContent";
 
 export default class MessageConfig {
     static getMessageContentClazz(type) {
@@ -494,6 +496,18 @@ export default class MessageConfig {
             flag: PersistFlag.Transparent,
             type: MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND,
             contentClazz: ConferenceCommandMessageContent,
+        },
+        {
+            name: 'mixMediaTextMessageContent',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.MESSAGE_CONTENT_TYPE_MIX_FILE_TEXT,
+            contentClazz: MixFileTextMessageContent,
+        },
+        {
+            name: 'mixMultiMediaTextMessageContent',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT,
+            contentClazz: MixMultiMediaTextMessageContent,
         }
 
     ];

@@ -180,6 +180,10 @@ export class AvEngineKitProxy {
             console.log('in conference, ignore all other msg');
             return;
         }
+        if(content.notLoaded){
+            console.log('message not loaded, ignore');
+            return;
+        }
         if (msg.direction === 1 &&
             (content.type === MessageContentType.VOIP_CONTENT_TYPE_START || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT)) {
             if (this.callWin) {

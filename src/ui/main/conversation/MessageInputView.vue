@@ -23,7 +23,7 @@
                     </li>
                     <li v-if="!inputOptions['disableFile']">
                         <i @click="pickFile" class="icon-ion-android-attach"/>
-                        <input ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                        <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                                style="display: none">
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
@@ -132,6 +132,7 @@ import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
 import {vOnClickOutside} from '@vueuse/components'
+import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 
 export default {
     name: "MessageInputView",
@@ -242,6 +243,10 @@ export default {
                 if (dT) {
                     let fileList = dT.files;
                     if (fileList.length > 0) {
+                        if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
+                            this.showSendMixMediaMessageModal(fileList)
+                            return
+                        }
                         for (let i = 0; i < fileList.length; i++) {
                             let file = fileList.item(i);
                             console.log('handle paste file', file);
@@ -282,6 +287,13 @@ export default {
                         console.log('clipboard item', item.types, item)
                         if (item.types.includes("image/png")) {
                             const blob = await item.getType("image/png");
+                            if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
+                                let file = new File([blob], new Date().getTime() + '.png', {
+                                    type: 'image/png'
+                                });
+                                this.showSendMixMediaMessageModal([file])
+                                return
+                            }
                             document.execCommand('insertImage', false, URL.createObjectURL(blob));
                             this.styleImageInEditor();
                             return;
@@ -291,7 +303,7 @@ export default {
             }
 
             if (text && text.trim()) {
-                document.execCommand('insertText', false, text);
+                document.execCommand('insertText', false, text.trim());
                 // Safari 浏览器 execCommand 失效，可以采用下面这种方式处理粘贴
                 // this.$refs.input.innerText += text;
             }
@@ -426,6 +438,7 @@ export default {
                     store.sendFile(this.conversationInfo.conversation, file)
                     // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
                     img.parentNode.removeChild(img);
+                    URL.revokeObjectURL(img.src)
                 }
             }
             message = input.innerText.trim();
@@ -558,9 +571,18 @@ export default {
 
         onPickFile(event) {
             // this.batchProcess(e.target.files[0]);
-            console.log('onPickFile', event.target.files[0]);
-            let file = event.target.files[0];
-            event.target.value = '';
+            console.log('onPickFile', event.target.files);
+            let files = event.target.files;
+            if (files.length === 0) {
+                return;
+            } else if (files.length > 10) {
+                this.$notify({
+                    text: '一次最多支持发送 10 个文件',
+                    type: 'warn'
+                });
+                return;
+            }
+            // event.target.value = '';
 
             // TODO
             // var showMessage = snackbar.showMessage;
@@ -575,20 +597,30 @@ export default {
             //   showMessage('Send file not allowed to exceed 100M.');
             //   return false;
             // }
-            if (isElectron()) {
-                if (new Date().getTime() - file.lastModified < 30 * 1000 && file.path.indexOf('/var/folders') === 0) {
-                    console.log('not support file', file)
-                    this.$notify({
-                        text: ' 不支持的文件类型',
-                        type: 'warn'
-                    });
-                    return;
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i]
+                if (isElectron()) {
+                    if (new Date().getTime() - file.lastModified < 30 * 1000 && file.path.indexOf('/var/folders') === 0) {
+                        console.log('not support file', file)
+                        this.$notify({
+                            text: ' 不支持的文件类型',
+                            type: 'warn'
+                        });
+                        return;
+                    }
                 }
             }
-            this.$eventBus.$emit('uploadFile', file)
-            store.sendFile(this.conversationInfo.conversation, file);
+            if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
+                this.showSendMixMediaMessageModal(files)
+                return;
+            }
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i]
+                this.$eventBus.$emit('uploadFile', file)
+                store.sendFile(this.conversationInfo.conversation, file);
+            }
         },
-
+        
         initEmojiPicker() {
             window.__twemoji_base_url__ = Config.emojiBaseUrl();
             let config = emojiConfig();
@@ -727,7 +759,11 @@ export default {
             let children = [...clonedInput.children]
             for (let i = 0; i < children.length; i++) {
                 let e = children[i]
-                e.replaceWith(e.alt)
+                if (e.tagName === 'BR') {
+                    e.replaceWith('\n')
+                } else {
+                    e.replaceWith(e.alt ? e.alt : '')
+                }
             }
             let draftText = clonedInput.innerHTML.trim();
 
@@ -876,6 +912,23 @@ export default {
             this.initMention(this.conversationInfo.conversation)
             this.focusInput();
             this.initEmojiPicker()
+        },
+
+        showSendMixMediaMessageModal(fileList) {
+            this.$modal.show(
+                SendMixMediaMessageView,
+                {
+                    files: [...fileList],
+                    conversation: this.conversationInfo.conversation,
+                    text: this.$refs.input.innerText,
+                }, null, {
+                    name: 'send-mix-multi-media-message-modal',
+                    width: 600,
+                    height: 480,
+                    clickToClose: true,
+                }, {
+                    'before-close': null,
+                });
         }
     },
 
@@ -907,6 +960,10 @@ export default {
         if (isElectron()) {
             ipcRenderer.on('screenshots-ok', (event, args) => {
                 console.log('screenshots-ok', args)
+                if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
+                    // ctrl + v 粘贴
+                    return
+                }
                 if (args.filePath) {
                     setTimeout(() => {
                         document.execCommand('insertImage', false, 'local-resource://' + args.filePath);

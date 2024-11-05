@@ -22,6 +22,8 @@ export default class EventType {
     static DeleteMessage = 'deleteMsg';
     // function (message) {}
     static MessageStatusUpdate = 'msgStatusUpdate';
+    // function (message) {}
+    static MessageContentUpdate = 'msgContentUpdate';
     // function (connectionStatus) {}
     static ConnectionStatusChanged = 'connectionStatusChanged';
     // function (host/ip/port) {}

@@ -12,6 +12,8 @@ export default class MessageContent {
     mentionedTargets = [];
     extra;
     pushContent;
+    // 仅超级群有效，消息是否已完整服务器加载
+    notLoaded = 0;
 
     constructor(type, mentionedType = 0, mentionedTargets = []) {
         this.type = type;
@@ -41,6 +43,7 @@ export default class MessageContent {
      */
     decode(payload) {
         this.type = payload.type;
+        this.notLoaded = payload.notLoaded;
         this.mentionedType = payload.mentionedType;
         if (payload.hasOwnProperty('mentionedTarget')) {
             // web
