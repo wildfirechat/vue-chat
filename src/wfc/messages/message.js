@@ -127,7 +127,7 @@ export default class Message {
             if (contentClazz) {
                 let content = new contentClazz();
                 if (obj.content.__notLoaded) {
-                    content.__notLoaded = true;
+                    content.notLoaded = true;
                     content.type = obj.content.type;
                 } else {
                     try {
