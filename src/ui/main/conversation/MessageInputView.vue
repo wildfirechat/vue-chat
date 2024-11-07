@@ -651,6 +651,7 @@ export default {
             let groupInfo = wfc.getGroupInfo(conversation.target);
             mentionMenuItems.push({
                 key: this.$t('conversation.all_people'),
+                keyIgnoreFriendAlias: this.$t('conversation.all_people'),
                 value: '@' + conversation.target,
                 avatar: groupInfo.portrait ? groupInfo.portrait : Config.DEFAULT_GROUP_PORTRAIT_URL,
                 //searchKey: '所有人' + pinyin.letter('所有人', '', null)
