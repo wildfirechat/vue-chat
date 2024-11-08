@@ -10,4 +10,5 @@ export default class ParticipantProfile {
     audioMuted = false;
     videoMuted = false;
     audience = false;
+    screenSharing = false;
 }

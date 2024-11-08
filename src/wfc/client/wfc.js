@@ -95,6 +95,7 @@ export class WfcManager {
      * 连接服务器
      * @param {string} userId 用户id
      * @param {string} token 用户token，生成token时，所使用的clientId，一定要通过{@link getClientId}获取
+     * @return {number} 返回上一次活动时间。如果间隔时间较长，可以加个第一次登录的等待提示界面，在等待时同步所有的用户信息/群组信息/频道信息等。
      */
     connect(userId, token) {
         impl.connect(userId, token);
@@ -198,7 +199,14 @@ export class WfcManager {
      * @returns {[GroupInfo]} 参考{@link GroupInfo}
      */
     getFavGroupList() {
-        return impl.getMyGroupList();
+        let groupInfos = impl.getMyGroupList();
+        groupInfos.map(info => {
+            if (!info.portrait || info.portrait.startsWith(Config.APP_SERVER)) {
+                info.portrait = this.defaultGroupPortrait(info);
+            }
+            return info;
+        })
+        return groupInfos;
     }
 
     /**
@@ -359,7 +367,14 @@ export class WfcManager {
      * @returns {[GroupSearchResult]}
      */
     searchGroups(keyword) {
-        return impl.searchGroups(keyword);
+        let results = impl.searchGroups(keyword);
+        results.forEach(r => {
+            let info = r.groupInfo;
+                if (!info.portrait || info.portrait.startsWith(Config.APP_SERVER)) {
+                    info.portrait = this.defaultGroupPortrait(info);
+                }
+        })
+        return results;
     }
 
     /**
