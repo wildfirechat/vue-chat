@@ -2,7 +2,7 @@
     <div class="password-form-container">
         <p class="title">重置密码</p>
         <div class="item">
-            <input v-model="resetAuthCode" class="text-input" type="number" placeholder="验证码">
+            <input v-model.trim="resetAuthCode" class="text-input" type="number" placeholder="验证码">
             <button class="request-auth-code-button" @click="requestResetAuthCode">获取验证码</button>
         </div>
         <div class="item">
@@ -12,7 +12,7 @@
             <input v-model="confirmPassword" class="text-input" type="text" placeholder="请再次输入新密码">
         </div>
         <p class="tip" v-if="newPassword && confirmPassword && newPassword !== confirmPassword">两次输入的密码不一致</p>
-        <button class="confirm-button" :disabled="resetAuthCode.trim() === '' || newPassword.trim() === '' || confirmPassword.trim() === ''" @click="resetPassword">确定</button>
+        <button class="confirm-button" :disabled="resetAuthCode === '' || newPassword === '' || confirmPassword === '' || newPassword !== confirmPassword" @click="resetPassword">确定</button>
     </div>
 </template>
 

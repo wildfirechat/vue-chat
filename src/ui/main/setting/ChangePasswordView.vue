@@ -2,16 +2,16 @@
     <div class="password-form-container">
         <p class="title">修改密码</p>
         <div class="item">
-            <input v-model="oldPassword" class="text-input" type="number" placeholder="请输入旧密码">
+            <input v-model.trim="oldPassword" class="text-input" type="number" placeholder="请输入旧密码">
         </div>
         <div class="item">
-            <input v-model="newPassword" class="text-input" type="text" placeholder="请输入新密码">
+            <input v-model.trim="newPassword" class="text-input" type="text" placeholder="请输入新密码">
         </div>
         <div class="item">
-            <input v-model="confirmPassword" class="text-input" type="text" placeholder="请再次输入新密码">
+            <input v-model.trim="confirmPassword" class="text-input" type="text" placeholder="请再次输入新密码">
         </div>
         <p class="tip" v-if="newPassword && confirmPassword && newPassword !== confirmPassword">两次输入的密码不一致</p>
-        <button class="confirm-button" :disabled="oldPassword.trim() === '' || newPassword.trim() === '' || confirmPassword.trim() === ''" @click="changePassword">确定</button>
+        <button class="confirm-button" :disabled="oldPassword === '' || newPassword === '' || confirmPassword === '' || newPassword !== confirmPassword" @click="changePassword">确定</button>
     </div>
 </template>
 
