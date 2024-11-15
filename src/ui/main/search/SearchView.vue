@@ -61,7 +61,7 @@ export default {
             if (this.sharedSearchState.searchDomainInfo) {
                 return `在 ${this.sharedContactState.currentExternalDomain.name} 搜索用户`
             } else {
-                return '搜索'
+                return '搜索、添加好友'
             }
         }
     },
