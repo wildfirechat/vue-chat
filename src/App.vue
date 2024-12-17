@@ -48,6 +48,8 @@ import './vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import IpcMain from "./ipc/ipcMain";
 import {currentWindow} from "./platform";
 import wfc from "./wfc/client/wfc";
+import waterMark from "./ui/util/waterMark";
+import Config from "./config";
 
 export default {
     name: 'App',
@@ -119,11 +121,17 @@ export default {
                 });
             }
         })
+        if(Config.ENABLE_WATER_MARK){
+            waterMark.init()
+        }
     },
     beforeUnmount() {
         this.$eventBus.$off('uploadFile');
         window.removeEventListener('blur', this.onblur)
         window.removeEventListener('focus', this.onfocus)
+        if(Config.ENABLE_WATER_MARK) {
+            waterMark.remove()
+        }
     },
     components: {
         IpcMain,

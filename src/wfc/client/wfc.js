@@ -311,7 +311,7 @@ export class WfcManager {
         let userInfos = impl.getUserInfos(userIds, groupId);
         userInfos.forEach((u) => {
             if (!u.portrait) {
-                u.portrait = this.defaultUserPortrait(u)
+                u.portrait = this.defaultUserPortrait(u);
             }
         });
         return userInfos;

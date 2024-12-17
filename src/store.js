@@ -1015,7 +1015,7 @@ let store = {
                     let isImg = f.type.indexOf('image') >= 0
                     let {thumbnail: it, width: iw, height: ih} = isImg ? await imageThumbnail(f) : await videoThumbnail(f);
                     it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
-                    if (it.length > 15 * 1024) {
+                    if (it.length > 6 * 1024) {
                         console.warn('generated thumbnail is too large, use default thumbnail', it.length);
                         it = Config.DEFAULT_THUMBNAIL_URL;
                     }
@@ -1123,8 +1123,8 @@ let store = {
             case MessageContentMediaType.Image:
                 let {thumbnail: it, width: iw, height: ih} = await imageThumbnail(file);
                 it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
-                console.log('image file', file)
-                if (it.length > 15 * 1024) {
+                console.log('image file',it.length, file )
+                if (it.length > 10 * 1024) {
                     console.warn('generated thumbnail is too large, use default thumbnail', it.length);
                     it = Config.DEFAULT_THUMBNAIL_URL;
                 }
@@ -1138,7 +1138,7 @@ let store = {
                     let {thumbnail: vt, width: vw, height: vh} = vtr;
                     let duration = await videoDuration(file)
                     duration = Math.ceil(duration * 1000);
-                    if (vt.length > 15 * 1024) {
+                    if (vt.length > 10 * 1024) {
                         console.warn('generated thumbnail is too large, use default thumbnail', vt.length);
                         vt = Config.DEFAULT_THUMBNAIL_URL;
                     }

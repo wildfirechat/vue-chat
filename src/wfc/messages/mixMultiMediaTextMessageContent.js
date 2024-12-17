@@ -35,7 +35,16 @@ export default class MixMultiMediaTextMessageContent extends MessageContent {
         let payload = super.encode();
         payload.searchableContent = this.text;
         let obj = {
-            "ms": this.multiMedias
+            "ms": this.multiMedias.map(mm => {
+                let tmm = mm
+                // base64 会增加 33% 的大小
+                try {
+                    tmm.thumbnail = atob(mm.thumbnail)
+                } catch (e) {
+                    // do nothing
+                }
+                return tmm
+            })
         }
         let str = JSON.stringify(obj);
         payload.binaryContent = wfc.utf8_to_b64(str);
@@ -48,6 +57,17 @@ export default class MixMultiMediaTextMessageContent extends MessageContent {
         if (payload.binaryContent && payload.binaryContent.length > 0) {
             let muStr = wfc.b64_to_utf8(payload.binaryContent)
             this.multiMedias = JSON.parse(muStr).ms
+            let mm = this.multiMedias[0];
+            try {
+                atob(mm.thumbnail)
+                // do nothing else
+            } catch (e) {
+                this.multiMedias.map(mme => {
+                    // 重新编码为 base64
+                    mme.thumbnail = btoa(mme.thumbnail)
+                    return mme
+                })
+            }
         }
     }
 }
