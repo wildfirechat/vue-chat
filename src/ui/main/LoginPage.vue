@@ -83,6 +83,14 @@
             <div v-if="loginStatus === 0" class="switch-login-type-container">
                 <p class="tip" @click="switchLoginType( loginType === 0 ? 1 : 0)">{{ loginType === 0 ? '使用密码/验证码登录' : '扫码登录' }}</p>
             </div>
+            <p class="diagnose" @click="diagnose">诊断</p>
+        </div>
+
+        <div v-if="showDiagnoseOverlay" class="diagnose-overlay">
+            <div class="diagnose-content">
+                <pre>{{ diagnoseResult }}</pre>
+                <button @click="closeDiagnoseOverlay">关闭</button>
+            </div>
         </div>
     </div>
 </template>
@@ -103,6 +111,8 @@ import IpcEventType from "../../ipcEventType";
 import appServerApi from "../../api/appServerApi";
 import organizationServerApi from "../../api/organizationServerApi";
 import WfcScheme from "../../wfcScheme";
+import axios from "axios";
+import avenginekit from "../../wfc/av/internal/engine.min";
 
 export default {
     name: 'LoginPage',
@@ -121,6 +131,8 @@ export default {
             password: '',
             authCode: '',
             firstTimeConnect: false,
+            diagnoseResult: '',
+            showDiagnoseOverlay: false,
         }
     },
     created() {
@@ -273,7 +285,7 @@ export default {
         },
 
         async refreshQrCode() {
-            this.createPCLoginSession(null);
+            await this.createPCLoginSession(null);
             if (!this.qrCodeTimer) {
                 this.qrCodeTimer = setInterval(() => {
                     if (this.loginStatus === 3) {
@@ -368,6 +380,8 @@ export default {
                 }
                 if (status !== ConnectionStatus.ConnectionStatusLogout) {
                     console.error('连接失败', status, ConnectionStatus.desc(status));
+                    this.cancel();
+                    this.diagnose();
                     this.$notify({
                         text: '连接失败，请打开控制台，查看具体日志',
                         type: 'error'
@@ -400,6 +414,93 @@ export default {
                     });
             }
         },
+
+        async diagnose() {
+            // TODO
+            // app-server
+            // api/version
+            // tcp ping
+            console.log('diagnose...')
+
+            let configInfo = '';
+            let routeHost = wfc.getHost()
+            let routePort = Config.ROUTE_PORT
+            let useWss = Config.USE_WSS
+            configInfo += `APP-Server: ${Config.APP_SERVER}\n`
+            configInfo += `IM-Server-Host: ${routeHost}\n`
+            configInfo += `USE_WSS: ${useWss}\n`
+            configInfo += `ROUTE_PORT: ${routePort}\n`
+
+            configInfo += `Web SDK: ${wfc.getVersion()}\n`
+            configInfo += `音视频 SDK: ${avenginekit.startConference !== undefined ? '高级版' : '多人版'}`
+            configInfo += '\n'
+
+            let ices = '';
+            if (Config.ICE_SERVERS && Config.ICE_SERVERS.length > 0) {
+                ices = Config.ICE_SERVERS[0][0] + ' ' + Config.ICE_SERVERS[0][1] + ' ' + Config.ICE_SERVERS[0][2]
+            }
+            configInfo += `Turn-Server: ${ices}\n`
+
+            if (Config.APP_SERVER.indexOf('wildfirechat') >= 0 && routeHost.indexOf('wildfirechat') === -1) {
+                configInfo += '错误：已替换 web sdk，但未修改 Config.APP_SERVER，请修改 Config.APP_SERVER\n'
+            }
+
+            if (Config.APP_SERVER.indexOf('wildfirechat') === -1 && routeHost.indexOf('wildfirechat') >= 0) {
+                configInfo += '错误：已修改 Config.APP_SERVER，但未替换 web sdk，请替换web sdk\n'
+            }
+
+            if (Config.APP_SERVER.startsWith('https:') && !Config.USE_WSS) {
+                configInfo += 'USE_WSS 配置错误：APP-Server 使用 https，但没有启用 wss，请修改 Config.USE_WSS = true\n'
+            }
+            if (Config.APP_SERVER.startsWith('http:') && Config.USE_WSS) {
+                configInfo += 'USE_WSS 配置错误：APP-Server 使用 http，但是启用了 wss，请修改 Config.USE_WSS = false\n'
+            }
+
+            if (Config.APP_SERVER.startsWith('https:') && Config.ROUTE_PORT !== 443) {
+                configInfo += '警告：APP-Server 使用 https，但 ROUTE_PORT 非标准 443 端口\n'
+            }
+            if (Config.APP_SERVER.startsWith('http:') && Config.ROUTE_PORT !== 80) {
+                configInfo += '警告：APP-Server 使用 http，但 ROUTE_PORT 非标准 80 端口\n'
+            }
+
+            console.warn('-----configInfo start---------\n')
+            console.warn(configInfo);
+            console.warn('-----configInfo end---------\n')
+
+            let result = '';
+            let appServerResponse = await axios.get(Config.APP_SERVER, {
+                transformResponse: [data => data],
+            })
+            if (appServerResponse.data === 'Ok') {
+                result += 'APP-Server 正常\n';
+            } else {
+                result += 'APP-Server 异常: ' + appServerResponse.status + '\n';
+            }
+            if (routeHost) {
+                let url = `${useWss ? 'https://' : 'http://'}${routeHost}:${routePort}/api/version`
+                try {
+                    let apiVersion = await axios.get(url)
+                    result += 'IM-Server api/version 正常\n'
+                    result += `remoteOriginUrl: ${apiVersion.data.remoteOriginUrl}\n`
+                    result += `commitId: ${apiVersion.data.commitId}\n`
+                    result += `commitTime: ${apiVersion.data.commitTime}\n`
+                    result += `buildTime: ${apiVersion.data.buildTime}\n`
+                } catch (e) {
+                    result += `IM-Server api/version 异常：${e}\n`
+                }
+            } else {
+                result += 'IM-Server 未知：未执行connect 操作'
+            }
+
+
+            console.log('result', result);
+
+            this.diagnoseResult = configInfo + '\n' + result;
+            this.showDiagnoseOverlay = true
+        },
+        closeDiagnoseOverlay() {
+            this.showDiagnoseOverlay = false;
+        }
     },
 
     computed: {
@@ -632,4 +733,46 @@ input::-webkit-inner-spin-button {
     height: 160px;
 }
 
+.diagnose {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    align-self: flex-start;
+    font-size: 12px;
+    color: lightcoral;
+}
+
+.diagnose-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.diagnose-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 100%;
+    max-height: 90%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.diagnose-content pre {
+    width: 100%;
+    text-align: left;
+}
+
+.diagnose-content button {
+    margin-top: 20px;
+}
 </style>
