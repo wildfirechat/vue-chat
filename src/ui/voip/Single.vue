@@ -9,9 +9,11 @@
     <div class="flex-column flex-align-center flex-justify-center" style="background: #292929">
         <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
 
-        <p class="webrtc-tip" v-if="showWebrtcTip">
-            上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!
-        </p>
+        <div class="webrtc-tip" v-if="showVoipTip">
+            <p>{{ supportConference ? '当前使用：高级版版音视频' : '当前使用：多人版音视频' }}</p>
+            <p>多人版音视频 和 高级版音视频不互通，切换方法请参考: wfc/av/internal/README.MD</p>
+            <p>{{ voipTip }}</p>
+        </div>
         <div v-if="session" class="container">
             <section class="full-height full-width">
                 <!--audio-->
@@ -103,9 +105,28 @@
                         <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
                     </div>
                     <div class="action">
+                        <tippy
+                            v-if="audioInputDevices.length > 1"
+                            :to="'#trigger-audioInputDevices'"
+                            placement="top"
+                            distant="7"
+                            interactive
+                            theme="light"
+                            arrow>
+                            <template #content>
+                                <div v-for="(device, index) in audioInputDevices" :key="index" class="audio-input-device-item" @click="switchAudioInput(device)">
+                                    {{ device.label  + (device.deviceId === currentAudioInputDeviceId ? ' (当前)' : '')}}
+                                </div>
+                            </template>
+                        </tippy>
+
+                        <div :id="'trigger-audioInputDevices'"
+                             ref="audioInputDeviceTippy"
+                             class="flex-column flex-align-center flex-justify-center">
                         <img v-if="!session.audioMuted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
                         <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
                         <p>静音</p>
+                    </div>
                     </div>
                     <div v-if="!audioOnly && false" class="action">
                         <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
@@ -144,10 +165,14 @@ export default {
             localStream: null,
             remoteStream: null,
             videoInputDeviceIndex: 0,
+            audioInputDeviceIndex: 0,
+            currentAudioInputDeviceId: '',
+            audioInputDevices: [],
             autoPlayInterval: 0,
-            showWebrtcTip: false,
-
-            ringAudio: null
+            ringAudio: null,
+            showVoipTip: Config.SHOW_VOIP_TIP,
+            voipTip: '',
+            supportConference: avenginekit.startConference !== undefined,
         }
     },
     methods: {
@@ -255,6 +280,23 @@ export default {
                 this.session = session;
                 this.audioOnly = session.audioOnly;
                 this.participantUserInfos = [...participantUserInfos];
+                // for test
+                // navigator.mediaDevices.getUserMedia({
+                //     audio: false,
+                //     video: {
+                //         mandatory: {
+                //             chromeMediaSource: 'desktop',
+                //             // chromeMediaSourceId: id,
+                //             minWidth: 800,
+                //             maxWidth: 1280,
+                //             minHeight: 600,
+                //             maxHeight: 720
+                //         }
+                //     }
+                // }).then((stream) => {
+                //     session.setInputStream(stream)
+                // }).catch(err => {
+                // })
             };
 
             sessionCallback.didChangeMode = (audioOnly) => {
@@ -316,6 +358,13 @@ export default {
 
         hangup() {
             this.session.hangup();
+        },
+
+        switchAudioInput(device) {
+            console.log('switchAudioInput', device);
+            this.currentAudioInputDeviceId = device.deviceId
+            this.session.setAudioInputDeviceId(device.deviceId)
+            this.$refs["audioInputDeviceTippy"]._tippy.hide();
         },
 
         switchCamera() {
@@ -400,19 +449,15 @@ export default {
         }
     },
 
-    mounted() {
+    async mounted() {
         console.log('single mounted')
-        let supportConference = avenginekit.startConference !== undefined
-        if (!supportConference) {
+        if (!this.supportConference) {
             let host = window.location.host;
             if (host.indexOf('wildfirechat.cn') === -1 && host.indexOf('localhost') === -1) {
                 for (const ice of Config.ICE_SERVERS) {
                     if (ice[0].indexOf('turn.wildfirechat.net') >= 0) {
                         // 显示自行部署 turn 提示
-                        this.showWebrtcTip = true;
-                        setTimeout(() => {
-                            this.showWebrtcTip = false;
-                        }, 10 * 1000)
+                        this.voipTip = '当前音视频 SDK 为多人版。多人版\n 上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!';
                         break
                     }
                 }
@@ -423,6 +468,14 @@ export default {
             avenginekit.setup();
         }
         this.setupSessionCallback();
+        let devices = await navigator.mediaDevices.enumerateDevices()
+        let audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+        if (audioInputDevices.length > 0) {
+            let defaultAudioDevice = audioInputDevices.filter(d => d.deviceId === 'default')[0];
+            let defaultAudioDeviceGroupId = defaultAudioDevice.groupId;
+            this.audioInputDevices = audioInputDevices.filter(d => d.deviceId !== 'default');
+            this.currentAudioInputDeviceId = this.audioInputDevices.filter(d => d.groupId === defaultAudioDeviceGroupId)[0].deviceId;
+        }
     },
 
     computed: {
@@ -526,6 +579,24 @@ export default {
 .video {
     width: 100%;
     height: 100%;
+}
+
+.audio-input-device-item {
+    flex: 1;
+    height: 30px;
+    padding: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+}
+
+.audio-input-device-item:not(:last-of-type) {
+    border-bottom: 1px solid #e0e0e0e5;
+}
+
+.audio-input-device-item:hover {
+    background: #e0e0e0e5;
 }
 
 .webrtc-tip {

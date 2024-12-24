@@ -492,13 +492,15 @@ let store = {
     },
 
     _loadDefaultData() {
-        this._loadFavGroupList();
-        this._loadChannelList();
-        this._loadFriendList();
-        this._loadFavContactList();
-        this._loadFriendRequest();
+        let loadOptions = miscState.subWindowLoadDataOptions;
+        let isMainWindow = miscState.isMainWindow;
+        (isMainWindow || loadOptions.loadFavContactList) && this._loadFavGroupList();
+        (isMainWindow || loadOptions.loadChannelList) && this._loadChannelList();
+        (isMainWindow || loadOptions.loadFriendList) && this._loadFriendList();
+        (isMainWindow || loadOptions.loadFavContactList) && this._loadFavContactList();
+        (isMainWindow || loadOptions.loadFriendRequestList) && this._loadFriendRequest();
+        (isMainWindow || loadOptions.loadDefaultConversationList) && this._loadDefaultConversationList();
         this._loadSelfUserInfo();
-        this._loadDefaultConversationList();
         this._loadUserLocalSettings();
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         // if (conversationState.currentConversationInfo) {

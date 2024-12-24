@@ -138,6 +138,8 @@ export default class Config {
     // 是否支持水印
     static ENABLE_WATER_MARK = true
 
+    // 单人音视频通话页面是否显示音视频 SDK 相关提示
+    static SHOW_VOIP_TIP = true
     static getWFCPlatform() {
         if (isElectron()) {
             if (window.process && window.process.platform === 'darwin') {

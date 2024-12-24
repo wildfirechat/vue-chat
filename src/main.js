@@ -58,14 +58,18 @@ app.use(CoolLightBox)
             wfc.attach()
 
             let subWindowLoadDataOptions = {
-                loadFavGroupList: true,
-                loadChannelList: true,
-                loadFriendList: true,
-                loadFavContactList: true,
-                loadFriendRequestList: true,
-                loadDefaultConversationList: true
+                loadFavGroupList: false,
+                loadChannelList: false,
+                loadFriendList: false,
+                loadFavContactList: false,
+                loadFriendRequestList: false,
+                loadDefaultConversationList: false
             }
             // TODO 优化，有的窗口并不需要store，或者不需要加载所有默认数据
+            if (path.startsWith('/files')) {
+                subWindowLoadDataOptions.loadFriendList = true
+                subWindowLoadDataOptions.loadDefaultConversationList = true
+            }
             store.init(false, subWindowLoadDataOptions);
         }
         // web

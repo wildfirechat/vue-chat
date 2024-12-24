@@ -139,7 +139,8 @@ export default {
             wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
         },
         go2Conversation() {
-            if (this.$router.currentRoute.path === '/home') {
+            if (this.$router.currentRoute.value.path === '/home') {
+                this.$eventBus.$emit('scrollToNextUnreadConversation');
                 return
             }
             this.$router.replace("/home");

@@ -66,9 +66,11 @@ export default {
             }
             this.screenShareActiveTime = this.$refs.screenShareVideo.currentTime;
         }, 1000)
+        document.getElementById('wf-watermark').style.display = 'none';
     },
     beforeUnmount() {
         clearInterval(this.screenShareCheckIntervalId);
+        document.getElementById('wf-watermark').style.display = 'block';
     },
 
     methods: {
