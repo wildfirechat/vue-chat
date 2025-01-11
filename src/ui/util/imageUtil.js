@@ -302,8 +302,7 @@ function videoThumbnail(file) {
     return new Promise(
         (resolve, reject) => {
             let video = document.createElement('video');
-            video.onplay = () => {
-                console.log('------------ video onplay');
+            video.onloadeddata = () => {
 
                 let canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth;
@@ -320,21 +319,24 @@ function videoThumbnail(file) {
                         reader.onloadend = () => {
                             let base64data = reader.result;
                             resolve({thumbnail: base64data, width: video.videoWidth, height: video.videoHeight});
-                            video.src = null;
+                            URL.revokeObjectURL(video.url)
                         };
                         reader.onerror = () => {
+                            URL.revokeObjectURL(video.url)
                             resolve(null);
-                        }
+                        };
                     }, 'image/jpeg', 0.3);
                 };
                 img.onerror = () => {
                     resolve(null);
+                    URL.revokeObjectURL(video.url)
                 };
             };
             video.onerror = () => {
                 resolve(null);
+                URL.revokeObjectURL(video.url)
             };
-            _loadVideo(video, file)
+            _loadVideo(video, file);
         });
 }
 
@@ -352,9 +354,11 @@ function _loadVideo(videoEl, file) {
     } else {
         let reader = new FileReader();
         reader.onload = function (event) {
-            video.src = event.target.result;
+            let buffer = event.target.result;
+            let videoBlob = new Blob([new Uint8Array(buffer)], {type: 'video/mp4'});
+            video.src = URL.createObjectURL(videoBlob);
         };
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
     }
 }
 
@@ -362,14 +366,13 @@ function videoDuration(file) {
     return new Promise(
         (resolve, reject) => {
             let video = document.createElement('video');
-            video.onplay = () => {
+            video.onloadeddata = () => {
                 resolve(video.duration);
             };
             video.onerror = () => {
                 resolve(0);
             };
             _loadVideo(video, file)
-            console.log('----------', video);
         });
 }
 

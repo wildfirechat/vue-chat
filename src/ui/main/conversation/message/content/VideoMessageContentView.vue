@@ -45,7 +45,7 @@ export default {
 
     computed: {
         videoUrl() {
-            if (this.message.messageContent.file) {
+            if (this.message.messageContent.file && this.message.messageContent.file.path) {
                 return this.message.messageContent.file;
             } else {
                 return this.message.messageContent.remotePath
