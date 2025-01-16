@@ -103,7 +103,7 @@ export default {
     methods: {
         invite() {
             let callSession = this.session;
-            let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin)
+            let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin, conferenceManager.conferenceInfo.password)
             console.log('invite', inviteMessageContent);
             let message = new Message(null, inviteMessageContent);
             this.$forwardMessage({

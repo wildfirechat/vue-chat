@@ -50,7 +50,7 @@ export default {
         showConferenceInfo() {
             if (avenginekit.sendConferenceRequest) {
                 let cmc = this.message.messageContent;
-                conferenceApi.queryConferenceInfo(cmc.callId, cmc.pin)
+                conferenceApi.queryConferenceInfo(cmc.callId, cmc.password)
                     .then(info => {
                         this.showConferenceInfoDialog(info);
                     })

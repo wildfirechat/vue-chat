@@ -11,10 +11,14 @@ export default class ConferenceInviteMessageContent extends MessageContent {
     startTime;
     audioOnly;
     audience;
+    // 会议PIN码，加入会议时使用
     pin;
+    // 会议密码，查询会议时使用
+    password;
     advanced;
+    callExtra;
 
-    constructor(callId, host, title, desc, startTime, audioOnly, audience, advance, pin) {
+    constructor(callId, host, title, desc, startTime, audioOnly, audience, advance, pin, password) {
         super(MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE);
         this.callId = callId;
         this.host = host;
@@ -25,6 +29,7 @@ export default class ConferenceInviteMessageContent extends MessageContent {
         this.audience = audience;
         this.advanced = advance;
         this.pin = pin;
+        this.password = password;
     }
 
     digest(message) {
@@ -45,6 +50,8 @@ export default class ConferenceInviteMessageContent extends MessageContent {
             advanced: this.advanced ? 1 : 0,
             a: this.audioOnly ? 1 : 0,
             p: this.pin,
+            pwd: this.password,
+            ce: this.callExtra
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
         return payload;
@@ -63,6 +70,8 @@ export default class ConferenceInviteMessageContent extends MessageContent {
             this.advanced = obj.advanced > 0;
             this.audioOnly = obj.a > 0;
             this.pin = obj.p;
+            this.password = obj.pwd;
+            this.callExtra = obj.ce;
         }
         this.callId = payload.content;
     }
