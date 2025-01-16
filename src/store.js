@@ -1413,7 +1413,7 @@ let store = {
             }
         }
 
-        if (numberValue(lastTimestamp) > 0 && numberValue(m.timestamp) - numberValue(lastTimestamp) > 5 * 60 * 1000) {
+        if (lastTimestamp === 0 || (numberValue(lastTimestamp) > 0 && numberValue(m.timestamp) - numberValue(lastTimestamp) > 5 * 60 * 1000)) {
             m._showTime = true;
         }
         m._timeStr = helper.timeFormat(m.timestamp)

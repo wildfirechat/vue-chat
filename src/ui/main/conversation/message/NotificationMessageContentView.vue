@@ -1,5 +1,6 @@
 <template>
     <div class="notification-container">
+        <p class="time" v-if="message._showTime">{{ message._timeStr }}</p>
         <p class="notification">{{ message.messageContent.digest(message) }}</p>
     </div>
 </template>
@@ -23,7 +24,14 @@ export default {
 <style lang="css" scoped>
 .notification-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.notification-container .time {
+    color: #b4b4b4;
+    font-size: 10px;
+    text-align: center;
 }
 
 .notification-container .notification {
