@@ -7,6 +7,7 @@
                 <div class="users">
                     <UserListView :users="readUsers"
                                  :show-category-label="false"
+                                 :click-user-item-func="()=>{}"
                                  :padding-left="'20px'"/>
                 </div>
             </div>
@@ -117,7 +118,7 @@ export default {
     max-height: 250px;
     width: 100%;
     overflow: hidden;
-    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .receipt-item .label {
