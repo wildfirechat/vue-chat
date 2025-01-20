@@ -574,6 +574,9 @@ let store = {
         let conversationInfo = wfc.getConversationInfo(conversation);
         if (conversationInfo) {
             conversationInfo = this._patchConversationInfo(conversationInfo, true);
+            conversationInfo.conversation._targetOnlineStateDesc = this.getUserOnlineState(conversation.target);
+        } else {
+            return
         }
         let index = conversationState.conversationInfoList.findIndex(info => info.conversation.equal(conversation));
         if (index >= 0) {
