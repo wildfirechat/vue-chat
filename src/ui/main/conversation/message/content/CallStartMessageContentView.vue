@@ -45,6 +45,8 @@ export default {
             if (voip.endTime > 0 && voip.connectTime > 0) {
                 let duration = parseInt((numberValue(voip.endTime) - numberValue(voip.connectTime)) / 1000);
                 desc = `通话时长：${duration}''`
+            } else if (voip.connectTime > 0) {
+                desc = '通话中'
             } else {
                 let reason = voip.status;
                 switch (reason) {
