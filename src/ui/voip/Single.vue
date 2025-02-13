@@ -93,7 +93,7 @@
                     <!--          </div>-->
                 </div>
                 <!--outgoing-->
-                <div v-if="status === 1" class="action-container">
+                <div v-if="status === 1 || status === 3" class="action-container">
                     <div class="action">
                         <img @click="hangup" class="action-img" src='@/assets/images/av_hang_up.png'/>
                     </div>
