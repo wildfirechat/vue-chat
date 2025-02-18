@@ -180,7 +180,7 @@ export default {
             if (this.$router.currentRoute.path !== '/home') {
                 this.$router.replace("/home");
             }
-            let conversation = new Conversation(ConversationType.Channel, channel.channelId, 0);
+            let conversation = new Conversation(ConversationType.Channel, channel.targetId, 0);
             store.setCurrentConversation(conversation);
             store.hideSearchView();
         },

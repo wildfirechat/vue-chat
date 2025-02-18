@@ -1085,7 +1085,7 @@ export class WfcManager {
      * @param {function (number)} failCB
      */
     searchChannel(keyword, fuzzy, successCB, failCB) {
-        impl.searchChannel(keyword, successCB, failCB);
+        impl.searchChannel(keyword, fuzzy, successCB, failCB);
     }
 
     /**
