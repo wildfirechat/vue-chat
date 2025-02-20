@@ -453,7 +453,7 @@ export default {
         console.log('single mounted')
         if (!this.supportConference) {
             let host = window.location.host;
-            if (host.indexOf('wildfirechat.cn') === -1 && host.indexOf('localhost') === -1) {
+            if (host.indexOf('wildfirechat.cn') === -1 && host.indexOf('localhost') === -1 && Config.ICE_SERVERS) {
                 for (const ice of Config.ICE_SERVERS) {
                     if (ice[0].indexOf('turn.wildfirechat.net') >= 0) {
                         // 显示自行部署 turn 提示
