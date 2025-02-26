@@ -472,8 +472,11 @@ export default {
         let audioInputDevices = devices.filter(device => device.kind === 'audioinput');
         if (audioInputDevices.length > 0) {
             let defaultAudioDevice = audioInputDevices.filter(d => d.deviceId === 'default')[0];
+            if(!defaultAudioDevice){
+                defaultAudioDevice = audioInputDevices[0]
+            }
             let defaultAudioDeviceGroupId = defaultAudioDevice.groupId;
-            this.audioInputDevices = audioInputDevices.filter(d => d.deviceId !== 'default');
+            this.audioInputDevices = audioInputDevices;
             this.currentAudioInputDeviceId = this.audioInputDevices.filter(d => d.groupId === defaultAudioDeviceGroupId)[0].deviceId;
         }
     },
