@@ -10,12 +10,12 @@ export default {
                     let beforeClose = (event) => {
                         console.log('Closing...', event, event.params)
                         // What a gamble... 50% chance to cancel closing
-                        if (event.params.toCreateConversation) {
+                        if (event && event.params && event.params.toCreateConversation) {
                             // Promise.race([createConversationAndForwardMessage(forwardType, messages)])
                             //     .then(resolve)
                             //     .catch(reject);
                             createConversationAndForwardMessage(forwardType, messages).then(resolve).catch(reject)
-                        } else if (event.params.confirm) {
+                        } else if (event.params && event.params.confirm) {
                             let conversations = event.params.conversations;
                             let extraMessageText = event.params.extraMessageText;
                             store.forwardMessage(forwardType, conversations, messages, extraMessageText)

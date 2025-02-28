@@ -55,7 +55,7 @@ export default {
             if (lines.length > 1) {
                 content = lines.map(line => `<span>${helper.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
             } else {
-                //content = helper.escapeHtml(content)
+                content = helper.escapeHtml(content)
             }
 
             content = emojiParse(content);
@@ -64,7 +64,7 @@ export default {
                 content = content.replace(/<img/g, '<img style="max-width:400px;"')
                 return content;
             }
-            return this.$xss(content);
+            return content;
         }
     }
 }

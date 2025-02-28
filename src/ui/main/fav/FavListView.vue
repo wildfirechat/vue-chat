@@ -370,7 +370,7 @@ export default {
             let items = this.favItems.filter(fi => fi.type === MessageContentType.Image || fi.type === MessageContentType.Video)
             let groupedItems = [];
 
-            let months = [this.$t('common.month_1'), this.$t('common.month_1'), this.$t('common.month_2'), this.$t('common.month_3'), this.$t('common.month_4'), this.$t('common.month_5'), this.$t('common.month_6'), this.$t('common.month_7'), this.$t('common.month_8'), this.$t('common.month_9'), this.$t('common.month_10'), this.$t('common.month_11'), this.$t('common.month_12'),];
+            let months = [this.$t('common.month_1'), this.$t('common.month_2'), this.$t('common.month_3'), this.$t('common.month_4'), this.$t('common.month_5'), this.$t('common.month_6'), this.$t('common.month_7'), this.$t('common.month_8'), this.$t('common.month_9'), this.$t('common.month_10'), this.$t('common.month_11'), this.$t('common.month_12'),];
 
             let map = new Map();
             items.forEach(item => {

@@ -20,7 +20,7 @@
             </template>
         </div>
         <div class="footer" v-if="message.messageContent.text">
-            <p>{{ message.messageContent.text }}</p>
+            <p style="white-space: pre-line">{{ message.messageContent.text }}</p>
         </div>
     </div>
 </template>
@@ -168,12 +168,18 @@ export default {
 
 .footer {
     width: 100%;
-    height: 40px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
+}
+
+.footer p{
+    width: 100%;
+    max-height: 100px;
+    overflow: auto;
+    padding: 10px 0;
 }
 
 img {

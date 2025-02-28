@@ -82,7 +82,6 @@ export class AvEngineKitProxy {
     }
 
     updateCallStartMessageContentListener = (event, message) => {
-        console.log('av-c updateCallStartMessageContent', event, message)
         let messageUid = message.messageUid;
         let content = message.content;
 
