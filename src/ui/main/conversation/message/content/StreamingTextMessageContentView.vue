@@ -1,7 +1,7 @@
 <template>
     <div class="streaming-text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <p class="text" v-html="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
+        <p class="text" v-html="this.$xss(this.textContent)" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
         <FadeLoader :loading="message.messageContent.type === 14" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
     </div>
 </template>

@@ -33,8 +33,8 @@
                     <p class="time single-line">{{ source._timeStr }}</p>
                 </div>
                 <div class="content">
-                    <p class="draft single-line" v-if="shouldShowDraft" v-html="draft"></p>
-                    <p class="draft single-line" v-else-if="shouldShowVoipStatus" v-html="voipOngoingDesc"></p>
+                    <p class="draft single-line" v-if="shouldShowDraft" v-html="this.$xss(draft)"></p>
+                    <p class="draft single-line" v-else-if="shouldShowVoipStatus" v-html="this.$xss(voipOngoingDesc)"></p>
                     <p class="last-message-desc single-line" v-else>
                         <i v-if="unreadMention > 0">[有人@我]</i>
                         {{ lastMessageContent }}

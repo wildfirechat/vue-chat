@@ -148,19 +148,22 @@ eventBus.$off = eventBus.off
 eventBus.$emit = eventBus.emit
 app.config.globalProperties.$eventBus = eventBus
 
+const xssOptions = (() => {
+    let whiteList = xss.getDefaultWhiteList();
+    window.__whiteList = whiteList;
+    //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
+    //这儿配置保留 img 标签的style、class、src、alt、id 属性
+    whiteList.img = ["style", "class", "src", "alt", "id"];
+    return {
+        whiteList
+    };
+})();
 
-// app.prototype.xss = xss;
-// app.prototype.xssOptions = () => {
-//     let whiteList = xss.getDefaultWhiteList();
-//     window.__whiteList = whiteList;
-//     //xss 处理的时候，默认会将 img 便签的class属性去除，导致 emoji 表情显示太大
-//     //这儿配置保留 img 标签的style、class、src、alt、id 属性
-//     whiteList.img = ["style", "class", "src", "alt", "id"];
-//     return {
-//         whiteList
-//     };
-// };
+app.config.globalProperties.$xss = (html) => {
+    return xss(html, xssOptions);
+};
 
 app.config.globalProperties.$set = (obj, key, value) => obj[key] = value
 
-app.mount('#app')
+// Mount the app at the end
+app.mount('#app');

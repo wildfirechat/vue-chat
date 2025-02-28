@@ -3,7 +3,7 @@
          @click="startCall"
          v-bind:class="{out:message.direction === 0}">
         <i class="icon-ion-android-call"></i>
-        <p class="text" v-html="this.textContent"></p>
+        <p class="text" v-html="this.$xss(this.textContent)"></p>
     </div>
 </template>
 

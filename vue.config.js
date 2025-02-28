@@ -96,22 +96,15 @@ module.exports = {
             .use("vue-loader")
             .loader("vue-loader")
             .tap(options => {
-                // TODO
-                // options.compilerOptions.directives = {
-                //     html(node, directiveMeta) {
-                //         (node.props || (node.props = [])).push({
-                //             name: "innerHTML",
-                //             value: `xss(_s(${directiveMeta.value}), xssOptions())`
-                //         });
-                //     }
-                // };
-                options.compilerOptions = {
-                    compatConfig: {
-                        //MODE: 2
-                        MODE: 3
+                // Return just the compatibility config without directive transforms
+                return {
+                    ...options,
+                    compilerOptions: {
+                        compatConfig: {
+                            MODE: 3
+                        }
                     }
-                }
-                return options;
+                };
             });
 
     }

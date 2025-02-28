@@ -514,7 +514,7 @@ export default {
 
         createElementFromHTML(htmlString) {
             let div = document.createElement('div');
-            div.innerHTML = htmlString.trim();
+            div.innerHTML = this.$xss(htmlString.trim());
 
             // Change this to div.childNodes to support multiple top-level nodes
             return div.firstChild;
@@ -620,7 +620,7 @@ export default {
                 store.sendFile(this.conversationInfo.conversation, file);
             }
         },
-        
+
         initEmojiPicker() {
             window.__twemoji_base_url__ = Config.emojiBaseUrl();
             let config = emojiConfig();

@@ -1,7 +1,7 @@
 <template>
     <div class="text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <p class="text" v-html="this.textContent" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
+        <p class="text" v-html="this.$xss(this.textContent)" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
     </div>
 </template>
 
@@ -55,7 +55,7 @@ export default {
             if (lines.length > 1) {
                 content = lines.map(line => `<span>${helper.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
             } else {
-                content = helper.escapeHtml(content)
+                //content = helper.escapeHtml(content)
             }
 
             content = emojiParse(content);
@@ -64,7 +64,7 @@ export default {
                 content = content.replace(/<img/g, '<img style="max-width:400px;"')
                 return content;
             }
-            return content;
+            return this.$xss(content);
         }
     }
 }
