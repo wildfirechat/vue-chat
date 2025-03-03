@@ -111,7 +111,7 @@ export default class Config {
 
     // 会话过期时间，表示一个会话，自己不再参与之后，多久会过期。会话列表不展示已过期的会话；单位是天
     static CONVERSATION_EXPIRE_TIME = 30;
-    // 文件传输助手ID
+    // 文件传输助手ID，如果不需要的话，将其置空即可
     static FILE_HELPER_ID = 'wfc_file_transfer';
     // 是否将用户信息、群组信息、频道信息、聊天室信息持久化
     static ENABLE_INFO_PERSISTENCE = false;

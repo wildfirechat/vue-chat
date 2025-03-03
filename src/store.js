@@ -1553,7 +1553,7 @@ let store = {
     _loadFriendList() {
         let friends = wfc.getMyFriendList(false);
         let fileHelperIndex = friends.indexOf(Config.FILE_HELPER_ID);
-        if (fileHelperIndex < 0) {
+        if (fileHelperIndex < 0 && Config.FILE_HELPER_ID) {
             friends.push(Config.FILE_HELPER_ID);
         }
         if (friends && friends.length > 0) {
