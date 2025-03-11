@@ -590,9 +590,10 @@ let store = {
         }
 
         if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.equal(conversation)) {
+            let isClearConversationMessageHistory = !conversationInfo.lastMessage && !!conversationState.currentConversationInfo.lastMessage;
             conversationState.currentConversationInfo = conversationInfo;
             // 清除聊天记录
-            if (!conversationInfo.lastMessage) {
+            if (isClearConversationMessageHistory) {
                 conversationState.currentConversationMessageList = [];
             }
         }
