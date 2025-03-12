@@ -86,6 +86,9 @@ export class AvEngineKitProxy {
         let content = message.content;
 
         let msg = wfc.getMessageByUid(messageUid);
+        if (!msg) {
+            return
+        }
         let orgContent = msg.messageContent;
         orgContent.connectTime = content.connectTime ? content.connectTime : orgContent.connectTime;
         orgContent.endTime = content.endTime ? content.endTime : orgContent.endTime;
@@ -169,6 +172,10 @@ export class AvEngineKitProxy {
             console.log('not enable multi call ');
             return;
         }
+        if (!isElectron() && msg.messageContent === MessageContentType.VOIP_REMOTE_CONTROL_REQUEST) {
+            console.log('only pc support remote control');
+            return;
+        }
         let now = (new Date()).valueOf();
         let delta = wfc.getServerDeltaTime();
         if (now - (numberValue(msg.timestamp) - delta) >= 90 * 1000) {
@@ -193,7 +200,7 @@ export class AvEngineKitProxy {
                     this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
                 }
             }
-            if (!this.isSupportVoip || !this.hasMicrophone || !this.hasSpeaker) {
+            if (!this.isSupportVoip || (!WfcAVEngineKit.ENABLE_VOIP_WHEN_NO_MIC_AND_SPEAKER && (!this.hasSpeaker || !this.hasMicrophone))) {
                 this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
                 return;
             }
@@ -241,6 +248,9 @@ export class AvEngineKitProxy {
                     }
                     if (!this.callWin) {
                         if (this.conversation) {
+                            msg.participantUserInfos = participantUserInfos;
+                            msg.selfUserInfo = selfUserInfo;
+                            msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
                             this.showCallUI(msg.conversation, false, {
                                 event: 'message',
                                 args: msg
@@ -369,7 +379,7 @@ export class AvEngineKitProxy {
             return;
         }
         console.log(`startCall speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+        if (!this.isSupportVoip || (!WfcAVEngineKit.ENABLE_VOIP_WHEN_NO_MIC_AND_SPEAKER && (!this.hasSpeaker || !this.hasMicrophone))) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
@@ -428,7 +438,7 @@ export class AvEngineKitProxy {
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
             return;
         }
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+        if (!this.isSupportVoip || (!WfcAVEngineKit.ENABLE_VOIP_WHEN_NO_MIC_AND_SPEAKER && (!this.hasSpeaker || !this.hasMicrophone))) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker);
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;
@@ -488,7 +498,7 @@ export class AvEngineKitProxy {
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
             return;
         }
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+        if (!this.isSupportVoip || (!WfcAVEngineKit.ENABLE_VOIP_WHEN_NO_MIC_AND_SPEAKER && (!this.hasSpeaker || !this.hasMicrophone))) {
             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone);
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
             return;

@@ -34,6 +34,12 @@ export default class WfcAVEngineKit {
     static SCREEN_SHARING_REPLACE_MODE = true;
 
     /**
+     * 是否启用 datachannel
+     * @type {boolean}
+     */
+    static ENABLE_DATA_CHANNEL = false
+
+    /**
      禁止双流模式下，小流低帧率。默认为false，小流的帧率为8fps。当为true时使用 {@link SMALL_STREAM_FPS}， 或者使用同大流一样的帧率
      */
      static DISABLE_SMALL_STREAM_LOW_FPS = false;
@@ -67,6 +73,11 @@ export default class WfcAVEngineKit {
      */
 
     static FORCE_MEDIA_OVER_TCP = false;
+    /**
+     * 没有麦克风和音频输出设备时，是否允许发起或参加音视频通话
+     * @type {boolean}
+     */
+    static ENABLE_VOIP_WHEN_NO_MIC_AND_SPEAKER= true;
 
     /**
      * 高级版音视频 SDK 有效

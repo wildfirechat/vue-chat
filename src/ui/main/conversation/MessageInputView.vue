@@ -53,6 +53,9 @@
                         <li v-if="!inputOptions['disableVideoCall']">
                             <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
                         </li>
+                        <li v-if="sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
+                            <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
+                        </li>
                     </template>
                     <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
                         <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
@@ -133,6 +136,8 @@ import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
 import {currentWindow, fs} from "../../../platform";
 import {vOnClickOutside} from '@vueuse/components'
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
+import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
+import avenginekit from "../../../wfc/av/internal/engine.min";
 
 export default {
     name: "MessageInputView",
@@ -557,6 +562,23 @@ export default {
             this.$startVoipCall({audioOnly: false, conversation: conversation});
         },
 
+        requestRemoteControl(){
+            if(avenginekit.startConference){
+                if(process.platform === 'linux'){
+                    this.$notify({
+                        text:'远程协助，目前只支持 Windows 和 macOS',
+                        type:'error',
+                    })
+                    return
+                }
+                avenginekitproxy.requestRemoteControl(this.conversationInfo.conversation);
+            }else {
+                this.$notify({
+                    text:'需要高级版音视频才支持远程协助',
+                    type:'error',
+                })
+            }
+        },
         toggleChannelMenu(toggle = true) {
             if (toggle) {
                 this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;

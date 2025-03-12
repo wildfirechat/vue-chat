@@ -19,8 +19,8 @@
             <p>开启视频</p>
         </div>
         <div class="action">
-            <img @click="stopScreenShare" class="action-img" src='@/assets/images/av_video_answer.png'/>
-            <p>结束共享</p>
+            <img @click="stopScreenShare" class="action-img" src='@/assets/images/av_hang_up.png'/>
+            <p>{{ stopScreenShareTitle}}</p>
         </div>
     </div>
 
@@ -38,6 +38,15 @@ export default {
             type: String,
             default: null,
         },
+        stopScreenShareTitle: {
+            type: String,
+            required: false,
+            default: '结束共享',
+        },
+        stopScreenShareFunc: {
+            type: Function,
+            required: false,
+        }
     },
     data() {
         return {
@@ -88,6 +97,10 @@ export default {
         },
 
         stopScreenShare() {
+            if (this.stopScreenShareFunc) {
+                this.stopScreenShareFunc();
+                return
+            }
             console.log('stopScreenShare', this.session);
             this.session.stopScreenShare();
             console.log('stopScreenShare', this.session.videoMuted, this.session.audioMuted);

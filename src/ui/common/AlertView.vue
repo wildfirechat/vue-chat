@@ -16,6 +16,11 @@
 export default {
     name: "AlertView",
     props: {
+        name: {
+            type: String,
+            required: true,
+            default: '',
+        },
         showIcon: {
             type: Boolean,
             required: false,
@@ -53,11 +58,11 @@ export default {
     },
     methods: {
         cancel() {
-            this.$modal.hide('alert-modal', {cancel: true})
+            this.$modal.hide(this.name, {cancel: true})
         },
 
         confirm() {
-            this.$modal.hide('alert-modal', {confirm: true})
+            this.$modal.hide(this.name, {confirm: true})
         },
     }
 }

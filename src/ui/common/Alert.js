@@ -24,6 +24,7 @@ export default {
             this.$modal.show(
                 AlertView,
                 {
+                    name: options.name ? options.name : 'alert-modal',
                     showIcon: showIcon,
                     title: options.title,
                     content: options.content,
@@ -32,7 +33,7 @@ export default {
                 },
                 null,
                 {
-                    name: 'alert-modal',
+                    name: options.name ? options.name : 'alert-modal',
                     clickToClose: true,
                     adaptive: true,
                     width: 260,

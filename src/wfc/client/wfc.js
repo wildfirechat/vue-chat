@@ -1950,7 +1950,7 @@ export class WfcManager {
 
     /**
      *
-     * 群里面是否开启了已送达报告和已读报告功能
+     * 是否开启了群组已读报告功能
      * @return {boolean}
      */
     isGroupReceiptEnabled() {
@@ -2010,7 +2010,7 @@ export class WfcManager {
     }
 
     /**
-     *
+     * 获取会话的阅读状态。
      * @param conversation
      * @return {Map<string, Long>}
      */

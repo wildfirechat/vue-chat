@@ -1,7 +1,7 @@
 <template>
     <section class="screen-window-picker-container" ref="contentContainer">
-        <h2 class="title">选择要分享什么</h2>
-        <p class="desc">WFC想分享您屏幕上的内容</p>
+        <h2 class="title">{{ title }}</h2>
+        <p class="desc">{{ desc }}</p>
         <div class="category-container">
             <div class="category" v-bind:class="{active:this.currentCategory === 'screen'}"
                  @click="setCategory('screen')">
@@ -48,6 +48,23 @@ import IpcEventType from "../../ipcEventType";
 
 export default {
     name: "ScreenOrWindowPicker",
+    props: {
+        title: {
+            type: String,
+            required: false,
+            default: "选择要分享什么"
+        },
+        desc: {
+            type: String,
+            required: false,
+            default: "WFC想分享您屏幕上的内容"
+        },
+        types: {
+            type: Array,
+            required: false,
+            default: ['screen', 'window']
+        }
+    },
     data() {
         return {
             currentCategory: 'screen', // window
@@ -95,8 +112,7 @@ export default {
     },
 
     mounted() {
-        let types = ['screen', 'window'];
-        ipcRenderer.invoke(IpcEventType.GET_SOURCE, {types: types, thumbnailSize: {width: 200, height: 200}, fetchWindowIcons: true})
+        ipcRenderer.invoke(IpcEventType.GET_SOURCE, {types: this.types, thumbnailSize: {width: 200, height: 200}, fetchWindowIcons: true})
             .then(sources => {
                 this.screenSources = sources.filter(source => source.id.startsWith('screen'))
                 this.windowSources = sources.filter(source => source.id.startsWith('window'))

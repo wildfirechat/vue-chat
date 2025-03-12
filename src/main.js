@@ -70,6 +70,9 @@ app.use(CoolLightBox)
                 subWindowLoadDataOptions.loadFriendList = true
                 subWindowLoadDataOptions.loadDefaultConversationList = true
             }
+            if ( path.startsWith('/workspace')) {
+                subWindowLoadDataOptions.loadFriendList = true
+            }
             store.init(false, subWindowLoadDataOptions);
         }
         // web
