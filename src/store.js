@@ -503,6 +503,7 @@ let store = {
         this._loadSelfUserInfo();
         this._loadUserLocalSettings();
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
+        conversationState.isGroupMessageReceiptEnable = wfc.isGroupReceiptEnabled() && wfc.isUserReceiptEnabled();
         // if (conversationState.currentConversationInfo) {
         //     this._loadCurrentConversationMessages();
         // }

@@ -11,7 +11,7 @@
 
                 <div class="message-avatar-content-container">
                     <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
-                    <FadeLoader :loading="message.status === 0 && message.messageContent.type !== 5" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"> </FadeLoader>
+                    <FadeLoader :loading="message.status === 0 && message.messageContent.type !== 5" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
                     <i v-if="message.status === 2" class="icon-ion-close-circled" style="color: red" @click="resend"/>
                     <div class="flex-column flex-align-end">
                         <MessageContentContainerView :message="message"
@@ -226,7 +226,13 @@ export default {
         },
 
         shouldShowMessageReceipt() {
-            return this.sharedConversationState.isMessageReceiptEnable && ["FireRobot", Config.FILE_HELPER_ID].indexOf(this.message.conversation.target) < 0;
+            let show = false;
+            if (this.message.conversation.type === ConversationType.Group) {
+                show = this.sharedConversationState.isGroupMessageReceiptEnable;
+            } else if (this.message.conversation.type === ConversationType.Single) {
+                show = this.sharedConversationState.isMessageReceiptEnable && ["FireRobot", Config.FILE_HELPER_ID].indexOf(this.message.conversation.target) < 0;
+            }
+            return show;
         }
     },
 

@@ -1949,6 +1949,15 @@ export class WfcManager {
     }
 
     /**
+     *
+     * 群里面是否开启了已送达报告和已读报告功能
+     * @return {boolean}
+     */
+    isGroupReceiptEnabled() {
+        return impl.isGroupReceiptEnabled();
+    }
+
+    /**
      * 当前用户是否开启消息回执
      * @return {boolean}
      */

@@ -17,6 +17,7 @@ export const pstore = defineStore('store-p', () => {
 
         // TODO 调用setUserEnableReceipt时，需要更新
         isMessageReceiptEnable: false,
+        isGroupMessageReceiptEnable: false,
 
         inputtingUser: null,
         inputClearHandler: null,
