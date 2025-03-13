@@ -718,7 +718,9 @@ let store = {
         if (!conversationInfo) {
             if (conversationState.currentConversationInfo) {
                 let conversation = conversationState.currentConversationInfo.conversation;
-                wfc.unwatchOnlineState(conversation.type, [conversation.target]);
+                if(wfc.isUserOnlineStateEnabled()){
+                    wfc.unwatchOnlineState(conversation.type, [conversation.target]);
+                }
                 if (conversation.type === ConversationType.Channel) {
                     let content = new LeaveChannelChatMessageContent();
                     wfc.sendConversationMessage(conversation, content);
@@ -739,7 +741,7 @@ let store = {
             return;
         }
         let conversation = conversationInfo.conversation;
-        if (conversation.type === ConversationType.Group || (conversation.type === ConversationType.Single && !wfc.isMyFriend(conversation.target))) {
+        if (wfc.isUserOnlineStateEnabled() && (conversation.type === ConversationType.Group || (conversation.type === ConversationType.Single && !wfc.isMyFriend(conversation.target)))) {
             wfc.watchOnlineState(conversation.type, [conversation.target], 1000, (states) => {
                 states.forEach((e => {
                     miscState.userOnlineStateMap.set(e.userId, e);
