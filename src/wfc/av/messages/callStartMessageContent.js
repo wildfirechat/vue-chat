@@ -53,7 +53,7 @@ export default class CallStartMessageContent extends MessageContent {
             ts: this.targetIds,
             t: this.targetIds[0],
             p: this.pin,
-            ty: this.sdkType
+            ty: this.sdkType,
         };
         payload.binaryContent = wfc.utf8_to_b64(JSON.stringify(obj));
 
