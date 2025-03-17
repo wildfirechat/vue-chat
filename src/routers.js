@@ -16,6 +16,7 @@ import ConversationFloatPage from "./ui/main/ConversationFloatPage";
 import ConferencePortalPage from "./ui/voip/conference/ConferencePortalPage";
 import MessagePage from "./ui/main/MessagePage.vue";
 import MultimediaPreviewPage from "./ui/main/MultimediaPreviewPage.vue";
+import AI from "./ui/main/AI.vue";
 
 const routers = [
     {
@@ -56,6 +57,11 @@ const routers = [
                 name: 'conference',
                 component: ConferencePortalPage,
             },
+            {
+                path: 'ai',
+                name: 'AI',
+                component: AI,
+            }
         ]
     },
     {
@@ -112,7 +118,6 @@ const routers = [
         name: 'conversation-window',
         path: '/conversation-window',
         component: ConversationFloatPage,
-
     }
 ]
 export default routers

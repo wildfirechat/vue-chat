@@ -38,7 +38,7 @@
                         <li>
                             <div class="menu-item">
                                 <i class="icon-ion-ios-chatboxes"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home'}"
+                                   v-bind:class="{ active: this.$router.currentRoute.value.path === '/home' }"
                                    @click="go2Conversation"></i>
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
@@ -46,43 +46,50 @@
                         <li>
                             <div class="menu-item">
                                 <i class="icon-ion-android-contact"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/contact'}"
+                                   v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/contact' }"
                                    @click="go2Contact"></i>
                                 <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
                         <li>
                             <i class="icon-ion-android-favorite"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"
+                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/fav' }"
                                @click="go2Fav"></i>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <i class="icon-ion-ios-folder"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/files'}"
+                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/files' }"
                                @click="go2Files"></i>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.enableOpenWorkSpace">
                             <i class="icon-ion-code-working"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}"
+                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/h-wp' }"
                                @click="go2Workspace"></i>
                         </li>
                         <li v-if="supportConference">
                             <i class="icon-ion-speakerphone"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/conference'}"
+                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/conference' }"
                                @click="go2Conference"></i>
                         </li>
                         <li>
-                            <i class="icon-ion-android-settings"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/setting'}"
+                            <i class="icon-ion-android-sunny"
+                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai'}"
+                               @click="go2AI"></i>
+                        </li>
+                        <li>
+                            <i v-show="this.$router.currentRoute.value.path !== '/home/ai'"
+                               class="icon-ion-android-settings"
+                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/setting' }"
                                @click="go2Setting"></i>
                         </li>
                     </ul>
                 </nav>
             </section>
             <router-view v-slot="{ Component, route }">
-                <keep-alive>
+                <keep-alive v-show="route.path !== '/home/ai'">
                     <component :is="Component" :key="route.path"/>
                 </keep-alive>
+                <AI v-show="route.path === '/home/ai'"/>
             </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <div class="drag-area" :style="dragAreaLeft"></div>
@@ -119,6 +126,7 @@ import Multi from "../voip/Multi.vue";
 import Conference from "../voip/conference/Conference.vue";
 import 'tippy.js/dist/tippy.css' // optional for styling
 import {UseDraggable} from '@vueuse/components'
+import AI from "./AI.vue";
 
 var avenginkitSetuped = false;
 export default {
@@ -187,7 +195,13 @@ export default {
                 return;
             }
             this.$router.replace({path: "/home/conference"});
-            this.isSetting = true;
+            this.isSetting = false;
+        },
+        go2AI() {
+            if (this.$router.currentRoute.value.path !== '/home/ai') {
+                this.$router.replace({path: '/home/ai'});
+            }
+            this.isSetting = false;
         },
         go2Setting() {
             if (this.$router.currentRoute.path === '/home/setting') {
@@ -305,6 +319,7 @@ export default {
     },
 
     components: {
+        AI,
         Conference,
         Multi,
         Single,
@@ -317,7 +332,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
 .home {
     display: flex;
     width: calc(100vw - var(--main-margin-left) - var(--main-margin-right));
