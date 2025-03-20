@@ -71,7 +71,7 @@
                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/conference' }"
                                @click="go2Conference"></i>
                         </li>
-                        <li>
+                        <li v-if="aiPortalUrl">
                             <i class="icon-ion-android-sunny"
                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai'}"
                                @click="go2AI"></i>
@@ -127,6 +127,7 @@ import Conference from "../voip/conference/Conference.vue";
 import 'tippy.js/dist/tippy.css' // optional for styling
 import {UseDraggable} from '@vueuse/components'
 import AI from "./AI.vue";
+import Config from "../../config";
 
 var avenginkitSetuped = false;
 export default {
@@ -245,6 +246,9 @@ export default {
     },
 
     computed: {
+        aiPortalUrl() {
+            return Config.AI_PORTAL_URL
+        },
         unread() {
             let count = 0;
             this.shareConversationState.conversationInfoList.forEach(info => {

@@ -55,6 +55,8 @@ export default class Config {
 
     static MESSAGE_ROAMING = 1;
 
+    // AI 入口地址，如果不需要 AI 功能，置为 null 即可
+    static AI_PORTAL_URL = 'https://static.wildfirechat.cn/chatbox-web/index.html'
 
     /**
      * web/wx 端有效
