@@ -251,6 +251,7 @@ import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
 import {vOnClickOutside} from '@vueuse/components'
 
 import {markRaw} from "vue";
+import EventType from "../../../wfc/client/wfcEvent";
 
 export default {
     name: 'Conference',
@@ -1022,6 +1023,15 @@ export default {
                 return;
             }
             this.showChooseLayoutView = false;
+        },
+
+        onUserInfosUpdate(userInfos = []) {
+            for (let i = 0; i < this.participantUserInfos.length; i++) {
+                let userInfo = userInfos.find(u => u.uid === this.participantUserInfos[i].uid);
+                if (userInfo) {
+                    Object.assign(this.participantUserInfos[i], userInfo);
+                }
+            }
         }
     },
 
@@ -1241,7 +1251,7 @@ export default {
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
                 }
-                
+
                 if (oldCurrentPagePariticipants) {
                     oldCurrentPagePariticipants.forEach(u => {
                         if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
@@ -1324,6 +1334,8 @@ export default {
         } else {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
         }
+
+        wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     },
 
     unmounted() {
@@ -1334,6 +1346,7 @@ export default {
         this.$eventBus.$off('muteVideo');
         this.$eventBus.$off('muteAudio');
         this.conferenceManager.destroy();
+        wfc.eventEmitter.off(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     }
 }
 </script>

@@ -92,7 +92,7 @@
                 <!--connected-->
                 <div v-if="status === 4" class="duration-action-container">
                     <p>{{ duration }}</p>
-                    <p class="single-line"> {{ '正在讲话: ' + speakingUserName}}</p>
+                    <p class="single-line"> {{ '正在讲话: ' + speakingUserName }}</p>
                     <div class="action-container">
 
                         <div class="action">
@@ -131,6 +131,7 @@ import MultiCallOngoingMessageContent from "../../wfc/av/messages/multiCallOngoi
 import VideoType from "../../wfc/av/engine/videoType";
 import wfc from "../../wfc/client/wfc";
 import Config from "../../config";
+import EventType from "../../wfc/client/wfcEvent";
 
 export default {
     name: 'Multi',
@@ -506,10 +507,19 @@ export default {
         },
 
         broadcastMultiCallOngoing() {
-            if (this.status === CallState.STATUS_CONNECTED){
+            if (this.status === CallState.STATUS_CONNECTED) {
                 let participants = this.participantUserInfos.map(pu => pu.uid).filter(uid => uid !== this.selfUserInfo.uid)
                 let ongoing = new MultiCallOngoingMessageContent(this.session.callId, this.session.initiatorId, this.session.audioOnly, participants);
                 wfc.sendConversationMessage(this.session.conversation, ongoing);
+            }
+        },
+
+        onUserInfosUpdate(userInfos = []) {
+            for (let i = 0; i < this.participantUserInfos.length; i++) {
+                let userInfo = userInfos.find(u => u.uid === this.participantUserInfos[i].uid);
+                if (userInfo) {
+                    Object.assign(this.participantUserInfos[i], userInfo);
+                }
             }
         }
     },
@@ -562,6 +572,8 @@ export default {
             avenginekit.setup();
         }
         this.setupSessionCallback();
+
+        wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     },
 
     unmounted() {
@@ -571,6 +583,7 @@ export default {
         if (this.broadcastMultiCallOngoingTimer) {
             clearInterval(this.broadcastMultiCallOngoingTimer);
         }
+        wfc.eventEmitter.off(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     }
 }
 </script>

@@ -115,7 +115,7 @@
                             arrow>
                             <template #content>
                                 <div v-for="(device, index) in audioInputDevices" :key="index" class="audio-input-device-item" @click="switchAudioInput(device)">
-                                    {{ device.label  + (device.deviceId === currentAudioInputDeviceId ? ' (当前)' : '')}}
+                                    {{ device.label + (device.deviceId === currentAudioInputDeviceId ? ' (当前)' : '') }}
                                 </div>
                             </template>
                         </tippy>
@@ -123,10 +123,10 @@
                         <div :id="'trigger-audioInputDevices'"
                              ref="audioInputDeviceTippy"
                              class="flex-column flex-align-center flex-justify-center">
-                        <img v-if="!session.audioMuted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
-                        <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
-                        <p>静音</p>
-                    </div>
+                            <img v-if="!session.audioMuted" @click="mute" class="action-img" src='@/assets/images/av_mute.png'/>
+                            <img v-else @click="mute" class="action-img" src='@/assets/images/av_mute_hover.png'/>
+                            <p>静音</p>
+                        </div>
                     </div>
                     <div v-if="!audioOnly && false" class="action">
                         <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
@@ -150,6 +150,8 @@ import {isElectron} from "../../platform";
 import ScreenOrWindowPicker from "./ScreenOrWindowPicker";
 import VideoType from "../../wfc/av/engine/videoType";
 import Config from "../../config";
+import wfc from "../../wfc/client/wfc";
+import EventType from "../../wfc/client/wfcEvent";
 
 export default {
     name: 'Single',
@@ -446,6 +448,14 @@ export default {
             let sec = ~~((timestamp % 60));
             str += (sec < 10 ? "0" : "") + sec
             return str;
+        },
+        onUserInfosUpdate(userInfos = []) {
+            for (let i = 0; i < this.participantUserInfos.length; i++) {
+                let userInfo = userInfos.find(u => u.uid === this.participantUserInfos[i].uid);
+                if (userInfo) {
+                    Object.assign(this.participantUserInfos[i], userInfo);
+                }
+            }
         }
     },
 
@@ -472,18 +482,23 @@ export default {
         let audioInputDevices = devices.filter(device => device.kind === 'audioinput');
         if (audioInputDevices.length > 0) {
             let defaultAudioDevice = audioInputDevices.filter(d => d.deviceId === 'default')[0];
-            if(!defaultAudioDevice){
+            if (!defaultAudioDevice) {
                 defaultAudioDevice = audioInputDevices[0]
             }
             let defaultAudioDeviceGroupId = defaultAudioDevice.groupId;
             this.audioInputDevices = audioInputDevices;
             this.currentAudioInputDeviceId = this.audioInputDevices.filter(d => d.groupId === defaultAudioDeviceGroupId)[0].deviceId;
         }
+
+        wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
+    },
+    beforeUnmount() {
+        wfc.eventEmitter.off(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     },
 
     computed: {
         participantUserInfo() {
-            return this.session.participantUserInfos[0];
+            return this.participantUserInfos[0];
         },
 
         duration() {
