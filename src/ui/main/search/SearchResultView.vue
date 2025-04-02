@@ -162,7 +162,8 @@ export default {
         },
 
         hideSearchView(e) {
-            if (e.target.id !== 'searchInput') {
+            console.log('hideSearchView', e);
+            if (e.target.id !== 'searchInput' && e.target.classList[0] !== 'show-all') {
                 store.hideSearchView()
             }
         },
