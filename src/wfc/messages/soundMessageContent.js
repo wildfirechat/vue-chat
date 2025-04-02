@@ -8,6 +8,9 @@ import MessageContentType from './messageContentType';
 
 export default class SoundMessageContent extends MediaMessageContent {
     duration;
+    // 本地使用
+    _speechToTextInProgress = false;
+    _speechText = ''
 
     constructor(fileOrLocalPath, remotePath, duration) {
         super(MessageContentType.Voice, MessageContentMediaType.Voice, fileOrLocalPath, remotePath);

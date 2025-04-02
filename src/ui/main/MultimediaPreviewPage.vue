@@ -111,7 +111,6 @@ export default {
                 }
             } else if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
                 let entries = this.message.messageContent.multiMedias;
-                console.log('xxxxxxxxxxx', entries)
                 this.currentMedia = {
                     url: entries[this.currentMixMultiMediaItemIndex].url,
                     thumbnail: entries[this.currentMixMultiMediaItemIndex].thumbnail,

@@ -171,7 +171,9 @@
     "month_11": "十一月",
     "month_12": "十二月",
     "wfc_id": "野火號",
-    "channel": "頻道"
+    "channel": "頻道",
+    "speech2text": "轉文字",
+    "cancelSpeech2text": "取消轉文字"
   },
   "misc": {
     "beijing": "北京",
