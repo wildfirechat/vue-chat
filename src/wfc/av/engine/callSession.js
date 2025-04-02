@@ -13,6 +13,7 @@ export default class CallSession {
     screenSharing = false
     audioOnly = false
 
+    moCall;
     startTime
     startMsgUid
 

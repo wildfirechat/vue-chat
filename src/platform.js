@@ -29,3 +29,4 @@ export const currentWindow = null;
 export const BrowserWindow = null;
 export const AppPath = null;
 export const desktopCapturer = null;
+export const app = null;

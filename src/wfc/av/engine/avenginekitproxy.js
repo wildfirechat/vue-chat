@@ -17,7 +17,7 @@ import CallEndReason from "./callEndReason";
 import CallByeMessageContent from "../messages/callByeMessageContent";
 import WfcAVEngineKit from "./avenginekit";
 
-// main window renderer process -> voip window renderer process
+// main window renderer process -> main process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
 export class AvEngineKitProxy {
     wfc;
@@ -648,6 +648,7 @@ export class AvEngineKitProxy {
         if (!this.callWin) {
             return;
         }
+        this.isVoipWindowReady = false;
         setTimeout(() => {
             this.onVoipCallStatusCallback && this.onVoipCallStatusCallback(this.conversation, false);
             this.conversation = null;
@@ -659,7 +660,6 @@ export class AvEngineKitProxy {
             this.participants = [];
             this.queueEvents = [];
             this.callWin = null;
-            this.isVoipWindowReady = false;
             this.voipEventRemoveAllListeners('voip-message', 'conference-request', 'update-call-start-message', 'start-screen-share');
         }, 2000);
     }

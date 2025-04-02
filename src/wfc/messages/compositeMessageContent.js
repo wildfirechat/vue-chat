@@ -107,8 +107,14 @@ export default class CompositeMessageContent extends MediaMessageContent {
             let fileName = 'wcf-' + new Date().getTime() + '.data';
             this.file = new File([blob], fileName);
             if (isElectron()) {
-                this.localPath = require('tmp').tmpNameSync() + fileName;
-                require('fs').writeFileSync(this.localPath, str);
+                let fs = require('fs');
+                let sep = require('path').sep;
+                let cmsDir = wfc.getAppPath() + sep + 'cms' + sep;
+                if(!fs.existsSync(cmsDir)){
+                    fs.mkdirSync(cmsDir);
+                }
+                this.localPath = cmsDir + fileName;
+                fs.writeFileSync(this.localPath, str);
                 payload.localMediaPath = this.localPath;
                 payload.mediaType = MessageContentType.File;
             }
