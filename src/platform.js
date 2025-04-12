@@ -29,4 +29,6 @@ export const currentWindow = null;
 export const BrowserWindow = null;
 export const AppPath = null;
 export const desktopCapturer = null;
+export const shell = null;
+export const screen = null;
 export const app = null;
