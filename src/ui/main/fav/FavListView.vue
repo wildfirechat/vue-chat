@@ -75,8 +75,8 @@
             <infinite-loading :identifier="infiniteId" force-use-infinite-wrapper direction="bottom"
                               @infinite="infiniteHandler">
                 <!--            <template slot="spinner">加载中...</template>-->
-                <template slot="no-more">{{ $t('fav.no_more') }}</template>
-                <template slot="no-results">{{ $t('fav.all_fav_load') }}</template>
+                <template #no-more>{{ $t('fav.no_more') }}</template>
+                <template #no-results>{{ $t('fav.all_fav_load') }}</template>
             </infinite-loading>
             <vue-context ref="menu" v-slot="{data:favItem}" :close-on-scroll="true" v-on:close="onMenuClose">
                 <!--          更多menu item-->

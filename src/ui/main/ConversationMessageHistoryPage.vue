@@ -39,8 +39,8 @@
                                   direction="top"
                                   @infinite="infiniteHandler">
                     <!--            <template slot="spinner">加载中...</template>-->
-                    <template slot="no-more">{{ $t('conversation.no_more_message') }}</template>
-                    <template slot="no-results">{{ $t('conversation.no_more_message') }}</template>
+                    <template #no-more>{{ $t('conversation.no_more_message') }}</template>
+                    <template #no-results>{{ $t('conversation.no_more_message') }}</template>
                 </infinite-loading>
                 <ul>
                     <li v-for="(message, index) in filteredMessages"
@@ -72,8 +72,8 @@
                                   direction="bottom"
                                   @infinite="infiniteHandlerBottom">
                     <!--            <template slot="spinner">加载中...</template>-->
-                    <template slot="no-more">{{ $t('fav.no_more') }}</template>
-                    <template slot="no-results">{{ $t('fav.all_fav_load') }}</template>
+                    <template #no-more>{{ $t('fav.no_more') }}</template>
+                    <template #no-results>{{ $t('fav.all_fav_load') }}</template>
                 </infinite-loading>
             </div>
         </div>

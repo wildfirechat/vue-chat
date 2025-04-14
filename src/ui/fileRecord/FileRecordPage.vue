@@ -94,8 +94,8 @@
                                           direction="bottom"
                                           @infinite="infiniteHandler">
                             <!--            <template slot="spinner">加载中...</template>-->
-                            <template slot="no-more">{{ $t('file_record.no_more') }}</template>
-                            <template slot="no-results">{{ $t('file_record.all_file_load') }}</template>
+                            <template #no-more>{{ $t('file_record.no_more') }}</template>
+                            <template #no-results>{{ $t('file_record.all_file_load') }}</template>
                         </infinite-loading>
                     </div>
                     <div v-else class="file-record-empty-container">{{ emptyDesc }}</div>
