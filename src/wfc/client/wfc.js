@@ -2213,7 +2213,7 @@ export class WfcManager {
      * @return {boolean}
      */
     isEnableMesh() {
-        return impl.isEnableMesh();
+        return impl.isEnableMesh && impl.isEnableMesh();
     }
 
     /**
