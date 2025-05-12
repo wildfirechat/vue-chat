@@ -165,6 +165,11 @@ let store = {
             console.log('store GroupMembersUpdate', groupId)
             this._reloadGroupConversationIfExist([new NullGroupInfo(groupId)]);
             // this._loadFavGroupList();
+            if (conversationState.currentConversationInfo && conversationState.currentConversationInfo.conversation.type === ConversationType.Group
+                && conversationState.currentConversationInfo.conversation.target === groupId) {
+                this._patchCurrentConversationMessages();
+            }
+
             // TODO 其他相关逻辑
         });
 
