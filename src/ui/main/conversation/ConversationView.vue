@@ -706,7 +706,7 @@ export default {
                     if (done) break;
 
                     let text = decoder.decode(value, {stream: true});
-                    text = text.trim();
+                    text = text.replace(/\r\n|\n|\r/g, '');
                     if (text) {
                         result += text.replaceAll('data:', '')
                         console.log('speech2text', text, text.replaceAll('data:', ''));

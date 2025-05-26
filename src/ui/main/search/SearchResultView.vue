@@ -72,6 +72,22 @@
                         {{ $t('search.view_all') + this.sharedSearchState.groupSearchResult.length }}
                     </div>
                 </li>
+                <li class="category-item" v-if="sharedSearchState.conversationSearchResult.length > 0">
+                    <label>{{ '会话' }}</label>
+                    <ul>
+                        <li v-for="(conv, index) in toShowConversationList" :key="index">
+                            <div class="search-result-item group" @click="chatToConversation(conv.conversation)">
+                                <img :src="conv.conversation._target.portrait">
+                                <span>{{ conv.conversation._target._displayName }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div v-if="!shouldShowAllConversation && this.sharedSearchState.conversationSearchResult.length > 5"
+                         class="show-all"
+                         @click.stop="showAllConversation">
+                        {{ $t('search.view_all') + this.sharedSearchState.conversationSearchResult.length }}
+                    </div>
+                </li>
                 <li class="category-item" v-if="sharedMiscState.isElectron">
                     <label>{{ $t('search.message_history') }}</label>
                     <div class="search-result-item message" @click="showMessageHistoryPage">
@@ -106,6 +122,7 @@ export default {
             shouldShowAllChannel: false,
             shouldShowAllContact: false,
             shouldShowAllGroup: false,
+            shouldShowAllConversation: false,
         }
     },
 
@@ -161,6 +178,10 @@ export default {
             this.shouldShowAllGroup = true;
         },
 
+        showAllConversation() {
+            this.shouldShowAllConversation = true;
+        },
+
         hideSearchView(e) {
             console.log('hideSearchView', e);
             if (e.target.id !== 'searchInput' && e.target.classList[0] !== 'show-all') {
@@ -195,6 +216,14 @@ export default {
             store.hideSearchView();
         },
 
+        chatToConversation(conversation) {
+            if (this.$router.currentRoute.path !== '/home') {
+                this.$router.replace("/home");
+            }
+            store.setCurrentConversation(conversation);
+            store.hideSearchView();
+        },
+
         showMessageHistoryPage() {
             let hash = window.location.hash;
             let url = window.location.origin;
@@ -223,6 +252,9 @@ export default {
         },
         toShowGroupList: function () {
             return !this.shouldShowAllGroup && this.sharedSearchState.groupSearchResult.length > 5 ? this.sharedSearchState.groupSearchResult.slice(0, 4) : this.sharedSearchState.groupSearchResult;
+        },
+        toShowConversationList: function () {
+            return !this.shouldShowAllConversation && this.sharedSearchState.conversationSearchResult.length > 5 ? this.sharedSearchState.conversationSearchResult.slice(0, 4) : this.sharedSearchState.conversationSearchResult;
         }
     },
 

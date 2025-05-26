@@ -1896,7 +1896,6 @@ let store = {
         return result;
     },
 
-    // TODO
     filterConversation(query) {
         return conversationState.conversationInfoList.filter(info => {
             let displayNamePinyin = convert(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
