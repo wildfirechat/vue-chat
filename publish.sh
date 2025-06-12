@@ -17,4 +17,4 @@ cd ..
 tar -czvf dist.tar.gz dist
 scp dist.tar.gz wfccn:/var/wildfirechat_sites/web
 ssh wfccn 'cd /var/wildfirechat_sites/web; rm -rf css/ dist favicon.ico fonts/ img/ index.html js/; tar -xzvf dist.tar.gz; mv dist/* .; rm -rf dist.tar.gz'
-rm -rf dist dist.tar.gz
+#rm -rf dist dist.tar.gz
