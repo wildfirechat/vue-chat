@@ -71,19 +71,7 @@
    请使用微信扫描下方二维码，体验野火IM 手机Web/H5 端
 
    ![野火IM](https://static.wildfirechat.cn/mobile-web.png?imageView2/1/w/260/h/260)
-
-## 截图
-
-![](http://static.wildfirechat.cn/web-home.png)
-![](http://static.wildfirechat.cn/web-conversation.png)
-![](http://static.wildfirechat.cn/web-contact.png)
-![](http://static.wildfirechat.cn/web-channel.png)
-![](http://static.wildfirechat.cn/web-emoji.png)
-![](http://static.wildfirechat.cn/web-forward.png)
-![](http://static.wildfirechat.cn/web-setting.png)
-![](http://static.wildfirechat.cn/web-multi-video-call.png)
-![](http://static.wildfirechat.cn/web-multi-audio-call.png)
-
+ 
 ## 分支说明
 
 1. `master`：基于`Vue 3`开发，是未来的开发重心
@@ -119,18 +107,17 @@ $ npm run build
 1. 执行上面的打包步骤
 2. 将打包生成的```dist```目录下的所有文件上传到服务器
 3. 下面是采用nginx部署的示例配置
+   ```nginx
+   server {
+       listen 80;
+       server_name im.xxx.yyy;
 
-```nginx
-server {
-    listen 80;
-    server_name im.xxx.yyy;
-
-    location / {
-        root /path/to/dist;
-        index index.html;
-    }
-}
-```
+       location / {
+           root /path/to/dist;
+           index index.html;
+       }
+   }
+   ```
 4. 如果需要支持 https，请参考[nginx配置https](https://docs.wildfirechat.cn/faq/web/https.html)。
 
 ## 压缩/混淆配置说明
@@ -142,6 +129,19 @@ server {
 由于浏览器限制，页面需要通过 https://im.xxx.yyy 或通过 http://localhost 访问时，才支持音视频通话
 
 默认附带免费版本音视频，关于野火音视频可以参考[野火音视频使用说明](https://docs.wildfirechat.cn/webrtc/)和[野火音视频简介](https://docs.wildfirechat.cn/blogs/野火音视频简介.html)。如果使用音视频高级版，请参考[音视频高级版切换方法](./src/wfc/av/internal/README.MD)。
+
+
+## 截图
+
+![](http://static.wildfirechat.cn/web-home.png)
+![](http://static.wildfirechat.cn/web-conversation.png)
+![](http://static.wildfirechat.cn/web-contact.png)
+![](http://static.wildfirechat.cn/web-channel.png)
+![](http://static.wildfirechat.cn/web-emoji.png)
+![](http://static.wildfirechat.cn/web-forward.png)
+![](http://static.wildfirechat.cn/web-setting.png)
+![](http://static.wildfirechat.cn/web-multi-video-call.png)
+![](http://static.wildfirechat.cn/web-multi-audio-call.png)
 
 ## License
 
