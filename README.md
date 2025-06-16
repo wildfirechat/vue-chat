@@ -115,6 +115,24 @@ $ npm install
 $ npm run build
 ```
 
+## 部署
+1. 执行上面的打包步骤
+2. 将打包生成的```dist```目录下的所有文件上传到服务器
+3. 下面是采用nginx部署的示例配置
+
+```nginx
+server {
+    listen 80;
+    server_name im.xxx.yyy;
+
+    location / {
+        root /path/to/dist;
+        index index.html;
+    }
+}
+```
+4. 如果需要支持 https，请参考[nginx配置https](https://docs.wildfirechat.cn/faq/web/https.html)。
+
 ## 压缩/混淆配置说明
 
 1. ```wfc```目录整体不能压缩
