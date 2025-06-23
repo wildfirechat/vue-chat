@@ -2315,6 +2315,8 @@ export class WfcManager {
             if (m.portrait && !m.portrait.startsWith(`${Config.APP_SERVER}`)) {
                 req.members.push({
                     avatarUrl: m.portrait
+                    // 如果需要对头像地址进行base64编码，可以使用下面的代码，app-server
+                    //avatarUrl: btoa(m.portrait)
                 })
             } else {
                 req.members.push({
