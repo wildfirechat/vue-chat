@@ -650,7 +650,7 @@ export default {
                     this.selfUserInfo._isAudience = false;
                 }
             } else {
-                if (this.session.videoMuted && !this.session.audience) {
+                if (this.session.videoMuted && !this.selfUserInfo._isScreenSharing && !this.session.audience) {
                     await this.session.switchAudience(true);
                     this.selfUserInfo._isAudience = true;
                 }
