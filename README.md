@@ -85,6 +85,11 @@
 > 注意避免使用`cnpm`，我们使用`cnpm`出现过一些奇怪问题的情况。如果您使用`cnpm`当遇到问题时请切换到`npm`试一下。
 
 ## 开发
+> demo 默认只能连到官方服务，如果想要连到自行私有化部署的服务，则需要部署专业版 IM-Server，以及修改相关配置
+   1. 部署专业版 IM-Server
+      > 社区版 IM-Server 不支持 Web 端接入
+   2. 将`config.js`里面的 `APP_SERVER`修改为自己部署的`app-server`的地址
+   3. 用通过邮件获取到的 Web SDK，替换`wfc/proto/proto.min.js`文件
 
 ```
 npm install
