@@ -1220,7 +1220,7 @@ export default {
         },
         currentPageParticipants: {
             deep: true,
-            handler(newCurrentPageParticipants, oldCurrentPagePariticipants) {
+            handler(newCurrentPageParticipants, oldCurrentPageParticipants) {
                 if (this.audioOnly) {
                     return;
                 }
@@ -1248,8 +1248,12 @@ export default {
                     }
                 }
 
-                if (oldCurrentPagePariticipants) {
-                    oldCurrentPagePariticipants.forEach(u => {
+                if (oldCurrentPageParticipants) {
+                    oldCurrentPageParticipants.forEach(u => {
+                        let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
+                        if(newIndex > -1) {
+                            return;
+                        }
                         if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
                             return
                         }
