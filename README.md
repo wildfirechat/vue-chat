@@ -22,44 +22,7 @@
 1. 本项目所使用的`Web SDK`是需要付费的，且依赖于`专业版 IM-Server`，价格请参考[费用详情](https://docs.wildfirechat.cn/price/)
 2. `Web SDK`和`专业版 IM-Server`都支持试用，具体请参考[试用说明](https://docs.wildfirechat.cn/trial/)
 3. 本项目默认只能连接到官方服务，购买或申请试用之后，替换`Web SDK`，即可连到自行部署的服务
-
-## 常见开发问题
-1. 音视频相关问题，请参考以下文档
-    1. [av readme](src/wfc/av/internal/README.MD)
-    2. [音视频常见问题](https://docs.wildfirechat.cn/faq/webrtc.html?h=webrtc)
-
-2. 纯内网环境，不能显示表情
-    1. 将```src/assets/twemoji```目录上传到一个内网能访问的服务器，比如部署```app server```的服务器
-    2. 确保通过```http(s)://base_twemoji_url/72x72/1f1e6.png```能访问到对应表情，此处```1f1e6.png```蓝底白字大写字母A
-    3. 修改```config.js```，将```https://static.wildfirechat.net/twemoji/assets/``` 替换成新部署的```http(s)://base_twemoji_url/```，需要注意，最后一个```/```不能省略
-    4. 动态表情类似处理
-
-3. 想自己部署表情图片
-
-    请常见问题2
-4. 通过`iframe`加载
-
-   需要通过 https 加载、并允许摄像头和麦克风权限，才能正常进行音视频通话，参考如下：
-   > `<iframe src="https://example.com" allow="camera;microphone"></iframe>`
-
-
-
-
-### 联系我们
-
-> 商务合作请优先采用邮箱和我们联系。技术问题请到[野火IM论坛](http://bbs.wildfirechat.cn/) 发帖交流。
-
-1. heavyrain.lee 邮箱: heavyrain.lee@wildfirechat.cn 微信：wildfirechat
-2. imndx 邮箱: imndx@wildfirechat.cn 微信：wfchat
-
-### 问题交流
-
-1. 如果大家发现bug，请在GitHub提issue
-2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
-3. 微信公众号
-
-<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
-
+ 
 ## 体验
 
 1. PC Web 端
@@ -134,6 +97,40 @@ $ npm run build
 由于浏览器限制，页面需要通过 https://im.xxx.yyy 或通过 http://localhost 访问时，才支持音视频通话
 
 默认附带免费版本音视频，关于野火音视频可以参考[野火音视频使用说明](https://docs.wildfirechat.cn/webrtc/)和[野火音视频简介](https://docs.wildfirechat.cn/blogs/野火音视频简介.html)。如果使用音视频高级版，请参考[音视频高级版切换方法](./src/wfc/av/internal/README.MD)。
+
+## 常见开发问题
+1. 音视频相关问题，请参考以下文档
+    1. [av readme](src/wfc/av/internal/README.MD)
+    2. [音视频常见问题](https://docs.wildfirechat.cn/faq/webrtc.html?h=webrtc)
+
+2. 纯内网环境，不能显示表情
+    1. 将```src/assets/twemoji```目录上传到一个内网能访问的服务器，比如部署```app server```的服务器
+    2. 确保通过```http(s)://base_twemoji_url/72x72/1f1e6.png```能访问到对应表情，此处```1f1e6.png```蓝底白字大写字母A
+    3. 修改```config.js```，将```https://static.wildfirechat.net/twemoji/assets/``` 替换成新部署的```http(s)://base_twemoji_url/```，需要注意，最后一个```/```不能省略
+    4. 动态表情类似处理
+
+3. 想自己部署表情图片
+
+   请常见问题2
+4. 通过`iframe`加载
+
+   需要通过 https 加载、并允许摄像头和麦克风权限，才能正常进行音视频通话，参考如下：
+   > `<iframe src="https://example.com" allow="camera;microphone"></iframe>`
+
+### 联系我们
+
+> 商务合作请优先采用邮箱和我们联系。技术问题请到[野火IM论坛](http://bbs.wildfirechat.cn/) 发帖交流。
+
+1. heavyrain.lee 邮箱: heavyrain.lee@wildfirechat.cn 微信：wildfirechat
+2. imndx 邮箱: imndx@wildfirechat.cn 微信：wfchat
+
+### 问题交流
+
+1. 如果大家发现bug，请在GitHub提issue
+2. 其他问题，请到[野火IM论坛](http://bbs.wildfirechat.cn/)进行交流学习
+3. 微信公众号
+
+<img src="http://static.wildfirechat.cn/wx_wfc_qrcode.jpg" width = 50% height = 50% />
 
 
 ## 截图
