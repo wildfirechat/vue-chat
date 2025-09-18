@@ -1594,6 +1594,24 @@ export class WfcManager {
     }
 
     /**
+     获取服务器消息，可以获取对应messageUid之前或者之后的消息。**如果消息是不连续的，saveToDb要为false，避免存储在本地，需要特别注意这一点。**
+
+     @discussion 获取得到的消息数目有可能少于指定的count数，如果count不为0就意味着还有更多的消息可以获取，只有获取到的消息数为0才表示没有更多的消息了。
+
+     @param conversation 会话
+     @param contentTypes 指定获取的类型。
+     @param messageUid 起始消息的ID
+     @param count 总数
+     @param before 是获取对应messageUid之前或者时候的消息
+     @param save 是否保存到本地内存中，如果是不连续的消息，千万要为false。
+     @param successCB 返回消息
+     @param failCB 返回错误码
+     */
+    loadRemoteConversationMessagesEx2(conversation, contentTypes, messageUid, count, before, save, successCB, failCB) {
+        impl.loadRemoteMessages(conversation, contentTypes, messageUid, count, successCB, failCB, false, before, save);
+    }
+
+    /**
      * 根据会话线路，获取远程历史消息
      * @param {number} line 会话线路
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
