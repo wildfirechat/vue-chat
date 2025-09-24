@@ -252,6 +252,7 @@ import {vOnClickOutside} from '@vueuse/components'
 
 import {markRaw} from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
+import WfcAVEngineKit from "../../../wfc/av/engine/avenginekit";
 
 export default {
     name: 'Conference',
@@ -384,7 +385,6 @@ export default {
                 console.log('oninitial', selfUserInfo._isAudience)
                 // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null);
-                this.$set(this.selfUserInfo, '_screenShareStream', null);
                 this.$set(this.selfUserInfo, '_isScreenSharing', false);
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
 
@@ -398,10 +398,17 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
                 console.log('didCreateLocalVideoTrack', screenShare)
+                if(WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare){
                     this.selfUserInfo._stream = stream;
-                    this.selfUserInfo._screenShareStream = null;
                     this.selfUserInfo._isVideoMuted = false;
-                this.selfUserInfo._isScreenSharing = screenShare;
+                    this.selfUserInfo._isScreenSharing = screenShare;
+                } else {
+                    let selfScreenShareUserInfo = Object.assign(new UserInfo(), this.selfUserInfo);
+                    selfScreenShareUserInfo._stream = stream;
+                    selfScreenShareUserInfo._isVideoMuted = false;
+                    selfScreenShareUserInfo._isScreenSharing = true;
+                    this.participantUserInfos.splice(1, 0, selfScreenShareUserInfo);
+                }
                 this.autoPlay();
             };
 
@@ -429,11 +436,9 @@ export default {
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream, screenSharing) => {
                 let p;
                 console.log('didReceiveRemoteVideoTrack', userId, stream, screenSharing);
-                let index = -1;
                 for (let i = 0; i < this.participantUserInfos.length; i++) {
                     p = this.participantUserInfos[i];
                     if (p.uid === userId && p._isScreenSharing === screenSharing) {
-                        index = i;
                         p._stream = stream;
                         p._stream.timestamp = new Date().getTime();
                         break;
