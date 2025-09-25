@@ -16,6 +16,8 @@ const IpcEventType = {
     FILE_COPY: 'file-copy',
     START_SCREEN_SHOT: "screenshots-start",
     OPEN_H5_APP_WINDOW: 'open-h5-app-window',
+    WORKSPACE_NEW_TAB_WEB_CONTENT: 'workspace-new-tab-web-content',
+    WORKSPACE_ADD_NEW_TAB: 'workspace-add-new-tab',
     SHOW_COMPOSITE_MESSAGE_WINDOW: 'show-composite-message-window',
     IS_SUSPEND: 'is-suspend',
     START_SCREEN_SHARE: 'start-screen-share',

@@ -71,7 +71,7 @@ import StreamingTextGeneratingMessageContent from "../messages/streamingTextGene
 import StreamingTextGeneratedMessageContent from "../messages/streamingTextGeneratedMessageContent";
 import MixMultiMediaTextMessageContent from "../messages/mixMultiMediaTextMessageContent";
 import MixFileTextMessageContent from "../messages/mixFileTextMessageContent";
-
+import GroupRejectJoinNotificationContent from "../messages/notification/groupRejectJoinNotificationContent";
 export default class MessageConfig {
     static getMessageContentClazz(type) {
         for (const content of MessageConfig.MessageContents) {
@@ -346,6 +346,12 @@ export default class MessageConfig {
             flag: PersistFlag.No_Persist,
             type: MessageContentType.ModifyGroupSetting_Notification,
             contentClazz: ModifyGroupSettingNotification,
+        },
+        {
+            name: 'groupRejectJoinNotificationContent',
+            flag: PersistFlag.Persist,
+            type: MessageContentType.RejectJoinGroup,
+            contentClazz: GroupRejectJoinNotificationContent,
         },
         {
             name: 'recall',

@@ -1559,7 +1559,7 @@ export class WfcManager {
      * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
      * @param {number} count
-     * @param {function (Message)} successCB
+     * @param {function (Message[])} successCB
      * @param failCB
      */
     loadRemoteMessages(conversation, contentTypes, beforeUid, count, successCB, failCB) {
@@ -1572,7 +1572,7 @@ export class WfcManager {
      * @param {[number]} contentTypes 消息类型列表，可选值参考{@link MessageContentType}
      * @param {number | Long} beforeUid 消息uid，表示拉取本条消息之前的消息
      * @param {number} count
-     * @param {function ([Message])} successCB
+     * @param {function (Message[])} successCB
      * @param failCB
      */
     loadRemoteConversationMessages(conversation, contentTypes, beforeUid, count, successCB, failCB) {

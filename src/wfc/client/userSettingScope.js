@@ -35,6 +35,10 @@ export default class UserSettingScope {
     static PttSilent = 25;
     static GroupRemark = 26;
 
+    static Privacy_Searchable = 27;
+    static AddFriend_NoVerify = 28;
+    static Sync_Badge = 29;
+
     // 用户自定义的scope需从1000开始，以防冲突
     static kUserSettingCustomBegin = 1000;
 }

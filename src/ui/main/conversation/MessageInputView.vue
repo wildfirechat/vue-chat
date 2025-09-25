@@ -53,7 +53,7 @@
                         <li v-if="!inputOptions['disableVideoCall']">
                             <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
                         </li>
-                        <li v-if="sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
+                        <li v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
                             <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
                         </li>
                     </template>

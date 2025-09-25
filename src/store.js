@@ -48,6 +48,7 @@ import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
 import SoundMessageContent from "./wfc/messages/soundMessageContent";
 import MixMultiMediaTextMessageContent from "./wfc/messages/mixMultiMediaTextMessageContent";
 import MixFileTextMessageContent from "./wfc/messages/mixFileTextMessageContent";
+import Long from "long";
 
 /**
  * 一些说明
@@ -130,7 +131,6 @@ let store = {
             this._loadDefaultConversationList();
             this._loadFavContactList();
             this._loadFavGroupList();
-            this._loadChannelList();
             this.updateTray();
             // 清除远程消息时，WEB SDK会同时触发ConversationInfoUpdate 和 setting更新，但PC SDK不会，只会触发setting更新
             // if (isElectron()) {
@@ -459,7 +459,7 @@ let store = {
 
                 conversationState.downloadingMessages = conversationState.downloadingMessages.filter(v => !eq(v.messageUid, messageUid));
                 let msg = wfc.getMessageByUid(messageUid);
-                console.log('xxxxx downloaded file', msg)
+                console.log('downloaded file', msg)
                 if (msg) {
                     msg.messageContent.localPath = localPath;
                     wfc.updateMessageContent(msg.messageId, msg.messageContent);
@@ -515,9 +515,12 @@ let store = {
         this._loadUserLocalSettings();
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         conversationState.isGroupMessageReceiptEnable = wfc.isGroupReceiptEnabled() && wfc.isUserReceiptEnabled();
-        // if (conversationState.currentConversationInfo) {
-        //     this._loadCurrentConversationMessages();
-        // }
+        // 休眠恢复之后，重新连接成功时，可能出现会话列表的 lastMessage 在会话界面未显示，需要判断是否需要重新加载当前会话的消息
+        if (conversationState.currentConversationInfo) {
+            if(gt(conversationState.currentConversationInfo.timestamp, 0) && (conversationState.currentConversationMessageList.length === 0 || !eq(conversationState.currentConversationInfo.timestamp, conversationState.currentConversationMessageList[conversationState.currentConversationMessageList.length - 1].timestamp))){
+                this._loadCurrentConversationMessages();
+            }
+        }
     },
 
     // conversation actions
@@ -1298,8 +1301,8 @@ let store = {
             return;
         }
         let conversation = conversationState.currentConversationInfo.conversation;
-        console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let loadRemoteHistoryMessageFunc = () => {
+            console.log('loadRemoteConversationMessages', conversation, stringValue(conversationState.currentConversationOldestMessageUid));
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
                     console.log('loadRemoteConversationMessages response', msgs.length);
@@ -1308,16 +1311,14 @@ let store = {
                     } else {
                         // 可能拉回来的时候，本地已经切换会话了
                         if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                            conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
                             let filteredMsgs = msgs.filter(m => {
                                 return m.messageId !== 0 && conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid)) === -1
                             })
-                            if (filteredMsgs.length === 0) {
-                                completeCB()
-                                return;
-                            }
 
-                            conversationState.currentConversationOldestMessageUid = filteredMsgs[0].messageUid;
-                            this._onloadConversationMessages(conversation, filteredMsgs);
+                            console.log('loadRemoteConversationMessages filteredMessages', filteredMsgs.length);
+                            let newMsg = this._onloadConversationMessages(conversation, filteredMsgs);
+                            console.log('loadRemoteConversationMessages newMsg', newMsg);
                             loadedCB();
                         }
                         if (!conversationState.currentConversationInfo.lastMessage) {
@@ -1763,6 +1764,10 @@ let store = {
 
     toggleChannelList() {
         contactState.expandChanel = !contactState.expandChanel;
+        // 从服务端拉取，且比较耗性能，故展开时，才从刷新
+        if(contactState.expandChanel) {
+            this._loadChannelList();
+        }
     },
 
     toggleFriendRequestList() {
@@ -2291,4 +2296,5 @@ function _reset() {
 window.__store = store;
 window.stringValue = stringValue;
 window.longValue = longValue;
+window.fromString = Long.fromString;
 export default store

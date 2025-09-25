@@ -86,6 +86,7 @@ import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
 import EventType from "../../../wfc/client/wfcEvent";
 import appServerApi from "../../../api/appServerApi";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
+import MessageContentType from "../../../wfc/messages/messageContentType";
 
 export default {
     name: "GroupConversationInfoView",
@@ -112,6 +113,7 @@ export default {
     mounted() {
         wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
         wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onUserInfosUpdate)
+        wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
         wfc.getGroupMembers(this.conversationInfo.conversation.target, true);
 
         let userInfo = wfc.getUserInfo(wfc.getUserId(), false, this.conversationInfo.conversation.target);
@@ -121,10 +123,22 @@ export default {
     beforeUnmount() {
         wfc.eventEmitter.removeListener(EventType.UserInfosUpdate, this.onUserInfosUpdate);
         wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onUserInfosUpdate);
+        wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
     components: {UserListView},
     methods: {
+        onReceiveMessage(msg, hasMore){
+            if(msg.conversation.equal(this.conversationInfo.conversation) && msg.messageContent.type === MessageContentType.RejectJoinGroup){
+                let content = msg.messageContent;
+                if(content.operator === wfc.getUserId()){
+                    this.$notify({
+                        text: content.formatNotification(msg),
+                        type: 'warn'
+                    });
+                }
+            }
+        },
         onUserInfosUpdate() {
             this.groupMemberUserInfos = store.getConversationMemberUsrInfos(this.conversationInfo.conversation);
         },
