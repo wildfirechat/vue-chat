@@ -17,7 +17,7 @@ export class AppServerApi {
     loinWithPassword(mobile, password) {
         return new Promise((resolve, reject) => {
             let responsePromise = this._post('/login_pwd', {
-                mobile,
+                mobile: `+86 ${mobile}`,
                 password,
                 platform: Config.getWFCPlatform(),
                 clientId: wfc.getClientId()
@@ -29,7 +29,7 @@ export class AppServerApi {
     loginWithAuthCode(mobile, authCode) {
         return new Promise((resolve, reject) => {
             let responsePromise = this._post('/login', {
-                mobile,
+                mobile: `+86 ${mobile}`,
                 code: authCode,
                 platform: Config.getWFCPlatform(),
                 clientId: wfc.getClientId()
