@@ -36,7 +36,8 @@ export default class Config {
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://app.wildfirechat.net';
+    static APP_SERVER = "https://47.113.127.120"; //"https://120.79.81.41:10443";
+    static IM_SERVER_HOST = "imtest.chuanshusvr.tech"; //"test-bug-2.chuanshusvr.tech";
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
     static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
@@ -59,7 +60,7 @@ export default class Config {
     static MESSAGE_ROAMING = 1;
 
     // AI 入口地址，如果不需要 AI 功能，置为 null 即可
-    static AI_PORTAL_URL = 'https://static.wildfirechat.cn/chatbox-web/index.html'
+    static AI_PORTAL_URL = null; // 'https://static.wildfirechat.cn/chatbox-web/index.html'
 
     /**
      * web/wx 端有效
@@ -89,7 +90,7 @@ export default class Config {
     // 2 clientId存储于localStorage，和域名绑定，每个域名，对应一个clientId，重启浏览器等，不会变化，会导致同一个浏览器，不能同时登录多个不同的账号
     // token是和clientId绑定的，当选策略1和2的时候，应用层可选择将上次成功连接的userId和token持久化，当用户进行刷新网页等操作时，可以直接用持久化的userId和token进行连接；而不用重新进行扫码登录
     // 选2时，支持web端快速登录
-    static CLIENT_ID_STRATEGY = 1;
+    static CLIENT_ID_STRATEGY = 2;
 
     static SDK_PLATFORM_WINDOWS = 3;
     static SDK_PLATFORM_OSX = 4;
@@ -119,7 +120,7 @@ export default class Config {
     // 文件传输助手ID，如果不需要的话，将其置空即可
     static FILE_HELPER_ID = 'wfc_file_transfer';
     // 是否将用户信息、群组信息、频道信息、聊天室信息持久化
-    static ENABLE_INFO_PERSISTENCE = false;
+    static ENABLE_INFO_PERSISTENCE = true;
 
     // 登录时，最多预加载多少个会话的未读消息
     static MAX_TO_LOAD_UNREAD_MESSAGE_CONVERSATION_COUNT = 50;
@@ -136,7 +137,7 @@ export default class Config {
     static ENABLE_MULTI_CALL_AUTO_JOIN = false;
 
     // 需要专业版 im-server 才支持，是否打开语音对讲功能，和对讲机类似的功能，不是发送语音消息
-    static ENABLE_PTT = true;
+    static ENABLE_PTT = false;
 
     // 是否支持图文混排、文件文本混排，目前之后 pc 端支持，故默认关闭
     static ENABLE_MIX_MEDIA_MESSAGE = false;
