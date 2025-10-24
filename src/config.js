@@ -149,6 +149,8 @@ export default class Config {
 
     // 单人音视频通话页面是否显示音视频 SDK 相关提示
     static SHOW_VOIP_TIP = true
+    // AI机器人ID
+    static AI_ROBOT = "FireRobot";
     static getWFCPlatform() {
         if (isElectron()) {
             if (window.process && window.process.platform === 'darwin') {

@@ -1629,6 +1629,7 @@ let store = {
                 u._displayNameIgnoreFriendAlias = wfc.getGroupMemberDisplayNameEx(u, true);
             } else {
                 u._displayName = wfc.getUserDisplayNameEx(u);
+                u._displayNameIgnoreFriendAlias = u.displayName
             }
             u._pinyin = convert(u._displayName, {style: 0}).join('').trim().toLowerCase();
             let firstLetter = u._pinyin[0];
@@ -2088,6 +2089,14 @@ let store = {
         }
     },
 
+    /**
+     * 异步获取群成员用户信息
+     * 仅 electron 环境有效
+     * @param groupId
+     * @param includeSelf
+     * @param sortByPinyin
+     * @return {Promise<unknown>}
+     */
     getGroupMemberUserInfosAsync(groupId, includeSelf = true, sortByPinyin = false) {
         return new Promise((resolve, reject) => {
             let memberIds = wfc.getGroupMemberIds(groupId);
@@ -2152,6 +2161,7 @@ let store = {
         return userInfos;
     },
 
+    // 仅 electron 环境有效
     async getConversationMemberUsrInfosAsync(conversation) {
         let userInfos = [];
         if (conversation.type === 0) {
