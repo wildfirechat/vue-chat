@@ -1147,8 +1147,9 @@ export default {
                 sp = this.conferenceFocusUser;
             } else if (this.conferenceLocalFocusUser && !this.conferenceLocalFocusUser._isVideoMuted) {
                 sp = this.conferenceLocalFocusUser;
-            } else if (this.speakingVideoParticipant) {
-                sp = this.speakingVideoParticipant;
+            // 可能会导致焦点用户切换太快，故注释掉
+            // } else if (this.speakingVideoParticipant) {
+            //     sp = this.speakingVideoParticipant;
             } else {
                 sp = this.participantUserInfos.find(u => !u._isAudience && !u._isVideoMuted && u._isScreenSharing === true);
                 if (!sp) {
@@ -1251,27 +1252,32 @@ export default {
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
-                }
-
-                if (oldCurrentPageParticipants) {
-                    oldCurrentPageParticipants.forEach(u => {
-                        let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
-                        if(newIndex > -1) {
-                            return;
-                        }
-                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                            return
-                        }
-                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
-                    })
-                }
-                if (newCurrentPageParticipants) {
-                    newCurrentPageParticipants.forEach(u => {
-                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                            return
-                        }
-                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
-                    })
+           
+                    // 宫格布局时，订阅当前显示的用户大流，不显示的不订阅视频流
+                    if (oldCurrentPageParticipants) {
+                        oldCurrentPageParticipants.forEach(u => {
+                            let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
+                            if(newIndex > -1) {
+                                return;
+                            }
+                            if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                                return
+                            }
+                            this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
+                        })
+                    }
+                    if (newCurrentPageParticipants) {
+                        newCurrentPageParticipants.forEach(u => {
+                            let oldIndex = oldCurrentPageParticipants.findIndex(ou => ou.uid === u.uid && ou._isScreenSharing === u._isScreenSharing);
+                            if(oldIndex > -1) {
+                                return;
+                            }
+                            if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                                return
+                            }
+                            this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
+                        })
+                    }
                 }
             }
         },

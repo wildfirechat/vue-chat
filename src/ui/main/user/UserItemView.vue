@@ -6,11 +6,10 @@
              v-bind:class="{sticky:enableCategoryLabelSticky}">
             <p>{{ source.category.toUpperCase() }}</p>
         </div>
-        <div v-else>
+        <div v-else style="width: 100%">
             <tippy
                 v-if="!clickUserItemFunc"
                 :to="'#user-' + source.uid"
-                interactive
                 theme="light"
                 :animate-fill="false"
                 placement="left"
@@ -96,6 +95,7 @@ export default {
     },
     methods: {
         clickUserItem(user) {
+            console.log('click...', user, this.clickUserItemFunc);
             this.clickUserItemFunc && this.clickUserItemFunc(user);
         },
 

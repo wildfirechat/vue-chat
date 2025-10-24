@@ -46,45 +46,29 @@
                     </div>
                 </div>
                 <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
+              
                     <div class="drag-drop">
                         <p>{{ $t('conversation.drag_to_send_to', [conversationTitle]) }}</p>
                     </div>
                 </div>
-                <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll"
-                     infinite-wrapper>
-                    <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true" direction="top"
-                                      @infinite="infiniteHandler">
-                        <!--            <template slot="spinner">加载中...</template>-->
-                        <template #no-more>{{ $t('conversation.no_more_message') }}</template>
-                        <template #no-results>{{ $t('conversation.all_message_load') }}</template>
-                    </infinite-loading>
-                    <div v-for="(message) in sharedConversationState.currentConversationMessageList"
-                         :ref="message.messageId"
-                         :key="message.messageId">
-                        <!--todo 不同的消息类型 notification in out-->
-
-                        <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-                        <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
-                        <ContextableNotificationMessageContentContainerView
-                            v-else-if="isContextableNotificationMessage(message)"
-                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                            @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            :message="message"
-                        />
-                        <NormalOutMessageContentView
-                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                            :message="message"
-                            @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            v-else-if="message.direction === 0"/>
-                        <NormalInMessageContentView
-                            @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                            :message="message"
-                            @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            v-else/>
-                    </div>
+                <div ref="conversationMessageList" class="conversation-message-list">
+                    <virtual-list
+                                  :data-component="messageItemView"
+                                  :data-sources="sharedConversationState.currentConversationMessageList || []"
+                                  :data-key="messageKey"
+                                  ref="virtualList"
+                                  :estimate-size="100"
+                                  @scroll="onVirtualListScroll"
+                                  @totop="onScrollToTop($event)"
+                                  style="height: 100%; overflow-y: auto;"
+                    >
+                        <template #header>
+                            <div v-show="overflow" class="header">
+                                <div class="spinner" v-show="isLoadingHistory && !finished"></div>
+                                <div class="finished" v-show="finished">没有更多了</div>
+                            </div>
+                        </template>
+                    </virtual-list>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
                     <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>
@@ -238,6 +222,8 @@ import WfcUtil from "../../../wfc/util/wfcUtil";
 
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
+import MessageItemView from "./MessageItemView.vue";
+import {markRaw} from "vue";
 
 var amr;
 export default {
@@ -288,6 +274,10 @@ export default {
             unreadMessageCount: 0,
             isWindowAlwaysTop: currentWindow && currentWindow.isAlwaysOnTop(),
             enableLoadRemoteHistoryMessage: !store.state.misc.isElectron, // web 端，本地没有消息存储，所以默认开启加载远程消息
+            messageItemView: markRaw(MessageItemView),
+            isLoadingHistory: false,
+            overflow: false,
+            finished: false,
         };
     },
 
@@ -483,6 +473,72 @@ export default {
             }
         },
 
+        onVirtualListScroll(e, range) {
+            // 检查overflow状态
+            this.checkOverFlow();
+            this.onScroll(e);
+        },
+
+        onScrollToTop(event) {
+            console.log('scrollToTop', event);
+            if (this.isLoadingHistory) {
+                return;
+            }
+
+            this.isLoadingHistory = true;
+
+            const oldMsgCount = this.sharedConversationState.currentConversationMessageList.length;
+            const isInitialLoad = oldMsgCount === 0;
+
+            store.loadConversationHistoryMessages(() => {
+                const newMessageCount = this.sharedConversationState.currentConversationMessageList.length;
+                const loadedMessageCount = newMessageCount - oldMsgCount;
+
+                if (isInitialLoad) {
+                    // 初始加载：滚动到底部
+                    this.$nextTick(() => {
+                        this.scrollToBottom();
+                    });
+                } else if (loadedMessageCount > 0) {
+                    const vsl = this.$refs.virtualList;
+                    let newMsgIds = this.sharedConversationState.currentConversationMessageList.slice(0, loadedMessageCount).map(m => m.messageId);
+
+                    // this.$nextTick(() => {
+                    //     const offset = newMsgIds.reduce((previousValue, currentMessageId) => {
+                    //         return previousValue + vsl.getSize(currentMessageId);
+                    //     }, 0)
+                    //     vsl.scrollToOffset(offset);
+                    // });
+                    vsl.scrollToIndex(newMsgIds.length -1)
+                }
+
+                this.isLoadingHistory = false;
+
+            }, () => {
+                this.finished = true;
+                this.isLoadingHistory = false;
+            }, this.enableLoadRemoteHistoryMessage);
+        },
+
+        // 检查是否有overflow，用于显示header
+        checkOverFlow() {
+            const virtualList = this.$refs.virtualList;
+            if (virtualList && virtualList.getScrollSize && virtualList.getClientSize) {
+                this.overflow = virtualList.getScrollSize() > virtualList.getClientSize();
+            }
+        },
+
+        scrollToBottom() {
+            // 滚动到底部
+            const virtualList = this.$refs.virtualList;
+            if (virtualList && virtualList.scrollToBottom) {
+                virtualList.scrollToBottom();
+            } else if (virtualList && virtualList.scrollToOffset) {
+                // 如果没有 scrollToBottom 方法，使用 scrollToOffset
+                const scrollSize = virtualList.getScrollSize ? virtualList.getScrollSize() : 999999;
+                virtualList.scrollToOffset(scrollSize);
+            }
+        },
         dragStart() {
             if (this.muted) {
                 return;
@@ -725,12 +781,21 @@ export default {
         },
 
         scrollToMessageItemView(message) {
-            if (this.$refs[message.messageId][0]) {
-                this.$refs[message.messageId][0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                })
+            const list = this.sharedConversationState.currentConversationMessageList;
+            if (list && this.$refs.virtualList) {
+                const idx = list.findIndex(m => m.messageId === message.messageId);
+                if (idx >= 0 && this.$refs.virtualList.scrollToIndex) {
+                    try {
+                        this.$refs.virtualList.scrollToIndex(idx);
+                    } catch (e) {
+                        console.warn('scrollToIndex failed, not found', e);
+                    }
+                }
             }
+        },
+
+        messageKey(message) {
+            return message.messageId;
         },
 
         recallMessage(message) {
@@ -833,19 +898,6 @@ export default {
         multiSelect(message) {
             this.toggleMessageMultiSelectionActionView(message);
         },
-
-        infiniteHandler($state) {
-            console.log('to load more message');
-            store.loadConversationHistoryMessages(() => {
-                console.log('loaded', this.enableLoadRemoteHistoryMessage)
-                $state.loaded(!this.enableLoadRemoteHistoryMessage);
-                this.enableLoadRemoteHistoryMessage = true;
-            }, () => {
-                console.log('complete')
-                $state.complete()
-                this.enableLoadRemoteHistoryMessage = true;
-            }, this.enableLoadRemoteHistoryMessage);
-        },
      
         playVoice(message) {
             if (amr) {
@@ -914,8 +966,7 @@ export default {
         },
 
         showUnreadMessage() {
-            let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            this.scrollToBottom();
             this.unreadMessageCount = 0;
         },
 
@@ -927,11 +978,11 @@ export default {
             }
         },
 
-        openMessageContextMenu(event, message){
+        openMessageContextMenu({event, message}) {
             this.$refs.menu.open(event, message);
         },
 
-        openMessageSenderContextMenu(event, message) {
+        openMessageSenderContextMenu({event, message}) {
             // 目前只支持群会话里面，消息发送者右键@
             if (message.conversation.type === ConversationType.Group) {
                 this.$refs.messageSenderContextMenu.open(event, message);
@@ -943,6 +994,9 @@ export default {
         this.popupItem = this.$refs['setting'];
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
+        // 监听来自 MessageItemView 的事件
+        this.$eventBus.$on('open-message-context-menu', this.openMessageContextMenu);
+        this.$eventBus.$on('open-message-sender-context-menu', this.openMessageSenderContextMenu);
 
         this.$eventBus.$on('send-file', args => {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
@@ -964,6 +1018,8 @@ export default {
         document.removeEventListener('mousemove', this.drag);
         this.$eventBus.$off('send-file');
         this.$eventBus.$off('forward-fav');
+        this.$eventBus.$off('open-message-context-menu', this.openMessageContextMenu);
+        this.$eventBus.$off('open-message-sender-context-menu', this.openMessageSenderContextMenu);
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
@@ -975,8 +1031,7 @@ export default {
         // refer to http://iamdustan.com/smoothscroll/
         console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
         if (this.sharedConversationState.shouldAutoScrollToBottom && !this.sharedMiscState.isPageHidden) {
-            let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            this.scrollToBottom();
             this.clearConversationUnreadStatus();
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
@@ -991,11 +1046,13 @@ export default {
                 this.unreadMessageCount = 0;
             }
         }
+        if ((!this.conversationInfo && this.sharedConversationState.currentConversationInfo) || !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
+            this.onScrollToTop()
+        }
 
         // 切换到新的会话
         if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
             this.showConversationInfo = false;
-            this.enableLoadRemoteHistoryMessage = !isElectron()
             this.ongoingCalls = [];
             if (this.ongoingCallTimer) {
                 clearInterval(this.ongoingCallTimer);
@@ -1003,6 +1060,7 @@ export default {
             }
         }
         this.conversationInfo = this.sharedConversationState.currentConversationInfo;
+        this.enableLoadRemoteHistoryMessage = !isElectron() || this.conversationInfo.conversation.type === ConversationType.ChatRoom;
     },
 
     computed: {
@@ -1059,10 +1117,6 @@ export default {
                 return '';
             }
         },
-        loadingIdentifier() {
-            let conversation = this.sharedConversationState.currentConversationInfo.conversation;
-            return conversation.type + '-' + conversation.target + '-' + conversation.line;
-        },
         currentVoiceMessage() {
             let voice = this.sharedConversationState.currentVoiceMessage;
             if (voice) {
@@ -1094,11 +1148,6 @@ export default {
             return false;
         },
     },
-    // watch: {
-    //     conversationInfo() {
-    //         console.log('conversationInfo changed', this.conversationInfo);
-    //     }
-    // },
 
     directives: {
         vOnClickOutside
@@ -1246,6 +1295,31 @@ export default {
 
 .conversation-message-list ul {
     list-style: none;
+}
+
+.header {
+    padding: 10px;
+    text-align: center;
+}
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4168e0;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.finished {
+    color: #999;
+    font-size: 14px;
 }
 
 .unread-count-tip-container {

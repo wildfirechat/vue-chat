@@ -4,15 +4,21 @@
     <ContextableNotificationMessageContentContainerView
         v-else-if="isContextableNotificationMessage(source)"
         @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, source) : null"
+        @openMessageContextMenu="handleOpenMessageContextMenu"
+        @openMessageSenderContextMenu="handleOpenMessageSenderContextMenu"
         :message="source"
     />
     <NormalOutMessageContentView
         @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, source) : null"
         :message="source"
+        @openMessageContextMenu="handleOpenMessageContextMenu"
+        @openMessageSenderContextMenu="handleOpenMessageSenderContextMenu"
         v-else-if="source.direction === 0"/>
     <NormalInMessageContentView
         @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, source) : null"
         :message="source"
+        @openMessageContextMenu="handleOpenMessageContextMenu"
+        @openMessageSenderContextMenu="handleOpenMessageSenderContextMenu"
         v-else/>
 </template>
 
@@ -96,6 +102,14 @@ export default {
                 store.selectOrDeselectMessage(message);
                 event.stopPropagation();
             }
+        },
+
+        handleOpenMessageContextMenu(event, message) {
+            this.$eventBus.$emit('open-message-context-menu', {event, message});
+        },
+
+        handleOpenMessageSenderContextMenu(event, message) {
+            this.$eventBus.$emit('open-message-sender-context-menu', {event, message});
         },
     }
 }

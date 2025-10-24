@@ -197,7 +197,6 @@ export default {
                     groupedUsers.push(user);
                 }
             });
-            console.log('xxx xxx', groupedUsers)
             return groupedUsers;
         },
 

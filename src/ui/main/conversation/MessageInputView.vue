@@ -579,6 +579,7 @@ export default {
                 })
             }
         },
+
         toggleChannelMenu(toggle = true) {
             if (toggle) {
                 this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
@@ -655,7 +656,7 @@ export default {
             }
         },
 
-        initMention(conversation) {
+        async initMention(conversation) {
             if (this.convMuted) {
                 return;
             }
@@ -664,32 +665,62 @@ export default {
                 this.tribute = null;
             }
             let type = conversation.conversationType;
-            if (type === ConversationType.Single
-                || type === ConversationType.ChatRoom || type === ConversationType.Channel) {
-                return
-            }
 
             let mentionMenuItems = [];
-            let groupInfo = wfc.getGroupInfo(conversation.target);
-            mentionMenuItems.push({
-                key: this.$t('conversation.all_people'),
-                keyIgnoreFriendAlias: this.$t('conversation.all_people'),
-                value: '@' + conversation.target,
-                avatar: groupInfo.portrait ? groupInfo.portrait : Config.DEFAULT_GROUP_PORTRAIT_URL,
-                //searchKey: '所有人' + pinyin.letter('所有人', '', null)
-                searchKey: this.$t('conversation.all_people') + 'suoyouren' + 'syr'
-            });
+            if(Config.AI_ROBOT){
+                let aiRobotId = Config.AI_ROBOT;
+                let aiUserInfos = store.getUserInfos([aiRobotId]);
+                for (let aiInfo of aiUserInfos) {
+                    mentionMenuItems.push({
+                        key: aiInfo._displayName,
+                        keyIgnoreFriendAlias: aiInfo._displayNameIgnoreFriendAlias,
+                        value: '@' + aiInfo.uid,
+                        avatar: aiInfo.portrait ? aiInfo.portrait : Config.DEFAULT_PORTRAIT_URL,
+                        //searchKey: '所有人' + pinyin.letter('所有人', '', null)
+                        searchKey: aiInfo._displayName + aiInfo._pinyin + aiInfo._firstLetters,
+                        robot: true,
+                    });
+                }
 
-            let groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false);
-            groupMemberUserInfos.forEach((e) => {
+            }
+            if(type === ConversationType.Group) {
+                let groupInfo = wfc.getGroupInfo(conversation.target);
                 mentionMenuItems.push({
-                    key: e._displayName,
-                    keyIgnoreFriendAlias: e._displayNameIgnoreFriendAlias,
-                    value: '@' + e.uid,
-                    avatar: e.portrait,
-                    searchKey: e._displayName + e._pinyin + e._firstLetters,
+                    key: this.$t('conversation.all_people'),
+                    keyIgnoreFriendAlias: this.$t('conversation.all_people'),
+                    value: '@' + conversation.target,
+                    avatar: groupInfo.portrait ? groupInfo.portrait : Config.DEFAULT_GROUP_PORTRAIT_URL,
+                    //searchKey: '所有人' + pinyin.letter('所有人', '', null)
+                    searchKey: this.$t('conversation.all_people') + 'suoyouren' + 'syr'
                 });
-            });
+
+                // 超大群，弹出@时，显示所有群成员意义不大，但会导致性能问题，故限制
+                if(groupInfo.memberCount  < 500){
+                    let groupMemberUserInfos;
+                    if(isElectron()){
+                        groupMemberUserInfos = await store.getGroupMemberUserInfosAsync(conversation.target, false);
+                    } else {
+                        groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false);
+                    }
+                    groupMemberUserInfos.forEach((e) => {
+                        mentionMenuItems.push({
+                            key: e._displayName,
+                            keyIgnoreFriendAlias: e._displayNameIgnoreFriendAlias,
+                            value: '@' + e.uid,
+                            avatar: e.portrait,
+                            searchKey: e._displayName + e._pinyin + e._firstLetters,
+                        });
+                    });
+                } else {
+                    this.$notify({
+                        text:'超大群，@时暂不支持弹出群成员列表',
+                        type:'warn'
+                    })
+                }
+            }
+            if(mentionMenuItems.length === 0) {
+                return
+            }
 
             this.tribute = new Tribute({
                 values: mentionMenuItems,
@@ -698,7 +729,7 @@ export default {
                     // if (this.range.isContentEditable(this.current.element)) {
                     //     return '<span contenteditable="false"><a href="http://zurb.com" target="_blank" title="' + item.original.email + '">' + item.original.value + '</a></span>';
                     // }
-                    this.mentions.push({key: item.original.key, value: item.original.value});
+                    this.mentions.push({key: item.original.key, keyIgnoreFriendAlias: item.original.keyIgnoreFriendAlias, value: item.original.value});
 
                     return '@' + item.original.keyIgnoreFriendAlias;
                 },
@@ -713,7 +744,6 @@ export default {
                 },
                 menuContainer: document.getElementById('conversation-content'),
             });
-
             if (this.$refs["input"]) {
                 this.tribute.attach(this.$refs['input']);
             }
@@ -722,8 +752,9 @@ export default {
         handleMention(text) {
             let textMessageContent = new TextMessageContent();
             textMessageContent.content = text.trim();
+            console.log('handleMention', textMessageContent);
             this.mentions.forEach(e => {
-                if (text.indexOf(e.key) > -1) {
+                if (text.indexOf(e.key) > -1 || text.indexOf(e.keyIgnoreFriendAlias) > -1) {
                     if (e.value === '@' + this.conversationInfo.conversation.target) {
                         textMessageContent.mentionedType = 2;
                     } else {
@@ -780,6 +811,7 @@ export default {
             }
             let clonedInput = this.$refs['input'].cloneNode(true);
             let children = [...clonedInput.children]
+
             for (let i = 0; i < children.length; i++) {
                 let e = children[i]
                 if (e.tagName === 'BR') {
@@ -952,7 +984,9 @@ export default {
                 }, {
                     'before-close': null,
                 });
+
         }
+
     },
 
     activated() {

@@ -1301,8 +1301,9 @@ let store = {
             return;
         }
         let conversation = conversationState.currentConversationInfo.conversation;
+        console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let loadRemoteHistoryMessageFunc = () => {
-            console.log('loadRemoteConversationMessages', conversation, stringValue(conversationState.currentConversationOldestMessageUid));
+            console.log('loadRemoteConversationMessages', conversation, conversationState.currentConversationOldestMessageUid);
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
                     console.log('loadRemoteConversationMessages response', msgs.length);
@@ -1315,10 +1316,12 @@ let store = {
                             let filteredMsgs = msgs.filter(m => {
                                 return m.messageId !== 0 && conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid)) === -1
                             })
+                            if (filteredMsgs.length === 0) {
+                                loadedCB();
+                                return;
+                            }
 
-                            console.log('loadRemoteConversationMessages filteredMessages', filteredMsgs.length);
-                            let newMsg = this._onloadConversationMessages(conversation, filteredMsgs);
-                            console.log('loadRemoteConversationMessages newMsg', newMsg);
+                            this._onloadConversationMessages(conversation, filteredMsgs);
                             loadedCB();
                         }
                         if (!conversationState.currentConversationInfo.lastMessage) {
@@ -2059,6 +2062,12 @@ let store = {
     },
 
     // clone一下，别影响到好友列表
+    /**
+     * @param groupId
+     * @param includeSelf
+     * @param sortByPinyin
+     * @return {*}
+     */
     getGroupMemberUserInfos(groupId, includeSelf = true, sortByPinyin = false) {
 
         let memberIds = wfc.getGroupMemberIds(groupId);
@@ -2079,6 +2088,54 @@ let store = {
         }
     },
 
+    getGroupMemberUserInfosAsync(groupId, includeSelf = true, sortByPinyin = false) {
+        return new Promise((resolve, reject) => {
+            let memberIds = wfc.getGroupMemberIds(groupId);
+            wfc.getUserInfosAsync(memberIds, groupId, userInfos => {
+                if (!includeSelf) {
+                    userInfos = userInfos.filter(u => u.uid !== wfc.getUserId())
+                }
+                let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+                if (sortByPinyin) {
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId));
+                } else {
+                    let compareFn = (u1, u2) => {
+                        let index1 = memberIds.findIndex(id => id === u1.uid)
+                        let index2 = memberIds.findIndex(id => id === u2.uid)
+                        return index1 - index2;
+                    }
+                    // resolve(userInfosCloneCopy)
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId, compareFn));
+                }
+            });
+        })
+    },
+
+    /**
+     * 获取部分群成员用户信息
+     * @param groupId
+     * @param memberIds
+     * @param sortByPinyin
+     * @return {Promise<unknown>}
+     */
+    getPartialGroupMembersInfoAsync(groupId, memberIds, sortByPinyin = false) {
+        return new Promise((resolve, reject) => {
+            wfc.getUserInfosAsync(memberIds, groupId, userInfos => {
+                let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+                if (sortByPinyin) {
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId));
+                } else {
+                    let compareFn = (u1, u2) => {
+                        let index1 = memberIds.findIndex(id => id === u1.uid)
+                        let index2 = memberIds.findIndex(id => id === u2.uid)
+                        return index1 - index2;
+                    }
+                    // resolve(userInfosCloneCopy)
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId, compareFn));
+                }
+            });
+        })
+    },
     // clone一下，别影响到好友列表
     getConversationMemberUsrInfos(conversation) {
         let userInfos = [];
@@ -2091,6 +2148,21 @@ let store = {
             userInfos = this._patchAndSortUserInfos(userInfosCloneCopy, '');
         } else if (conversation.type === 1) {
             userInfos = this.getGroupMemberUserInfos(conversation.target, true);
+        }
+        return userInfos;
+    },
+
+    async getConversationMemberUsrInfosAsync(conversation) {
+        let userInfos = [];
+        if (conversation.type === 0) {
+            if (conversation.target !== contactState.selfUserInfo.uid) {
+                userInfos.push(wfc.getUserInfo(wfc.getUserId(), false));
+            }
+            userInfos.push(wfc.getUserInfo(conversation.target, false));
+            let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+            userInfos = this._patchAndSortUserInfos(userInfosCloneCopy, '');
+        } else if (conversation.type === 1) {
+            userInfos = await this.getGroupMemberUserInfosAsync(conversation.target, true);
         }
         return userInfos;
     },
