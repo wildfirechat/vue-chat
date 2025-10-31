@@ -440,6 +440,9 @@ export default {
                     p = this.participantUserInfos[i];
                     if (p.uid === userId && p._isScreenSharing === screenSharing) {
                         p._stream = stream;
+                        let s = this.session.getSubscriber(userId, screenSharing);
+                        p._isVideoMuted = s.videoMuted;
+                        p._isAudioMuted = s.audioMuted;
                         p._stream.timestamp = new Date().getTime();
                         break;
                     }
@@ -455,7 +458,11 @@ export default {
             };
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
-                console.log('didParticipantJoined', userId, screenSharing)
+                console.log('didParticipantJoined', userId, screenSharing, this.participantUserInfos.length)
+                let index = this.participantUserInfos.findIndex(p => p.uid === userId && p._isScreenSharing === screenSharing);
+                if(index >= 0) {
+                    return;
+                }
                 let userInfo = wfc.getUserInfo(userId);
                 let subscriber = this.session.getSubscriber(userId, screenSharing);
                 userInfo._stream = subscriber.stream;
@@ -468,7 +475,7 @@ export default {
                 // 动态添加的属性不是 reactive 的，故直接创建个新的对象
                 // 其实这个问题很奇怪，只有发起会议，第一次进入该会议的时候，其他端加入，参与者列表会不刷新；重新进入等，都一切正常
                 this.participantUserInfos.push(Object.assign(new UserInfo(), userInfo));
-                console.log('joined', userInfo, subscriber.audience, this.participantUserInfos.length);
+                console.log('joined', userInfo, subscriber, subscriber.audience, this.participantUserInfos.length);
             }
 
             sessionCallback.didParticipantLeft = (userId, endReason, screenSharing) => {
@@ -577,14 +584,16 @@ export default {
                         this.selfUserInfo._isVideoMuted = this.session.videoMuted;
                         return;
                     }
-                    let s = this.session.getSubscriber(p);
+                    p = p.startsWith('screen_sharing_') ? p.substring('screen_sharing_'.length) : p;
+                    let screenSharing = p.startsWith('screen_sharing_');
+                    let s = this.session.getSubscriber(p, screenSharing);
                     if (!s) {
                         return;
                     }
-                    console.log('conference', 'didMuteStateChanged', p, s.videoMuted, s.audioMuted);
+                    console.log('conference', 'didMuteStateChanged', p, screenSharing, s.videoMuted, s.audioMuted);
                     this.participantUserInfos.forEach(u => {
-                        if (u.uid === p && u._isScreenSharing === false) {
-                            let subscriber = this.session.getSubscriber(p);
+                        if (u.uid === p && u._isScreenSharing === screenSharing) {
+                            let subscriber = this.session.getSubscriber(p, screenSharing);
                             u._isVideoMuted = subscriber.videoMuted;
                             u._isAudioMuted = subscriber.audioMuted;
                             if (this.speakingVideoParticipant && this.speakingVideoParticipant.uid === u.uid) {
