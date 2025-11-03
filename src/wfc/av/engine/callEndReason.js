@@ -19,6 +19,9 @@ export default class CallEndReason {
     static RoomDestroyed = 13;
     static RoomNotExist = 14;
     static RoomParticipantsFull = 15;
+    // 本方被电话或其他事件打断
     static Interrupted = 16;
     static RemoteInterrupted = 17;
+    // 被踢，可能是多端加入或者 API 踢掉
+    static Kicked = 18;;
 }
