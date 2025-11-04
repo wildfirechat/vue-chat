@@ -724,6 +724,7 @@ export default {
 
             this.tribute = new Tribute({
                 values: mentionMenuItems,
+                requireLeadingSpace: false,
                 selectTemplate: (item) => {
                     if (typeof item === 'undefined') return null;
                     // if (this.range.isContentEditable(this.current.element)) {
@@ -731,7 +732,7 @@ export default {
                     // }
                     this.mentions.push({key: item.original.key, keyIgnoreFriendAlias: item.original.keyIgnoreFriendAlias, value: item.original.value});
 
-                    return '@' + item.original.keyIgnoreFriendAlias;
+                    return ' @' + item.original.keyIgnoreFriendAlias;
                 },
                 menuItemTemplate: function (item) {
                     return '<img width="24" height="24" src="' + item.original.avatar + ' "> ' + item.original.key;
