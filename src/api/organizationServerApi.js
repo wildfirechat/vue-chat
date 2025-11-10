@@ -141,7 +141,8 @@ export class OrganizationServerApi {
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse, headers: {
                 'authToken': getItem('authToken-' + new URL(path).host),
-            }, withCredentials: true,
+            },
+            withCredentials: false,
         })
         if (rawResponse) {
             return response;

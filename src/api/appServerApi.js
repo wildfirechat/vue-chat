@@ -175,7 +175,7 @@ export class AppServerApi {
             headers: {
                 'authToken': getItem('authToken-' + new URL(path).host),
             },
-            withCredentials: true,
+            withCredentials: false,
         })
         if (rawResponse) {
             return response;
