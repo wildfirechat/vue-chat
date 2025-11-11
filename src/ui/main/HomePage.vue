@@ -95,7 +95,6 @@
             <div class="drag-area" :style="dragAreaLeft"></div>
             <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
                           class="voip-div-container"
-                          draggable="true"
                           :initial-value="{x:'50%', y:'50%'}"
                           :prevent-default="true"
                           v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
