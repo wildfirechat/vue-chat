@@ -53,7 +53,7 @@ export default class Config {
     // 我们提供的服务能力有限，总体带宽仅3Mbps，只能用于用户测试和体验，为了保证测试可用，我们会不定期的更改密码。<br>
     // 上线时请一定要切换成你们自己的服务。可以购买腾讯云或者阿里云的轻量服务器，价格很便宜，可以避免影响到您的用户体验。<br>
     // 如果所有客户端都是在局域网内使用，可以不配置turn服务，置为null
-    static ICE_SERVERS = [['turn:turn.wildfirechat.net:3478', 'wfchat', 'wfchat123']];
+    static ICE_SERVERS = [['turn:turn.wildfirechat.net:3478', 'wfchat', 'wfchatpwd']];
     static LANGUAGE = 'zh_CN';
 
     static MESSAGE_ROAMING = 1;
