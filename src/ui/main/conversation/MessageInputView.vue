@@ -36,11 +36,40 @@
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
                     </li>
-                    <li v-if="enablePtt">
+                    <li v-if="enablePtt" style="position: relative;">
+                        <!-- 对讲录音动画提示 -->
+                        <transition name="fade-slide">
+                            <div v-if="isPttTalking" class="recording-indicator">
+                                <div class="recording-content">
+                                    <div class="wave-container">
+                                        <div class="wave-bar" v-for="i in 5" :key="i" :style="{animationDelay: (i * 0.1) + 's'}"></div>
+                                    </div>
+                                    <span class="recording-text">对讲中</span>
+                                    <span class="recording-time">{{ pttTime }}</span>
+                                </div>
+                                <div class="recording-tip">松开结束</div>
+                            </div>
+                        </transition>
                         <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
                            class="icon-ion-android-radio-button-on ptt-icon"/>
                     </li>
-                    <li>
+                    <li style="position: relative;">
+                        <!-- 录音动画提示 -->
+                        <transition name="fade-slide">
+                            <div v-if="isRecording" 
+                                 class="recording-indicator"
+                                 @mouseenter="onRecordingIndicatorEnter"
+                                 @mouseleave="onRecordingIndicatorLeave">
+                                <div class="recording-content">
+                                    <div class="wave-container">
+                                        <div class="wave-bar" v-for="i in 5" :key="i" :style="{animationDelay: (i * 0.1) + 's'}"></div>
+                                    </div>
+                                    <span class="recording-text">录音中</span>
+                                    <span class="recording-time">{{ recordingTime }}</span>
+                                </div>
+                                <div class="recording-tip" :class="{cancel: isRecordingCancelMode}">{{ isRecordingCancelMode ? '松开取消发送' : '松开发送' }}</div>
+                            </div>
+                        </transition>
                         <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
                            class="icon-ion-android-microphone record-icon"/>
                     </li>
@@ -165,6 +194,13 @@ export default {
             sharedMiscState: store.state.misc,
             showEmojiDialog: false,
             tribute: null,
+            recordingTime: '00:00',
+            recordingTimer: null,
+            recordingStartTime: 0,
+            isRecordingCancelMode: false,
+            pttTime: '00:00',
+            pttTimer: null,
+            pttStartTime: 0,
             mentions: [],
             emojiCategories: categoriesDefault,
             emojis: emojisDefault,
@@ -886,10 +922,8 @@ export default {
                 talkingCallback.onStartTalking = (conversation) => {
                     this.isPttTalking = true;
                     console.log('onStartTalking', conversation)
-                    this.$notify({
-                        text: '请开始说话',
-                        type: 'info'
-                    });
+                    // 开始对讲计时
+                    this.startPttTimer();
                 };
                 talkingCallback.onRequestFail = (conversation, reason) => {
                     this.$notify({
@@ -900,12 +934,16 @@ export default {
                 talkingCallback.onTalkingEnd = (conversation, reason) => {
                     if (conversation.equal(this.conversationInfo.conversation)) {
                         this.isPttTalking = false;
+                        // 停止对讲计时
+                        this.stopPttTimer();
                     }
                 }
                 pttClient.requestTalk(this.conversationInfo.conversation, talkingCallback)
                 window.addEventListener('mouseup', this.handleMouseUp)
             } else {
                 this.isPttTalking = false;
+                // 停止对讲计时
+                this.stopPttTimer();
                 pttClient.releaseTalk(this.conversationInfo.conversation);
             }
         },
@@ -918,10 +956,8 @@ export default {
                     this.amrRecorder.initWithRecord().then(() => {
                         this.isRecording = true;
                         this.amrRecorder.startRecord();
-                        this.$notify({
-                            text: '请开始说话',
-                            type: 'info'
-                        });
+                        // 开始计时
+                        this.startRecordingTimer();
                     }).catch((e) => {
                         this.$notify({
                             text: '录音失败',
@@ -934,6 +970,8 @@ export default {
                 window.addEventListener('mouseup', this.handleMouseUp)
             } else {
                 this.isRecording = false;
+                // 停止计时
+                this.stopRecordingTimer();
                 if (this.amrRecorder) {
                     this.amrRecorder.finishRecord().then(() => {
                         let duration = this.amrRecorder.getDuration();
@@ -953,13 +991,85 @@ export default {
                 }
             }
         },
+        startRecordingTimer() {
+            this.recordingStartTime = Date.now();
+            this.recordingTime = '00:00';
+            this.recordingTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                this.recordingTime = `${minutes}:${seconds}`;
+            }, 100);
+        },
+
+        stopRecordingTimer() {
+            if (this.recordingTimer) {
+                clearInterval(this.recordingTimer);
+                this.recordingTimer = null;
+            }
+            this.recordingTime = '00:00';
+        },
+
+        startPttTimer() {
+            this.pttStartTime = Date.now();
+            this.pttTime = '00:00';
+            this.pttTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - this.pttStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                this.pttTime = `${minutes}:${seconds}`;
+            }, 100);
+        },
+
+        stopPttTimer() {
+            if (this.pttTimer) {
+                clearInterval(this.pttTimer);
+                this.pttTimer = null;
+            }
+            this.pttTime = '00:00';
+        },
+        
+        onRecordingIndicatorEnter() {
+            this.isRecordingCancelMode = true;
+        },
+        
+        onRecordingIndicatorLeave() {
+            this.isRecordingCancelMode = false;
+        },
+        
         handleMouseUp() {
             if (this.isPttTalking) {
                 this.requestPttTalk(false);
             } else if (this.isRecording) {
-                this.recordAudio(false);
+                if (this.isRecordingCancelMode) {
+                    // 取消录音
+                    this.cancelRecording();
+                } else {
+                    // 正常发送录音
+                    this.recordAudio(false);
+                }
             }
             window.removeEventListener('mouseup', this.handleMouseUp)
+        },
+        
+        cancelRecording() {
+            this.isRecording = false;
+            this.isRecordingCancelMode = false;
+            this.stopRecordingTimer();
+            if (this.amrRecorder) {
+                // 取消录音，不发送，直接清空 recorder
+                try {
+                    // 尝试停止录音但不获取结果
+                    this.amrRecorder.finishRecord();
+                } catch (e) {
+                    console.log('取消录音', e);
+                }
+                this.amrRecorder = null;
+            }
+            this.$notify({
+                text: '已取消录音',
+                type: 'info'
+            });
         },
 
         setupConversationInput() {
@@ -1233,7 +1343,124 @@ i:hover {
     animation: glow 2s infinite;
 }
 
->>> .emoji-picker {
+.recording-indicator {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #3F64E4 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    min-width: 180px;
+    z-index: 1000;
+}
+
+.recording-indicator::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #764ba2;
+}
+
+.recording-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.wave-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+}
+
+.wave-bar {
+    width: 3px;
+    height: 100%;
+    background: white;
+    border-radius: 2px;
+    animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% {
+        height: 30%;
+    }
+    50% {
+        height: 100%;
+    }
+}
+
+.recording-text {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.recording-time {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Monaco', 'Courier New', monospace;
+    margin-left: auto;
+}
+
+.recording-tip {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+}
+
+.recording-tip.cancel {
+    color: #ff6b6b;
+    font-weight: 600;
+    transform: scale(1.05);
+}
+
+/* 淡入淡出动画 */
+.fade-slide-enter-active {
+    animation: fadeSlideIn 0.3s ease-out;
+}
+
+.fade-slide-leave-active {
+    animation: fadeSlideOut 0.2s ease-in;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(5px);
+    }
+}
+</style>
+
+<style scoped>
+.emoji-picker {
     box-shadow: 5px 5px 20px 0 #C0C0C0;
     --ep-color-active: #3f64e4 !important;
 }

@@ -37,13 +37,21 @@ export default {
             let compositeMessageContent = this.message.messageContent;
             let messages = compositeMessageContent.messages;
             let str = '';
-            let conversation = messages[0].conversation;
-            let groupId = conversation.type === ConversationType.Group ? conversation.target : '';
             for (let i = 0; i < messages.length && i < 4; i++) {
-                if (messages[i].messageContent instanceof TextMessageContent) {
-                    str += wfc.getGroupMemberDisplayName(groupId, messages[i].from) + ': ' + this.textMessageContent(messages[i]);
+                let senderName;
+                let msg = messages[i];
+                if (msg.conversation.type === ConversationType.Channel && msg.direction === 1/*receive*/) {
+                    let channelInfo = wfc.getChannelInfo(msg.conversation.target, false)
+                    senderName = channelInfo.name
                 } else {
-                    str += wfc.getGroupMemberDisplayName(groupId, messages[i].from) + ': ' + messages[i].messageContent.digest(messages[i]);
+                    let groupId = msg.conversation.type === ConversationType.Group ? msg.conversation.target : '';
+                    senderName = wfc.getGroupMemberDisplayName(groupId, msg.from)
+                }
+           
+                if (msg.messageContent instanceof TextMessageContent) {
+                    str += senderName + ': ' + this.textMessageContent(msg);
+                } else {
+                    str += senderName + ': ' + msg.messageContent.digest(msg);
                 }
                 str += '\n';
             }
