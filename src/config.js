@@ -106,6 +106,12 @@ export default class Config {
      */
     static KEEP_ALIVE_TIMEOUT = 200;
 
+    /**
+     * Websocket 连接路径，默认是/
+     * @type {string}
+     */
+    static WS_PATH= '/ws';
+
     // html5 audio 标签不能播放amr格式的音频，需要将amr格式转换为mp3格式
     // 本服务传入amr音频文件的地址，将音频文件转换为mp3格式，并以application/octet-stream的格式返回
     // 如果语音消息很多，建议使用cdn
