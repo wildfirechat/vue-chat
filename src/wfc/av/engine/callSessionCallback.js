@@ -110,7 +110,7 @@ export default class CallSessionCallback {
 
     }
 
-    didGetStats(reports) {
+    didGetStats(userId, reports) {
 
     }
 
