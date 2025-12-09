@@ -1261,7 +1261,7 @@ export default {
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
-           
+
                     // 宫格布局时，订阅当前显示的用户大流，不显示的不订阅视频流
                     if (oldCurrentPageParticipants) {
                         oldCurrentPageParticipants.forEach(u => {

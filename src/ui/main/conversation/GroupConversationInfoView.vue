@@ -4,7 +4,7 @@
             <div class="group-portrait-container">
                 <p>群头像</p>
                 <img :src="conversationInfo.conversation._target.portrait" @click="pickFile"/>
-                <input v-if="enableEditGroupNameOrAnnouncement" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                <input v-if="enableModifyGroupNameAndPortrait" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                        accept="image/png, image/jpeg"
                        style="display: none">
             </div>
@@ -12,7 +12,7 @@
                 {{ $t('conversation.group_name') }}
                 <input type="text"
                        ref="groupNameInput"
-                       :disabled="!enableEditGroupNameOrAnnouncement"
+                       :disabled="!enableModifyGroupNameAndPortrait"
                        v-model="newGroupName"
                        @keyup.enter="updateGroupName"
                        :placeholder="conversationInfo.conversation._target._displayName">
@@ -21,7 +21,7 @@
                 {{ $t('conversation.group_announcement') }}
                 <input type="text"
                        ref="groupAnnouncementInput"
-                       :disabled="!enableEditGroupNameOrAnnouncement"
+                       :disabled="!enableModifyAnnouncement"
                        @keyup.enter='updateGroupAnnouncement'
                        v-model.trim="newGroupAnnouncement"
                        :placeholder="groupAnnouncement">
@@ -184,7 +184,7 @@ export default {
                 })
                 .catch(err => {
                     console.log('getGroupAnnouncement', err)
-                    if (this.enableEditGroupNameOrAnnouncement) {
+                    if (this.enableModifyAnnouncement) {
                         this.groupAnnouncement = this.$t('conversation.click_to_edit_group_announcement');
                     }
                 })
@@ -261,7 +261,7 @@ export default {
         },
 
         pickFile() {
-            if (!this.enableEditGroupNameOrAnnouncement) {
+            if (!this.enableModifyGroupNameAndPortrait) {
                 this.$notify({
                     text: '群主或管理员，才能更新头像',
                     type: 'warn'
@@ -383,11 +383,24 @@ export default {
 
         },
 
-        enableEditGroupNameOrAnnouncement() {
+        enableModifyGroupNameAndPortrait() {
             let groupInfo = this.conversationInfo.conversation._target;
             if (groupInfo.type === GroupType.Organization) {
                 return false;
+            } else if (groupInfo.type === GroupType.Restricted) {
+                let selfUid = wfc.getUserId();
+                let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
+                if (groupMember) {
+                    return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
+                } else {
+                return false;
             }
+            } else {
+                return true;
+            }
+        },
+
+        enableModifyAnnouncement() {
             let selfUid = wfc.getUserId();
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, selfUid);
             if (groupMember) {
