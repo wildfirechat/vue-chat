@@ -93,7 +93,7 @@ export default {
                     case MessageContentType.Video:
                     case MessageContentType.Image:
                     case MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT:
-                        previewMM(this.quotedMessage)
+                        previewMM(this.quotedMessage, 0, false)
                         break;
                     case MessageContentType.File:
                         this.downloadQuotedFile(this.quotedMessage)

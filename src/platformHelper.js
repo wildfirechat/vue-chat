@@ -43,7 +43,7 @@ export function downloadFile2(url, name, messageUid) {
     }
 }
 
-export function previewMM(message, mixMultiMediaItemIndex = 0) {
+export function previewMM(message, mixMultiMediaItemIndex = 0, continuous = true) {
     if (isElectron()) {
         let hash = window.location.hash;
         let url = window.location.origin;
@@ -71,6 +71,6 @@ export function previewMM(message, mixMultiMediaItemIndex = 0) {
         });
         console.log('show-multimedia-preview-window', url)
     } else {
-        store.previewMessage(message, true);
+        store.previewMessage(message, continuous);
     }
 }
