@@ -426,8 +426,6 @@ export default {
         },
 
         hideConversationInfo() {
-            // TODO
-            // 是否在创建群聊，或者是在查看会话参与者信息
             this.showConversationInfo && (this.showConversationInfo = false);
         },
 
@@ -1381,6 +1379,10 @@ export default {
     background-color: #ffffffe5;
     backdrop-filter: blur(6px);
     border-left: 1px solid #e6e6e6;
+    /**
+    否则会 clip 点击会话成员时，出现的 UserCardView
+     */
+    overflow: visible;
 }
 
 .conversation-info-container.active {

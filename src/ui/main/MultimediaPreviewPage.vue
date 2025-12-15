@@ -58,11 +58,6 @@ export default {
     name: 'MultimediaPreviewPage',
     data() {
         return {
-            currentMedia: {
-                url: '',
-                thumbnail: '',
-                type: 'image'
-            },
             mediaLoaded: false,
             message: null,
             currentMixMultiMediaItemIndex: 0,
@@ -81,7 +76,18 @@ export default {
         if (query && query.length > 1) {
             let params = new URLSearchParams(query);
             let messageUid = params.get('messageUid');
-            this.message = wfc.getMessageByUid(messageUid);
+            let localMsg = wfc.getMessageByUid(messageUid);
+            if (!localMsg) {
+                wfc.loadRemoteMessage(messageUid, msg => {
+                    this.message = msg;
+                    console.log(msg);
+                }, err => {
+                    console.error('loadRemoteMessage error', err);
+                })
+
+            } else {
+                this.message = localMsg;
+            }
             let value = params.get('mmmIndex');
             if (value) {
                 this.currentMixMultiMediaItemIndex = Number(value)
@@ -92,32 +98,9 @@ export default {
     },
 
     mounted() {
-        this.computeCurrentMedia();
     },
 
     methods: {
-        computeCurrentMedia() {
-            if (this.message.messageContent.type === MessageContentType.Image) {
-                this.currentMedia = {
-                    url: this.message.messageContent.remotePath,
-                    thumbnail: this.message.messageContent.thumbnail,
-                    type: 'image'
-                }
-            } else if (this.message.messageContent.type === MessageContentType.Video) {
-                this.currentMedia = {
-                    url: this.message.messageContent.remotePath,
-                    thumbnail: this.message.messageContent.thumbnail,
-                    type: 'video'
-                }
-            } else if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
-                let entries = this.message.messageContent.multiMedias;
-                this.currentMedia = {
-                    url: entries[this.currentMixMultiMediaItemIndex].url,
-                    thumbnail: entries[this.currentMixMultiMediaItemIndex].thumbnail,
-                    type: entries[this.currentMixMultiMediaItemIndex].type
-                }
-            }
-        },
         resize(width, height) {
             let display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
             let workAreaWith = display.workAreaSize.width;
@@ -168,15 +151,14 @@ export default {
             }
         },
         previewNextMessage(before) {
-            this.$refs.menu.close();
+            this.$refs.menu && this.$refs.menu.close();
+
             if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
                 if (before && this.currentMixMultiMediaItemIndex > 0) {
                     this.currentMixMultiMediaItemIndex--
-                    this.computeCurrentMedia();
                     return;
                 } else if (!before && this.currentMixMultiMediaItemIndex < this.message.messageContent.multiMedias.length - 1) {
                     this.currentMixMultiMediaItemIndex++;
-                    this.computeCurrentMedia();
                     return
                 }
             }
@@ -188,7 +170,7 @@ export default {
                     if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
                         this.currentMixMultiMediaItemIndex = before ? this.message.messageContent.multiMedias.length - 1 : 0
                     }
-                    this.computeCurrentMedia();
+
                     if (before) {
                         this.hasMoreNewMediaMessage = true;
                     } else {
@@ -225,6 +207,40 @@ export default {
                 forwardType: ForwardType.NORMAL,
                 messages: [this.message],
             });
+        }
+    },
+
+    computed: {
+        currentMedia() {
+            let cm = {
+                url: '',
+                thumbnail: '',
+                type: 'image'
+            }
+            if (!this.message) {
+                return cm;
+            }
+            if (this.message.messageContent.type === MessageContentType.Image) {
+                cm = {
+                    url: this.message.messageContent.remotePath,
+                    thumbnail: this.message.messageContent.thumbnail,
+                    type: 'image'
+                }
+            } else if (this.message.messageContent.type === MessageContentType.Video) {
+                cm = {
+                    url: this.message.messageContent.remotePath,
+                    thumbnail: this.message.messageContent.thumbnail,
+                    type: 'video'
+                }
+            } else if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
+                let entries = this.message.messageContent.multiMedias;
+                cm = {
+                    url: entries[this.currentMixMultiMediaItemIndex].url,
+                    thumbnail: entries[this.currentMixMultiMediaItemIndex].thumbnail,
+                    type: entries[this.currentMixMultiMediaItemIndex].type
+                }
+            }
+            return cm;
         }
     },
 

@@ -18,7 +18,7 @@ export default class CompositeMessageContent extends MediaMessageContent {
     loaded = false;
 
     constructor() {
-        super(MessageContentType.Composite_Message, MessageContentMediaType.General, '')
+        super(MessageContentType.Composite_Message, MessageContentMediaType.File, '')
     }
 
     setMessages(msgs) {

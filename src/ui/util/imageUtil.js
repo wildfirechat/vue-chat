@@ -251,6 +251,7 @@ function mergeImages(sources = [], options = {}) {
 let groupPortraitMap = new Map();
 window.__groupPortraitMap = groupPortraitMap;
 
+
 async function genGroupPortrait(groupMemberUsers) {
     let groupMemberPortraits = [];
     for (let i = 0; i < Math.min(9, groupMemberUsers.length); i++) {
@@ -266,17 +267,34 @@ function imageThumbnail(file) {
         img.setAttribute('crossOrigin', 'anonymous');
         img.onload = () => {
             let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
-            resizedCanvas.toBlob((blob) => {
-                var reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = () => {
-                    let base64data = reader.result;
-                    resolve({thumbnail: base64data, width: img.naturalWidth, height: img.naturalHeight});
-                }
-                reader.onerror = () => {
-                    resolve(null);
-                }
-            }, 'image/jpeg', 0.3);
+
+            // 递归函数，循环降低质量直到大小小于 7K
+            const compressToTarget = (quality) => {
+                console.log('compressing with quality:', quality);
+                resizedCanvas.toBlob((blob) => {
+                    // 检查 blob 大小是否小于 7KB
+                    const targetSize =7 * 1024; // 7KB
+
+                    if (blob.size <= targetSize || quality <= 0.1) {
+                        // 满足大小要求或质量已经很低了
+                        var reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {
+                            let base64data = reader.result;
+                            resolve({thumbnail: base64data, width: img.naturalWidth, height: img.naturalHeight});
+                        }
+                        reader.onerror = () => {
+                            resolve(null);
+                        }
+                    } else {
+                        // 继续降低质量
+                        compressToTarget(quality - 0.1);
+                    }
+                }, 'image/jpeg', quality);
+            };
+
+            // 从质量 0.8 开始压缩
+            compressToTarget(0.8);
         };
         img.onerror = () => {
             resolve(null);
@@ -313,19 +331,35 @@ function videoThumbnail(file) {
                 img.src = canvas.toDataURL();
                 img.onload = () => {
                     let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
-                    resizedCanvas.toBlob((blob) => {
-                        var reader = new FileReader();
-                        reader.readAsDataURL(blob);
-                        reader.onloadend = () => {
-                            let base64data = reader.result;
-                            resolve({thumbnail: base64data, width: video.videoWidth, height: video.videoHeight});
-                            URL.revokeObjectURL(video.url)
-                        };
-                        reader.onerror = () => {
-                            URL.revokeObjectURL(video.url)
-                            resolve(null);
-                        };
-                    }, 'image/jpeg', 0.3);
+
+                    // 递归函数，循环降低质量直到大小小于 10K
+                    const compressToTarget = (quality) => {
+                        resizedCanvas.toBlob((blob) => {
+                            // 检查 blob 大小是否小于 7KB
+                            const targetSize = 7 * 1024; // 7KB
+
+                            if (blob.size <= targetSize || quality <= 0.1) {
+                                // 满足大小要求或质量已经很低了
+                                var reader = new FileReader();
+                                reader.readAsDataURL(blob);
+                                reader.onloadend = () => {
+                                    let base64data = reader.result;
+                                    resolve({thumbnail: base64data, width: video.videoWidth, height: video.videoHeight});
+                                    URL.revokeObjectURL(video.url)
+                                };
+                                reader.onerror = () => {
+                                    URL.revokeObjectURL(video.url)
+                                    resolve(null);
+                                };
+                            } else {
+                                // 继续降低质量
+                                compressToTarget(quality - 0.1);
+                            }
+                        }, 'image/jpeg', quality);
+                    };
+
+                    // 从质量 0.8 开始压缩
+                    compressToTarget(0.8);
                 };
                 img.onerror = () => {
                     resolve(null);

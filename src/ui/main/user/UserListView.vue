@@ -16,6 +16,7 @@
                             :animate-fill="false"
                             distant="7"
                             animation="fade"
+                            interactive
                             trigger="click"
                             placement="left-start"
                             :style="tippyStyleFix"
