@@ -10,30 +10,42 @@ export class AppServerApi {
     constructor() {
     }
 
-    requestAuthCode(mobile) {
-        return this._post('/send_code', {mobile})
+    requestAuthCode(mobile, slideVerifyToken = null) {
+        let params = {mobile};
+        if (slideVerifyToken) {
+            params.slideVerifyToken = slideVerifyToken;
+        }
+        return this._post('/send_code', params)
     }
 
-    loinWithPassword(mobile, password) {
+    loinWithPassword(mobile, password, slideVerifyToken = null) {
         return new Promise((resolve, reject) => {
-            let responsePromise = this._post('/login_pwd', {
+            let params = {
                 mobile,
                 password,
                 platform: Config.getWFCPlatform(),
                 clientId: wfc.getClientId()
-            }, true)
+            };
+            if (slideVerifyToken) {
+                params.slideVerifyToken = slideVerifyToken;
+            }
+            let responsePromise = this._post('/login_pwd', params, true)
             this._interceptLoginResponse(responsePromise, resolve, reject)
         })
     }
 
-    loginWithAuthCode(mobile, authCode) {
+    loginWithAuthCode(mobile, authCode, slideVerifyToken = null) {
         return new Promise((resolve, reject) => {
-            let responsePromise = this._post('/login', {
+            let params = {
                 mobile,
                 code: authCode,
                 platform: Config.getWFCPlatform(),
                 clientId: wfc.getClientId()
-            }, true);
+            };
+            if (slideVerifyToken) {
+                params.slideVerifyToken = slideVerifyToken;
+            }
+            let responsePromise = this._post('/login', params, true);
             this._interceptLoginResponse(responsePromise, resolve, reject)
         })
     }
@@ -81,11 +93,15 @@ export class AppServerApi {
         })
     }
 
-    changePassword(oldPassword, newPassword) {
-        return this._post('/change_pwd', {
+    changePassword(oldPassword, newPassword, slideVerifyToken = null) {
+        let params = {
             oldPassword,
             newPassword
-        })
+        };
+        if (slideVerifyToken) {
+            params.slideVerifyToken = slideVerifyToken;
+        }
+        return this._post('/change_pwd', params)
     }
 
     requestResetPasswordAuthCode() {
@@ -134,6 +150,19 @@ export class AppServerApi {
 
     delFav(favItemId) {
         return this._post('/fav/del/' + favItemId, '')
+    }
+
+    // 滑动验证相关 API
+    getSlideVerify() {
+        return this._post('/slide_verify/generate', {}, false, false)
+    }
+
+    verifySlide(token, x) {
+        // 模仿 iOS，检查 code === 0 判断成功，不关心 result
+        return this._post('/slide_verify/verify', {
+            token: token,
+            x: x
+        }, false, true)
     }
 
     _interceptLoginResponse(responsePromise, resolve, reject) {

@@ -92,6 +92,14 @@
                 <button @click="closeDiagnoseOverlay">关闭</button>
             </div>
         </div>
+
+        <!-- 滑动验证组件 -->
+        <SlideVerifyDialog
+            ref="slideVerifyDialog"
+            @verify-success="onSlideVerifySuccess"
+            @verify-failed="onSlideVerifyFailed"
+            @load-failed="onSlideVerifyLoadFailed"
+        />
     </div>
 </template>
 
@@ -113,6 +121,7 @@ import organizationServerApi from "../../api/organizationServerApi";
 import WfcScheme from "../../wfcScheme";
 import axios from "axios";
 import avenginekit from "../../wfc/av/internal/engine.min";
+import SlideVerifyDialog from "../common/SlideVerifyDialog.vue";
 
 export default {
     name: 'LoginPage',
@@ -133,6 +142,10 @@ export default {
             firstTimeConnect: false,
             diagnoseResult: '',
             showDiagnoseOverlay: false,
+            // 滑动验证状态
+            hasSlideVerifiedForCode: false,
+            cachedSlideVerifyToken: null,
+            pendingAction: null, // 'send_code' 或 'password_login'
         }
     },
     created() {
@@ -184,7 +197,14 @@ export default {
         },
 
         async requestAuthCode() {
-            appServerApi.requestAuthCode(this.mobile)
+            // 发送验证码时需要滑动验证
+            if (!this.hasSlideVerifiedForCode) {
+                this.pendingAction = 'send_code';
+                this.$refs.slideVerifyDialog.show();
+                return;
+            }
+
+            appServerApi.requestAuthCode(this.mobile, this.cachedSlideVerifyToken)
                 .then(response => {
                     this.$notify({
                         text: '发送验证码成功',
@@ -205,12 +225,18 @@ export default {
                 return;
             }
 
+            // 密码登录需要滑动验证
+            this.pendingAction = 'password_login';
+            this.$refs.slideVerifyDialog.show();
+        },
+
+        _doLoginWithPassword(slideVerifyToken) {
             // 特殊用途，请勿打开
             // 必须在 getClientId 之前调用，createPCLoginSession 会触发调用 getClientId，打开时，需重新设计起逻辑
             // wfc.setAppName('wfc-' + this.mobile);
             this.$refs.loginWithPasswordButton.disabled = true;
             this.loginStatus = 3;
-            appServerApi.loinWithPassword(this.mobile, this.password)
+            appServerApi.loinWithPassword(this.mobile, this.password, slideVerifyToken)
                 .then(res => {
                     const {userId, token, portrait} = res
                     this.firstTimeConnect = wfc.connect(userId, token);
@@ -238,7 +264,7 @@ export default {
             this.$refs.loginWithAuthCodeButton.disabled = true;
             this.loginStatus = 3;
             //wfc.setAppName('wfc-' + this.mobile);
-            appServerApi.loginWithAuthCode(this.mobile, this.authCode)
+            appServerApi.loginWithAuthCode(this.mobile, this.authCode, this.cachedSlideVerifyToken)
                 .then(res => {
                     const {userId, token, portrait} = res;
                     this.firstTimeConnect = wfc.connect(userId, token);
@@ -500,6 +526,41 @@ export default {
         },
         closeDiagnoseOverlay() {
             this.showDiagnoseOverlay = false;
+        },
+
+        // 滑动验证成功回调
+        onSlideVerifySuccess(token) {
+            console.log('[LoginPage] 滑动验证成功，token:', token);
+            this.cachedSlideVerifyToken = token;
+
+            if (this.pendingAction === 'send_code') {
+                // 发送验证码
+                this.hasSlideVerifiedForCode = true;
+                this.requestAuthCode();
+            } else if (this.pendingAction === 'password_login') {
+                // 密码登录
+                this._doLoginWithPassword(token);
+            }
+
+            this.pendingAction = null;
+        },
+
+        // 滑动验证失败回调
+        onSlideVerifyFailed() {
+            console.log('[LoginPage] 滑动验证失败');
+            this.cachedSlideVerifyToken = null;
+            this.pendingAction = null;
+        },
+
+        // 滑动验证加载失败回调
+        onSlideVerifyLoadFailed() {
+            console.log('[LoginPage] 滑动验证加载失败');
+            this.cachedSlideVerifyToken = null;
+            this.pendingAction = null;
+            this.$notify({
+                text: '验证码加载失败，请重试',
+                type: 'error'
+            });
         }
     },
 
@@ -527,6 +588,7 @@ export default {
     components: {
         ElectronWindowsControlButtonView,
         ClipLoader,
+        SlideVerifyDialog,
     }
 
 }
