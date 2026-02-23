@@ -13,6 +13,7 @@ import pttClient from "../ptt/client/pttClient";
 import EventType from "./wfcEvent";
 import ConnectionStatus from "./connectionStatus";
 import NullUserInfo from "../model/nullUserInfo";
+import UserSettingScope from "./userSettingScope";
 
 
 export class WfcManager {
@@ -922,6 +923,21 @@ export class WfcManager {
      */
     modifyMyInfo(modifyMyInfoEntries, successCB, failCB) {
         impl.modifyMyInfo(modifyMyInfoEntries, successCB, failCB);
+    }
+
+    /**
+     * 当前设备是否被锁定
+     * 
+     * @returns {boolean} 是否被锁定
+     */
+    isLocked() {
+        const setting = this.getUserSetting(UserSettingScope.Lock_PC, impl.getClientId());
+        // Web 端返回的是用户设置对象，需要访问 .value 属性
+        if (setting && typeof setting === 'object' && setting.value !== undefined) {
+            return "1" === setting.value;
+        }
+        // 兼容处理：如果返回的是字符串
+        return "1" === setting;
     }
 
     /**
