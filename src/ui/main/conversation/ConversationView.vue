@@ -174,10 +174,6 @@ import SingleConversationInfoView from "../../main/conversation/SingleConversati
 import SecretConversationInfoView from "../../main/conversation/SecretConversationInfoView";
 import GroupConversationInfoView from "../../main/conversation/GroupConversationInfoView";
 import MessageInputView from "../../main/conversation/MessageInputView";
-import NormalOutMessageContentView from "../../main/conversation/message/NormalOutMessageContentContainerView";
-import NormalInMessageContentView from "../../main/conversation/message/NormalInMessageContentContainerView";
-import NotificationMessageContentView from "../../main/conversation/message/NotificationMessageContentView";
-import RecallNotificationMessageContentView from "../../main/conversation/message/RecallNotificationMessageContentView";
 import NotificationMessageContent from "../../../wfc/messages/notification/notificationMessageContent";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
@@ -194,7 +190,6 @@ import {copyImg, copyText} from "../../util/clipboard";
 import Message from "../../../wfc/messages/message";
 import {downloadFile} from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import MessageContentType from "../../../wfc/messages/messageContentType";
 import BenzAMRRecorder from "benz-amr-recorder";
@@ -231,10 +226,6 @@ export default {
         ChannelConversationInfoView,
         ContextableNotificationMessageContentContainerView,
         MultiSelectActionView,
-        NotificationMessageContentView,
-        RecallNotificationMessageContentView,
-        NormalInMessageContentView,
-        NormalOutMessageContentView,
         MessageInputView,
         GroupConversationInfoView,
         SingleConversationInfoView,
@@ -429,19 +420,6 @@ export default {
             this.showConversationInfo && (this.showConversationInfo = false);
         },
 
-        isNotificationMessage(message) {
-            return message && message.messageContent instanceof NotificationMessageContent
-                && message.messageContent.type !== MessageContentType.RecallMessage_Notification
-                && message.messageContent.type !== MessageContentType.Rich_Notification;
-        },
-
-        isContextableNotificationMessage(message) {
-            return message && (message.messageContent instanceof RichNotificationMessageContent || message.messageContent instanceof ArticlesMessageContent);
-        },
-
-        isRecallNotificationMessage(message) {
-            return message && message.messageContent.type === MessageContentType.RecallMessage_Notification;
-        },
 
         isCancelable(message) {
             return message && message.messageContent instanceof MediaMessageContent && message.status === MessageStatus.Sending;
@@ -995,6 +973,7 @@ export default {
         // 监听来自 MessageItemView 的事件
         this.$eventBus.$on('open-message-context-menu', this.openMessageContextMenu);
         this.$eventBus.$on('open-message-sender-context-menu', this.openMessageSenderContextMenu);
+        this.$eventBus.$on('reedit-message', this.reedit);
 
         this.$eventBus.$on('send-file', args => {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
@@ -1018,6 +997,7 @@ export default {
         this.$eventBus.$off('forward-fav');
         this.$eventBus.$off('open-message-context-menu', this.openMessageContextMenu);
         this.$eventBus.$off('open-message-sender-context-menu', this.openMessageSenderContextMenu);
+        this.$eventBus.$off('reedit-message', this.reedit);
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 

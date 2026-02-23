@@ -23,5 +23,5 @@ export default class CallEndReason {
     static Interrupted = 16;
     static RemoteInterrupted = 17;
     // 被踢，可能是多端加入或者 API 踢掉
-    static Kicked = 18;;
+    static Kicked = 18;
 }

@@ -14,6 +14,7 @@ export const pstore = defineStore('store-p', () => {
         currentConversationOldestMessageUid: 0,
 
         currentConversationRead: null,
+        streamingTextGeneratingMessages: new Map(),
 
         // TODO 调用setUserEnableReceipt时，需要更新
         isMessageReceiptEnable: false,
@@ -47,6 +48,7 @@ export const pstore = defineStore('store-p', () => {
             this.currentConversationOldestMessageId = 0;
             this.currentConversationOldestMessageUid = 0;
             this.currentConversationRead = null;
+            this.streamingTextGeneratingMessages = new Map();
             this.isMessageReceiptEnable = false;
             this.inputtingUser = null;
             this.inputClearHandler = null;

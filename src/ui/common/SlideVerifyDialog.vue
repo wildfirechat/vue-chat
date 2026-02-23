@@ -87,34 +87,28 @@ export default {
         async loadVerifyCode() {
             this.loading = true;
             try {
-                console.log('[SlideVerify] 开始加载验证码...');
                 const response = await appServerApi.getSlideVerify();
-                console.log('[SlideVerify] 服务器响应:', response);
                 this.loading = false;
 
                 if (response && response.token && response.backgroundImage && response.sliderImage) {
                     this.token = response.token;
                     this.sliderY = response.y;
-                    console.log('[SlideVerify] Token:', this.token, 'Y:', this.sliderY);
 
                     // 设置图片（后端已返回带前缀的 data URI）
                     this.backgroundImage = response.backgroundImage;
                     this.sliderImage = response.sliderImage;
-                    console.log('[SlideVerify] 验证码图片加载成功');
 
                     // 等待图片加载完成后计算位置
                     this.$nextTick(() => {
                         this.calculateScale();
                     });
                 } else {
-                    console.error('[SlideVerify] 响应数据不完整:', response);
                     this.$emit('load-failed');
                     this.hide();
                 }
             } catch (error) {
                 this.loading = false;
                 console.error('[SlideVerify] 加载验证码失败:', error);
-                console.error('[SlideVerify] 错误详情:', error.message, error.stack);
                 this.$emit('load-failed');
                 this.hide();
             }
@@ -165,13 +159,6 @@ export default {
                 // 计算滑块的 Y 坐标（需要加上图片的垂直偏移）
                 this.sliderImageTop = offsetY + (this.sliderY * this.scaleY);
 
-                console.log('[SlideVerify] 图片计算:');
-                console.log('  原始尺寸: ' + naturalWidth + 'x' + naturalHeight);
-                console.log('  容器尺寸: ' + containerWidth + 'x' + containerHeight);
-                console.log('  实际渲染: ' + renderWidth.toFixed(1) + 'x' + renderHeight.toFixed(1));
-                console.log('  偏移量: offsetX=' + offsetX.toFixed(1) + ', offsetY=' + offsetY.toFixed(1));
-                console.log('  缩放比例: scaleX=' + this.scaleX.toFixed(3) + ', scaleY=' + this.scaleY.toFixed(3));
-                console.log('  滑块位置: 原始Y=' + this.sliderY + ', 显示Y=' + this.sliderImageTop.toFixed(1));
             }
         },
 
@@ -232,15 +219,12 @@ export default {
             const sliderButton = this.$refs.sliderButton;
             const maxDistance = sliderTrack.offsetWidth - sliderButton.offsetWidth;
 
-            console.log('[SlideVerify] 松开滑块 - 当前位置: ' + this.currentX.toFixed(1) + 'px, 最大距离: ' + maxDistance + 'px, 比例: ' + (this.currentX / maxDistance * 100).toFixed(1) + '%');
 
             // 只要滑动超过 10px，就触发验证
             if (this.currentX >= 10) {
-                console.log('[SlideVerify] 滑动距离足够，开始验证');
                 this.verifySlidePosition(this.currentX);
             } else {
                 // 回弹
-                console.log('[SlideVerify] 滑动距离太近，回弹');
                 this.currentX = 0;
                 this.hintOpacity = 1;
                 this.updateSliderPosition();
@@ -249,35 +233,22 @@ export default {
 
         async verifySlidePosition(x) {
             try {
-                console.log('[SlideVerify] ========== 验证开始 ==========');
-                console.log('[SlideVerify] 滑块按钮在轨道上的位置: ' + x + 'px');
-                console.log('[SlideVerify] 背景图偏移 imageOffsetX: ' + this.imageOffsetX.toFixed(2) + 'px');
-                console.log('[SlideVerify] 缩放比例 scaleX: ' + this.scaleX.toFixed(3));
 
                 // 计算滑块图片相对于背景图左侧的位置
                 const sliderImageX = this.imageOffsetX + x;
-                console.log('[SlideVerify] 滑块图片在容器中的位置: ' + sliderImageX.toFixed(2) + 'px');
 
                 // 转换为相对于背景图的位置
                 const relativeToBg = x;  // 因为滑块图片和滑块按钮同步移动，相对距离相同
-                console.log('[SlideVerify] 滑块图片相对于背景图左侧的位置: ' + relativeToBg.toFixed(2) + 'px');
 
                 // 转换为原图坐标
                 const originalX = Math.round(relativeToBg / this.scaleX);
-                console.log('[SlideVerify] 转换到原图(300x150)的X坐标: ' + originalX);
-                console.log('[SlideVerify] 原图有效X坐标范围: 50 ~ 200');
-                console.log('[SlideVerify] ==================================');
 
                 // 模仿 iOS，检查 code === 0 判断成功
                 const responseStr = await appServerApi.verifySlide(this.token, originalX);
                 const response = typeof responseStr === 'string' ? JSON.parse(responseStr) : responseStr;
 
-                console.log('[SlideVerify] API 响应:', response);
-                console.log('[SlideVerify] response.code:', response.code);
-                console.log('[SlideVerify] response.code === 0:', response.code === 0);
 
                 if (response.code === 0) {
-                    console.log('[SlideVerify] 验证成功！');
                     this.isVerified = true;
                     const sliderButton = this.$refs.sliderButton;
                     sliderButton.classList.add('verified');
@@ -288,7 +259,6 @@ export default {
                         this.hide();
                     }, 500);
                 } else {
-                    console.log('[SlideVerify] 验证失败！code =', response.code);
                     // 验证失败
                     this.currentX = 0;
                     this.hintOpacity = 1;
@@ -307,7 +277,6 @@ export default {
                     this.$emit('verify-failed');
                 }
             } catch (error) {
-                console.error('验证失败:', error);
                 this.currentX = 0;
                 this.hintOpacity = 1;
                 this.updateSliderPosition();

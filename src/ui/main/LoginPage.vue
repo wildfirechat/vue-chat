@@ -431,7 +431,7 @@ export default {
                 if (this.loginType === 0) {
                     this.refreshQrCode();
                 }
-                if (status !== ConnectionStatus.ConnectionStatusLogout) {
+                if (status !== ConnectionStatus.ConnectionStatusLogout && status !== ConnectionStatus.ConnectionStatusUnconnected) {
                     console.error('连接失败', status, ConnectionStatus.desc(status));
                     this.cancel();
                     this.diagnose();

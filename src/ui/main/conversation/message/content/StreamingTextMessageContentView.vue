@@ -1,17 +1,18 @@
 <template>
-    <div class="streaming-text-message-container"
-         v-bind:class="{out:message.direction === 0}">
-        <p class="text" v-html="this.$xss(this.textContent)" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
-        <FadeLoader :loading="message.messageContent.type === 14" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
+    <div>
+        <div class="streaming-text-message-container"
+            v-bind:class="{out:message.direction === 0}">
+            <p class="text" v-html="this.$xss(this.textContent)" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
+            <FadeLoader :loading="message.messageContent.type === 14" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
+        </div>
+        <p class="ai-content-tip">本内容由 AI 生成</p>
     </div>
 </template>
 
 <script>
 import Message from "../../../../../wfc/messages/message";
-import {parser as emojiParse} from "../../../../util/emoji";
-import helper from "../../../../util/helper";
 import FadeLoader from 'vue-spinner/src/FadeLoader.vue'
-//import {marked} from "marked";
+import {marked} from "marked";
 
 export default {
     name: "StreamingTextMessageContentView",
@@ -54,15 +55,7 @@ export default {
     computed: {
         textContent() {
             let content = this.message.messageContent.digest(this.message).trim();
-            let lines = content.replace(/\r\n/g, '\n').split('\n');
-            if (lines.length > 1) {
-                content = lines.map(line => `<span>${helper.escapeHtml(line)}</span>\n`).reduce((total, cv, ci, arr) => total + cv, '');
-            } else {
-                content = helper.escapeHtml(content)
-            }
-
-            content = emojiParse(content);
-            // tmp = marked.parse(tmp);
+            content = marked.parse(content);
             if (content.indexOf('<img') >= 0) {
                 content = content.replace(/<img/g, '<img style="max-width:400px;"')
                 return content;
@@ -88,7 +81,7 @@ export default {
 
 .streaming-text-message-container >>> p {
     user-select: text;
-    white-space: pre-line;
+    //white-space: pre-line;
 }
 
 .streaming-text-message-container >>> .loading {
@@ -133,6 +126,12 @@ export default {
 
 .streaming-text-message-container .text >>> .emoji {
     vertical-align: middle;
+}
+
+.ai-content-tip{
+    margin: 5px 10px 0;
+    font-size: 12px;
+    color: #999;
 }
 
 </style>

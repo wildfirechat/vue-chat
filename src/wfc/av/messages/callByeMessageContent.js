@@ -26,6 +26,7 @@ export default class CallByeMessageContent extends MessageContent {
         let obj = {
             r: this.reason,
             u: this.inviteMsgUid ? stringValue(this.inviteMsgUid) : undefined,
+            c: this.callId,
         };
         let str = JSON.stringify(obj)
         str = _patchToJavaLong(str, 'u');
