@@ -30,6 +30,9 @@ export default class UserOnlineState {
             //  Platform_LINUX = 7;
             //  Platform_iPad = 8;
             //  Platform_APad = 9;
+            //  Platform_Harmony = 10
+            //  Platform_Harmony_Pad = 11
+            //  Platform_Harmony_PC = 12
             //  */
             // platform;
             //
@@ -39,7 +42,7 @@ export default class UserOnlineState {
             // //最后可见
             // lastSeen;
 
-            let ps = ['', 'iOS', 'Android', 'Windows', 'mac', 'Web', '小程序', 'Linux', 'iPad', 'Android-Pad'];
+            let ps = ['', 'iOS', 'Android', 'Windows', 'mac', 'Web', '小程序', 'Linux', 'iPad', 'Android-Pad', 'Harmony', 'Harmony-Pad', 'Harmony-PC'];
             if (s.state === 0) {
                 onlineClientDesc += ps[s.platform] + ' '
             } else if ([1, 2, 8, 9].indexOf(s.platform) >= 0) {
