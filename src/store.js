@@ -103,6 +103,8 @@ let store = {
             miscState.isDisableSyncDraft = wfc.isDisableSyncDraft();
             try {
                 if (status === ConnectionStatus.ConnectionStatusConnected) {
+                    // 连接成功后检查锁定状态
+                    miscState.isLocked = wfc.isLocked();
                     this._loadDefaultData();
 
                     this.updateTray();

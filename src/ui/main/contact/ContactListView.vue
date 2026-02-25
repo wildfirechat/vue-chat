@@ -269,7 +269,7 @@ export default {
 }
 
 .category-item .tip {
-    font-size: 12px;
+    font-size: 10px;
     padding-left: 5px;
     color: #7f7f7f;
 }

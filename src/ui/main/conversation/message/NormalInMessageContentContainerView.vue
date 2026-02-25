@@ -200,6 +200,7 @@ export default {
     width: 40px;
     height: 40px;
     border-radius: 3px;
+    object-fit: cover;
 }
 
 .avatar-container {

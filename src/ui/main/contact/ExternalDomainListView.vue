@@ -2,7 +2,7 @@
     <section>
         <ul>
             <li v-for="(domainInfo, index) in externalDomains" :key="index" @click="showExternalDomain(domainInfo)">
-                <div class="organization-item"
+                <div class="external-domain-item"
                      v-bind:class="{active: sharedContactState.currentExternalDomain && sharedContactState.currentExternalDomain.domainId === domainInfo.domainId}">
                     <img class="avatar" :src="domainInfo.portrait ? domainInfo.portrait : defaultPortraitUrl">
                     <span class="single-line">{{ domainInfo.name }}</span>
@@ -45,12 +45,13 @@ export default {
 
 <style scoped>
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 3px;
+    object-fit: cover;
 }
 
-.organization-item {
+.external-domain-item {
     height: 50px;
     padding: 5px 10px 5px 30px;
     display: flex;
@@ -58,11 +59,15 @@ export default {
     align-items: center;
 }
 
-.organization-item.active {
+.external-domain-item:hover {
+    background-color: #EAEAEA;
+}
+
+.external-domain-item.active {
     background-color: #d6d6d6;
 }
 
-.organization-item span {
+.external-domain-item span {
     margin-left: 10px;
 }
 

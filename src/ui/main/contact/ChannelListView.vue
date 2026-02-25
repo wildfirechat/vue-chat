@@ -34,9 +34,10 @@ export default {
 
 <style scoped>
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 3px;
+    object-fit: cover;
 }
 
 .channel-item {
@@ -45,6 +46,10 @@ export default {
     display: flex;
     font-size: 13px;
     align-items: center;
+}
+
+.channel-item:hover{
+    background-color: #EAEAEA;
 }
 
 .channel-item.active {

@@ -215,6 +215,7 @@ export default {
     width: 60px;
     height: 60px;
     border-radius: 3px;
+    object-fit: cover;
 }
 
 .header {

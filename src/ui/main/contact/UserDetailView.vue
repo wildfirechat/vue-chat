@@ -160,6 +160,7 @@ export default {
     height: 60px;
     border-radius: 5px;
     margin-right: 20px;
+    object-fit: cover;
 }
 
 .header .name {
