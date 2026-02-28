@@ -92,9 +92,17 @@
 import pollApi from "../../api/pollApi";
 import wfc from "../../wfc/client/wfc";
 import Config from "../../config";
+import { backInAppSubWindowOrRouter, closeInAppSubWindowOrWindow, getSubWindowQuery } from '../util/subWindowNavigator';
 
 export default {
     name: "PollDetail",
+    props: {
+        subWindowQuery: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     data() {
         return {
             loading: false,
@@ -192,7 +200,7 @@ export default {
     },
     mounted() {
         document.title = this.$t('poll.poll_detail');
-        let query = this.$route.query;
+        let query = getSubWindowQuery(this);
         this.groupId = query.groupId || '';
         this.fromMessage = query.fromMessage === '1';
         this.pollId = parseInt(query.pollId);
@@ -200,7 +208,7 @@ export default {
     },
     methods: {
         goBack() {
-            this.$router.back();
+            backInAppSubWindowOrRouter(this);
         },
         async fetchPoll() {
             this.loading = true;
@@ -291,7 +299,7 @@ export default {
                     text: this.$t('poll.poll_deleted'),
                     type: 'success',
                 });
-                window.close();
+                closeInAppSubWindowOrWindow(this);
             } catch (e) {
                 alert(this.$t('poll.delete_failed') + ': ' + e.message);
             } finally {
@@ -344,7 +352,7 @@ export default {
             return userInfo.portrait || Config.DEFAULT_PORTRAIT_URL;
         },
         closeWindow() {
-            window.close();
+            closeInAppSubWindowOrWindow(this);
         },
     }
 }

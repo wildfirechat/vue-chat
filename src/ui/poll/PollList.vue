@@ -37,9 +37,17 @@
 
 <script>
 import pollApi from "../../api/pollApi";
+import { backInAppSubWindowOrRouter, getSubWindowQuery, isInAppSubWindow, pushInAppSubWindow } from '../util/subWindowNavigator';
 
 export default {
     name: "PollList",
+    props: {
+        subWindowQuery: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     data() {
         return {
             loading: false,
@@ -49,12 +57,12 @@ export default {
     },
     mounted() {
         document.title = this.$t('poll.my_polls');
-        this.groupId = this.$route.query.groupId || '';
+        this.groupId = getSubWindowQuery(this).groupId || '';
         this.loadMyPolls();
     },
     methods: {
         goBack() {
-            this.$router.back();
+            backInAppSubWindowOrRouter(this);
         },
         async loadMyPolls() {
             this.loading = true;
@@ -79,13 +87,18 @@ export default {
             return this.$t('poll.poll_in_progress');
         },
         openPollDetail(poll) {
-            this.$router.push({
-                path: '/poll/detail',
-                query: {
-                    pollId: poll.id,
-                    groupId: this.groupId
-                }
-            });
+            const query = {
+                pollId: poll.id,
+                groupId: this.groupId
+            };
+            if (isInAppSubWindow(this)) {
+                pushInAppSubWindow(this, '/poll/detail', query);
+            } else {
+                this.$router.push({
+                    path: '/poll/detail',
+                    query,
+                });
+            }
         }
     }
 }

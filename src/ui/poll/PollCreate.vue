@@ -142,9 +142,17 @@
 
 <script>
 import pollApi from "../../api/pollApi";
+import { backInAppSubWindowOrRouter, closeInAppSubWindowOrWindow, getSubWindowQuery } from '../util/subWindowNavigator';
 
 export default {
     name: "PollCreate",
+    props: {
+        subWindowQuery: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     data() {
         return {
             groupId: '',
@@ -191,11 +199,11 @@ export default {
     },
     mounted() {
         document.title = this.$t('poll.create_poll');
-        this.groupId = this.$route.query.groupId || '';
+        this.groupId = getSubWindowQuery(this).groupId || '';
     },
     methods: {
         goBack() {
-            this.$router.back();
+            backInAppSubWindowOrRouter(this);
         },
         addOption() {
             if (this.form.options.length < 10) {
@@ -273,7 +281,7 @@ export default {
                     });
                 }
 
-                window.close();
+                closeInAppSubWindowOrWindow(this);
             } catch (e) {
                 alert(this.$t('poll.poll_create_failed') + ': ' + e.message);
             }

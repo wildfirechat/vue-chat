@@ -1,14 +1,5 @@
 <template>
     <div class="collection-create">
-        <!-- Header -->
-        <header v-if="!isElectron" class="page-header">
-            <div class="header-left">
-                <span class="back-btn" @click="closeWindow">{{ $t('common.back') }}</span>
-            </div>
-            <div class="header-title">{{ $t('collection.create_collection') }}</div>
-            <div class="header-right"></div>
-        </header>
-
         <!-- Create Form -->
         <div class="create-content">
             <div class="form-wrapper">
@@ -59,9 +50,18 @@
 <script>
 import collectionApi from "../../api/collectionApi";
 import store from "../../store";
+import { closeInAppSubWindowOrWindow, getSubWindowQuery, isInAppSubWindow } from '../util/subWindowNavigator';
+import { isElectron } from '../../platform';
 
 export default {
     name: "CollectionCreate",
+    props: {
+        subWindowQuery: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     data() {
         return {
             groupId: '',
@@ -86,15 +86,17 @@ export default {
         }
     },
     mounted() {
-        document.title = this.$t('collection.create_collection');
-        
+        if(isElectron()){
+            document.title = this.$t('collection.create_collection');
+        }
+
         // Initialize expire time to tomorrow
         let tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset());
         this.form.expireAtStr = tomorrow.toISOString().slice(0, 16);
-        
-        this.groupId = this.$route.query.groupId || '';
+
+        this.groupId = getSubWindowQuery(this).groupId || '';
     },
     methods: {
         async createCollection() {
@@ -124,7 +126,7 @@ export default {
             }
         },
         closeWindow() {
-            window.close();
+            closeInAppSubWindowOrWindow(this);
         }
     }
 }

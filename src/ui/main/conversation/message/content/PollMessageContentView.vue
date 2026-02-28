@@ -28,7 +28,8 @@ import Message from "../../../../../wfc/messages/message";
 import IpcEventType from "../../../../../ipcEventType";
 import Config from '../../../../../config'
 import { buildPollUrl } from '../../../../../platformHelper';
-import { ipcRenderer } from '../../../../../platform';
+import { ipcRenderer, isElectron } from '../../../../../platform';
+import { openInAppSubWindow } from '../../../../util/subWindowNavigator';
 
 export default {
     name: "PollMessageContentView",
@@ -82,6 +83,14 @@ export default {
                 this.$notify({
                     text: '未配置投票服务地址',
                     type: 'error',
+                });
+                return;
+            }
+            if (!isElectron()) {
+                openInAppSubWindow(this, '/poll/detail', {
+                    pollId: this.content.pollId,
+                    groupId: this.content.groupId,
+                    fromMessage: '1'
                 });
                 return;
             }

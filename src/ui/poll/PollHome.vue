@@ -19,23 +19,45 @@
 </template>
 
 <script>
+import { getSubWindowQuery, isInAppSubWindow, pushInAppSubWindow } from '../util/subWindowNavigator';
+
 export default {
     name: "PollHome",
+    props: {
+        subWindowQuery: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     mounted() {
         document.title = this.$t('poll.poll');
     },
     methods: {
+        getQuery() {
+            return getSubWindowQuery(this);
+        },
         goToCreate() {
-            this.$router.push({
-                path: '/poll/create',
-                query: { groupId: this.$route.query.groupId }
-            });
+            const query = { groupId: this.getQuery().groupId };
+            if (isInAppSubWindow(this)) {
+                pushInAppSubWindow(this, '/poll/create', query);
+            } else {
+                this.$router.push({
+                    path: '/poll/create',
+                    query,
+                });
+            }
         },
         goToMyPolls() {
-            this.$router.push({
-                path: '/poll/list',
-                query: { groupId: this.$route.query.groupId }
-            });
+            const query = { groupId: this.getQuery().groupId };
+            if (isInAppSubWindow(this)) {
+                pushInAppSubWindow(this, '/poll/list', query);
+            } else {
+                this.$router.push({
+                    path: '/poll/list',
+                    query,
+                });
+            }
         }
     }
 }

@@ -41,9 +41,10 @@
 <script>
 import Message from "../../../../../wfc/messages/message";
 import IpcEventType from "../../../../../ipcEventType";
-import {ipcRenderer} from '../../../../../platform';
+import {ipcRenderer, isElectron} from '../../../../../platform';
 import Config from '../../../../../config'
 import { buildCollectionUrl } from '../../../../../platformHelper';
+import { openInAppSubWindow } from '../../../../util/subWindowNavigator';
 
 export default {
     name: "CollectionMessageContentView",
@@ -88,6 +89,13 @@ export default {
                     text: '未配置接龙服务地址',
                     type: 'error',
                 })
+                return;
+            }
+            if (!isElectron()) {
+                openInAppSubWindow(this, '/collection/detail', {
+                    collectionId: this.message.messageContent.collectionId,
+                    groupId: this.message.messageContent.groupId
+                });
                 return;
             }
             const url = buildCollectionUrl({

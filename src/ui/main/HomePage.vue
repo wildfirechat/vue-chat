@@ -105,6 +105,7 @@
                 <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
                 <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
             </UseDraggable>
+            <SubWindowHost v-if="!sharedMiscState.isElectron"/>
         </div>
     </div>
 </template>
@@ -130,6 +131,7 @@ import {UseDraggable} from '@vueuse/components'
 import AI from "./AI.vue";
 import Config from "../../config";
 import BackupView from '../../backup/BackupView.vue'
+import SubWindowHost from "./SubWindowHost.vue";
 
 var avenginkitSetuped = false;
 export default {
@@ -326,6 +328,7 @@ export default {
 
     components: {
         BackupView,
+        SubWindowHost,
         AI,
         Conference,
         Multi,
@@ -341,6 +344,7 @@ export default {
 <style lang="css" scoped>
 .home {
     display: flex;
+    position: relative;
     width: calc(100vw - var(--main-margin-left) - var(--main-margin-right));
     height: calc(100vh - var(--main-margin-top) - var(--main-margin-bottom));
     justify-content: center;

@@ -72,9 +72,17 @@
 import collectionApi from "../../api/collectionApi";
 import wfc from "../../wfc/client/wfc";
 import store from "../../store";
+import { closeInAppSubWindowOrWindow, getSubWindowQuery } from '../util/subWindowNavigator';
 
 export default {
     name: "CollectionDetail",
+    props: {
+        subWindowQuery: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     data() {
         return {
             loading: false,
@@ -144,7 +152,7 @@ export default {
     mounted() {
         document.title = this.$t('collection.collection_detail');
         
-        let query = this.$route.query;
+        let query = getSubWindowQuery(this);
         this.collectionId = query.collectionId;
         this.groupId = query.groupId || '';
         this.fetchCollection();
@@ -211,7 +219,7 @@ export default {
             }
         },
         closeWindow() {
-            window.close();
+            closeInAppSubWindowOrWindow(this);
         },
         getCreatorName(userId) {
             return wfc.getUserDisplayName(userId);

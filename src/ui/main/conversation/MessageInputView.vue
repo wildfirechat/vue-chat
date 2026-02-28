@@ -178,6 +178,7 @@ import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import avenginekit from "../../../wfc/av/internal/engine.min";
 import { buildCollectionUrl, buildPollUrl } from '../../../platformHelper'
+import { openInAppSubWindow } from '../../util/subWindowNavigator'
 
 export default {
     name: "MessageInputView",
@@ -273,6 +274,12 @@ export default {
         openCollectionWindow() {
             if ((Config.APP_SERVER.indexOf('wildfirechat.net') >= 0 && Config.COLLECTION_SERVER.indexOf('wildfirechat.net') >= 0)
                 || (Config.APP_SERVER.indexOf('wildfirechat.net') === -1 && Config.COLLECTION_SERVER.indexOf('wildfirechat.net') === -1)) {
+                if (!this.sharedMiscState.isElectron) {
+                    openInAppSubWindow(this, '/collection/create', {
+                        groupId: this.conversationInfo.conversation.target
+                    });
+                    return;
+                }
                 const url = buildCollectionUrl({
                     mode: 'create',
                     groupId: this.conversationInfo.conversation.target
@@ -291,6 +298,12 @@ export default {
         openPollWindow() {
             if ((Config.APP_SERVER.indexOf('wildfirechat.net') >= 0 && Config.POLL_SERVER.indexOf('wildfirechat.net') >= 0)
                 || (Config.APP_SERVER.indexOf('wildfirechat.net') === -1 && Config.POLL_SERVER.indexOf('wildfirechat.net') === -1)) {
+                if (!this.sharedMiscState.isElectron) {
+                    openInAppSubWindow(this, '/poll', {
+                        groupId: this.conversationInfo.conversation.target
+                    });
+                    return;
+                }
                 const url = buildPollUrl({
                     mode: 'home',
                     groupId: this.conversationInfo.conversation.target
