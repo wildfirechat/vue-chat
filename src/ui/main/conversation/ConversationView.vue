@@ -219,6 +219,7 @@ import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageCo
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 import MessageItemView from "./MessageItemView.vue";
 import {markRaw} from "vue";
+import CollectionMessageContent from '../../../wfc/messages/collectionMessageContent'
 
 var amr;
 export default {
@@ -574,8 +575,10 @@ export default {
         },
 
         isForwardable(message) {
-            if (message
-                && ((message.messageContent instanceof SoundMessageContent) || (message.messageContent instanceof CallStartMessageContent))) {
+            if (message && (
+                (message.messageContent instanceof SoundMessageContent)
+                || (message.messageContent instanceof CollectionMessageContent)
+                || (message.messageContent instanceof CallStartMessageContent))) {
                 return false;
             }
             return true;
@@ -586,7 +589,7 @@ export default {
                 return false;
             }
             return [MessageContentType.VOIP_CONTENT_TYPE_START,
-                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
+                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE, MessageContentType.Collection].indexOf(message.messageContent.type) <= -1;
         },
 
         isRecallable(message) {
@@ -653,6 +656,8 @@ export default {
                 MessageContentType.Video,
                 MessageContentType.Composite_Message,
                 MessageContentType.Articles,
+                MessageContentType.Articles,
+                MessageContentType.Collection,
                 MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) === -1;
         },
 

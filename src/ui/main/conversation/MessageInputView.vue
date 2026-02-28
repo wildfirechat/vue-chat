@@ -19,22 +19,24 @@
                 />
                 <ul>
                     <li v-if="!inputOptions['disableEmoji']">
-                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"/>
+                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
                     </li>
                     <li v-if="!inputOptions['disableFile']">
-                        <i @click="pickFile" class="icon-ion-android-attach"/>
+                        <i @click="pickFile" class="icon-ion-android-attach" :title="$t('conversation.action_tip_file')"/>
                         <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                                style="display: none">
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
-                        <div style="display: inline-block; text-align: center">
-                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors"/>
+                        <div style="display: inline-block; text-align: center" class="screen-shot-wrapper">
+                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
+                            <span class="screen-shot-more">
                             <i class="icon-ion-chevron-down" style="font-size: 10px; color: #494849; padding-left: 5px;"/>
-                            <span @click="screenShot(true)" class="screen-shot-button">隐藏当前窗口截图</span>
+                                <span @click="screenShot(true)" class="screen-shot-button">{{ $t('conversation.action_tip_screenshot_hide') }}</span>
+                            </span>
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
-                        <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
+                        <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
                     </li>
                     <li v-if="enablePtt" style="position: relative;">
                         <!-- 对讲录音动画提示 -->
@@ -51,6 +53,7 @@
                             </div>
                         </transition>
                         <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
+                                    :title="$t('conversation.action_tip_ptt')"
                            class="icon-ion-android-radio-button-on ptt-icon"/>
                     </li>
                     <li style="position: relative;">
@@ -71,16 +74,23 @@
                             </div>
                         </transition>
                         <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
+                           :title="$t('conversation.action_tip_voice')"
                            class="icon-ion-android-microphone record-icon"/>
+                    </li>
+                    <li v-if="isCollectionEnable && conversationInfo.conversation.type === 1" @click="openCollectionWindow">
+                        <i class="icon-ion-android-list" :title="$t('conversation.action_tip_collection')"/>
+                    </li>
+                    <li v-if="isPollEnable && conversationInfo.conversation.type === 1" @click="openPollWindow">
+                        <i class="icon-ion-stats-bars" :title="$t('conversation.action_tip_poll')"/>
                     </li>
                 </ul>
                 <ul>
                     <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
                         <li v-if="!inputOptions['disableAudioCall']">
-                            <i @click="startAudioCall" class="icon-ion-ios-telephone"/>
+                            <i @click="startAudioCall" class="icon-ion-ios-telephone" :title="$t('conversation.action_tip_audio_call')"/>
                         </li>
                         <li v-if="!inputOptions['disableVideoCall']">
-                            <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
+                            <i @click="startVideoCall" class="icon-ion-ios-videocam" :title="$t('conversation.action_tip_video_call')"/>
                         </li>
                         <li v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
                             <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
@@ -167,6 +177,7 @@ import {vOnClickOutside} from '@vueuse/components'
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import avenginekit from "../../../wfc/av/internal/engine.min";
+import { buildCollectionUrl, buildPollUrl } from '../../../platformHelper'
 
 export default {
     name: "MessageInputView",
@@ -214,6 +225,8 @@ export default {
 
             isPttTalking: false,
             isRecording: false,
+            isCollectionEnable: !!Config.COLLECTION_SERVER,
+            isPollEnable: !!Config.POLL_SERVER
         }
     },
     methods: {
@@ -255,6 +268,42 @@ export default {
                     wfc.sendConversationMessage(this.conversationInfo.conversation, typing)
                     this.lastTypingMessageTimestamp = now;
                 }
+            }
+        },
+        openCollectionWindow() {
+            if ((Config.APP_SERVER.indexOf('wildfirechat.net') >= 0 && Config.COLLECTION_SERVER.indexOf('wildfirechat.net') >= 0)
+                || (Config.APP_SERVER.indexOf('wildfirechat.net') === -1 && Config.COLLECTION_SERVER.indexOf('wildfirechat.net') === -1)) {
+                const url = buildCollectionUrl({
+                    mode: 'create',
+                    groupId: this.conversationInfo.conversation.target
+                });
+                ipcRenderer.send(IpcEventType.SHOW_COLLECTION_WINDOW, {
+                    url: url,
+                    groupId: this.conversationInfo.conversation.target
+                });
+            } else {
+                this.$notify({
+                    type: 'error',
+                    text: '未部署接龙服务'
+                })
+            }
+        },
+        openPollWindow() {
+            if ((Config.APP_SERVER.indexOf('wildfirechat.net') >= 0 && Config.POLL_SERVER.indexOf('wildfirechat.net') >= 0)
+                || (Config.APP_SERVER.indexOf('wildfirechat.net') === -1 && Config.POLL_SERVER.indexOf('wildfirechat.net') === -1)) {
+                const url = buildPollUrl({
+                    mode: 'home',
+                    groupId: this.conversationInfo.conversation.target
+                });
+                ipcRenderer.send(IpcEventType.SHOW_POLL_WINDOW, {
+                    url: url,
+                    groupId: this.conversationInfo.conversation.target
+                });
+            } else {
+                this.$notify({
+                    type: 'error',
+                    text: '未部署投票服务'
+                })
             }
         },
         async handlePaste(e, source) {
@@ -1301,7 +1350,7 @@ i:hover {
     color: #fff;
 }
 
-.input-action-container ul li:hover .screen-shot-button {
+.input-action-container ul li .screen-shot-more:hover .screen-shot-button {
     display: inline-block;
     width: 120px;
 }

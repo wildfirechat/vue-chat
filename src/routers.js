@@ -17,6 +17,12 @@ import ConferencePortalPage from "./ui/voip/conference/ConferencePortalPage";
 import MessagePage from "./ui/main/MessagePage.vue";
 import MultimediaPreviewPage from "./ui/main/MultimediaPreviewPage.vue";
 import AI from "./ui/main/AI.vue";
+import CollectionCreate from "./ui/collection/CollectionCreate.vue";
+import CollectionDetail from "./ui/collection/CollectionDetail.vue";
+import PollHome from "./ui/poll/PollHome.vue";
+import PollCreate from "./ui/poll/PollCreate.vue";
+import PollList from "./ui/poll/PollList.vue";
+import PollDetail from "./ui/poll/PollDetail.vue";
 
 const routers = [
     {
@@ -118,6 +124,36 @@ const routers = [
         name: 'conversation-window',
         path: '/conversation-window',
         component: ConversationFloatPage,
+    },
+    {
+        name: 'collection-create',
+        path: '/collection/create',
+        component: CollectionCreate,
+    },
+    {
+        name: 'collection-detail',
+        path: '/collection/detail',
+        component: CollectionDetail,
+    },
+    {
+        name: 'poll-home',
+        path: '/poll',
+        component: PollHome,
+    },
+    {
+        name: 'poll-create',
+        path: '/poll/create',
+        component: PollCreate,
+    },
+    {
+        name: 'poll-list',
+        path: '/poll/list',
+        component: PollList,
+    },
+    {
+        name: 'poll-detail',
+        path: '/poll/detail',
+        component: PollDetail,
     }
 ]
 export default routers

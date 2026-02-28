@@ -26,6 +26,15 @@ export default class MessageContentType {
     static Streaming_Text_Generating = 14;
     //流式文本消息
     static Streaming_Text_Generated = 15;
+    // 消息未能送达
+    static NOT_DELIVERED = 16;
+
+    // 接龙消息，与iOS MESSAGE_CONTENT_TYPE_COLLECTION 保持一致
+    static Collection = 17;
+
+    // 投票消息类型
+    static Poll = 18;           // 投票创建消息
+    static Poll_Result = 19;    // 投票结果消息
     static Mark_Unread_Sync = 31;
 
     static StartSecretChat_Notification = 40;

@@ -76,6 +76,17 @@ export default {
         },
         onfocus() {
             store.setPageVisibility(true);
+        },
+        onBeforeUnload() {
+            // 如果处于锁定状态，清除自动登录相关的本地存储
+            if (this.sharedMiscState.isLocked) {
+                console.log('App is locked, clearing auto login data');
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    localStorage.removeItem(userId + '-' + 'autoLogin');
+                    localStorage.removeItem('token');
+                }
+            }
         }
     },
 
@@ -95,7 +106,8 @@ export default {
             root.style.setProperty('--home-menu-padding-top', '0px')
         }
         window.addEventListener('blur', this.onblur);
-        window.addEventListener('focus', this.onfocus)
+        window.addEventListener('focus', this.onfocus);
+        window.addEventListener('beforeunload', this.onBeforeUnload);
         if (isElectron()){
             currentWindow.minimizable = this.sharedMiscState.enableMinimize;
         }
@@ -132,6 +144,7 @@ export default {
         this.$eventBus.$off('uploadFile');
         window.removeEventListener('blur', this.onblur)
         window.removeEventListener('focus', this.onfocus)
+        window.removeEventListener('beforeunload', this.onBeforeUnload)
         if(Config.ENABLE_WATER_MARK) {
             waterMark.remove()
         }

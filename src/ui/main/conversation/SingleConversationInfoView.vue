@@ -48,6 +48,7 @@ export default {
                 initialCheckedUsers: [this.conversationInfo.conversation._target],
                 uncheckableUsers: [this.conversationInfo.conversation._target],
                 confirmTitle: this.$t('common.add'),
+                showOrganization: true
             });
         },
         showUserInfo(user) {

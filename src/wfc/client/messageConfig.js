@@ -72,6 +72,10 @@ import StreamingTextGeneratedMessageContent from "../messages/streamingTextGener
 import MixMultiMediaTextMessageContent from "../messages/mixMultiMediaTextMessageContent";
 import MixFileTextMessageContent from "../messages/mixFileTextMessageContent";
 import GroupRejectJoinNotificationContent from "../messages/notification/groupRejectJoinNotificationContent";
+import CollectionMessageContent from "../messages/collectionMessageContent";
+import PollMessageContent from "../messages/pollMessageContent";
+import PollResultMessageContent from "../messages/pollResultMessageContent";
+
 export default class MessageConfig {
     static getMessageContentClazz(type) {
         for (const content of MessageConfig.MessageContents) {
@@ -514,7 +518,25 @@ export default class MessageConfig {
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT,
             contentClazz: MixMultiMediaTextMessageContent,
-        }
+        },
+		{
+            name: 'collection',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Collection,
+            contentClazz: CollectionMessageContent,
+        },
+        {
+            name: 'poll',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Poll,
+            contentClazz: PollMessageContent,
+        },
+        {
+            name: 'pollResult',
+            flag: PersistFlag.Persist_And_Count,
+            type: MessageContentType.Poll_Result,
+            contentClazz: PollResultMessageContent,
+        },
 
     ];
 }

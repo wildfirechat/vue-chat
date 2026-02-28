@@ -16,4 +16,8 @@ export default class MessageContentMediaType {
     static CUSTOM1 = 9;
     static CUSTOM2 = 10;
     static CUSTOM3 = 11;
+    /**
+     * 网盘
+     */
+    static PAN = 12;
 }

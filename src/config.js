@@ -38,6 +38,13 @@ export default class Config {
     // 默认的app server使用端口是8888
     static APP_SERVER = 'https://app.wildfirechat.net';
 
+    // 接龙服务地址
+    static COLLECTION_SERVER = 'https://jielong.wildfirechat.net';
+
+    // 投票服务地址
+    static POLL_SERVER = 'https://poll.wildfirechat.net';
+
+
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
     static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
 
