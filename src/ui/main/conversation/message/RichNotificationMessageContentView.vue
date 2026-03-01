@@ -32,9 +32,11 @@ export default {
     },
     methods: {
         onClickRichNotification() {
-            // TODO 打开 app 或者链接
             console.log('onClickRichNotification');
+            const targetUrl = this.message.messageContent.exUrl;
+            
             if (isElectron()) {
+                // Electron 环境：打开独立工作台窗口
                 let hash = window.location.hash;
                 let url = window.location.origin;
                 if (hash) {
@@ -42,16 +44,13 @@ export default {
                 } else {
                     url += "/workspace"
                 }
-
-                url += '?url=' + encodeURIComponent(this.message.messageContent.exUrl);
-
-
-                ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, {hostUrl: location.href, url: encodeURI(url)})
+                url += '?url=' + encodeURIComponent(targetUrl);
+                ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, { hostUrl: location.href, url: encodeURI(url) })
             } else {
-                this.$notify({
-                    title: '不支持打开该类型的消息',
-                    text: '请使用手机或者 PC 端打开',
-                    type: 'warn'
+                // Web 环境：在工作台中打开
+                this.$router.push({
+                    path: '/home/h-wp',
+                    query: { url: targetUrl }
                 });
             }
         }

@@ -40,6 +40,7 @@
 import { init, destroy } from './bridgeServerImpl'
 import wfc from '../../wfc/client/wfc';
 import Config from '../../config';
+import { toRaw } from 'vue';
 
 export default {
     name: 'WorkspacePage',
@@ -61,18 +62,18 @@ export default {
     },
 
     created() {
-        // 检查是否有传入的 url 参数
-        let tmpUrl = this._getQuery(location.href, 'url');
-        if (tmpUrl) {
-            this.defaultUrl = decodeURIComponent(tmpUrl);
-        } else {
-            this.defaultUrl = Config.OPEN_PLATFORM_WORK_SPACE_URL;
-        }
+        this.defaultUrl = Config.OPEN_PLATFORM_WORK_SPACE_URL;
+        this.processUrlParam();
     },
 
     mounted() {
-        // 初始化工作台，加载门户页
+        // 1. 始终先加载工作台主页（门户页），不可关闭
         this.addTab(this.defaultUrl, false, this.defaultTitle);
+
+        // 2. 如果有目标 URL，新开一个标签页打开
+        if (this.targetUrl && this.targetUrl !== this.defaultUrl) {
+            this.addTab(this.targetUrl, true, '新标签');
+        }
 
         // 初始化 bridgeServer
         init(wfc, this);
@@ -88,7 +89,25 @@ export default {
         window.removeEventListener('message', this.handleWindowMessage);
     },
 
+    watch: {
+        // 监听路由参数变化（处理再次点击富文本通知的情况）
+        '$route.query.url'(newUrl, oldUrl) {
+            if (newUrl && newUrl !== oldUrl) {
+                const decodedUrl = decodeURIComponent(newUrl);
+                if (decodedUrl !== this.defaultUrl) {
+                    this.addTab(decodedUrl, true, '新标签');
+                }
+            }
+        }
+    },
+
     methods: {
+        // 处理 URL 参数
+        processUrlParam() {
+            const tmpUrl = this.$route.query.url;
+            this.targetUrl = tmpUrl ? decodeURIComponent(tmpUrl) : null;
+        },
+
         // 添加标签页
         addTab(url, closable = true, title = '新标签') {
             // 检查是否已存在相同 url 的标签
@@ -216,7 +235,9 @@ export default {
         // 开放平台 UI 相关方法（供 bridgeServer 调用）
         chooseContacts(options, successCB, failCB) {
             this.$pickContact({
-                successCB,
+                successCB: (users) => {
+                    successCB && successCB(users.map(u  => toRaw(u)));
+                },
                 failCB,
             });
         },
