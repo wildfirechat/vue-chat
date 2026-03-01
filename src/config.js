@@ -69,6 +69,9 @@ export default class Config {
     // static AI_PORTAL_URL = "https://static.wildfirechat.cn/chatbox-web/index.html";
     static AI_PORTAL_URL = null;
 
+    // 开放平台工作台地址，如果不需要工作台功能，置为 null 即可
+    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://open.wildfirechat.cn/work.html';
+
     /**
      * web/wx 端有效
      * 配置是否开启漫游消息通知，即连接过程中，收到的漫游消息，也对上层进行消息通知

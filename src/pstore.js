@@ -195,6 +195,7 @@ export const pstore = defineStore('store-p', () => {
             this.isVoipOngoing = false;
             this.config = Config;
             this.userOnlineStateMap = new Map();
+            this.enableOpenWorkSpace = !!(Config.OPEN_PLATFORM_WORK_SPACE_URL);
             this.isLocked = false;
         }
     })
