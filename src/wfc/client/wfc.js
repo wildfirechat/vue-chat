@@ -927,7 +927,7 @@ export class WfcManager {
 
     /**
      * 当前设备是否被锁定
-     * 
+     *
      * @returns {boolean} 是否被锁定
      */
     isLocked() {
@@ -2226,6 +2226,20 @@ export class WfcManager {
      */
     getAuthCode(appId, appType, host, successCB, failCB) {
         impl.getAuthCode(appId, appType, host, successCB, failCB);
+    }
+
+    /**
+     * 验证页面合法性。请参考 https://gitee.com/wfchat/open-platform
+     * @param {String} appId 应用ID
+     * @param {number} appType 应用类型
+     * @param {number} timestamp 时间戳
+     * @param {nonceStr} nonceStr 应用host
+     * @param {signature} signature 应用host
+     * @param {function()} successCB
+     * @param {function(number)} failCB
+     */
+    configApplication(appId, appType, timestamp, nonceStr, signature, successCB, failCB) {
+        impl.configApplication(appId, appType, timestamp, nonceStr, signature, successCB, failCB);
     }
 
     requireLock(lockId, duration, successCB, failCB) {

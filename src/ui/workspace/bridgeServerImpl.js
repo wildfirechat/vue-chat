@@ -139,7 +139,8 @@ const handlers = {
             return;
         }
 
-        if (external) {
+        // web 端，不支持外部打开
+        if (false && external) {
             // 外部打开：新浏览器标签页
             window.open(url, '_blank');
         } else {
