@@ -5,16 +5,10 @@
  * 兼容 vue-pc-chat 的 WebSocket 协议格式
  */
 
-import Config from "../../config";
 
 let mWfc = null;
 let mHostPage = null;
 let messageHandler = null;
-
-// 默认允许的 origin 白名单
-const DEFAULT_ALLOWED_ORIGINS = [
-    'https://open.wildfirechat.cn',
-];
 
 /**
  * 初始化 bridgeServer
