@@ -96,7 +96,7 @@ let store = {
         // 初始化时检查锁定状态
         miscState.isLocked = wfc.isLocked();
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, (status) => {
-            console.log('store ConnectionStatusChanged', status)
+            console.log('store ConnectionStatusChanged', status, ConnectionStatus.desc(status));
             contactState.isEnableMesh = wfc.isEnableMesh();
             miscState.connectionStatus = status;
             miscState.isCommercialServer = wfc.isCommercialServer();

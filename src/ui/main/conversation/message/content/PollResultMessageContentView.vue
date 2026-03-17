@@ -97,7 +97,7 @@ export default {
     background-color: white;
     border-radius: 5px;
     cursor: pointer;
-    width: 240px;
+    width: 280px;
     display: flex;
     flex-direction: column;
     overflow: hidden;

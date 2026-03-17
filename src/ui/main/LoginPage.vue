@@ -158,6 +158,7 @@ export default {
 
             let autoLogin = getItem(userId + '-' + 'autoLogin') === '1'
             if (autoLogin && token) {
+                console.log('autoLogin', userId)
                 this.firstTimeConnect = wfc.connect(userId, token);
                 this.loginStatus = 4;
             } else {

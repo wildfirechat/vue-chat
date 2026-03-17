@@ -271,6 +271,7 @@
         "single_choice": "单选",
         "multiple_choice": "多选",
         "anonymous_poll": "匿名投票",
+        "named_poll": "实名投票",
         "show_result_always": "始终显示结果",
         "end_time": "截止时间",
         "no_end_time": "无截止时间",
