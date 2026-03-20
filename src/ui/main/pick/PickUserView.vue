@@ -2,10 +2,10 @@
     <div class="pick-contact-container">
         <section class="contact-list-container">
             <div class="input-container">
-                <input type="text" :placeholder="$t('common.search')" v-model="filterQuery">
+                <input type="text" :placeholder="$t('common.search')" v-model="filterQuery" :disabled="!showOrganization">
                 <i class="icon-ion-ios-search"></i>
             </div>
-            <div v-if="showOrganization" class="pick-source-container">
+            <div v-if="showOrganization && orgServiceAvailable" class="pick-source-container">
                 <div v-if="pickSource" class="pick-source-nav">
                     <ul>
                         <li @click.prevent="pickSource = null">
@@ -36,7 +36,7 @@
                     </ul>
                 </div>
             </div>
-            <div v-if="!showOrganization || pickSource === 'friend'" class="friend-list-container">
+            <div v-if="!(showOrganization && orgServiceAvailable) || pickSource === 'friend'" class="friend-list-container">
                 <CheckableUserListView :enable-pick="true"
                                        :users="filterUsers"
                                        :initial-checked-users="initialCheckedUsers"
@@ -144,6 +144,7 @@ export default {
             pickSource: null,
             organizationPathList: [],
             defaultOrganizationPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
+            orgServiceAvailable: organizationServerApi.isServiceAvailable,
         }
     },
     methods: {

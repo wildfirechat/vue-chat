@@ -6,7 +6,7 @@ import OrganizationServerError from "./organizationServerError";
 import UserInfo from "../wfc/model/userInfo";
 
 export class OrganizationServerApi {
-    isServiceAvailable = true;
+    isServiceAvailable = false;
     serviceUnavailbelError = new OrganizationServerError(-1, '未登录或服务不可用');
 
     constructor() {
@@ -42,6 +42,9 @@ export class OrganizationServerApi {
                         } else {
                             reject(new OrganizationServerError(response.data.code, response.data.message));
                         }
+                    })
+                    .catch(error => {
+                        reject(error);
                     })
 
             }, error => {
@@ -136,6 +139,9 @@ export class OrganizationServerApi {
      * @private
      */
     async _post(path, data = {}, rawResponse = false, rawResponseData = false) {
+        if(!this.isServiceAvailable){
+            throw new Error("service not available");
+        }
         let response;
         path = Config.ORGANIZATION_SERVER + path;
         response = await axios.post(path, data, {

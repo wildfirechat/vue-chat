@@ -55,6 +55,12 @@ export default {
                     this.loadAndShowOrganization(orgs[0])
                 }
             })
+            .catch(error => {
+                this.$notify({
+                    text: error.message,
+                    type: "error",
+                });
+            })
     },
     methods: {
         loadAndShowOrganization(org) {

@@ -32,7 +32,7 @@
                     </div>
                 </div>
             </header>
-            <div ref="conversationContentContainer" class="conversation-content-container"
+            <div ref="conversationContentContainer" class="conversation-content-container" :class="{ dragging: isHandlerDragging }"
                  @dragover="dragEvent($event, 'dragover')"
                  @dragleave="dragEvent($event, 'dragleave')"
                  @dragenter="dragEvent($event,'dragenter')"
@@ -77,12 +77,13 @@
                 <div v-if="unreadMessageCount > 0" class="unread-count-tip-container" @click="showUnreadMessage">
                     {{ '' + this.unreadMessageCount + '条新消息' }}
                 </div>
-                <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu" v-on:mousedown="dragStart"
+                <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu" v-on:mousedown="dragStart($event)"
                      class="divider-handler"></div>
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                                   v-show="!sharedConversationState.enableMessageMultiSelection"
                                   :input-options="inputOptions"
                                   :muted="muted"
+                                  :resized="messageInputViewResized"
                                   ref="messageInputView"/>
                 <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo"/>
                 <SingleConversationInfoView
@@ -270,6 +271,9 @@ export default {
             isLoadingHistory: false,
             overflow: false,
             finished: false,
+            resizeRafId: 0,
+            pendingPointerY: 0,
+            lastMessageListHeight: 0,
         };
     },
 
@@ -516,11 +520,18 @@ export default {
                 virtualList.scrollToOffset(scrollSize);
             }
         },
-        dragStart() {
+        dragStart(e) {
             if (this.muted) {
                 return;
             }
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            document.body.style.cursor = 'row-resize';
+            document.body.style.userSelect = 'none';
             this.isHandlerDragging = true;
+            this.messageInputViewResized = true;
             console.log('drag start')
         },
 
@@ -530,26 +541,41 @@ export default {
                 return false;
             }
 
-            // Get offset
-            let containerOffsetTop = this.$refs['conversationContentContainer'].offsetTop;
+            this.pendingPointerY = e.clientY;
+            if (this.resizeRafId) {
+                return false;
+            }
+            this.resizeRafId = requestAnimationFrame(() => {
+                this.resizeRafId = 0;
+                let container = this.$refs['conversationContentContainer'];
+                let messageList = this.$refs['conversationMessageList'];
+                if (!container || !messageList) {
+                    return;
+                }
 
-            // Get x-coordinate of pointer relative to container
-            let pointerRelativeYpos = e.clientY - containerOffsetTop;
-
-            // Arbitrary minimum width set on box A, otherwise its inner content will collapse to width of 0
+                let containerTop = container.getBoundingClientRect().top;
+                let pointerRelativeYpos = this.pendingPointerY - containerTop;
             let boxAminHeight = 150;
 
-            // Resize box A
-            // * 8px is the left/right spacing between .handler and its inner pseudo-element
-            // * Set flex-grow to 0 to prevent it from growing
-            this.$refs['conversationMessageList'].style.height = (Math.max(boxAminHeight, pointerRelativeYpos)) + 'px';
-            this.$refs['conversationMessageList'].style.flexGrow = 0;
-            this.messageInputViewResized = true;
+                let nextHeight = Math.max(boxAminHeight, Math.round(pointerRelativeYpos));
+                if (nextHeight === this.lastMessageListHeight) {
+                    return;
+                }
+                this.lastMessageListHeight = nextHeight;
+                messageList.style.height = nextHeight + 'px';
+                messageList.style.flexGrow = 0;
+            });
 
         },
 
         dragEnd() {
             this.isHandlerDragging = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+            if (this.resizeRafId) {
+                cancelAnimationFrame(this.resizeRafId);
+                this.resizeRafId = 0;
+            }
         },
 
         onMenuClose() {
@@ -996,6 +1022,8 @@ export default {
     },
 
     beforeUnmount() {
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
         document.removeEventListener('mouseup', this.dragEnd);
         document.removeEventListener('mousemove', this.drag);
         this.$eventBus.$off('send-file');
@@ -1276,12 +1304,17 @@ export default {
 .conversation-message-list {
     flex: 1 1 auto;
     overflow: auto;
+    will-change: height;
 }
 
 .conversation-message-list ul {
     list-style: none;
 }
 
+.conversation-content-container.dragging,
+.conversation-content-container.dragging * {
+    cursor: row-resize !important;
+}
 .header {
     padding: 10px;
     text-align: center;

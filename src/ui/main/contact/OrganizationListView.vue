@@ -33,6 +33,12 @@ export default {
             .then(orgs => {
                 this.rootOrganizations = orgs;
             })
+            .catch(error => {
+                this.$notify({
+                    text: '组织结构服务异常',
+                    type: 'error'
+                })
+            })
 
     },
     methods: {

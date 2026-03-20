@@ -1,10 +1,10 @@
 <template>
-    <div ref="message-input-container" class="message-input-container">
+    <div ref="message-input-container" class="message-input-container" :class="{resized: resized}">
         <div v-if="convMuted"
              style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
             <p style="color: white">群禁言或者群已被解散</p>
         </div>
-        <section v-else-if="!sharedConversationState.showChannelMenu" style="display: flex; flex-direction: column;">
+        <section v-else-if="!sharedConversationState.showChannelMenu" class="message-input-section">
             <section class="input-action-container">
                 <VEmojiPicker
                     id="emoji"
@@ -196,6 +196,11 @@ export default {
         muted: {
             type: Boolean,
             required: true,
+            default: false,
+        },
+        resized: {
+            type: Boolean,
+            required: false,
             default: false,
         }
     },
@@ -406,7 +411,7 @@ export default {
             }
 
             if (text && text.trim()) {
-                document.execCommand('insertText', false, text.trim());
+                document.execCommand('insertText', false, text);
                 // Safari 浏览器 execCommand 失效，可以采用下面这种方式处理粘贴
                 // this.$refs.input.innerText += text;
             }
@@ -442,16 +447,45 @@ export default {
             document.execCommand('insertText', false, text);
         },
 
+        getSelectedInputText() {
+            let input = this.$refs['input'];
+            let selection = window.getSelection();
+            if (!input || !selection || selection.rangeCount === 0 || selection.isCollapsed) {
+                return '';
+            }
+            let range = selection.getRangeAt(0);
+            if (!input.contains(range.commonAncestorContainer)) {
+                return '';
+            }
+            return selection.toString();
+        },
+
         copy() {
-            let text = this.$refs['input'].innerText;
+            let text = this.getSelectedInputText();
+            if (!text) {
+                text = this.$refs['input'].innerText;
+            }
             if (text) {
                 copyText(text)
             }
         },
 
         cut() {
+            let input = this.$refs['input'];
+            let selection = window.getSelection();
+            if (input && selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+                let range = selection.getRangeAt(0);
+                if (input.contains(range.commonAncestorContainer)) {
+                    let text = selection.toString();
+                    if (text) {
+                        copyText(text)
+                        range.deleteContents();
+                        return;
+                    }
+                }
+            }
             this.copy();
-            this.$refs['input'].innerHTML = '';
+            input.innerHTML = '';
         },
 
         async send(e) {
@@ -899,7 +933,14 @@ export default {
             if (input.innerHTML.trim()) {
                 console.log('inputting, ignore', draft.text)
             } else {
-                input.innerHTML = draft.text.replace(/ /g, '&nbsp').replace(/\n/g, '<br>');
+                input.innerHTML = '';
+                let lines = (draft.text || '').split('\n');
+                lines.forEach((line, index) => {
+                    if (index > 0) {
+                        input.appendChild(document.createElement('br'));
+                    }
+                    input.appendChild(document.createTextNode(line));
+                });
                 this.moveCursorToEnd(input);
             }
         },
@@ -909,17 +950,24 @@ export default {
                 return;
             }
             let clonedInput = this.$refs['input'].cloneNode(true);
-            let children = [...clonedInput.children]
-
-            for (let i = 0; i < children.length; i++) {
-                let e = children[i]
-                if (e.tagName === 'BR') {
-                    e.replaceWith('\n')
-                } else {
-                    e.replaceWith(e.alt ? e.alt : '')
-                }
-            }
-            let draftText = clonedInput.innerHTML.trim();
+            let imgs = clonedInput.querySelectorAll('img');
+            imgs.forEach(img => {
+                img.replaceWith(img.alt ? img.alt : '');
+            });
+            // innerText on detached nodes is not stable across environments.
+            // Normalize html explicitly so pasted multi-line text keeps line breaks.
+            let normalizedHtml = clonedInput.innerHTML
+                .replace(/<div><br><\/div>/gi, '\n')
+                .replace(/<p><br><\/p>/gi, '\n')
+                .replace(/<div>/gi, '')
+                .replace(/<\/div>/gi, '\n')
+                .replace(/<p>/gi, '')
+                .replace(/<\/p>/gi, '\n')
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/&nbsp;/gi, ' ');
+            let textContainer = document.createElement('div');
+            textContainer.innerHTML = normalizedHtml;
+            let draftText = (textContainer.textContent || '').replace(/\u00a0/g, ' ');
 
             let mentions = [];
             this.mentions.forEach(e => {
@@ -1294,6 +1342,16 @@ export default {
     position: relative;
 }
 
+.message-input-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-input-container.resized,
+.message-input-container.resized .message-input-section {
+    flex: 1 1 auto;
+    min-height: 150px;
+}
 #emoji {
     position: absolute;
     bottom: 55px;
@@ -1319,10 +1377,22 @@ export default {
     max-height: 260px;
     outline: none;
     padding: 0 20px;
-    overflow: auto;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
     user-select: text;
     -webkit-user-select: text;
     font-size: 13px;
+}
+
+.message-input-container.resized .input {
+    min-height: 0;
+    max-height: none;
+}
+
+.input p,
+.input div {
+    margin: 0;
 }
 
 .input:empty:before {

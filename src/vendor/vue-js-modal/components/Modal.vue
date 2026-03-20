@@ -888,7 +888,7 @@ export default {
   box-sizing: border-box;
 
   background-color: white;
-  border-radius: 3px;
+  border-radius: 8px;
   box-shadow: 0 20px 60px -2px rgba(27, 33, 58, 0.4);
 }
 
