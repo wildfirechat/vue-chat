@@ -56,7 +56,7 @@
                                           force-use-infinite-wrapper
                                           direction="top"
                                           @infinite="infiniteHandlerTop">
-                            <!--            <template slot="spinner">加载中...</template>-->
+                            <!--            <template #spinner>加载中...</template>-->
                             <template #no-more>{{ $t('conversation.no_more_message') }}</template>
                             <template #no-results>{{ $t('conversation.no_more_message') }}</template>
                         </infinite-loading>
@@ -89,7 +89,7 @@
                                           force-use-infinite-wrapper
                                           direction="bottom"
                                           @infinite="infiniteHandlerBottom">
-                            <!--            <template slot="spinner">加载中...</template>-->
+                            <!--            <template #spinner>加载中...</template>-->
                             <template #no-more>{{ $t('fav.no_more') }}</template>
                             <template #no-results>{{ $t('fav.all_fav_load') }}</template>
                         </infinite-loading>

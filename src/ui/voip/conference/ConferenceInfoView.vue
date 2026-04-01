@@ -136,7 +136,7 @@ export default {
         audience() {
             return !(this.conferenceInfo.owner === this.selfUserId || !this.conferenceInfo.audience || this.conferenceInfo.allowSwitchMode)
                 // Safari 浏览器，不支持直接静音自动播放音视频
-                || navigator.vendor.indexOf('Apple') > 0
+                || navigator.vendor.indexOf('Apple') >= 0
         },
         enableDestroy() {
             console.log('conferenceInfo', this.conferenceInfo, this.selfUserId);

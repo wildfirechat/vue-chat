@@ -74,7 +74,7 @@
             </ul>
             <infinite-loading :identifier="infiniteId" force-use-infinite-wrapper direction="bottom"
                               @infinite="infiniteHandler">
-                <!--            <template slot="spinner">加载中...</template>-->
+                <!--            <template #spinner>加载中...</template>-->
                 <template #no-more>{{ $t('fav.no_more') }}</template>
                 <template #no-results>{{ $t('fav.all_fav_load') }}</template>
             </infinite-loading>

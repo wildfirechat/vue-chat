@@ -93,7 +93,7 @@
                         <infinite-loading v-if="!fileQuery" :identifier="loadingIdentifier" force-use-infinite-wrapper
                                           direction="bottom"
                                           @infinite="infiniteHandler">
-                            <!--            <template slot="spinner">加载中...</template>-->
+                            <!--            <template #spinner>加载中...</template>-->
                             <template #no-more>{{ $t('file_record.no_more') }}</template>
                             <template #no-results>{{ $t('file_record.all_file_load') }}</template>
                         </infinite-loading>

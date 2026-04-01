@@ -13,7 +13,7 @@ const helper = {
 
         tagName = Array.isArray(tagName) ? tagName : [tagName];
 
-        tagName.map(e => {
+        tagName.forEach(e => {
             value[e] = xml.getElementsByTagName(e)[0].childNodes[0].nodeValue;
         });
 
