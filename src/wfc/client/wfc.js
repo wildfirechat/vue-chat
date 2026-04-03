@@ -2280,6 +2280,45 @@ export class WfcManager {
         impl.reloadDomainInfoFromRemote(domainId, updateDt, successCB, failCB);
     }
 
+      /**
+     * 上传进度回调函数
+     * @callback ProgressCallback
+     * @param {number} uploaded - 已上传的字节数
+     * @param {number} total - 总字节数
+     */
+
+    /**
+     * 上传成功回调函数
+     * @callback SuccessCallback
+     * @param {string} remoteUrl - 上传成功后的远程资源地址
+     */
+
+    /**
+     * 上传失败回调函数
+     * @callback FailCallback
+     * @param {number} errorCode - 错误码
+     */
+
+    /**
+     * 自定义文件上传处理器逻辑
+     * @callback CustomUploadFileHandler
+     * @param {Message} message - 消息对象实例
+     * @param {Blob|File} blob - 要上传的文件二进制数据或文件对象
+     * @param {string} name - 文件名称
+     * @param {number} mediaType - 媒体类型枚举值
+     * @param {ProgressCallback} progressCB - 进度更新回调
+     * @param {SuccessCallback} successCB - 成功回调
+     * @param {FailCallback} failCB - 失败回调
+     */
+
+    /**
+     * 设置自定义文件上传处理器
+     * @param {CustomUploadFileHandler} handler - 处理上传逻辑的函数
+     */
+    setCustomUploadFileHandler(handler){
+        impl.setCustomUploadFileHandler(handler);
+    }
+
     _getStore() {
         return impl._getStore();
     }
