@@ -30,6 +30,7 @@ import xss from "xss";
 import mitt from 'mitt'
 import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 import CustomMessageConfig from "./wfc_custom_message/customMessageConfig";
+import { exampleCustomUploadFileHandler } from './ui/util/exampleCustomUploadFileHandler';
 
 // Vue.config.productionTip = false
 
@@ -78,6 +79,8 @@ app.use(CoolLightBox)
         // web
     } else {
         wfc.init();
+        // 设置自定义文件上传 handler
+        // wfc.setCustomUploadFileHandler(exampleCustomUploadFileHandler)
         CustomMessageConfig.registerCustomMessages()
         // 双网环境配置
         // 可以根据访问网页的地址，配置是否切换备选网络策略

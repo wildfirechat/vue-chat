@@ -2312,7 +2312,7 @@ export class WfcManager {
      */
 
     /**
-     * 设置自定义文件上传处理器
+     * 设置自定义文件上传处理器，建议用全局函数，且一定要正确回调，回调前，检查 callback 是否非空
      * @param {CustomUploadFileHandler} handler - 处理上传逻辑的函数
      */
     setCustomUploadFileHandler(handler){
