@@ -3,9 +3,12 @@
         <ul>
             <li v-for="(group, index) in sharedContactState.favGroupList" :key="index" @click="showGroup(group)">
                 <div class="group-item"
-                     v-bind:class="{active: sharedContactState.currentGroup && sharedContactState.currentGroup.target === group.target}">
+                     v-bind:class="{active: sharedContactState.currentGroup && sharedContactState.currentGroup.target === group.target}"
+                     @contextmenu.prevent="showGroupContextMenu($event, group)">
                     <img class="avatar" :src="group.portrait">
-                    <span class="single-line">{{ group.remark ? group.remark : group.name }}</span>
+                    <div style="padding-left: 10px">
+                        <p class="single-line">{{ group.remark ? group.remark : group.name }}</p>
+                    </div>
                 </div>
             </li>
         </ul>
@@ -27,6 +30,9 @@ export default {
     methods: {
         showGroup(group) {
             store.setCurrentGroup(group)
+        },
+        showGroupContextMenu(event, group) {
+            // this.$eventBus.$emit('showContactContextMenu', [event, userInfo]);
         }
     },
 }
@@ -41,8 +47,7 @@ export default {
 }
 
 .group-item {
-    height: 50px;
-    padding: 5px 10px 5px 30px;
+    padding: 10px 5px 10px 30px;
     display: flex;
     font-size: 13px;
     align-items: center;

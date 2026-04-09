@@ -1,6 +1,6 @@
 <template>
     <div ref="userCardTippy"
-         :id="'#userCardInfoTrigger' + message.messageId"
+         :id="'userCardInfoTrigger' + message.messageId"
          class="user-card-content-container">
         <div class="portrait-name-container">
             <img :src="message.messageContent.portrait">
@@ -89,6 +89,10 @@ export default {
     padding-top: 8px;
     font-size: 13px;
     color: #b8b8b8;
+}
+
+.rightarrow:before {
+    border-left-color: white;
 }
 
 </style>

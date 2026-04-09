@@ -433,7 +433,8 @@ export default {
                     this.refreshQrCode();
                 }
                 if (status !== ConnectionStatus.ConnectionStatusLogout && status !== ConnectionStatus.ConnectionStatusUnconnected) {
-                    console.error('连接失败', status, ConnectionStatus.desc(status));
+                    console.error('连接失败，请根据下面描述进行排查', status)
+                     console.error(ConnectionStatus.desc(status))
                     this.cancel();
                     this.diagnose();
                     this.$notify({

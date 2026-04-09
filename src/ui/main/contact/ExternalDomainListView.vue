@@ -5,7 +5,9 @@
                 <div class="external-domain-item"
                      v-bind:class="{active: sharedContactState.currentExternalDomain && sharedContactState.currentExternalDomain.domainId === domainInfo.domainId}">
                     <img class="avatar" :src="domainInfo.portrait ? domainInfo.portrait : defaultPortraitUrl">
-                    <span class="single-line">{{ domainInfo.name }}</span>
+                    <div style="padding-left: 10px">
+                        <p class="single-line">{{ domainInfo.name }}</p>
+                    </div>
                 </div>
             </li>
         </ul>
@@ -52,8 +54,7 @@ export default {
 }
 
 .external-domain-item {
-    height: 50px;
-    padding: 5px 10px 5px 30px;
+    padding: 10px 5px 10px 30px;
     display: flex;
     font-size: 13px;
     align-items: center;
@@ -68,7 +69,6 @@ export default {
 }
 
 .external-domain-item span {
-    margin-left: 10px;
 }
 
 </style>

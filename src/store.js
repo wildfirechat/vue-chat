@@ -734,11 +734,10 @@ let store = {
         }
         this.setCurrentConversationInfo(info);
     },
-
     setCurrentConversationInfo(conversationInfo) {
-        if (!conversationInfo) {
-            if (conversationState.currentConversationInfo) {
+        if (conversationState.currentConversationInfo &&(!conversationInfo || !conversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation))) {
                 let conversation = conversationState.currentConversationInfo.conversation;
+
                 if (wfc.isUserOnlineStateEnabled() && ((conversation.type === ConversationType.Single || conversation.type === ConversationType.SecretChat) && !wfc.isMyFriend(conversation.target))) {
                     wfc.unwatchOnlineState(conversation.type, [conversation.target]);
                 }
@@ -746,7 +745,9 @@ let store = {
                     let content = new LeaveChannelChatMessageContent();
                     wfc.sendConversationMessage(conversation, content);
                 }
+            this.clearConversationUnreadStatus(conversationState.currentConversationInfo.conversation)
             }
+        if (!conversationInfo) {
             conversationState.currentConversationInfo = null;
             conversationState.shouldAutoScrollToBottom = false;
             conversationState.currentConversationMessageList.length = 0;
@@ -2265,6 +2266,28 @@ let store = {
             wfc.clearConversationUnreadStatus(conversation);
             this.updateTray();
         }
+    },
+
+    clearConversationHistory(conversation) {
+        wfc.clearMessages(conversation);
+        if (conversationState.currentConversationInfo && conversation.equal(conversationState.currentConversationInfo.conversation)) {
+            conversationState.currentConversationMessageList = [];
+        }
+    },
+
+    clearRemoteConversationHistory(conversation) {
+        wfc.clearRemoteConversationMessages(conversation, () => {
+            if (
+                conversationState.currentConversationInfo &&
+                conversation.equal(
+                    conversationState.currentConversationInfo.conversation
+                )
+            ) {
+                conversationState.currentConversationMessageList = [];
+            }
+        }, err => {
+            console.log('clearRemoteConversationHistory', err);
+        });
     },
 
     clearAllUnreadStatus() {

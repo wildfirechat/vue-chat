@@ -289,11 +289,11 @@ export default {
 
         clearConversationHistory() {
             this.$parent.enableLoadRemoteHistoryMessage = !this.sharedMiscState.isElectron;
-            wfc.clearMessages(this.conversationInfo.conversation);
+            store.clearConversationHistory(this.conversationInfo.conversation)
         },
 
         clearRemoteConversationHistory() {
-            wfc.clearRemoteConversationMessages(this.conversationInfo.conversation);
+            store.clearRemoteConversationHistory(this.conversationInfo.conversation);
         },
 
         async loadGroupMemberUserInfos(){

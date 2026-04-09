@@ -25,6 +25,7 @@ const IpcEventType = {
     GET_SOURCE: 'get-source',
     SHOW_COLLECTION_WINDOW: 'show-collection-window',
     SHOW_POLL_WINDOW: 'show-poll-window',
+    OPEN_MAIN_DEV_TOOLS: 'open-main-dev-tools',
 }
 
 module.exports = IpcEventType

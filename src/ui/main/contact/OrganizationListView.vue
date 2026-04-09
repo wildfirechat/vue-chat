@@ -5,7 +5,9 @@
                 <div class="organization-item"
                      v-bind:class="{active: sharedContactState.currentOrganization && sharedContactState.currentOrganization.id === organization.id}">
                     <img class="avatar" :src="organization.portrait ? organization.portrait : defaultPortraitUrl">
-                    <span class="single-line">{{ organization.name }}</span>
+                    <div style="padding-left: 10px">
+                        <p class="single-line">{{ organization.name }}</p>
+                    </div>
                 </div>
             </li>
         </ul>
@@ -58,8 +60,7 @@ export default {
 }
 
 .organization-item {
-    height: 50px;
-    padding: 5px 10px 5px 30px;
+    padding: 10px 5px 10px 30px;
     display: flex;
     font-size: 13px;
     align-items: center;
@@ -74,7 +75,7 @@ export default {
 }
 
 .organization-item span {
-    margin-left: 10px;
+    /*margin-left: 10px;*/
 }
 
 </style>

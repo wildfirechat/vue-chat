@@ -228,9 +228,8 @@ export default {
 }
 
 .message-content-container.highlight {
-    background-color: #dadada;
-    opacity: 0.5;
-    --in-arrow-color: #dadada !important;
+    filter: brightness(0.9);
+    z-index: 100;
 }
 
 </style>

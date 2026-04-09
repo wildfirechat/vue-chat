@@ -3,7 +3,7 @@
         <div class="message-time-container" v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
             <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
             <div class="message-content-container"
-                 v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
+                 v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0, highlight:highLight}">
                 <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                        class="checkbox"
                        :value="message" placeholder="" v-model="sharedPickState.messages">
@@ -102,6 +102,11 @@ export default {
     position: absolute;
     left: 0;
     margin-left: 20px;
+}
+
+.message-content-container.highlight {
+    filter: brightness(0.9);
+    z-index: 100;
 }
 
 </style>
