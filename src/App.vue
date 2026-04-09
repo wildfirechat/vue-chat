@@ -9,17 +9,11 @@
         <!-- 锁定界面 -->
         <LockScreenView v-if="sharedMiscState.isLocked" />
         <div v-if="!sharedMiscState.isElectron" id="blur-container" class="blur-container">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50"
-                 class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
-                <filter id="blur_mkvvpnf">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="50"></feGaussianBlur>
-                </filter>
-                <image x="0" y="0" width="100%" height="100%" externalResourcesRequired="true"
-                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                       xlink:href="https://static.wildfirechat.net/web_wfc_bg2.jpeg"
-                       style="filter:url(#blur_mkvvpnf)" preserveAspectRatio="none"></image>
-            </svg>
-            <div class="blur-mask"></div>
+            <div class="hero-bg-gradient"></div>
+            <div class="hero-bg-pattern"></div>
+            <div class="hero-bg-blob blob-1"></div>
+            <div class="hero-bg-blob blob-2"></div>
+            <div class="hero-bg-blob blob-3"></div>
         </div>
         <!--用来实现视频缩略图-->
         <div id="styled_video_container" class="styled_video_container">
@@ -193,14 +187,70 @@ export default {
     margin: 0;
 }
 
-.blur-container .blur-mask {
+.hero-bg-gradient {
     position: absolute;
-    left: 0;
     top: 0;
-    height: 100vh;
-    width: 100vw;
-    background: rgba(0, 0, 0, .2);
-    overflow: hidden;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, #e8efff 0%, #f5f8ff 40%, #ffffff 70%, #f0f4ff 100%);
+}
+
+.hero-bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(65, 104, 224, 0.08) 1px, transparent 0);
+    background-size: 32px 32px;
+}
+
+.hero-bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    animation: float 15s ease-in-out infinite;
+}
+
+.blob-1 {
+    width: 700px;
+    height: 700px;
+    background: linear-gradient(135deg, #3f64e4 0%, #764ba2 100%);
+    top: -250px;
+    right: -150px;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, #00c6ff 0%, #3f64e4 100%);
+    bottom: 50px;
+    left: -150px;
+    animation-delay: -7s;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    top: 30%;
+    left: 10%;
+    filter: blur(80px);
+    opacity: 0.2;
+    animation: float 12s ease-in-out infinite;
+    animation-delay: -3s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(15px, -25px);
+    }
 }
 
 .styled_video_container {
@@ -226,6 +276,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: var(--main-border-radius);
 }
 
 .container-emoji {

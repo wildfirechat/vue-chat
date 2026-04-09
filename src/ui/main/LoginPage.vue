@@ -622,7 +622,10 @@ export default {
     height: 500px;
     margin: auto;
     background: white;
-    border-radius: 5px;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
+                0 10px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .qr-container {
