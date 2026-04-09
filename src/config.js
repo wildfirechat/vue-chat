@@ -123,6 +123,18 @@ export default class Config {
      */
     static WS_PATH= '/ws';
 
+    /**
+     * IM 相关 http  请求的前缀路径，最终会拼接成类似的 http://${im_server_host}:{ROUTE_PORT}${HTTP_IM_PREFIX_PATH}/route 的请求地址
+     * @type {string}
+     */
+    static HTTP_IM_PREFIX_PATH= '';
+
+    /**
+     * 文件上传相关 http  请求的前缀路径，最终会拼接成类似的 http://im_server_host/${HTTP_UPLOAD_PREFIX_PATH}/fs 的请求地址
+     * @type {string}
+     */
+    static HTTP_UPLOAD_PREFIX_PATH= '';
+
     // html5 audio 标签不能播放amr格式的音频，需要将amr格式转换为mp3格式
     // 本服务传入amr音频文件的地址，将音频文件转换为mp3格式，并以application/octet-stream的格式返回
     // 如果语音消息很多，建议使用cdn
