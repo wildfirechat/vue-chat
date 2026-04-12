@@ -8,7 +8,7 @@
                 <div class="name">
                     <div style="display: flex; align-items: center">
                         <h2>{{ name }}</h2>
-                        <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                        <p v-if="isExternalDomainUser" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                     </div>
                     <p>你好，野火</p>
                 </div>
@@ -126,7 +126,7 @@ export default {
                 let domainId = WfcUtil.getExternalDomainId(user.uid);
                 let domainInfo = wfc.getDomainInfo(domainId);
                 return '@' + domainInfo.name;
-        }
+            }
             return '';
         },
     }
@@ -152,7 +152,7 @@ export default {
     display: flex;
     align-items: center;
     padding-bottom: 15px;
-    border-bottom: 1px solid #e6e6e6;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .header .avatar {
@@ -178,13 +178,13 @@ export default {
 
 .header .name p {
     font-size: 13px;
-    color: #7f7f7f;
+    color: var(--text-secondary-strong);
 }
 
 .content {
     width: 100%;
     text-align: left;
-    border-bottom: 1px solid #e6e6e6;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .content ul {
@@ -205,7 +205,7 @@ export default {
     width: 40px;
     text-align: justify;
     text-align-last: justify;
-    color: #7f7f7f;
+    color: var(--text-secondary-strong);
 }
 
 .content ul li p {
@@ -218,16 +218,16 @@ export default {
     border-radius: 3px;
     outline: none;
     padding: 5px;
-    color: #bfbfbf;
+    color: var(--text-hint);
     font-size: 13px;
 }
 
 .content ul li .alias > input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .content ul li .alias input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .content ul li > div {
@@ -247,7 +247,7 @@ export default {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    color: #5d7ce8;
+    color: var(--accent-color);
 }
 
 .footer .action a {

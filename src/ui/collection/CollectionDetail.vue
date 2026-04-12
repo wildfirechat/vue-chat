@@ -241,23 +241,23 @@ export default {
 .collection-detail {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh;
-    background-color: #f5f6f7;
+    background-color: var(--background-tertiary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    color: #333;
+    color: var(--text-primary);
     user-select: none;
 }
 
 /* Header */
 .page-header {
     height: 50px;
-    background: #fff;
+    background: var(--background-primary);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    border-bottom: 1px solid #e6e6e6;
+    border-bottom: 1px solid var(--border-primary);
     -webkit-app-region: drag;
     flex-shrink: 0;
     z-index: 10;
@@ -272,29 +272,29 @@ export default {
 .header-title {
     font-weight: 600;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
 }
 .back-btn {
     cursor: pointer;
     font-size: 14px;
-    color: #666;
+    color: var(--text-muted);
     padding: 5px 0;
 }
 .back-btn:hover {
-    color: #333;
+    color: var(--text-primary);
 }
 
 .loading-state, .error-state {
     padding: 60px;
     text-align: center;
-    color: #999;
+    color: var(--text-hint);
 }
 .spinner {
-    border: 3px solid rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--background-trans-muted);
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border-left-color: #1f64e4;
+    border-left-color: var(--accent-color);
     animation: spin 1s linear infinite;
     margin: 0 auto 10px;
 }
@@ -303,7 +303,7 @@ export default {
     100% { transform: rotate(360deg); }
 }
 .error-state {
-    color: #ff3b30;
+    color: var(--text-danger);
 }
 
 /* Detail Mode */
@@ -313,11 +313,11 @@ export default {
     display: flex;
     flex-direction: column;
     padding-bottom: 80px;
-    background: #fff;
+    background: var(--background-primary);
     width: 100%;
 }
 .detail-header {
-    background: #fff;
+    background: var(--background-primary);
     padding: 24px 24px 16px 24px;
 }
 .creator-info {
@@ -338,44 +338,44 @@ export default {
 .creator-name {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 .meta-info {
     font-size: 12px;
-    color: #999;
+    color: var(--text-hint);
     margin-top: 2px;
 }
 .collection-title {
     font-size: 24px;
     font-weight: bold;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 12px;
     line-height: 1.3;
 }
 .collection-desc {
     font-size: 15px;
-    color: #555;
+    color: var(--text-muted);
     margin-bottom: 12px;
     white-space: pre-wrap;
     line-height: 1.6;
 }
 .collection-template {
     font-size: 13px;
-    color: #1f64e4;
-    background: #f0f7ff;
+    color: var(--accent-color);
+    background: var(--background-item-selected);
     display: inline-block;
     padding: 4px 8px;
     border-radius: 4px;
 }
 .divider {
     height: 8px;
-    background: #f5f6f7;
+    background: var(--background-tertiary);
     flex-shrink: 0;
 }
 
 /* Entry List */
 .entry-list {
-    background: #fff;
+    background: var(--background-primary);
     flex: 1;
     padding: 10px 0;
 }
@@ -383,17 +383,17 @@ export default {
     display: flex;
     align-items: flex-start;
     padding: 16px 24px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-secondary);
     transition: background 0.2s;
 }
 .entry-item:hover {
-    background: #fafafa;
+    background: var(--background-secondary);
 }
 .index-badge {
     width: 24px;
     height: 24px;
-    background: #f0f2f5;
-    color: #576b95;
+    background: var(--background-secondary);
+    color: var(--text-link);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -416,25 +416,25 @@ export default {
 .entry-text {
     flex: 1;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
     line-height: 1.6;
     word-break: break-word;
 }
 
 .edit-input {
     width: 100%;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-primary);
     border-radius: 6px;
     padding: 10px 12px;
     font-size: 16px;
     line-height: 1.5;
     outline: none;
     resize: none;
-    background: #fff;
+    background: var(--background-primary);
     font-family: inherit;
-    color: #333;
-    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
-    border-color: #1f64e4;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-accent-focus);
+    border-color: var(--accent-color);
 }
 
 /* Floating Footer */
@@ -449,28 +449,28 @@ export default {
 }
 .action-btn {
     pointer-events: auto;
-    background: #1f64e4;
-    color: white;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
     border: none;
     padding: 12px 60px;
     border-radius: 24px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: var(--shadow-accent);
     transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
 }
 .action-btn:hover {
-    background: #006ce6;
+    background: var(--status-info);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    box-shadow: var(--shadow-accent-strong);
 }
 .action-btn:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    box-shadow: var(--shadow-accent);
 }
 .action-btn:disabled {
-    background: #b4d8ff;
+    background: var(--accent-color-subtle);
     box-shadow: none;
     cursor: default;
     transform: none;

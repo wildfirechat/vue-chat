@@ -34,7 +34,7 @@
                 </div>
             </li>
             <li>
-                <div class="action" style="color: black; pointer-events: auto">
+                <div class="action" style="color: var(--text-primary); pointer-events: auto">
                     <i @click="hideMultiSelectionActionView" class="icon-ion-close"></i>
                 </div>
             </li>
@@ -97,7 +97,7 @@ export default {
         forwardOneByOne() {
             let messages = [...this.sharedPickState.messages];
             this.$forwardMessage({
-                forwardType:ForwardType.ONE_BY_ONE,
+                forwardType: ForwardType.ONE_BY_ONE,
                 messages,
             });
             store.toggleMessageMultiSelection();
@@ -106,13 +106,13 @@ export default {
         forwardComposite() {
             let messages = [...this.sharedPickState.messages];
             this.$forwardMessage({
-                forwardType:ForwardType.COMPOSITE,
+                forwardType: ForwardType.COMPOSITE,
                 messages,
             });
             store.toggleMessageMultiSelection();
         },
 
-        fav(){
+        fav() {
             let messages = [...this.sharedPickState.messages];
             this.$parent.favMessages(messages);
             store.toggleMessageMultiSelection();
@@ -132,7 +132,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-top: 1px solid #e2e2e2;
+    border-top: 1px solid var(--border-separator);
 }
 
 ul {
@@ -155,14 +155,14 @@ ul li {
 }
 
 .action.enable {
-    color: black;
+    color: var(--text-primary);
     pointer-events: auto;
 }
 
 .action .icon {
     width: 60px;
     height: 60px;
-    background-color: white;
+    background-color: var(--background-primary);
     border-radius: 30px;
     display: flex;
     justify-content: center;
@@ -178,7 +178,7 @@ ul li {
     padding-top: 10px;
 }
 
-.action i{
+.action i {
     font-size: 20px;
 }
 

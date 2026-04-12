@@ -151,7 +151,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: var(--background-primary);
     padding: 5px 5px 0 5px;
     border-radius: 5px;
 }
@@ -162,7 +162,7 @@ export default {
     max-height: 100%;
     overflow: hidden;
     position: relative;
-    border: 1px solid #efefef;
+    border: 1px solid var(--border-tertiary);
     border-radius: 5px;
 }
 
@@ -198,12 +198,12 @@ video {
 
 i {
     font-size: 24px;
-    color: #000b;
+    color: var(--text-primary);
     cursor: pointer;
 }
 
 i:hover {
-    color: #3f64e4;
+    color: var(--accent-color);
 }
 
 </style>

@@ -55,9 +55,9 @@
                 <p>{{ $t('conversation.remove_member') }}</p>
             </div>
             <UserListView :users="users"
-                         :show-category-label="false"
-                         :click-user-item-func="clickGroupMemberItemFunc"
-                         :padding-left="'20px'"
+                          :show-category-label="false"
+                          :click-user-item-func="clickGroupMemberItemFunc"
+                          :padding-left="'20px'"
             />
         </div>
         <div v-if="sharedMiscState.isElectron" @click="clearConversationHistory" class="conversation-action-item">
@@ -119,6 +119,7 @@ export default {
 
         let userInfo = wfc.getUserInfo(wfc.getUserId(), false, this.conversationInfo.conversation.target);
         this.groupAlias = userInfo.groupAlias ? userInfo.groupAlias : userInfo.displayName;
+
         this.loadGroupMemberUserInfos();
     },
 
@@ -130,10 +131,10 @@ export default {
 
     components: {UserListView},
     methods: {
-        onReceiveMessage(msg, hasMore){
-            if(msg.conversation.equal(this.conversationInfo.conversation) && msg.messageContent.type === MessageContentType.RejectJoinGroup){
+        onReceiveMessage(msg, hasMore) {
+            if (msg.conversation.equal(this.conversationInfo.conversation) && msg.messageContent.type === MessageContentType.RejectJoinGroup) {
                 let content = msg.messageContent;
-                if(content.operator === wfc.getUserId()){
+                if (content.operator === wfc.getUserId()) {
                     this.$notify({
                         text: content.formatNotification(msg),
                         type: 'warn'
@@ -296,9 +297,9 @@ export default {
             store.clearRemoteConversationHistory(this.conversationInfo.conversation);
         },
 
-        async loadGroupMemberUserInfos(){
+        async loadGroupMemberUserInfos() {
             let groupId = this.conversationInfo.conversation.target;
-            if(isElectron()){
+            if (isElectron()) {
                 let memberIds = wfc.getGroupMemberIds(groupId, true);
                 const step = 500;
                 for (let i = 0; i < memberIds.length;) {
@@ -308,11 +309,11 @@ export default {
                     this.groupMemberUserInfos.push(...userInfos);
                 }
             } else {
-              this.groupMemberUserInfos = store.getGroupMemberUserInfos(groupId);
+                this.groupMemberUserInfos = store.getGroupMemberUserInfos(groupId);
             }
         }
     },
-      
+
     created() {
         this.getGroupAnnouncement();
     },
@@ -394,8 +395,8 @@ export default {
                 if (groupMember) {
                     return [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) >= 0;
                 } else {
-                return false;
-            }
+                    return false;
+                }
             } else {
                 return true;
             }
@@ -449,7 +450,7 @@ header .group-portrait-container {
 }
 
 header .group-portrait-container p {
-    color: #191919;
+    color: var(--text-primary);
     font-size: 13px;
 }
 
@@ -467,7 +468,7 @@ header label {
     justify-content: center;
     align-items: flex-start;
     font-size: 13px;
-    color: #191919;
+    color: var(--text-primary);
 }
 
 header label:not(:first-of-type) {
@@ -476,7 +477,7 @@ header label:not(:first-of-type) {
 
 header label:last-of-type {
     padding-bottom: 15px;
-    border-bottom: 1px solid #ececec;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 header label input {
@@ -489,8 +490,8 @@ header label input {
     background-color: transparent;
 }
 
-header label input::-webkit-input-placeholder{
-    color: #7F7F7F;
+header label input::-webkit-input-placeholder {
+    color: var(--text-secondary-strong);
 }
 
 .member-container {
@@ -508,18 +509,18 @@ header label input::-webkit-input-placeholder{
     padding: 0 10px 0 20px;
     height: 25px;
     border-radius: 3px;
-    border: 1px solid #ededed;
-    background-color: white;
+    border: 1px solid var(--border-tertiary);
+    background-color: var(--background-primary);
     text-align: left;
     outline: none;
 }
 
 .search-item input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .search-item input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .search-item i {
@@ -542,7 +543,7 @@ header label input::-webkit-input-placeholder{
     justify-content: center;
     align-items: center;
     border-radius: 3px;
-    border: 1px dashed #d6d6d6;
+    border: 1px dashed var(--border-dashed);
 }
 
 .action-item img {
@@ -556,22 +557,22 @@ header label input::-webkit-input-placeholder{
 }
 
 .action-item:active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .conversation-action-item {
     display: flex;
-    color: red;
+    color: var(--text-danger);
     align-items: center;
     justify-content: center;
     font-size: 12px;
     height: 42px;
     max-height: 42px;
-    border-top: 1px solid #ececec;
+    border-top: 1px solid var(--border-tertiary);
 }
 
 .conversation-action-item:active {
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
 }
 
 .switch {

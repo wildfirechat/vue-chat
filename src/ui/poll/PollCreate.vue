@@ -294,11 +294,11 @@ export default {
 .poll-create {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh;
-    background-color: #f5f6f7;
+    background-color: var(--background-tertiary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    color: #333;
+    color: var(--text-primary);
     user-select: none;
 }
 
@@ -319,7 +319,7 @@ export default {
 
 .back-btn {
     font-size: 15px;
-    color: #576b95;
+    color: var(--accent-color);
     cursor: pointer;
 }
 
@@ -334,7 +334,7 @@ export default {
 
 .form-wrapper {
     width: 100%;
-    background: #fff;
+    background: var(--background-primary);
     padding: 20px 24px;
 }
 
@@ -345,26 +345,26 @@ export default {
 .form-label {
     display: block;
     margin-bottom: 8px;
-    color: #666;
+    color: var(--text-hint);
     font-size: 14px;
 }
 
 .input-field {
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-primary);
     border-radius: 6px;
-    background: #fff;
+    background: var(--background-primary);
     font-size: 15px;
-    color: #333;
+    color: var(--text-primary);
     box-sizing: border-box;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-field:focus {
-    border-color: #1f64e4;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-main);
 }
 
 .textarea-field {
@@ -393,7 +393,7 @@ export default {
     height: 36px;
     border: none;
     background: transparent;
-    color: #999;
+    color: var(--text-hint);
     font-size: 18px;
     cursor: pointer;
     display: flex;
@@ -402,37 +402,37 @@ export default {
 }
 
 .delete-option-btn:hover {
-    color: #ff3b30;
+    color: var(--text-danger);
 }
 
 .add-option-btn {
     width: 100%;
     padding: 12px;
     margin-top: 8px;
-    border: 1px dashed #ddd;
+    border: 1px dashed var(--border-primary);
     border-radius: 6px;
-    background: #fff;
-    color: #1f64e4;
+    background: var(--background-primary);
+    color: var(--accent-color);
     font-size: 15px;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .add-option-btn:hover {
-    border-color: #1f64e4;
-    background: #f0f7ff;
+    border-color: var(--accent-color);
+    background: var(--background-item-selected);
 }
 
 .option-hint {
     font-size: 12px;
-    color: #999;
+    color: var(--text-hint);
     margin-top: 8px;
 }
 
 .settings-list {
-    background: #fff;
+    background: var(--background-primary);
     border-radius: 8px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
 }
 
 .setting-item {
@@ -440,7 +440,7 @@ export default {
     align-items: center;
     padding: 14px 16px;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .setting-item:last-child {
@@ -450,17 +450,17 @@ export default {
 .setting-label {
     flex: 1;
     font-size: 15px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .setting-value {
     font-size: 14px;
-    color: #666;
+    color: var(--text-hint);
 }
 
 .setting-arrow {
     font-size: 18px;
-    color: #999;
+    color: var(--text-hint);
     margin-left: 4px;
 }
 
@@ -484,7 +484,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: var(--background-item-placeholder);
     transition: .4s;
     border-radius: 28px;
 }
@@ -496,13 +496,13 @@ export default {
     width: 22px;
     left: 3px;
     bottom: 3px;
-    background-color: white;
+    background-color: var(--background-primary);
     transition: .4s;
     border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #1f64e4;
+    background-color: var(--accent-color);
 }
 
 input:checked + .slider:before {
@@ -522,26 +522,26 @@ input:checked + .slider:before {
 
 .action-btn {
     pointer-events: auto;
-    background: #1f64e4;
-    color: white;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
     border: none;
     padding: 12px 40px;
     border-radius: 24px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: var(--shadow-main);
     transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
 }
 
 .action-btn:hover {
-    background: #006ce6;
+    background: var(--accent-color-active);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    box-shadow: var(--shadow-main);
 }
 
 .action-btn:disabled {
-    background: #b4d8ff;
+    background: var(--background-item-selected);
     box-shadow: none;
     cursor: default;
     transform: none;
@@ -553,7 +553,7 @@ input:checked + .slider:before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--background-overlay);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -561,7 +561,7 @@ input:checked + .slider:before {
 }
 
 .dialog-content {
-    background: #fff;
+    background: var(--background-primary);
     border-radius: 12px;
     width: 80%;
     max-width: 300px;
@@ -573,8 +573,8 @@ input:checked + .slider:before {
     text-align: center;
     font-size: 16px;
     font-weight: 600;
-    color: #333;
-    border-bottom: 1px solid #f0f0f0;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .dialog-options {
@@ -586,9 +586,9 @@ input:checked + .slider:before {
     padding: 14px 16px;
     text-align: center;
     font-size: 15px;
-    color: #333;
+    color: var(--text-primary);
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .dialog-option:last-child {
@@ -596,8 +596,8 @@ input:checked + .slider:before {
 }
 
 .dialog-option:hover, .dialog-option.active {
-    background: #f5f6f7;
-    color: #1f64e4;
+    background: var(--background-item-hover);
+    color: var(--accent-color);
 }
 
 /* DateTime Picker Dialog */
@@ -608,43 +608,43 @@ input:checked + .slider:before {
 .datetime-input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-primary);
     border-radius: 6px;
     font-size: 15px;
-    color: #333;
+    color: var(--text-primary);
     outline: none;
 }
 
 .datetime-input:focus {
-    border-color: #1f64e4;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-main);
 }
 
 .dialog-actions {
     display: flex;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--border-secondary);
 }
 
 .dialog-btn {
     flex: 1;
     padding: 14px;
     border: none;
-    background: #fff;
+    background: var(--background-primary);
     font-size: 15px;
     cursor: pointer;
 }
 
 .dialog-btn.cancel {
-    color: #666;
-    border-right: 1px solid #f0f0f0;
+    color: var(--text-hint);
+    border-right: 1px solid var(--border-secondary);
 }
 
 .dialog-btn.confirm {
-    color: #1f64e4;
+    color: var(--accent-color);
     font-weight: 600;
 }
 
 .dialog-btn:hover {
-    background: #f5f6f7;
+    background: var(--background-item-hover);
 }
 </style>

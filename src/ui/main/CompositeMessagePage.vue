@@ -25,7 +25,7 @@
                             <!--message content-->
                             <TextMessageContentView :message="message"
                                                     v-if="message.messageContent.type === 1"
-                                                    :style="{'--out-arrow-color':'#a8bdff', '--in-arrow-color':'white'}"
+                                                    :style="{'--out-arrow-color':'var(--message-out-arrow)', '--in-arrow-color':'var(--message-in-arrow)'}"
                                                     v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
                             <!--                            <AudioMessageContentView :message="message"-->
                             <!--                                                     v-else-if="message.messageContent.type === 2"/>-->
@@ -190,7 +190,7 @@ export default {
 .composite-page {
     width: var(--composite-message-page-width);
     height: var(--composite-message-page-height);
-    background: #f7f7f7;
+    background: var(--background-primary);
     overflow: scroll;
 }
 
@@ -223,7 +223,7 @@ export default {
     position: absolute;
     margin-left: 55px;
     padding: 5px 0;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 .message-container {
@@ -244,7 +244,7 @@ export default {
 
 .name-time-container p {
     font-size: 12px;
-    color: #c2c2c2;
+    color: var(--text-tertiary);
 }
 
 .name-time-content-container .content {
@@ -266,11 +266,11 @@ export default {
 }
 
 >>> .text-message-container.out {
-    background-color: #f7f7f7;
+    background-color: var(--background-item-normal);
 }
 
 >>> .text-message-container {
-    background-color: #f7f7f7;
+    background-color: var(--background-item-normal);
     padding-left: 0;
 }
 

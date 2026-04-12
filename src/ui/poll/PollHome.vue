@@ -20,7 +20,6 @@
 
 <script>
 import { getSubWindowQuery, isInAppSubWindow, pushInAppSubWindow } from '../util/subWindowNavigator';
-
 export default {
     name: "PollHome",
     props: {
@@ -42,10 +41,10 @@ export default {
             if (isInAppSubWindow(this)) {
                 pushInAppSubWindow(this, '/poll/create', query);
             } else {
-                this.$router.push({
-                    path: '/poll/create',
+            this.$router.push({
+                path: '/poll/create',
                     query,
-                });
+            });
             }
         },
         goToMyPolls() {
@@ -53,10 +52,10 @@ export default {
             if (isInAppSubWindow(this)) {
                 pushInAppSubWindow(this, '/poll/list', query);
             } else {
-                this.$router.push({
-                    path: '/poll/list',
+            this.$router.push({
+                path: '/poll/list',
                     query,
-                });
+            });
             }
         }
     }
@@ -67,11 +66,11 @@ export default {
 .poll-home {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh;
-    background-color: #f5f6f7;
+    background-color: var(--background-tertiary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    color: #333;
+    color: var(--text-primary);
     user-select: none;
     padding: 24px;
 }
@@ -86,11 +85,11 @@ export default {
     font-size: 28px;
     font-weight: bold;
     margin-bottom: 32px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .home-menu {
-    background: #fff;
+    background: var(--background-primary);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -100,7 +99,7 @@ export default {
     align-items: center;
     padding: 16px;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .home-menu-item:last-child {
@@ -108,7 +107,7 @@ export default {
 }
 
 .home-menu-item:hover {
-    background: #f9f9f9;
+    background: var(--background-item-hover);
 }
 
 .menu-icon {
@@ -123,21 +122,21 @@ export default {
 }
 
 .create-icon {
-    background: #e6f2ff;
+    background: var(--background-item-selected);
 }
 
 .list-icon {
-    background: #f0f7ff;
+    background: var(--background-item-selected);
 }
 
 .menu-text {
     flex: 1;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .menu-arrow {
     font-size: 20px;
-    color: #999;
+    color: var(--text-hint);
 }
 </style>

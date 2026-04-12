@@ -181,7 +181,6 @@ export default {
         showAllConversation() {
             this.shouldShowAllConversation = true;
         },
-
         hideSearchView(e) {
             console.log('hideSearchView', e);
             if (e.target.id !== 'searchInput' && e.target.classList[0] !== 'show-all') {
@@ -245,7 +244,7 @@ export default {
             return !this.shouldShowAllUser && this.sharedSearchState.userSearchResult.length > 5 ? this.sharedSearchState.userSearchResult.slice(0, 4) : this.sharedSearchState.userSearchResult;
         },
         toShowChannelList: function () {
-            return !this.shouldShowAllChannel && this.sharedSearchState.channelSearchResult.length > 5 ? this.sharedSearchState.channelSearchResult.slice(0, 4) : this.sharedSearchState.channelSearchResult;
+            return !this.shouldShowAllChannel&& this.sharedSearchState.channelSearchResult.length > 5 ? this.sharedSearchState.channelSearchResult.slice(0, 4) : this.sharedSearchState.channelSearchResult;
         },
         toShowContactList: function () {
             return !this.shouldShowAllContact && this.sharedSearchState.contactSearchResult.length > 5 ? this.sharedSearchState.contactSearchResult.slice(0, 4) : this.sharedSearchState.contactSearchResult;
@@ -275,33 +274,33 @@ export default {
     display: block;
     z-index: 100;
     overflow: auto;
-    /*background-color: red;*/
-    background-color: #f3f3f3e5;
+    /*background-color: var(--text-danger);*/
+    background-color: var(--background-info-panel);
 }
 
 .search-result-container ul {
     list-style: none;
-    background-color: white;
+    background-color: var(--background-primary);
 }
 
 
 .category-item label {
-    color: #b2b2b2;
+    color: var(--text-hint);
     display: block;
     padding-top: 10px;
     padding-bottom: 2px;
     margin-left: 12px;
     font-size: 13px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .search-result-item {
-    background-color: white;
+    background-color: var(--background-primary);
     padding: 10px 12px;
 }
 
 .search-result-item:active {
-    background-color: #d9d9d9;
+    background-color: var(--border-strong);
 }
 
 .search-result-item.contact {
@@ -325,12 +324,12 @@ export default {
     margin-left: auto;
     padding: 3px 10px;
     border-radius: 3px;
-    border: 1px solid #cccccc;
+    border: 1px solid var(--border-primary);
     outline: none;
 }
 
 .search-result-item.contact button:active {
-    background: #cccccc;
+    background: var(--background-item-placeholder);
 }
 
 .search-result-item.group {
@@ -359,7 +358,7 @@ export default {
 
 .show-all {
     padding-left: 12px;
-    color: #66789d;
+    color: var(--text-link);
     font-size: 12px;
 }
 

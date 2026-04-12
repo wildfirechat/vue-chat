@@ -90,6 +90,7 @@
                     :data-component="contactItemView" :data-sources="groupedContacts" :data-key="'uid'"
                     :estimate-size="30"
                     style="max-height: 700px; overflow-y: auto"/>
+
                 <vue-context ref="menu" v-slot="{data:userInfo}" v-on:close="onContactContextMenuClose">
                     <li>
                         <a @click.prevent="sendMessage(userInfo)">{{
@@ -166,18 +167,15 @@ export default {
         showContacts() {
             store.toggleFriendList();
         },
-
         showOrganization() {
             store.toggleOrganizationList();
         },
         showExternalDomains() {
             store.toggleExternalDomainList();
         },
-
         showChatroom() {
             store.toggleChatroom();
         },
-
         sendMessage(userInfo) {
             let conversation = new Conversation(ConversationType.Single, userInfo.uid, 0);
             store.setCurrentConversation(conversation);
@@ -251,10 +249,10 @@ export default {
     display: flex;
     align-items: center;
     padding-left: 15px;
-    color: #262626;
+    color: var(--text-primary);
     font-size: 14px;
     position: sticky;
-    background-color: #fafafa;
+    background-color: var(--background-secondary);
     top: 0;
 }
 
@@ -271,11 +269,11 @@ export default {
 .category-item .tip {
     font-size: 10px;
     padding-left: 5px;
-    color: #7f7f7f;
+    color: var(--text-secondary-strong);
 }
 
 .arrow {
-    border: solid #b9b9b9;
+    border: solid var(--contact-arrow-border);
     border-width: 0 1px 1px 0;
     display: inline-block;
     padding: 3px;

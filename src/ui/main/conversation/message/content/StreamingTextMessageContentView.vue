@@ -3,7 +3,7 @@
         <div class="streaming-text-message-container"
             v-bind:class="{out:message.direction === 0}">
             <p class="text" v-html="this.$xss(this.textContent)" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
-            <FadeLoader :loading="message.messageContent.type === 14" color="#848484" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
+            <FadeLoader :loading="message.messageContent.type === 14" color="var(--text-hint)" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
         </div>
         <p class="ai-content-tip">本内容由 AI 生成</p>
     </div>
@@ -70,7 +70,7 @@ export default {
 .streaming-text-message-container {
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
     display: flex;
@@ -89,7 +89,7 @@ export default {
 }
 
 .streaming-text-message-container >>> code {
-    background: #f5f5f5;
+    background: var(--background-tertiary);
     display: inline-block;
     border-radius: 3px;
     padding: 0 5px;
@@ -97,11 +97,11 @@ export default {
 }
 
 .streaming-text-message-container.out {
-    background-color: #a8bdff;
+    background-color: var(--background-message-out);
 }
 
 .streaming-text-message-container .text {
-    color: #050505;
+    color: var(--text-primary);
     font-size: 13px;
     line-height: 20px;
     /*max-height: 1000px;*/
@@ -131,7 +131,7 @@ export default {
 .ai-content-tip{
     margin: 5px 10px 0;
     font-size: 12px;
-    color: #999;
+    color: var(--text-hint);
 }
 
 </style>

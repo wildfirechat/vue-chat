@@ -177,6 +177,7 @@ export const pstore = defineStore('store-p', () => {
         userOnlineStateMap: new Map(),
         enableOpenWorkSpace: !!(Config.OPEN_PLATFORM_WORK_SPACE_URL),
         isLocked: false,
+        theme: getItem('theme') || 'system',
 
         _reset() {
             this.connectionStatus = ConnectionStatus.ConnectionStatusUnconnected;
@@ -197,6 +198,7 @@ export const pstore = defineStore('store-p', () => {
             this.userOnlineStateMap = new Map();
             this.enableOpenWorkSpace = !!(Config.OPEN_PLATFORM_WORK_SPACE_URL);
             this.isLocked = false;
+            this.theme = getItem('theme') || 'system';
         }
     })
 

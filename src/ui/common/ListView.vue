@@ -48,11 +48,11 @@ export default {
     padding-right: 20px;
     vertical-align: center;
     align-items: center;
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 
 .item:active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 </style>

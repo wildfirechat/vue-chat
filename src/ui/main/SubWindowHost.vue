@@ -130,7 +130,7 @@ export default {
     top: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--background-overlay);
     z-index: 9998;
     display: flex;
     justify-content: flex-end;
@@ -139,9 +139,9 @@ export default {
 .sub-window-panel {
     width: min(480px, 100vw);
     height: 100%;
-    background: #f5f6f7;
+    background: var(--background-tertiary);
     position: relative;
-    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.18);
+    box-shadow: -2px 0 12px var(--background-mask);
 }
 
 .sub-window-close {
@@ -159,10 +159,10 @@ export default {
 
 .sub-window-close i {
     font-size: 16px;
-    color: #888;
+    color: var(--text-hint);
 }
 
 .sub-window-close i:hover {
-    color: #1f64e4;
+    color: var(--accent-color);
 }
 </style>

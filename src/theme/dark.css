@@ -1,0 +1,143 @@
+[data-theme='dark'] {
+    /* --- macOS Sonoma Dark Palette --- */
+    --background-primary: #1c1c1e;      /* 主内容背景：系统最深灰 */
+    --background-secondary: #2c2c2e;    /* 次级背景：如侧边栏、头部 */
+    --background-tertiary: #252527;     /* 三级背景：列表底色 */
+    --background-sidebar: #2c2c2e;      /* 侧边栏 */
+    --background-input: #3a3a3c;        /* 输入框：更深的对比色 */
+
+    --background-item-normal: transparent;
+    --background-item-hover: rgba(255, 255, 255, 0.05);
+    --background-item-active: rgba(255, 255, 255, 0.1);
+    --background-item-selected: #007aff; /* 经典的 macOS 选蓝色 */
+    --background-item-top: rgba(255, 255, 255, 0.03);
+    --background-item-placeholder: #3a3a3c;
+
+    --background-tooltip: #323232;
+    --background-overlay: rgba(0, 0, 0, 0.75);
+    --background-mask: rgba(0, 0, 0, 0.4);
+    --background-modal: #2c2c2e;        /* 弹窗背景 */
+    --background-badge: #ff453a;        /* 系统红 */
+
+    --background-message-in: #2c2c2e;   /* 接收气泡：系统次级灰 */
+    --background-message-out: #409cff;  /* 发送气泡：系统蓝 */
+    --background-message-selected: #121212;
+    --background-selected-alt: #2d3d5d;
+
+    --message-in-arrow: #2c2c2e;
+    --message-out-arrow: #409cff;
+
+    /* Text Colors */
+    --text-primary: #f5f5f7;            /* 主文字：Off-white，不刺眼 */
+    --text-secondary: #8e8e93;          /* 次要文字：系统灰 */
+    --text-secondary-strong: #aeaeb2;
+    --text-tertiary: #636366;
+    --text-placeholder: #8e8e93;
+    --text-hint: #8e8e93;
+    --text-time: #636366;
+    --text-link: #0a84ff;               /* 链接色：高对比蓝 */
+    --text-link-hover: #40a9ff;
+    --text-danger: #ff453a;
+    --text-on-accent: #ffffff;
+    --text-warning: #ffd60a;
+    --text-muted: #86868b;
+    --text-trans-light: rgba(255, 255, 255, 0.5);
+    --text-watermark: rgba(255, 255, 255, 0.06);
+
+    /* Borders */
+    --border-primary: rgba(255, 255, 255, 0.1);  /* 边框使用透明度，更融合 */
+    --border-secondary: rgba(255, 255, 255, 0.08);
+    --border-tertiary: rgba(255, 255, 255, 0.05);
+    --border-active: #0a84ff;
+    --border-subtle: rgba(255, 255, 255, 0.04);
+    --border-strong: #48484a;
+    --border-dashed: #3a3a3c;
+    --border-dashed-active: #636366;
+    --border-separator: rgba(255, 255, 255, 0.06);
+    --border-muted: #3a3a3c;
+    --border-light-strong: #48484a;
+    --contact-arrow-border: #8e8e93;
+
+    /* Accents */
+    --accent-color: #0a84ff;
+    --accent-color-active: #40a9ff;
+    --accent-color-subtle: rgba(10, 132, 255, 0.15);
+
+    --status-success: #32d74b;
+    --status-warning: #ffd60a;
+    --status-error: #ff453a;
+    --status-info: #64d2ff;
+    --status-warning-alt: #ffd60a;
+    --status-error-hover: #ff6961;
+
+    --background-accent-subtle: rgba(10, 132, 255, 0.1);
+    --background-success-subtle: rgba(50, 215, 75, 0.1);
+    --background-warning-subtle: rgba(255, 214, 10, 0.1);
+    --background-error-subtle: rgba(255, 69, 58, 0.1);
+    --background-accent-light: #1a2a4a;
+    --background-selected-dim: #262c3d;
+    --background-voip: #000000;
+    --background-voip-sidebar: #1c1c1e;
+    --background-active-subtle: #262c3d;
+    --background-info-panel: rgba(28, 28, 30, 0.9);
+    --background-trans-light: rgba(44, 44, 46, 0.9);
+    --background-trans-subtle: rgba(255, 255, 255, 0.03);
+    --background-trans-muted: rgba(255, 255, 255, 0.08);
+
+    /* Shadows */
+    --shadow-main: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-tooltip: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-accent: 0 4px 12px rgba(10, 132, 255, 0.2);
+    --shadow-accent-strong: 0 6px 16px rgba(10, 132, 255, 0.3);
+    --shadow-accent-focus: 0 0 0 3px rgba(10, 132, 255, 0.2);
+    --shadow-accent-recording: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+    /* Gradients */
+    --gradient-lock: linear-gradient(180deg, #1c1c1e 0%, #000000 100%);
+    --gradient-recording: linear-gradient(135deg, #0a84ff 0%, #0058d2 100%);
+
+    /* Mac Specific */
+    --mac-green-dark: #004400;
+    --mac-red-dark: #330000;
+    --mac-yellow-dark: #664400;
+
+    --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+    --scrollbar-track: transparent;
+
+    /* Third-party */
+    --ep-color-bg: #2c2c2e;
+    --ep-color-sbg: #1c1c1e;
+    --ep-color-border: #3a3a3c;
+    --ep-color-text: #f5f5f7;
+    --ep-color-active: #0a84ff;
+
+    /* Button Variables Dark */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    --button-primary-bg: #007aff;
+    --button-primary-text: #ffffff;
+    --button-primary-hover: #0063d1;
+
+    --button-default-bg: #3a3a3c;
+    --button-default-text: #f5f5f7;
+    --button-default-hover: #48484a;
+    --button-default-border: rgba(255, 255, 255, 0.1);
+
+    --button-danger-bg: #ff453a;
+    --button-danger-text: #ffffff;
+    --button-danger-hover: #d93b30;
+
+    --hero-bg-gradient: linear-gradient(180deg, #121214 0%, #1a1a1c 40%, #121214 70%, #1a1a1c 100%);
+    --hero-bg-pattern: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+    --hero-bg-blob-opacity: 0.15;
+    --hero-bg-blob-opacity-dim: 0.1;
+    --hero-bg-blob-1: linear-gradient(135deg, #0a84ff 0%, #5856d6 100%);
+    --hero-bg-blob-2: linear-gradient(135deg, #64d2ff 0%, #0a84ff 100%);
+    --hero-bg-blob-3: linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%);
+
+    .message-input-container i {
+        color: var(--text-secondary);
+    }
+}

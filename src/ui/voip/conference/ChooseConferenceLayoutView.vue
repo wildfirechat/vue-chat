@@ -63,9 +63,9 @@ export default {
     width: 300px;
     height: 145px;
     padding: 10px;
-    background: white;
+    background: var(--background-primary);
     border-radius: 2px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: var(--shadow-main);
 }
 
 .choose-layout-container .title {
@@ -90,7 +90,7 @@ export default {
 .category .category-name {
     font-size: 14px;
     padding: 5px;
-    background: #F6F8FB;
+    background: var(--background-secondary);
     border-radius: 5px;
     margin-bottom: 10px;
 }
@@ -101,17 +101,17 @@ export default {
 
 
 .grid-layout {
-    border: 1px solid #D9DBDC;
+    border: 1px solid var(--border-primary);
     border-radius: 5px;
     padding: 10px;
 }
 
 .grid-layout.active {
-    border-color: #4168e0;
+    border-color: var(--accent-color);
 }
 
 .grid-layout:hover {
-    border-color: #4168e0;
+    border-color: var(--accent-color);
 }
 
 .grid-layout .desc {
@@ -131,21 +131,21 @@ export default {
 .grid-container .item {
     width: 30px;
     height: 15px;
-    background: #DCE9FD;
+    background: var(--accent-color-subtle);
 }
 
 .focus-layout {
-    border: 1px solid #D9DBDC;
+    border: 1px solid var(--border-primary);
     border-radius: 5px;
     padding: 10px;
 }
 
 .focus-layout.active {
-    border-color: #4168e0;
+    border-color: var(--accent-color);
 }
 
 .focus-layout:hover {
-    border-color: #4168e0;
+    border-color: var(--accent-color);
 }
 
 .focus-layout .desc {
@@ -163,7 +163,7 @@ export default {
 .focus-layout .item-container .item {
     width: 75%;
     height: 100%;
-    background: #DCE9FD;
+    background: var(--accent-color-subtle);
 }
 
 .focus-layout .right-item-container {

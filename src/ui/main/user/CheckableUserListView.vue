@@ -1,35 +1,35 @@
 <template>
     <ul v-if="this.users.length < 100">
-            <li v-for="(groupedUser) in groupedUsers" :key="groupedUser.category">
-                <div ref="contactItem" class="contact-item">
-                    <div v-if="showCategoryLabel" class="label"
-                         :style="paddingStyle"
-                         v-bind:class="{sticky:enableCategoryLabelSticky}">
-                        <p>{{ groupedUser.category.toUpperCase() }}</p>
-                    </div>
-                    <ul>
-                        <li v-for="(user) in groupedUser.users" :key="user.uid">
-                            <div class="content"
-                                 :name="'user-'+user.uid"
-                                 :style="paddingStyle"
-                                 v-bind:class="{disabled: isUserUncheckable(user)}"
-                                 @click.stop="clickUserItem(user)">
-                                <input class="checkbox"
-                                       v-bind:value="user"
-                                       :disabled="isUserUncheckable(user)"
-                                       type="checkbox"
-                                       :checked="isUserChecked(user)">
-                                <img class="avatar" :src="user.portrait" alt="">
-                                <span
-                                    class="single-line"> {{
-                                        user._displayName || (user.groupAlias ? user.groupAlias : (user.friendAlias ? user.friendAlias : (user.displayName ? user.displayName : '用户')))
-                                    }}</span>
-                            </div>
-                        </li>
-                    </ul>
+        <li v-for="(groupedUser) in groupedUsers" :key="groupedUser.category">
+            <div ref="contactItem" class="contact-item">
+                <div v-if="showCategoryLabel" class="label"
+                     :style="paddingStyle"
+                     v-bind:class="{sticky:enableCategoryLabelSticky}">
+                    <p>{{ groupedUser.category.toUpperCase() }}</p>
                 </div>
-            </li>
-        </ul>
+                <ul>
+                    <li v-for="(user) in groupedUser.users" :key="user.uid">
+                        <div class="content"
+                             :name="'user-'+user.uid"
+                             :style="paddingStyle"
+                             v-bind:class="{disabled: isUserUncheckable(user)}"
+                             @click.stop="clickUserItem(user)">
+                            <input class="checkbox"
+                                   v-bind:value="user"
+                                   :disabled="isUserUncheckable(user)"
+                                   type="checkbox"
+                                   :checked="isUserChecked(user)">
+                            <img class="avatar" :src="user.portrait" alt="">
+                            <span
+                                class="single-line"> {{
+                                    user._displayName || (user.groupAlias ? user.groupAlias : (user.friendAlias ? user.friendAlias : (user.displayName ? user.displayName : '用户')))
+                                }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
     <virtual-list
         v-else
         :data-component="CheckableUserItemView" :data-sources="virtualListGroupedUsers" :data-key="'uid'"
@@ -215,12 +215,12 @@ ul {
 
 .contact-item .label {
     width: 100%;
-    background-color: #fafafa;
+    background-color: var(--background-secondary);
 }
 
 .contact-item .label p {
     padding: 5px 5px 5px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .contact-item .label.sticky {
@@ -240,11 +240,11 @@ ul {
 }
 
 .contact-item .content.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .contact-item .content:active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .disabled {

@@ -17,7 +17,7 @@
                :srcObject.prop="participant._stream"
                :muted="participant.uid === selfUserId"
                autoPlay/>
-        <div v-if="!participant._isVideoMuted" class="video-stream-tip-container">
+        <div v-if="!participant._isVideoMuted && showFocusTip" class="video-stream-tip-container">
             <p>{{ '双击视频，将其设置为焦点' }}</p>
         </div>
         <div class="info-container">
@@ -45,6 +45,10 @@ export default {
         session: {
             type: Object,
             required: true,
+        },
+        showFocusTip: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -162,11 +166,11 @@ export default {
     justify-content: center;
     align-items: center;
     border: 1px solid black;
-    background: #2d3033;
+    background: var(--background-voip-sidebar);
 }
 
 .participant-video-item.highlight {
-    border: 2px solid #1FCA6A;
+    border: 2px solid var(--status-success);
 }
 
 .participant-video-item .video-stream-tip-container {
@@ -185,7 +189,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #2d3033;
+    background: var(--background-voip-sidebar);
 }
 
 .avatar {
@@ -231,7 +235,7 @@ export default {
 
 .participant-video-item p {
     max-height: 20px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 </style>

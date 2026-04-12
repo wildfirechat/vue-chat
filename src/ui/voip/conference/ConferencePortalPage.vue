@@ -3,23 +3,23 @@
         <div class="left-slider">
             <h2 class="title">视频会议</h2>
             <div class="action-container">
-                <div class="action" style="background: #e1e9ff" @click="joinConference">
+                <div class="action" style="background: var(--background-accent-subtle)" @click="joinConference">
                     <!--                    <img :src="require(`@/assets/images/av_join_conference.png`)" alt="">-->
                     <div class="icon">
-                        <i class="icon-ion-android-add" style="color: #3570fe"></i>
+                        <i class="icon-ion-android-add" style="color: var(--status-info)"></i>
                     </div>
                     <p class="title">加入会议</p>
                 </div>
-                <div class="action" style="background: #d9f3fe" @click="createConference">
+                <div class="action" style="background: var(--background-accent-subtle)" @click="createConference">
                     <div class="icon">
-                        <i class="icon-ion-ios-videocam" style="color: #3570fe"></i>
+                        <i class="icon-ion-ios-videocam" style="color: var(--status-info)"></i>
                     </div>
                     <!--                    <img :src="require(`@/assets/images/av_start_conference.png`)" alt="">-->
                     <p class="title">发起会议</p>
                 </div>
-                <div class="action" style="background: #fee9d3" @click="orderConference">
+                <div class="action" style="background: var(--background-warning-subtle)" @click="orderConference">
                     <div class="icon">
-                        <i class="icon-ion-android-calendar" style="color: #ff8700"></i>
+                        <i class="icon-ion-android-calendar" style="color: var(--status-warning-alt)"></i>
                     </div>
                     <!--                    <img :src="require(`@/assets/images/av_book_conference.png`)" alt="">-->
                     <p class="title">预定会议</p>
@@ -34,7 +34,7 @@
                          v-for="(conferenceInfo, index) in favConferenceInfos"
                          :key="index">
                         <div class="icon">
-                            <i class="icon-ion-ios-videocam" style="color:#5d7ce8 "></i>
+                            <i class="icon-ion-ios-videocam" style="color: var(--accent-color) "></i>
                         </div>
                         <div>
                             <p class="title single-line">{{ conferenceInfo.conferenceTitle }}</p>
@@ -53,7 +53,7 @@
                          v-for="(conferenceInfo, index) in historyConferenceInfos"
                          :key="index">
                         <div class="icon">
-                            <i class="icon-ion-ios-videocam" style="color:#5d7ce8 "></i>
+                            <i class="icon-ion-ios-videocam" style="color: var(--accent-color) "></i>
                         </div>
                         <div>
                             <p class="title single-line">{{ conferenceInfo.conferenceTitle }}</p>
@@ -252,7 +252,7 @@ export default {
 .left-slider {
     height: 100%;
     width: 30%;
-    background: white;
+    background: var(--background-primary);
     padding: 20px;
 }
 
@@ -285,7 +285,7 @@ export default {
 .action .icon {
     width: 40px;
     height: 40px;
-    background: white;
+    background: var(--background-primary);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -302,7 +302,7 @@ export default {
 
 .right-slider {
     height: 100%;
-    background: #f8f9fb;
+    background: var(--background-secondary);
     flex: 1 1 auto;
     overflow-y: auto;
     padding: 20px;
@@ -315,13 +315,13 @@ export default {
     display: flex;
     align-items: center;
     padding: 15px;
-    background: white;
+    background: var(--background-primary);
     border-radius: 10px;
     font-size: 12px;
 }
 
 .fav-container .fav-list {
-    background: white;
+    background: var(--background-primary);
     border-radius: 10px;
 }
 
@@ -333,14 +333,14 @@ export default {
 }
 
 .fav-conference:active {
-    background: #f1f1f1;
+    background: var(--background-tertiary);
 }
 
 .fav-conference .icon {
     width: 30px;
     height: 30px;
     border-radius: 15px;
-    background: #e0e9fb;
+    background: var(--background-accent-subtle);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -348,7 +348,7 @@ export default {
 }
 
 .fav-conference:not(:last-of-type) {
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 .fav-conference .title {
@@ -356,7 +356,7 @@ export default {
 }
 
 .fav-conference .desc {
-    color: gray;
+    color: var(--text-secondary);
     margin-top: 3px;
     font-size: 12px;
 }

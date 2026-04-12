@@ -42,7 +42,7 @@ export default {
 .link-message-container {
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
     display: flex;
@@ -69,7 +69,7 @@ export default {
 }
 
 .link-message-container .desc {
-    color: #888888;
+    color: var(--text-hint);
     font-size: 13px;
     -webkit-line-clamp: 3;
     line-height: 20px;
@@ -80,6 +80,6 @@ export default {
 }
 
 .rightarrow:before {
-    border-left-color: white;
+    border-left-color: var(--text-on-accent);
 }
 </style>

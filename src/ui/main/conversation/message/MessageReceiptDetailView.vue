@@ -134,7 +134,7 @@ export default {
 
 
 .receipt-item:last-of-type {
-//border-left: 1px solid lightgrey;
+//border-left: 1px solid var(--border-tertiary);
 }
 
 </style>

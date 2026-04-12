@@ -77,7 +77,7 @@ export default {
 }
 
 .contact-list-panel {
-    background-color: #fafafa;
+    background-color: var(--background-secondary);
     width: 261px;
     height: 100%;
 }
@@ -88,12 +88,12 @@ ul {
 
 .contact-detail-container {
     flex: 1;
-    background-color: white;
+    background-color: var(--background-primary);
 }
 
 .contact-empty-container {
     flex: 1;
-    background-color: white;
+    background-color: var(--background-primary);
     display: flex;
     justify-content: center;
     align-items: center;

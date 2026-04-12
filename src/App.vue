@@ -86,6 +86,13 @@ export default {
 
     created() {
         let root = document.documentElement;
+        // Apply theme
+        store.applyTheme();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (this.sharedMiscState.theme === 'system') {
+                store.applyTheme();
+            }
+        });
         if (isElectron() || window.location.href.indexOf('voip') >= 0) {
             root.style.setProperty('--main-margin-left', '0px');
             root.style.setProperty('--main-margin-right', '0px');
@@ -169,9 +176,9 @@ export default {
 
 .tippy-tooltip {
     right: var(--tippy-right) !important;
-    border: 1px solid #f5f5f5 !important;
-    background-color: #fcfcfc !important;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.125);
+    border: 1px solid var(--border-subtle) !important;
+    background-color: var(--background-tooltip) !important;
+    box-shadow: var(--shadow-tooltip);
 }
 
 #app {
@@ -193,7 +200,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, #e8efff 0%, #f5f8ff 40%, #ffffff 70%, #f0f4ff 100%);
+    background: var(--hero-bg-gradient);
 }
 
 .hero-bg-pattern {
@@ -202,7 +209,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(65, 104, 224, 0.08) 1px, transparent 0);
+    background-image: var(--hero-bg-pattern);
     background-size: 32px 32px;
 }
 
@@ -210,14 +217,14 @@ export default {
     position: absolute;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.35;
+    opacity: var(--hero-bg-blob-opacity);
     animation: float 15s ease-in-out infinite;
 }
 
 .blob-1 {
     width: 700px;
     height: 700px;
-    background: linear-gradient(135deg, #3f64e4 0%, #764ba2 100%);
+    background: var(--hero-bg-blob-1);
     top: -250px;
     right: -150px;
     animation-delay: 0s;
@@ -226,7 +233,7 @@ export default {
 .blob-2 {
     width: 500px;
     height: 500px;
-    background: linear-gradient(135deg, #00c6ff 0%, #3f64e4 100%);
+    background: var(--hero-bg-blob-2);
     bottom: 50px;
     left: -150px;
     animation-delay: -7s;
@@ -235,11 +242,11 @@ export default {
 .blob-3 {
     width: 300px;
     height: 300px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--hero-bg-blob-3);
     top: 30%;
     left: 10%;
     filter: blur(80px);
-    opacity: 0.2;
+    opacity: var(--hero-bg-blob-opacity-dim);
     animation: float 12s ease-in-out infinite;
     animation-delay: -3s;
 }

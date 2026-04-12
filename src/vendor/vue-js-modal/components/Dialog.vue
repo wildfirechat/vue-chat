@@ -126,7 +126,7 @@ export default {
   display: flex;
   flex: 0 1 auto;
   width: 100%;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-secondary);
 }
 
 .vue-dialog-buttons-none {
@@ -150,14 +150,14 @@ export default {
 }
 
 .vue-dialog-button:hover {
-  background: #f9f9f9;
+  background: var(--background-item-hover);
 }
 
 .vue-dialog-button:active {
-  background: #f3f3f3;
+  background: var(--background-tertiary);
 }
 
 .vue-dialog-button:not(:first-of-type) {
-  border-left: 1px solid #eee;
+  border-left: 1px solid var(--border-secondary);
 }
 </style>

@@ -1,0 +1,137 @@
+:root {
+    /* --- Default Light Theme Variables --- */
+    --background-primary: #ffffff;
+    --background-secondary: #fafafa;
+    --background-tertiary: #f3f3f3;
+    --background-sidebar: #EAEAEA;
+    --background-input: #eeeeee;
+    --background-item-normal: #f8f8f8;
+    --background-item-hover: #eaeaea;
+    --background-item-active: #dedede;
+    --background-item-selected: #e3f2fd;
+    --background-item-top: #ebebeb;
+    --background-item-placeholder: #d6d6d6;
+    --background-tooltip: #fcfcfc;
+    --background-overlay: rgba(0, 0, 0, 0.5);
+    --background-mask: rgba(0, 0, 0, 0.2);
+    --background-modal: #ffffff;
+    --background-badge: #ff0000;
+    --background-message-in: #ffffff;
+    --background-message-out: #a8bdff;
+    --background-message-selected: #e7e7e7;
+    --background-selected-alt: #dbe1f0;
+
+    --message-in-arrow: #ffffff;
+    --message-out-arrow: #a8bdff;
+
+    --text-primary: #262626;
+    --text-secondary: #868686;
+    --text-secondary-strong: #7f7f7f;
+    --text-tertiary: #ACACAC;
+    --text-placeholder: #b8b8b8;
+    --text-hint: #999999;
+    --text-time: #b4b4b4;
+    --text-link: #1f64e4;
+    --text-link-hover: #3f64e4;
+    --text-danger: #ff0000;
+    --text-on-accent: #ffffff;
+    --text-warning: #F0A040;
+    --text-muted: #666666;
+    --text-trans-light: rgba(255, 255, 255, 0.7);
+
+    --border-primary: #e5e5e5;
+    --border-secondary: #eeeeee;
+    --border-tertiary: #ececec;
+    --border-active: #4168e0;
+    --border-subtle: #f5f5f5;
+    --border-strong: #d9d9d9;
+    --border-dashed: #d6d6d6;
+    --border-dashed-active: #b2b2b2;
+    --border-separator: #f2f2f2;
+    --border-muted: #e4e4e4;
+    --border-light-strong: #ebebeb;
+    --contact-arrow-border: #b9b9b9;
+
+    --accent-color: #1f64e4;
+    --accent-color-active: #3f64e4;
+    --accent-color-subtle: #daeafe;
+
+    --status-success: #4CAF50;
+    --status-warning: #FD802E;
+    --status-error: #F95569;
+    --status-info: #3570fe;
+    --status-warning-alt: #ff8700;
+    --status-error-hover: #ff7875;
+
+    --background-accent-subtle: #e1e9ff;
+    --background-success-subtle: #e8f5e9;
+    --background-warning-subtle: #fee9d3;
+    --background-error-subtle: #ffebee;
+    --background-accent-light: #e1e9ff;
+    --background-selected-dim: #dbe1f0;
+    --background-voip: #292929;
+    --background-voip-sidebar: #2d3033;
+    --background-active-subtle: #dbe1f0;
+    --background-info-panel: #ffffffe5;
+    --background-trans-light: rgba(255, 255, 255, 0.9);
+    --background-trans-subtle: rgba(0, 0, 0, 0.05);
+    --background-trans-muted: rgba(0, 0, 0, 0.1);
+
+    --shadow-main: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    --shadow-tooltip: 0 0 25px rgba(0, 0, 0, 0.125);
+    --shadow-accent: 0 4px 12px rgba(31, 100, 228, 0.3);
+    --shadow-accent-strong: 0 6px 16px rgba(31, 100, 228, 0.4);
+    --shadow-accent-focus: 0 0 0 3px rgba(31, 100, 228, 0.1);
+    --shadow-accent-recording: 0 8px 24px rgba(63, 100, 228, 0.4);
+
+    --gradient-lock: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --gradient-recording: linear-gradient(135deg, #3F64E4 0%, #764ba2 100%);
+
+    --mac-red: #ff5f57;
+    --mac-red-active: #bf4943;
+    --mac-yellow: #ffbd2e;
+    --mac-yellow-active: #bf9123;
+    --mac-green: #28c940;
+    --mac-green-active: #1f9a31;
+    --mac-green-dark: #006400;
+    --mac-red-dark: #4d0000;
+    --mac-yellow-dark: #995700;
+    --mac-close-hover: #e2463f;
+
+    --scrollbar-thumb: #c1c1c1;
+    --scrollbar-track: transparent;
+
+    /* Emoji Picker Variables (Third-party) */
+    --ep-color-bg: #ffffff;
+    --ep-color-sbg: #f3f3f3;
+    --ep-color-border: #eeeeee;
+    --ep-color-text: #262626;
+    --ep-color-active: #1f64e4;
+
+    --text-watermark: rgba(0, 0, 0, 0.1);
+
+    /* Button Variables */
+    --button-primary-bg: var(--accent-color);
+    --button-primary-text: var(--text-on-accent);
+    --button-primary-hover: var(--accent-color-active);
+
+    --button-default-bg: var(--background-input);
+    --button-default-text: var(--text-primary);
+    --button-default-hover: var(--background-item-hover);
+    --button-default-border: var(--border-primary);
+
+    --button-danger-bg: var(--text-danger);
+    --button-danger-text: var(--text-on-accent);
+    --button-danger-hover: #ff4d4f;
+
+    --hero-bg-gradient: linear-gradient(180deg, #e8efff 0%, #f5f8ff 40%, #ffffff 70%, #f0f4ff 100%);
+    --hero-bg-pattern: radial-gradient(circle at 1px 1px, rgba(65, 104, 224, 0.08) 1px, transparent 0);
+    --hero-bg-blob-opacity: 0.35;
+    --hero-bg-blob-opacity-dim: 0.2;
+    --hero-bg-blob-1: linear-gradient(135deg, #3f64e4 0%, #764ba2 100%);
+    --hero-bg-blob-2: linear-gradient(135deg, #00c6ff 0%, #3f64e4 100%);
+    --hero-bg-blob-3: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    ::-webkit-scrollbar {
+    }
+}

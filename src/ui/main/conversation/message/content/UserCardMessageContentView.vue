@@ -62,7 +62,7 @@ export default {
     height: 100px;
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
 }
@@ -71,7 +71,7 @@ export default {
     display: flex;
     align-items: center;
     padding-bottom: 10px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .portrait-name-container img {
@@ -88,11 +88,11 @@ export default {
 .desc {
     padding-top: 8px;
     font-size: 13px;
-    color: #b8b8b8;
+    color: var(--text-placeholder);
 }
 
 .rightarrow:before {
-    border-left-color: white;
+    border-left-color: var(--text-on-accent);
 }
 
 </style>

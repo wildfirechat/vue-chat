@@ -30,7 +30,7 @@
                         <div style="display: inline-block; text-align: center" class="screen-shot-wrapper">
                             <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
                             <span class="screen-shot-more">
-                            <i class="icon-ion-chevron-down" style="font-size: 10px; color: #494849; padding-left: 5px;"/>
+                                <i class="icon-ion-chevron-down" style="font-size: 10px; color: var(--text-primary); padding-left: 5px;"/>
                                 <span @click="screenShot(true)" class="screen-shot-button">{{ $t('conversation.action_tip_screenshot_hide') }}</span>
                             </span>
                         </div>
@@ -59,7 +59,7 @@
                     <li style="position: relative;">
                         <!-- 录音动画提示 -->
                         <transition name="fade-slide">
-                            <div v-if="isRecording" 
+                            <div v-if="isRecording"
                                  class="recording-indicator"
                                  @mouseenter="onRecordingIndicatorEnter"
                                  @mouseleave="onRecordingIndicatorLeave">
@@ -231,6 +231,7 @@ export default {
 
             isPttTalking: false,
             isRecording: false,
+
             isCollectionEnable: !!Config.COLLECTION_SERVER,
             isPollEnable: !!Config.POLL_SERVER
         }
@@ -1101,6 +1102,7 @@ export default {
                 }
             }
         },
+
         startRecordingTimer() {
             this.recordingStartTime = Date.now();
             this.recordingTime = '00:00';
@@ -1138,15 +1140,15 @@ export default {
             }
             this.pttTime = '00:00';
         },
-        
+
         onRecordingIndicatorEnter() {
             this.isRecordingCancelMode = true;
         },
-        
+
         onRecordingIndicatorLeave() {
             this.isRecordingCancelMode = false;
         },
-        
+
         handleMouseUp() {
             if (this.isPttTalking) {
                 this.requestPttTalk(false);
@@ -1161,7 +1163,7 @@ export default {
             }
             window.removeEventListener('mouseup', this.handleMouseUp)
         },
-        
+
         cancelRecording() {
             this.isRecording = false;
             this.isRecordingCancelMode = false;
@@ -1352,6 +1354,7 @@ export default {
     flex: 1 1 auto;
     min-height: 150px;
 }
+
 #emoji {
     position: absolute;
     bottom: 55px;
@@ -1397,7 +1400,7 @@ export default {
 
 .input:empty:before {
     content: attr(title);
-    color: rgb(128, 128, 128);
+    color: var(--text-hint);
     font-size: 13px;
 }
 
@@ -1413,12 +1416,12 @@ export default {
 
 i {
     font-size: 24px;
-    color: #000b;
+    color: var(--text-primary);
     cursor: pointer;
 }
 
 i:hover {
-    color: #3f64e4;
+    color: var(--accent-color);
 }
 
 .input-action-container ul li .screen-shot-button {
@@ -1428,9 +1431,9 @@ i:hover {
     display: none;
     padding: 5px 10px;
     font-size: 12px;
-    background-color: #b8b8b8;
+    background-color: var(--text-placeholder);
     border-radius: 5px;
-    color: #fff;
+    color: var(--text-on-accent);
 }
 
 .input-action-container ul li .screen-shot-more:hover .screen-shot-button {
@@ -1457,34 +1460,35 @@ i:hover {
 }
 
 .ptt-icon {
-    color: #000b;
+    color: var(--text-primary);
 }
 
 .ptt-icon.active {
-    color: red;
+    color: var(--text-danger);
     animation: glow 2s infinite;
 }
 
 
 .record-icon {
-    color: #000b;
+    color: var(--text-primary);
 }
 
 .record-icon.active {
-    color: red;
+    color: var(--text-danger);
     animation: glow 2s infinite;
 }
 
+/* 录音动画样式 */
 .recording-indicator {
     position: absolute;
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #3F64E4 0%, #764ba2 100%);
+    background: var(--gradient-recording);
     border-radius: 12px;
     padding: 12px 20px;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    box-shadow: var(--shadow-accent-recording);
     min-width: 180px;
     z-index: 1000;
 }
@@ -1496,7 +1500,7 @@ i:hover {
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #764ba2;
+    border-top-color: var(--accent-color-active);
 }
 
 .recording-content {
@@ -1516,7 +1520,7 @@ i:hover {
 .wave-bar {
     width: 3px;
     height: 100%;
-    background: white;
+    background: var(--background-primary);
     border-radius: 2px;
     animation: wave 1s ease-in-out infinite;
 }
@@ -1531,14 +1535,14 @@ i:hover {
 }
 
 .recording-text {
-    color: white;
+    color: var(--text-on-accent);
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.5px;
 }
 
 .recording-time {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--background-trans-light);
     font-size: 13px;
     font-weight: 600;
     font-family: 'Monaco', 'Courier New', monospace;
@@ -1546,7 +1550,7 @@ i:hover {
 }
 
 .recording-tip {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--background-trans-light);
     font-size: 11px;
     text-align: center;
     margin-top: 2px;
@@ -1554,7 +1558,7 @@ i:hover {
 }
 
 .recording-tip.cancel {
-    color: #ff6b6b;
+    color: var(--status-error);
     font-weight: 600;
     transform: scale(1.05);
 }
@@ -1593,7 +1597,6 @@ i:hover {
 
 <style scoped>
 .emoji-picker {
-    box-shadow: 5px 5px 20px 0 #C0C0C0;
-    --ep-color-active: #3f64e4 !important;
+    box-shadow: var(--shadow-tooltip);
 }
 </style>

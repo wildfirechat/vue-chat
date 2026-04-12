@@ -50,11 +50,11 @@ export default {
 }
 
 .channel-item:hover{
-    background-color: #EAEAEA;
+    background-color: var(--background-item-hover);
 }
 
 .channel-item.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .channel-item span {

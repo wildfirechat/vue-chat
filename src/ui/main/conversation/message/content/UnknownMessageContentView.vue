@@ -27,18 +27,18 @@ export default {
 .text-message-container {
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
 }
 
 .text-message-container.out {
-    background-color: #a8bdff;
+    background-color: var(--background-message-out);
 }
 
 
 .text-message-container .text {
-    color: #050505;
+    color: var(--text-primary);
     font-size: 16px;
 }
 

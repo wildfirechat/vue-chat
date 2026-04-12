@@ -136,7 +136,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    background-color: #f7f7f7;
+    background-color: var(--background-item-normal);
     overflow: hidden;
 }
 
@@ -150,8 +150,8 @@ export default {
     margin: 15px 20px 0 15px;
     flex: 1;
     border-radius: 3px;
-    border: 1px solid #ededed;
-    background-color: white;
+    border: 1px solid var(--border-tertiary);
+    background-color: var(--background-primary);
     padding-left: 10px;
     text-align: left;
 }
@@ -162,7 +162,7 @@ export default {
 }
 
 .user-list-container .back {
-    background-color: #f7f7f7;
+    background-color: var(--background-item-normal);
     height: 40px;
     font-size: 13px;
     padding-left: 15px;
@@ -171,7 +171,7 @@ export default {
 }
 
 .user-list-container .back:active {
-    background-color: #e5e5e5;
+    background-color: var(--border-primary);
 }
 
 .checked-user-list-container {
@@ -252,7 +252,7 @@ export default {
 }
 
 .checked-user-list-container .content .unpick-button:active {
-    background-color: #e5e5e5;
+    background-color: var(--border-primary);
 }
 
 .checked-user-list-container footer {
@@ -266,12 +266,12 @@ export default {
 .checked-user-list-container footer button {
     padding: 5px 30px;
     border-radius: 4px;
-    border: 1px solid #cccccc;
+    border: 1px solid var(--border-primary);
 }
 
 .checked-user-list-container footer button.confirm {
-    background-color: #4168e0;
-    color: white;
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
     margin-left: 20px;
     margin-right: 20px;
 }

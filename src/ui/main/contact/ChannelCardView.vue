@@ -84,8 +84,8 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #292a2c;
-    background-color: #fcfcfc;
+    color: var(--text-primary);
+    background-color: var(--background-tooltip);
 }
 
 .user-info-container .avatar {
@@ -100,7 +100,7 @@ export default {
     padding-bottom: 20px;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 
@@ -171,7 +171,7 @@ export default {
 }
 
 i:hover {
-    color: #3f64e4;
+    color: var(--accent-color);
 }
 
 

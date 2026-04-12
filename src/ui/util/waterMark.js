@@ -1,4 +1,5 @@
 import wfc from "../../wfc/client/wfc";
+import { getItem } from './storageHelper';
 
 let updateWaterMarkInterval;
 
@@ -41,7 +42,8 @@ function genWaterMarkDataURL(waterMarkStr) {
     if (ctx) {
         ctx.rotate((-20 * Math.PI) / 180)
         ctx.font = '18px Vedana'
-        ctx.fillStyle = '#ccc'
+        // Read color from CSS variable
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-watermark').trim() || 'rgba(0, 0, 0, 0.1)';
         ctx.textAlign = 'left'
         ctx.textBaseline = 'middle'
         ctx.fillText(waterMarkStr, canvas.width / 20, canvas.height)
@@ -51,11 +53,12 @@ function genWaterMarkDataURL(waterMarkStr) {
 }
 
 class watermark {
+    watermarkStr = '';
     // 该方法只允许调用一次
     init(str) {
         console.log('init watermark')
-        let watermarkStr = str
-        updateWaterMark(watermarkStr)
+        this.watermarkStr = str
+        updateWaterMark(this.watermarkStr)
         if (!str) {
             setTimeout(() => {
                 updateWaterMark(this.defaultWaterMark())
@@ -67,9 +70,15 @@ class watermark {
 
         window.addEventListener('resize', () => {
             if (location.hash !== '#/') {
-                updateWaterMark(watermarkStr ? watermarkStr : this.defaultWaterMark(), true)
+                updateWaterMark(this.watermarkStr ? this.watermarkStr : this.defaultWaterMark(), true)
             }
         })
+    }
+
+    refresh() {
+        if (this.watermarkStr || updateWaterMarkInterval) {
+            updateWaterMark(this.watermarkStr ? this.watermarkStr : this.defaultWaterMark(), true)
+        }
     }
 
     remove() {

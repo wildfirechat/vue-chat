@@ -47,7 +47,7 @@ export default {
                     let groupId = msg.conversation.type === ConversationType.Group ? msg.conversation.target : '';
                     senderName = wfc.getGroupMemberDisplayName(groupId, msg.from)
                 }
-           
+
                 if (msg.messageContent instanceof TextMessageContent) {
                     str += senderName + ': ' + this.textMessageContent(msg);
                 } else {
@@ -99,7 +99,7 @@ export default {
                     CompositeMessagePage,
                     {
                         message: this.message,
-                        isInCompositeView:true,
+                        isInCompositeView: true,
                     }, null, {
                         name: 'show-composite-message-modal' + '-' + stringValue(this.message.messageUid),
                         width: 800,
@@ -119,7 +119,7 @@ export default {
 .composite-message-container {
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
     overflow: hidden;
@@ -131,18 +131,18 @@ export default {
 }
 
 .composite-message-container .title {
-    color: #050505;
+    color: var(--text-primary);
     font-size: 15px;
 }
 
 .composite-message-container .content, .desc {
     padding: 5px 0;
     font-size: 14px;
-    color: #b2b2b2;
+    color: var(--text-hint);
 }
 
 .composite-message-container .desc {
-    border-top: 1px solid #f2f2f2;
+    border-top: 1px solid var(--border-separator);
     padding: 5px 0 0 0;
 }
 

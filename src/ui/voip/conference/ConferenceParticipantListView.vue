@@ -103,6 +103,7 @@ export default {
     methods: {
         invite() {
             let callSession = this.session;
+
             let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin, conferenceManager.conferenceInfo.password)
             console.log('invite', inviteMessageContent);
             let message = new Message(null, inviteMessageContent);
@@ -341,6 +342,7 @@ export default {
             this.isContextMenuShow = false;
             this.currentParticipant = {};
         },
+
         showUserCard(p) {
             this.$refs['userCardTippy-' + p.uid][0]._tippy.show();
         },
@@ -366,9 +368,9 @@ export default {
     flex-direction: column;
     height: 100%;
     overflow: auto;
-    background-color: #ffffffe5;
+    background-color: var(--background-info-panel);
     backdrop-filter: blur(6px);
-    border-left: 1px solid #e6e6e6;
+    border-left: 1px solid var(--border-primary);
 }
 
 .participant-list-container .action-item {
@@ -385,7 +387,7 @@ export default {
     justify-content: center;
     align-items: center;
     border-radius: 3px;
-    border: 1px dashed #d6d6d6;
+    border: 1px dashed var(--border-dashed);
     margin-right: 10px;
 }
 
@@ -397,7 +399,7 @@ export default {
 }
 
 .participant-user.active {
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
 }
 
 .participant-user .name-desc {
@@ -409,7 +411,7 @@ export default {
 }
 
 .audio-video {
-    color: black;
+    color: var(--text-primary);
     padding: 0 10px;
 }
 
@@ -438,7 +440,7 @@ export default {
     justify-content: center;
     align-items: center;
     border-radius: 3px;
-    border: 1px dashed #d6d6d6;
+    border: 1px dashed var(--border-dashed);
     margin-right: 10px;
 }
 
@@ -447,8 +449,8 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
-    color: white;
-    background: #e0d6d6d6;
+    color: var(--text-on-accent);
+    background: var(--background-item-placeholder);
 }
 
 .action-container {

@@ -25,6 +25,7 @@ import {currentWindow, ipcRenderer, isElectron, remote} from "./platform";
 import SearchType from "./wfc/model/searchType";
 import Config from "./config";
 import {getItem, setItem} from "./ui/util/storageHelper";
+import watermark from "./ui/util/waterMark";
 import CompositeMessageContent from "./wfc/messages/compositeMessageContent";
 import {stringValue, longValue} from "./wfc/util/longUtil";
 import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
@@ -2258,6 +2259,22 @@ let store = {
         } else if (conversationState.currentConversationInfo) {
             conversationState.shouldAutoScrollToBottom = true;
         }
+    },
+
+    setTheme(theme) {
+        miscState.theme = theme;
+        setItem('theme', theme);
+        this.applyTheme();
+    },
+
+    applyTheme() {
+        let theme = miscState.theme;
+        let actualTheme = theme;
+        if (theme === 'system') {
+            actualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', actualTheme);
+        watermark.refresh();
     },
 
     clearConversationUnreadStatus(conversation) {

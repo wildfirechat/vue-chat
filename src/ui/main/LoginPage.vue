@@ -15,10 +15,10 @@
                 </div>
                 <!--    等待扫码-->
                 <div v-if="loginStatus === 0" class="pending-scan">
-                    <p style="font-size: 20px; color: #353535; padding-bottom: 10px">{{ $t('login.desc') }}</p>
-                    <p style="font-size: 15px; color: #a3a3a3">{{ $t('login.tip_web') }}</p>
-                    <p style="font-size: 15px; color: #a3a3a3; padding-bottom: 5px">{{ $t('login.warning') }}</p>
-                    <a style="font-size: 15px; color: #4168e0" target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
+                    <p style="font-size: 20px; color: var(--text-primary); padding-bottom: 10px">{{ $t('login.desc') }}</p>
+                    <p style="font-size: 15px; color: var(--text-secondary)">{{ $t('login.tip_web') }}</p>
+                    <p style="font-size: 15px; color: var(--text-secondary); padding-bottom: 5px">{{ $t('login.warning') }}</p>
+                    <a style="font-size: 15px; color: var(--accent-color)" target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
                 </div>
                 <!--    已经扫码-->
                 <div v-else-if="loginStatus === 1" class="scanned">
@@ -63,7 +63,7 @@
                     <p class="tip" @click="register">注册</p>
                 </div>
                 <button class="login-button" :disabled="mobile === '' || !password || password === ''" ref="loginWithPasswordButton" @click="loginWithPassword">{{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}</button>
-                <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'" :width="'80px'"/>
+                <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'var(--accent-color)'" :height="'80px'" :width="'80px'"/>
             </div>
             <div v-else class="login-form-container">
                 <!--            验证码登录-->
@@ -621,7 +621,7 @@ export default {
     width: 380px;
     height: 500px;
     margin: auto;
-    background: white;
+    background: var(--background-primary);
     border-radius: 12px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
                 0 10px 20px rgba(0, 0, 0, 0.04);
@@ -632,7 +632,7 @@ export default {
     border-radius: 3px;
     width: 250px;
     height: 250px;
-    background-color: #e7e7e7;
+    background-color: var(--background-tertiary);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -675,7 +675,7 @@ export default {
     margin-top: 5px;
     padding: 5px;
     font-size: 14px;
-    color: gray;
+    color: var(--text-secondary);
 }
 
 .qrcode-login-container button {
@@ -688,30 +688,30 @@ export default {
 .button-cancel {
     margin-top: 10px;
     background-color: transparent;
-    color: gray;
+    color: var(--text-secondary);
 }
 
 .button-cancel:active {
-    color: #4168e0;
+    color: var(--border-active);
 }
 
 .button-cancel:hover {
-    color: #4168e0;
+    color: var(--border-active);
 }
 
 .button-confirm {
     width: 200px;
     height: 40px;
-    color: white;
-    background-color: #4168e0a0;
+    color: var(--text-on-accent);
+    background-color: var(--border-active);
 }
 
 .button-confirm:hover {
-    background-color: #4168e0;
+    background-color: var(--border-active);
 }
 
 .button-confirm:active {
-    background-color: #4168e0;
+    background-color: var(--border-active);
 }
 
 
@@ -728,7 +728,7 @@ export default {
 .switch-login-type-container {
     padding-top: 10px;
     font-size: 14px;
-    color: #4168e0;
+    color: var(--border-active);
 }
 
 .login-form-container {
@@ -743,7 +743,7 @@ export default {
 .login-form-container .title {
     align-self: flex-start;
     font-size: 18px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .login-form-container .item {
@@ -756,7 +756,7 @@ export default {
 .login-form-container .text-input {
     height: 40px;
     width: 100%;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
     outline: none;
     padding: 0 5px;
@@ -770,23 +770,23 @@ input::-webkit-inner-spin-button {
 }
 
 .login-form-container .text-input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .login-form-container .text-input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .login-form-container .login-button {
     height: 40px;
     width: 100%;
     margin-top: 20px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
 }
 
 .login-form-container .login-button:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .login-form-container .request-auth-code-button {
@@ -801,13 +801,13 @@ input::-webkit-inner-spin-button {
 .login-form-container .syncing {
     position: absolute;
     bottom: 0;
-    color: #4168e0;
+    color: var(--border-active);
 }
 
 .tip {
     align-self: flex-start;
     font-size: 12px;
-    color: #4168e0;
+    color: var(--border-active);
     margin-top: 10px;
 }
 
@@ -831,7 +831,7 @@ input::-webkit-inner-spin-button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--background-overlay);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -839,7 +839,7 @@ input::-webkit-inner-spin-button {
 }
 
 .diagnose-content {
-    background: white;
+    background: var(--background-primary);
     padding: 20px;
     border-radius: 5px;
     max-width: 100%;

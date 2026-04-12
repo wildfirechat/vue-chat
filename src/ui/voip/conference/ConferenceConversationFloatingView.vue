@@ -53,7 +53,6 @@ export default {
         let conversationInfo = new ConversationInfo();
         conversationInfo.conversation = conversation;
         store.setCurrentConversationInfo(conversationInfo);
-
         this.filterInternal = setInterval(() => {
             this.filterMessage();
         }, 1 * 1000);
@@ -126,7 +125,7 @@ export default {
 }
 
 .message .sender {
-    color: #f66868;
+    color: var(--status-error);
     padding-right: 5px;
 }
 
@@ -139,7 +138,7 @@ export default {
     z-index: 100000;
 }
 
-.send-message-container input{
+.send-message-container input {
     width: 100%;
     height: 100%;
     background: transparent;

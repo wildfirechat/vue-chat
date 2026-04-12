@@ -106,6 +106,7 @@ export default {
             avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', audience, info.advance, !this.enableAudio, !this.enableVideo);
             this.$modal.hide('conference-info-modal');
         },
+
         copyConferenceId(){
             copyText(this.conferenceInfo.conferenceId)
             this.$notify({
@@ -153,7 +154,7 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: #f8f8f8;
+    background: var(--background-item-normal);
 }
 
 .conference-info-container h2 {
@@ -161,13 +162,13 @@ export default {
     font-weight: normal;
     font-style: normal;
     font-size: 18px;
-    background: white;
+    background: var(--background-primary);
     text-align: center;
     padding: 20px 0;
 }
 
 .item-container {
-    background: white;
+    background: var(--background-primary);
     margin-bottom: 20px;
     font-size: 14px;
 }
@@ -182,15 +183,15 @@ export default {
 
 
 /*.item:active {*/
-/*    background: #d6d6d6;*/
+/*    background: var(--background-item-placeholder);*/
 /*}*/
 
 .item:not(:last-of-type) {
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 .item .desc {
-    color: gray;
+    color: var(--text-secondary);
 }
 
 .item label {
@@ -205,7 +206,7 @@ export default {
 }
 
 button {
-    background: white;
+    background: var(--background-primary);
     width: 100%;
     text-align: center;
     vertical-align: middle;
@@ -220,7 +221,7 @@ button:active {
 
 button.destroy {
     margin-right: 10px;
-    color: red;
+    color: var(--text-danger);
 }
 
 </style>

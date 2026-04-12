@@ -54,11 +54,11 @@ export default {
 }
 
 .group-item:hover{
-    background-color: #EAEAEA;
+    background-color: var(--background-item-hover);
 }
 
 .group-item.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .group-item span {

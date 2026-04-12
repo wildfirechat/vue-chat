@@ -98,12 +98,12 @@ header label {
     justify-content: center;
     align-items: flex-start;
     font-size: 14px;
-    color: #999999;
+    color: var(--text-hint);
 }
 
 header label:last-of-type {
     padding-bottom: 15px;
-    border-bottom: 1px solid #ececec;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 header label input {
@@ -122,16 +122,16 @@ header label input {
     transform: translateX(-50%);
     bottom: 0;
     display: flex;
-    color: red;
+    color: var(--text-danger);
     align-items: center;
     justify-content: center;
     height: 54px;
     width: 100%;
-    border-top: 1px solid #ececec;
+    border-top: 1px solid var(--border-tertiary);
 }
 
 .unsubscribe-channel-item:active {
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
 }
 
 </style>

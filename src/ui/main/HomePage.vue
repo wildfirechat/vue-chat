@@ -349,7 +349,7 @@ export default {
     height: calc(100vh - var(--main-margin-top) - var(--main-margin-bottom));
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: var(--background-primary);
     border-radius: var(--main-border-radius);
     overflow: hidden;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
@@ -365,7 +365,7 @@ export default {
     flex-direction: column;
     align-items: center;
     /*background: linear-gradient(180deg, #292a2c 0%, #483a3a 100%);*/
-    background: #EAEAEA;
+    background: var(--background-sidebar);
     border-top-left-radius: var(--main-border-radius);
     border-bottom-left-radius: var(--main-border-radius);
     padding: var(--home-menu-padding-top) 0 20px 0;
@@ -373,7 +373,7 @@ export default {
 }
 
 .avatar {
-    background-color: gray;
+    background-color: var(--text-secondary);
     width: 35px;
     height: 35px;
     display: block;
@@ -409,9 +409,9 @@ export default {
 
 .menu .menu-item .badge {
     position: absolute;
-    color: white;
+    color: var(--text-on-accent);
     font-size: 10px;
-    background-color: red;
+    background-color: var(--background-badge);
     border-radius: 8px;
     min-width: 16px;
     height: 16px;
@@ -425,16 +425,16 @@ export default {
 
 i {
     font-size: 26px;
-    color: #868686;
+    color: var(--text-secondary);
     cursor: pointer;
 }
 
 i:hover {
-    color: #1f64e4;
+    color: var(--accent-color);
 }
 
 i.active {
-    color: #3f64e4;
+    color: var(--accent-color-active);
 }
 
 .drag-area {
@@ -451,19 +451,19 @@ i.active {
     top: 0;
     left: 60px;
     right: 0;
-    color: red;
+    color: var(--text-danger);
     padding: 15px 0;
     text-align: center;
-    background: #f2f2f280;
+    background: var(--background-tertiary);
     /*box-shadow: 0 0 1px #000;*/
 }
 
 .voip-div-container {
-    background: #292929;
+    background: var(--background-voip);
     position: fixed;
     margin: auto;
     border-radius: 5px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: var(--shadow-main), 0 6px 20px 0 var(--background-mask);
     display: flex;
     flex-direction: column;
 }
@@ -486,7 +486,7 @@ i.active {
 .voip-div-container .title {
     text-align: center;
     padding: 5px 0;
-    background: #b6b6b6;
+    background: var(--background-item-placeholder);
     display: flex;
     justify-content: center;
     align-content: center;
@@ -497,11 +497,11 @@ i.active {
 }
 
 .voip-div-container .title i:hover {
-    color: #868686;
+    color: var(--text-secondary);
 }
 
 .voip-div-container .title i:active {
-    color: #868686;
+    color: var(--text-secondary);
 }
 
 .voip-div-container .content {
@@ -514,7 +514,7 @@ i.active {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--background-overlay);
     display: flex;
     align-items: center;
     justify-content: center;

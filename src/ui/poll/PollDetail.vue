@@ -362,11 +362,11 @@ export default {
 .poll-detail {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh;
-    background-color: #f5f6f7;
+    background-color: var(--background-tertiary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    color: #333;
+    color: var(--text-primary);
     user-select: none;
     position: relative;
 }
@@ -374,15 +374,15 @@ export default {
 .loading-state, .error-state {
     padding: 60px;
     text-align: center;
-    color: #999;
+    color: var(--text-hint);
 }
 
 .spinner {
-    border: 3px solid rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--background-trans-muted);
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border-left-color: #1f64e4;
+    border-left-color: var(--accent-color);
     animation: spin 1s linear infinite;
     margin: 0 auto 10px;
 }
@@ -393,7 +393,7 @@ export default {
 }
 
 .error-state {
-    color: #ff3b30;
+    color: var(--text-danger);
 }
 
 .detail-nav-bar {
@@ -401,13 +401,13 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 16px 16px 0 16px;
-    background: #fff;
+    background: var(--background-primary);
     width: 100%;
 }
 
 .back-btn {
     font-size: 15px;
-    color: #576b95;
+    color: var(--text-link);
     cursor: pointer;
 }
 
@@ -415,7 +415,7 @@ export default {
     flex: 1;
     overflow-y: auto;
     padding-bottom: 80px;
-    background: #fff;
+    background: var(--background-primary);
     width: 100%;
 }
 
@@ -444,51 +444,51 @@ export default {
 
 .creator-name {
     font-size: 14px;
-    color: #666;
+    color: var(--text-muted);
 }
 
 .status-tag {
     font-size: 13px;
-    color: #ff9500;
-    background: #fff7e6;
+    color: var(--status-warning);
+    background: var(--background-warning-subtle);
     padding: 4px 8px;
     border-radius: 4px;
 }
 
 .status-tag.ended {
-    color: #999;
-    background: #f5f5f5;
+    color: var(--text-hint);
+    background: var(--background-tertiary);
 }
 
 .poll-title {
     font-size: 20px;
     font-weight: bold;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 8px;
     line-height: 1.4;
 }
 
 .poll-desc {
     font-size: 14px;
-    color: #666;
+    color: var(--text-muted);
     line-height: 1.6;
 }
 
 .divider {
     height: 8px;
-    background: #f5f6f7;
+    background: var(--background-tertiary);
 }
 
 .options-section-title {
     padding: 16px 24px 8px;
     font-size: 14px;
-    color: #666;
-    background: #fff;
+    color: var(--text-muted);
+    background: var(--background-primary);
 }
 
 .vote-options {
     padding: 0 16px 16px;
-    background: #fff;
+    background: var(--background-primary);
 }
 
 .vote-option-item {
@@ -497,8 +497,8 @@ export default {
     align-items: center;
     padding: 14px 16px;
     margin-bottom: 8px;
-    background: #fff;
-    border: 1px solid #e5e5e5;
+    background: var(--background-primary);
+    border: 1px solid var(--border-primary);
     border-radius: 8px;
     cursor: pointer;
     overflow: hidden;
@@ -509,8 +509,8 @@ export default {
 }
 
 .vote-option-item.selected {
-    border-color: #1f64e4;
-    background: #f0f7ff;
+    border-color: var(--accent-color);
+    background: var(--background-item-selected);
 }
 
 .progress-bar {
@@ -518,7 +518,7 @@ export default {
     left: 0;
     top: 0;
     bottom: 0;
-    background: #e6f2ff;
+    background: var(--background-item-selected);
     z-index: 0;
 }
 
@@ -531,19 +531,19 @@ export default {
 .check-circle {
     width: 22px;
     height: 22px;
-    border: 2px solid #ccc;
+    border: 2px solid var(--border-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    color: #fff;
+    color: var(--text-on-accent);
     transition: all 0.2s;
 }
 
 .check-circle.checked {
-    background: #1f64e4;
-    border-color: #1f64e4;
+    background: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .option-text {
@@ -551,7 +551,7 @@ export default {
     z-index: 1;
     flex: 1;
     font-size: 15px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .option-text.with-checkbox {
@@ -562,7 +562,7 @@ export default {
     position: relative;
     z-index: 1;
     font-size: 13px;
-    color: #666;
+    color: var(--text-muted);
     white-space: nowrap;
 }
 
@@ -570,8 +570,8 @@ export default {
     padding: 16px 24px;
     text-align: center;
     font-size: 13px;
-    color: #999;
-    background: #f5f6f7;
+    color: var(--text-hint);
+    background: var(--background-tertiary);
 }
 
 .floating-footer {
@@ -598,31 +598,31 @@ export default {
 }
 
 .action-btn {
-    background: #1f64e4;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    box-shadow: var(--shadow-accent);
 }
 
 .action-btn:hover {
-    background: #006ce6;
+    background: var(--status-info);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    box-shadow: var(--shadow-accent-strong);
 }
 
 .action-btn:disabled {
-    background: #b4d8ff;
+    background: var(--accent-color-subtle);
     box-shadow: none;
     cursor: default;
     transform: none;
 }
 
 .secondary-btn {
-    background: #1f64e4;
-    color: white;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
 }
 
 .danger-btn {
-    background: #ff3b30;
-    color: white;
+    background: var(--status-error);
+    color: var(--text-on-accent);
 }
 </style>

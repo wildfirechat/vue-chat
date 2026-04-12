@@ -94,7 +94,7 @@ export default {
 <style scoped>
 .poll-result-message-container {
     margin: 0 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     border-radius: 5px;
     cursor: pointer;
     width: 280px;
@@ -105,7 +105,7 @@ export default {
 }
 
 .poll-result-message-container.out {
-    background-color: #a8bdff;
+    background-color: var(--background-message-out);
 }
 
 .poll-result-title {
@@ -113,7 +113,7 @@ export default {
     align-items: flex-start;
     font-size: 14px;
     font-weight: bold;
-    color: #000;
+    color: var(--text-primary);
     line-height: 1.4;
 }
 
@@ -131,34 +131,34 @@ export default {
 }
 
 .poll-result-message-container.out .poll-result-title {
-    color: #000;
+    color: var(--text-primary);
 }
 
 .poll-result-stats {
     font-size: 12px;
-    color: #888;
+    color: var(--text-hint);
     margin-top: 8px;
 }
 
 .poll-result-message-container.out .poll-result-stats {
-    color: #555;
+    color: var(--text-muted);
 }
 
 .poll-result-status {
     font-size: 12px;
-    color: #576b95;
+    color: var(--text-link);
     margin-top: 4px;
 }
 
 .poll-result-message-container.out .poll-result-status {
-    color: #333;
+    color: var(--text-primary);
 }
 
 .poll-result-status.ended {
-    color: #999;
+    color: var(--text-hint);
 }
 
 .poll-result-message-container.out .poll-result-status.ended {
-    color: #666;
+    color: var(--text-muted);
 }
 </style>

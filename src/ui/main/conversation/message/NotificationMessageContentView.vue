@@ -29,13 +29,13 @@ export default {
 }
 
 .notification-container .time {
-    color: #b4b4b4;
+    color: var(--text-time);
     font-size: 10px;
     text-align: center;
 }
 
 .notification-container .notification {
-    color: #b8b8b8;
+    color: var(--text-placeholder);
     margin: 20px 20px;
     font-size: 12px;
 }

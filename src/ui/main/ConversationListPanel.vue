@@ -40,14 +40,14 @@ export default {
 .conversation-list-panel-container {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #e5e5e5;
+    border-right: 1px solid var(--border-primary);
 }
 
 .panel {
     height: calc(100% - 60px);
     max-height: calc(100% - 60px);
     position: relative;
-    background-color: #f3f3f3;
+    background-color: var(--background-tertiary);
     overflow-y: auto;
     flex: 1;
 }

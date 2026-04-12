@@ -71,14 +71,15 @@ export default {
 }
 
 .chatroom-item:hover{
-    background-color: #EAEAEA;
+    background-color: var(--background-item-hover);
 }
 
 .chatroom-item.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .chatroom-item span {
+    /*margin-left: 10px;*/
 }
 
 </style>

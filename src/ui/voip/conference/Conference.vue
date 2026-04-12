@@ -6,9 +6,9 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center voip-container" style="width: 100%; height: 100%" ref="rootContainer">
+    <div class="flex-column voip-container" style="width: 100%; height: 100%" ref="rootContainer">
         <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
-            <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
+            <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px;"
                                               :title="'野火会议'"
                                               :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
             <ScreenShareControlView v-if="session && session.screenSharing" type="conference"/>
@@ -20,7 +20,7 @@
         <div v-if="session" class="main-slider-container"
              v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="main">
-                <header style="background: white; height: 20px; display: flex; justify-content: space-between">
+                <header style="background: var(--background-primary); height: 20px; display: flex; justify-content: space-between">
                     <a href="#" @click.prevent>
                         <i class="icon-ion-information" style="padding: 0 10px"
                            id="info-icon"
@@ -65,9 +65,9 @@
                     <!--main-->
                     <!--video-->
                     <div v-if="!audioOnly" style="width: 100%; height: 100%">
-                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex > 0" style="position: absolute; top: 50%; left: 0; color: #c8cacc; z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-left-c"
+                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex > 0" style="position: absolute; top: 50%; left: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-left-c"
                            @click="prePage"></i>
-                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex < gridPageCount - 1" style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-right-c"
+                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex < gridPageCount - 1" style="position: absolute; top: 50%; right: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-right-c"
                            @click="nextPage"></i>
                         <!--                    宫格布局-->
                         <section v-if="computedCurrentLayout=== 0" class="content-container grid video">
@@ -75,6 +75,7 @@
                             <ConferenceParticipantVideoView v-for="(participant) in currentPageParticipants"
                                                             :key="participant.uid + '-' + participant._isScreenSharing"
                                                             :participant="participant"
+                                                            :show-focus-tip="false"
                                                             :session="session">
                             </ConferenceParticipantVideoView>
                         </section>
@@ -89,7 +90,7 @@
                                        :muted="computedFocusVideoParticipant.uid === selfUserInfo.uid"
                                        playsInline
                                        autoPlay/>
-                                <div @click="toggleParticipantListVideoView" style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px">
+                                <div @click="toggleParticipantListVideoView" style="position: absolute; top: 50%; right: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px">
                                     <i :class="hideFocusLayoutParticipantListVideoView ? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'"></i>
                                 </div>
                             </div>
@@ -98,6 +99,7 @@
                                 <ConferenceParticipantVideoView v-for="(participant) in participantUserInfos"
                                                                 :key="participant.uid + '-' + participant._isScreenSharing"
                                                                 :participant="participant"
+                                                                :show-focus-tip="true"
                                                                 :session="session">
                                 </ConferenceParticipantVideoView>
                             </div>
@@ -106,9 +108,9 @@
                     <!--audio-->
                     <div v-else style="width: 100%; height: 100%">
                         <div
-                            style="background: white; height: 50px; display: flex; justify-content: center; align-items: center">
+                            style="background: var(--background-primary); height: 50px; display: flex; justify-content: center; align-items: center">
                             <div
-                                style="background: #daeafe; width: 300px; height: 40px; padding: 0 5px; border-radius: 3px; display: flex; flex-direction: column; justify-content: center">
+                                style="background: var(--accent-color-subtle); width: 300px; height: 40px; padding: 0 5px; border-radius: 3px; display: flex; flex-direction: column; justify-content: center">
                                 <p class="single-line"> {{ '正在讲话: ' + speakingUserName }}</p>
                             </div>
                         </div>
@@ -133,7 +135,7 @@
                                     <img class="avatar"
                                          v-bind:class="{highlight:participant._volume > 0}"
                                          :src="participant.portrait" :alt="participant">
-                                    <i v-if="participant._isHost" class="indicator icon-ion-person" style="background: #FD802E"></i>
+                                    <i v-if="participant._isHost" class="indicator icon-ion-person" style="background: var(--status-warning)"></i>
                                     <i v-if="participant._isAudience" class="indicator icon-ion-ios-mic-off" style="color: red"></i>
                                 </div>
                                 <p class="single-line">{{ userName(participant) }}</p>
@@ -170,7 +172,7 @@
                                 </div>
                                 <div class="action" @click="chat">
                                     <i class="icon-ion-ios-chatboxes"
-                                       style="width: 40px; height: 40px; font-size: 40px; color: black"
+                                       style="width: 40px; height: 40px; font-size: 40px; color: var(--text-primary)"
                                        v-bind:style="{color: showConversationView ? 'white' : 'black'}"/>
                                     <p>聊天</p>
                                 </div>
@@ -249,7 +251,6 @@ import ConversationInfo from "../../../wfc/model/conversationInfo";
 import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
 import {vOnClickOutside} from '@vueuse/components'
-
 import {markRaw} from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
 import WfcAVEngineKit from "../../../wfc/av/engine/avenginekit";
@@ -292,7 +293,6 @@ export default {
 
             showConferenceSimpleInfoView: false,
             showChooseLayoutView: false,
-
         }
     },
     components: {
@@ -401,7 +401,7 @@ export default {
                 if(WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare){
                     this.selfUserInfo._stream = stream;
                     this.selfUserInfo._isVideoMuted = false;
-                    this.selfUserInfo._isScreenSharing = screenShare;
+                	this.selfUserInfo._isScreenSharing = screenShare;
                 } else {
                     let selfScreenShareUserInfo = Object.assign(new UserInfo(), this.selfUserInfo);
                     selfScreenShareUserInfo._stream = stream;
@@ -463,6 +463,7 @@ export default {
                 if(index >= 0) {
                     return;
                 }
+
                 let userInfo = wfc.getUserInfo(userId);
                 let subscriber = this.session.getSubscriber(userId, screenSharing);
                 userInfo._stream = subscriber.stream;
@@ -491,6 +492,7 @@ export default {
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
                 conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000)
+
                 // 可以根据reason，进行一些提示
                 // alert('会议已结束');
 
@@ -629,7 +631,7 @@ export default {
             };
 
             if (isElectron()) {
-                avenginekit.setup(sessionCallback);
+            	avenginekit.setup(sessionCallback);
             } else {
                 avenginekit.sessionCallback = sessionCallback;
             }
@@ -710,7 +712,6 @@ export default {
                 this.enableVideo(true);
                 return;
             }
-
             this.$alert({
                 content: audio ? '主持人不允许解除静音，您可以向主持人申请解除静音' : '主持人不允许打开摄像头，您可以向主持人申请打开摄像头',
                 confirmText: '申请',
@@ -734,8 +735,8 @@ export default {
 
         chat() {
             if (isElectron()) {
-                this.showConversationView = !this.showConversationView;
-                this.toggleSliderView();
+            	this.showConversationView = !this.showConversationView;
+            	this.toggleSliderView();
             } else {
                 let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0)
                 let chatroomInfo = new ChatRoomInfo();
@@ -1354,7 +1355,6 @@ export default {
         } else {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
         }
-
         wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     },
 
@@ -1374,23 +1374,24 @@ export default {
 <style lang="css" scoped>
 
 .voip-container {
-    background: #00000000 !important;
+    background: var(--background-voip) !important;
     position: relative;
     --conference-container-margin-top: 30px;
     --slider-width: 0px;
     --main-width: 100%;
+    overflow: hidden;
 }
 
 a {
-    color: gray;
+    color: var(--text-secondary);
 }
 
 i:hover {
-    color: #1f64e4;
+    color: var(--accent-color);
 }
 
 i.active {
-    color: #3f64e4;
+    color: var(--accent-color);
 }
 
 .main-slider-container {
@@ -1410,7 +1411,7 @@ i.active {
     width: var(--slider-width);
     height: 100%;
     overflow: auto;
-    background: white;
+    background: var(--background-primary);
 }
 
 .conference-main-content-container {
@@ -1460,7 +1461,7 @@ i.active {
 }
 
 .content-container.audio {
-    background: white;
+    background: var(--background-primary);
     height: calc(100% - 50px);
     overflow: auto;
     padding: 10px 0 50px 0;
@@ -1483,12 +1484,12 @@ i.active {
     height: 18px;
     position: absolute;
     left: 50%;
-    color: white;
+    color: var(--text-on-accent);
     text-align: center;
     vertical-align: center;
     border-radius: 9px;
     bottom: 0;
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
     transform: translateX(-50%) translateY(25%);
 }
 
@@ -1518,7 +1519,7 @@ footer {
 }
 
 .duration-action-container p {
-    color: white;
+    color: var(--text-on-accent);
     padding: 0 5px 0 0;
 }
 
@@ -1534,7 +1535,7 @@ footer {
     flex-direction: column;
     align-items: center;
     font-size: 12px;
-    color: white;
+    color: var(--text-on-accent);
     padding: 0 25px 0 25px;
 }
 
@@ -1545,7 +1546,7 @@ footer {
 }
 
 .avatar.highlight {
-    border: 2px solid #1FCA6A;
+    border: 2px solid var(--status-success);
 }
 
 .action-img {
@@ -1564,10 +1565,10 @@ footer {
     top: 0;
     width: 100%;
     height: 100%;
-    background: #e0e0e0e0;
+    background: var(--border-primary);
     text-align: center;
     justify-content: center;
-    color: red;
+    color: var(--text-danger);
 }
 
 .icon-ion-grid:after {

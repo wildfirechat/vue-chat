@@ -1,3 +1,4 @@
+import {reactive} from "vue";
 import conferenceApi from "../../../api/conferenceApi";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import MessageContentType from "../../../wfc/messages/messageContentType";
@@ -511,6 +512,7 @@ class ConferenceManager {
         historyList = historyList.filter(info => info.conferenceId !== conferenceInfo.conferenceId);
         localStorage.setItem('historyConfList', JSON.stringify(historyList, null, ''));
     }
+
     getHistoryConference() {
         let tmp = localStorage.getItem('historyConfList');
         let historyList = JSON.parse(tmp);
@@ -550,5 +552,5 @@ class ConferenceManager {
     }
 }
 
-let self = new ConferenceManager();
+let self = reactive(new ConferenceManager());
 export default self;

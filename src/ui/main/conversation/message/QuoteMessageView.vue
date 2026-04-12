@@ -169,12 +169,12 @@ export default {
 .quoted-message {
     display: flex;
     max-width: 100%;
-    background-color: #e9e9e9;
+    background-color: var(--background-tertiary);
     border-radius: 5px;
     padding: 5px 10px;
     margin-right: 10px;
     font-size: 13px;
-    color: #737373;
+    color: var(--text-muted);
 }
 
 .quoted-message > p {

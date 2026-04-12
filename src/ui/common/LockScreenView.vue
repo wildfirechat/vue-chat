@@ -30,7 +30,7 @@ export default {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: var(--gradient-lock);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,7 +42,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #ffffff;
+    color: var(--text-on-accent);
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -61,7 +61,7 @@ export default {
     width: 80px;
     height: 80px;
     margin-bottom: 24px;
-    color: #e94560;
+    color: var(--status-error);
 }
 
 .lock-icon svg {
@@ -78,6 +78,6 @@ export default {
 
 .lock-description {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-trans-light);
 }
 </style>

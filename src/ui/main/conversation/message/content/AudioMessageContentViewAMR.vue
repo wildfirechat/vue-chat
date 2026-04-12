@@ -4,12 +4,12 @@
             <p v-if="message.direction === 0" class="duration">{{ duration }}"</p>
             <div class="volume-container">
                 <i v-show="!message._isPlaying" class="icon-ion-android-volume-up"></i>
-                <ScaleLoader v-if="message._isPlaying" :color="'#d2d2d2'" :height="'15px'" :width="'3px'"/>
+                <ScaleLoader v-if="message._isPlaying" :color="'var(--text-tertiary)'" :height="'15px'" :width="'3px'"/>
             </div>
             <!--        <div class="dot"></div>-->
             <p v-if="message.direction === 1" class="duration">{{ duration }}"</p>
         </div>
-        <ScaleLoader v-if="!message.messageContent._speechText && message.messageContent._speechToTextInProgress" :color="'#d2d2d2'" :height="'15px'" :width="'3px'" style="margin: 8px 10px"/>
+        <ScaleLoader v-if="!message.messageContent._speechText && message.messageContent._speechToTextInProgress" :color="'var(--text-tertiary)'" :height="'15px'" :width="'3px'" style="margin: 8px 10px"/>
         <p v-if="message.messageContent._speechText" class="speechText">{{ message.messageContent._speechText }}</p>
     </div>
 </template>
@@ -96,14 +96,14 @@ export default {
     height: 40px;
     width: var(--voice-width);
     min-width: 55px;
-    background: white;
+    background: var(--background-primary);
     border-radius: 5px;
     padding: 5px 10px;
     align-items: center;
 }
 
 .volume-container i {
-    color: #888888;
+    color: var(--text-hint);
 }
 
 .volume-container div {
@@ -111,16 +111,16 @@ export default {
 }
 
 .duration {
-    color: #b2b2b2;
+    color: var(--text-hint);
     padding: 8px;
 }
 
 .speechText {
-    color: #888888;
+    color: var(--text-hint);
     margin: 8px 10px;
     padding: 8px 4px 8px 8px;
     font-size: 13px;
-    background-color: #e9e9e9;
+    background-color: var(--background-tertiary);
     border-radius: 5px;
 }
 

@@ -61,14 +61,15 @@ export default {
 }
 
 .external-domain-item:hover {
-    background-color: #EAEAEA;
+    background-color: var(--background-item-hover);
 }
 
 .external-domain-item.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .external-domain-item span {
+    /*margin-left: 10px;*/
 }
 
 </style>

@@ -110,7 +110,7 @@ export default {
 .call-start-message-container {
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
     display: flex;
@@ -123,12 +123,12 @@ export default {
 }
 
 .call-start-message-container.out {
-    background-color: #a8bdff;
+    background-color: var(--background-message-out);
 }
 
 
 .call-start-message-container .text {
-    color: #050505;
+    color: var(--text-primary);
     font-size: 13px;
 }
 

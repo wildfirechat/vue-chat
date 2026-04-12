@@ -47,7 +47,7 @@ export default {
     content: '';
     display: block;
     height: 50%;
-    background: #848484; /*jow loading的颜色*/
+    background: var(--text-hint); /*jow loading的颜色*/
     border-radius: 5px;
 }
 
@@ -78,7 +78,7 @@ export default {
     transform: translateX(-50%) translateY(-50%);
     width: 15px;
     height: 15px;
-    background: #f3f3f3;
+    background: var(--background-tertiary);
     border-radius: 15px;
 }
 

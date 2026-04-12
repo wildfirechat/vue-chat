@@ -4,7 +4,7 @@
             <div class="desc">
                 <div style="display: flex; align-items: center">
                     <h2>{{ userInfo.displayName }}</h2>
-                    <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                    <p v-if="isExternalDomainUser" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                 </div>
                 <label style="max-width: 200px; text-overflow: ellipsis" class="single-line">{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
             </div>
@@ -90,7 +90,8 @@ export default {
             }
             this.close();
             // 跳转到会话列表页
-            if (this.$router.currentRoute.path !== '/home'){
+
+            if (this.$router.currentRoute.path !== '/home') {
                 this.$router.replace('/home');
             }
         },
@@ -111,7 +112,7 @@ export default {
                 FriendRequestView,
                 {
                     userInfo: this.userInfo,
-                },null,
+                }, null,
                 {
                     name: 'friend-request-modal',
                     width: 600,
@@ -192,7 +193,7 @@ export default {
                 let domainId = WfcUtil.getExternalDomainId(user.uid);
                 let domainInfo = wfc.getDomainInfo(domainId);
                 return '@' + domainInfo.name;
-        	}
+            }
             return '';
         },
     }
@@ -207,8 +208,8 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #292a2c;
-    background-color: #fcfcfc;
+    color: var(--text-primary);
+    background-color: var(--background-tooltip);
 }
 
 .user-info-container .avatar {
@@ -224,7 +225,7 @@ export default {
     padding-bottom: 20px;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 
@@ -241,7 +242,6 @@ export default {
 }
 
 .content ul {
-    border: 1px solid white;
     list-style: none;
     margin: 10px 20px;
 }
@@ -255,6 +255,7 @@ export default {
 
 .content ul li label {
     margin-right: 20px;
+    color: var(--text-secondary);
 }
 
 .content ul li .alias {
@@ -266,21 +267,23 @@ export default {
     width: 100%;
     outline: none;
     border: none;
-    background-color: #fcfcfc;
+    background-color: var(--background-tooltip);
     padding: 2px 5px;
+    color: var(--text-primary);
 }
 
 .content ul li .alias > input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .content ul li .alias > input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .content ul li > div {
     display: inline-block;
     flex: 1;
+    color: var(--text-primary);
 }
 
 .action {
@@ -295,11 +298,13 @@ export default {
 .action a {
     display: inline-block;
     text-decoration: none;
+    color: var(--text-primary);
 }
 
 .action a i {
     font-size: 24px;
     padding: 5px 30px;
+    color: var(--text-secondary);
 }
 
 .action a i:last-of-type {
@@ -307,7 +312,7 @@ export default {
 }
 
 i:hover {
-    color: #3f64e4;
+    color: var(--accent-color);
 }
 
 

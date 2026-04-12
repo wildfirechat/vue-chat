@@ -86,6 +86,7 @@ export default {
         }
     },
     mounted() {
+
         if(isElectron()){
             document.title = this.$t('collection.create_collection');
         }
@@ -136,11 +137,11 @@ export default {
 .collection-create {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh;
-    background-color: #f5f6f7;
+    background-color: var(--background-tertiary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    color: #333;
+    color: var(--text-primary);
     user-select: none;
 }
 
@@ -148,12 +149,12 @@ export default {
 .page-header {
     height: 50px;
     width: 100%;
-    background: #fff;
+    background: var(--background-primary);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    border-bottom: 1px solid #e6e6e6;
+    border-bottom: 1px solid var(--border-primary);
     -webkit-app-region: drag;
     flex-shrink: 0;
     z-index: 10;
@@ -168,16 +169,16 @@ export default {
 .header-title {
     font-weight: 600;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
 }
 .back-btn {
     cursor: pointer;
     font-size: 14px;
-    color: #666;
+    color: var(--text-muted);
     padding: 5px 0;
 }
 .back-btn:hover {
-    color: #333;
+    color: var(--text-primary);
 }
 
 /* Create Form */
@@ -187,7 +188,7 @@ export default {
     overflow-y: auto;
     padding: 20px;
     padding-bottom: 80px;
-    background: #fff;
+    background: var(--background-primary);
 }
 .form-wrapper {
     width: 100%;
@@ -196,7 +197,7 @@ export default {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 24px;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .form-item {
@@ -205,18 +206,18 @@ export default {
 .form-label {
     display: block;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
 }
 .input-field {
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-primary);
     border-radius: 6px;
-    background: #fff;
+    background: var(--background-primary);
     font-size: 15px;
-    color: #333;
+    color: var(--text-primary);
     box-sizing: border-box;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -225,8 +226,8 @@ export default {
     margin-bottom: 40px;
 }
 .input-field:focus {
-    border-color: #1f64e4;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-accent-focus);
 }
 .textarea-field {
     resize: none;
@@ -244,19 +245,19 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-primary);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
-    background: #fff;
+    background: var(--background-primary);
 }
 .radio-card:hover {
-    background: #f9f9f9;
+    background: var(--background-item-hover);
 }
 .radio-card.active {
-    border-color: #1f64e4;
-    background: #f0f7ff;
-    color: #1f64e4;
+    border-color: var(--accent-color);
+    background: var(--background-item-selected);
+    color: var(--accent-color);
 }
 .radio-card input {
     display: none;
@@ -278,28 +279,28 @@ export default {
 }
 .action-btn {
     pointer-events: auto;
-    background: #1f64e4;
-    color: white;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
     border: none;
     padding: 12px 60px;
     border-radius: 24px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: var(--shadow-accent);
     transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
 }
 .action-btn:hover {
-    background: #006ce6;
+    background: var(--status-info);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    box-shadow: var(--shadow-accent-strong);
 }
 .action-btn:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    box-shadow: var(--shadow-accent);
 }
 .action-btn:disabled {
-    background: #b4d8ff;
+    background: var(--accent-color-subtle);
     box-shadow: none;
     cursor: default;
     transform: none;

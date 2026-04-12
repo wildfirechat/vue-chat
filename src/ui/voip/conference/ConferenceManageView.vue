@@ -106,7 +106,6 @@ export default {
             desc += '正在举手'
             return desc;
         },
-
         audioApplyUnmuteTip() {
             let ids = conferenceManager.applyingUnmuteAudioMembers;
             if (ids.length > 0) {
@@ -135,7 +134,7 @@ export default {
                 return '';
             }
         }
-               
+
     },
     watch: {},
 
@@ -147,9 +146,9 @@ export default {
     display: none;
     height: 100%;
     overflow: auto;
-    background-color: #ffffffe5;
+    background-color: var(--background-info-panel);
     backdrop-filter: blur(6px);
-    border-left: 1px solid #e6e6e6;
+    border-left: 1px solid var(--border-primary);
 }
 
 .conference-manage-view-container.active {
@@ -159,19 +158,19 @@ export default {
 
 .conference-manage-view-container .action-tip {
     padding: 10px;
-    background: #f1f1f1;
-    border-bottom: 1px solid #dadada;
+    background: var(--background-tertiary);
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .conference-manage-view-container .action-tip:active {
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
 }
 
 .title-container {
     display: flex;
     padding: 10px;
     align-items: center;
-    background: #f1f1f1;
+    background: var(--background-tertiary);
 }
 
 .title-container i {
@@ -180,7 +179,7 @@ export default {
 }
 
 .title-container i:active {
-    /*background: #d6d6d6;*/
+    /*background: var(--background-item-placeholder);*/
 }
 
 </style>

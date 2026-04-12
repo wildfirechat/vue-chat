@@ -105,18 +105,18 @@ export default {
     width: 100%;
     height: 30px;
     margin-top: 10px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
     outline: none;
     padding: 0 5px;
 }
 
 .conf-item input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .conf-item input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .action-container {
@@ -135,12 +135,12 @@ export default {
 
 .action-container button:active {
     width: 50%;
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .advance_desc {
     font-size: 12px;
-    color: #F95569;
+    color: var(--status-error);
 }
 
 .join-conference-container > * {

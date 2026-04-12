@@ -41,7 +41,7 @@ export default {
 }
 
 .message-container .text {
-    color: #050505;
+    color: var(--text-primary);
     font-size: 13px;
 }
 

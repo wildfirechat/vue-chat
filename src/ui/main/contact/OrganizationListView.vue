@@ -67,11 +67,11 @@ export default {
 }
 
 .organization-item:hover {
-    background-color: #EAEAEA;
+    background-color: var(--background-item-hover);
 }
 
 .organization-item.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .organization-item span {

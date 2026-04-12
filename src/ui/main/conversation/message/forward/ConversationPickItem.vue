@@ -46,14 +46,14 @@ export default {
     height: 70px;
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 1px solid var(--border-secondary);
     align-items: center;
     justify-content: flex-start;
     padding-left: 15px;
 }
 
 .conversation-item:active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .conversation-item .header {
@@ -67,14 +67,14 @@ export default {
     height: 45px;
     display: inline-block;
     top: 50%;
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
     transform: translateY(-50%);
     border-radius: 3px;
 }
 
 .conversation-item .title {
     font-size: 14px;
-    color: #262626;
+    color: var(--text-primary);
     font-style: normal;
     font-weight: normal;
     padding-right: 10px;

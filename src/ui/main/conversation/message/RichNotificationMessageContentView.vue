@@ -34,7 +34,6 @@ export default {
         onClickRichNotification() {
             console.log('onClickRichNotification');
             const targetUrl = this.message.messageContent.exUrl;
-            
             if (isElectron()) {
                 // Electron 环境：打开独立工作台窗口
                 let hash = window.location.hash;
@@ -44,8 +43,11 @@ export default {
                 } else {
                     url += "/workspace"
                 }
+
                 url += '?url=' + encodeURIComponent(targetUrl);
-                ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, { hostUrl: location.href, url: encodeURI(url) })
+
+
+                ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, {hostUrl: location.href, url: encodeURI(url)})
             } else {
                 // Web 环境：在工作台中打开
                 this.$router.push({
@@ -61,7 +63,7 @@ export default {
 
 <style lang="css" scoped>
 .notification-container {
-    background-color: white;
+    background-color: var(--background-primary);
     width: 400px;
     padding: 5px 10px;
     border-radius: 5px;
@@ -98,7 +100,7 @@ export default {
 }
 
 .ex-info-container {
-    border-top: 1px solid lightgrey;
+    border-top: 1px solid var(--border-tertiary);
     padding-top: 5px;
     margin: 5px 0;
     font-size: 14px;

@@ -23,11 +23,11 @@
                     <i v-if="source.conversation.type === 5" class="icon-ion-android-lock" style="padding-right: 5px"></i>
                     <div v-if="isOrganizationGroupConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
                         <h2 class="title single-line">{{ conversationTitle }}</h2>
-                        <p class="single-line" style="background: #3f64e4; border-radius: 2px; color: white; padding: 1px 2px; font-size: 9px">官方</p>
+                        <p class="single-line" style="background: var(--accent-color); border-radius: 2px; color: var(--text-on-accent); padding: 1px 2px; font-size: 9px">官方</p>
                     </div>
                     <div v-else-if="isExternalDomainSingleConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
                         <h2 class="title single-line">{{ conversationTitle }}</h2>
-                        <p class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                        <p class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                     </div>
                     <h2 v-else class="title single-line">{{ conversationTitle }}</h2>
                     <p class="time single-line">{{ source._timeStr }}</p>
@@ -147,6 +147,7 @@ export default {
         showConversationInfoContextMenu(event) {
             this.$eventBus.$emit('showConversationContextMenu', [event, this.source]);
         },
+
     },
     computed: {
         conversationTitle() {
@@ -164,7 +165,6 @@ export default {
             }
             return false;
         },
-
         isExternalDomainSingleConversation() {
             let info = this.source;
             if (info.conversation.type === ConversationType.Single && WfcUtil.isExternal(info.conversation.target)) {
@@ -267,42 +267,43 @@ export default {
 <style scoped>
 .conversation-item-container {
     padding-left: 12px;
-    background-color: #f8f8f8;
+    background-color: var(--background-item-normal);
 }
 
 .conversation-item-container:hover{
-    background-color: #EAEAEA;
+    background-color: var(--background-item-hover);
 }
+
 .conversation-item-container.drag {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .conversation-item-container.active {
-    background-color: #DEDEDE;
+    background-color: var(--background-item-active);
 }
 
 .conversation-item-container.top {
-    background-color: #EBEBEB;
+    background-color: var(--background-item-top);
 }
 
 .conversation-item-container.top:hover{
-    background-color: #DEDEDE;
+    background-color: var(--background-item-active);
 }
 
 .conversation-item-container.highlight {
-    box-shadow: 0 0 0 1px #4168e0 inset;
+    box-shadow: 0 0 0 1px var(--border-active) inset;
     z-index: 100;
 }
 
 .conversation-item-container.active.top {
-    background-color: #D3D3D3;
+    background-color: var(--background-item-active);
 }
 
 .conversation-item {
     width: 100%;
     height: 68px;
     display: flex;
-    /*border-bottom: 1px solid #eeeeee;*/
+    /*border-bottom: 1px solid var(--border-secondary);*/
     align-items: center;
     justify-content: center;
 }
@@ -320,7 +321,7 @@ export default {
     height: 36px;
     min-width: 36px;
     min-height: 36px;
-    background: #d6d6d6;
+    background: var(--background-tertiary);
     top: 50%;
     transform: translateY(-50%);
     border-radius: 3px;
@@ -329,9 +330,9 @@ export default {
 
 .header .badge {
     position: absolute;
-    color: white;
+    color: var(--text-on-accent);
     font-size: 10px;
-    background-color: red;
+    background-color: var(--background-badge);
     border-radius: 8px;
     min-width: 16px;
     height: 16px;
@@ -373,7 +374,7 @@ export default {
 .content-container .title-time-container .title {
     display: inline-block;
     font-size: 14px;
-    color: #262626;
+    color: var(--text-primary);
     font-style: normal;
     font-weight: normal;
     flex: 1;
@@ -381,7 +382,7 @@ export default {
 
 .content-container .title-time-container .time {
     display: inline-block;
-    color: gray;
+    color: var(--text-secondary);
     font-size: 10px;
 }
 
@@ -393,32 +394,32 @@ export default {
 .content .draft {
     font-size: 12px;
     height: 20px;
-    color: #b8b8b8;
+    color: var(--text-placeholder);
 }
 
 /*refer to: https://blog.csdn.net/weixin_42412046/article/details/80804285*/
 >>> .content .draft em {
-    color: red;
+    color: var(--text-danger);
     font-style: normal;
     padding-right: 5px;
 }
 
 .conversation-item-container.top .content .last-message-desc {
-    color: #949494;
+    color: var(--text-secondary);
 }
 
 .content .last-message-desc {
-    color: #ACACAC;
+    color: var(--text-tertiary);
     font-size: 12px;
 }
 
 .content .last-message-desc i {
     font-style: normal;
-    color: red;
+    color: var(--text-danger);
 }
 
 .content i {
-    color: #b8b8b8;
+    color: var(--text-placeholder);
 }
 
 

@@ -543,7 +543,7 @@ export default {
     flex-direction: column;
     align-items: center;
     font-size: 12px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .avatar {
@@ -564,7 +564,7 @@ export default {
     align-items: center;
     width: 100%;
     height: 100%;
-    color: white;
+    color: var(--text-on-accent);
     /*background-color: rebeccapurple;*/
 }
 
@@ -585,7 +585,7 @@ export default {
     height: auto;
     position: absolute;
     top: 0;
-    background-color: #cccccc;
+    background-color: var(--background-item-placeholder);
     left: 0;
 }
 
@@ -606,23 +606,30 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: black;
+    color: var(--text-primary);
 }
 
 .audio-input-device-item:not(:last-of-type) {
-    border-bottom: 1px solid #e0e0e0e5;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .audio-input-device-item:hover {
-    background: #e0e0e0e5;
+    background: var(--border-primary);
 }
 
 .webrtc-tip {
     position: absolute;
-    color: red;
     left: 0;
     top: 0;
     z-index: 999;
+}
+
+p {
+    color: var(--text-on-accent);
+}
+
+.webrtc-tip p {
+    color: var(--text-danger);
 }
 
 </style>

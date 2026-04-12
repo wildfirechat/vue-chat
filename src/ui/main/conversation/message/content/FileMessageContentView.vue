@@ -7,10 +7,10 @@
             <p class="file-name">{{ this.message.messageContent.name }}</p>
             <p class="file-size single-line">{{ size }}</p>
         </div>
-        <div v-if="downloadStats" style="height:5px; background: #4168e0a0; position: absolute; left: 0; bottom: 0"
+        <div v-if="downloadStats" style="height:5px; background: var(--accent-color); position: absolute; left: 0; bottom: 0"
              v-bind:style="{width: downloadStats.progress / downloadStats.total * 100 + '%'}">
         </div>
-        <div v-if="sendStats" style="height:5px; background: #4168e0a0; position: absolute; left: 0; bottom: 0"
+        <div v-if="sendStats" style="height:5px; background: var(--accent-color); position: absolute; left: 0; bottom: 0"
              v-bind:style="{width: sendStats.progress / sendStats.total * 100 + '%'}">
         </div>
     </div>
@@ -100,7 +100,7 @@ export default {
 .file-message-container {
     margin: 0 10px;
     padding: 10px;
-    background-color: white;
+    background-color: var(--background-primary);
     position: relative;
     border-radius: 5px;
     display: flex;
@@ -127,17 +127,17 @@ export default {
 }
 
 .file-message-container .file-size {
-    color: #888888;
+    color: var(--text-hint);
     font-size: 13px;
 }
 
 .file-message-container .text {
-    color: #050505;
+    color: var(--text-primary);
     font-size: 16px;
 }
 
 .rightarrow:before {
-    border-left-color: white;
+    border-left-color: var(--text-on-accent);
 }
 
 </style>

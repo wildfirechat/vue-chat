@@ -72,21 +72,21 @@ export default {
 
 
 .message-time-container.checked {
-    background-color: #e7e7e7;
+    background-color: var(--background-item-placeholder);
 }
 
 .message-time-container .time {
     width: 100%;
     text-align: center;
-    color: #b4b4b4;
+    color: var(--text-time);
     font-size: 10px;
-    background-color: #f3f3f3;
+    background-color: var(--background-tertiary);
 }
 
 .message-time-container .receipt {
     margin-right: 70px;
     font-size: 12px;
-    color: #b4b4b4;
+    color: var(--text-time);
 }
 
 .message-content-container {

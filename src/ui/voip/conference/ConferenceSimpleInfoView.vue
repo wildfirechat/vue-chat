@@ -22,6 +22,7 @@
 import WfcScheme from "../../../wfcScheme";
 import wfc from "../../../wfc/client/wfc";
 import {copyText} from "../../util/clipboard";
+
 export default {
     name: "ConferenceSimpleInfoView",
     props: {
@@ -51,11 +52,11 @@ export default {
 <style scoped>
 
 .conference-simple-info-container {
-    background: white;
+    background: var(--background-primary);
     padding: 5px 10px;
     width: 300px;
     border-radius: 2px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 var(--background-mask), 0 6px 20px 0 var(--background-mask);
 }
 
 .title {
@@ -72,12 +73,12 @@ export default {
     width: 60px;
     min-width: 60px;
     font-size: 13px;
-    color: #2d3033;
+    color: var(--text-primary);
 }
 
 .info-item .value {
     flex: 1 1 auto;
-    color: gray;
+    color: var(--text-secondary);
     text-overflow: ellipsis;
     overflow: hidden;
 }

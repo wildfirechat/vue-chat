@@ -86,16 +86,16 @@ export default {
     width: 100%;
     padding: 0 5px;
     outline: none;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
 }
 
 .info-action-container input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .info-action-container input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .info-container {
@@ -128,21 +128,21 @@ export default {
 }
 
 .info-action-container .action-container .cancel {
-    border: 1px solid #cccccc;
+    border: 1px solid var(--border-primary);
 }
 
 .info-action-container .action-container .cancel:active {
-    background: #cccccc;
+    background: var(--background-item-placeholder);
 }
 
 .info-action-container .action-container .confirm {
-    background-color: #4168e0;
-    color: white;
+    background-color: var(--accent-color);
+    color: var(--text-on-accent);
     border: 1px solid white;
 }
 
 .info-action-container .action-container .confirm:active {
-    background-color: #3168e0;
+    background-color: var(--status-info);
 }
 
 </style>

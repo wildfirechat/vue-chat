@@ -145,8 +145,8 @@ export default {
 }
 
 .category.active {
-    color: #4168e0;
-    border-bottom: 2px solid #4168e0;
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
 }
 
 .source-container {
@@ -156,7 +156,7 @@ export default {
     overflow-x: auto;
     flex-wrap: wrap;
     overflow-y: scroll;
-    border: 1px solid lightgrey;
+    border: 1px solid var(--border-tertiary);
     width: 100%;
 }
 
@@ -168,7 +168,7 @@ export default {
 }
 
 .source.active {
-    border: 2px solid #4168e0;
+    border: 2px solid var(--accent-color);
 }
 
 .source .thumbnail {
@@ -206,8 +206,8 @@ export default {
 }
 
 .action-container button:active {
-    color: #4168e0;
-    border-color: #4168e0;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .action-container button.disabled {

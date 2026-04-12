@@ -53,14 +53,14 @@ export default {
 .top-article {
     position: relative;
     width: 400px;
-    background: white;
+    background: var(--background-primary);
     padding: 10px;
     border-radius: 5px;
     margin: 5px 0;
 }
 
 .top-article:hover {
-    background: #e0e0e0e5;
+    background: var(--border-primary);
 }
 
 .top-article img {
@@ -86,7 +86,7 @@ export default {
     position: absolute;
     bottom: 0;
     left: 0;
-    color: white;
+    color: var(--text-on-accent);
     padding: 0 20px;
     transform: translateY(-50%);
 }
@@ -99,12 +99,12 @@ export default {
     position: relative;
     width: 400px;
     height: 80px;
-    background: white;
+    background: var(--background-primary);
     padding: 0 10px;
 }
 
 .sub-article:hover {
-    background: #e0e0e0e5;
+    background: var(--border-primary);
 }
 
 .articles-container .sub-article:last-of-type {

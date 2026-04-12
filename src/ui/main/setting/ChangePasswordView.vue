@@ -67,6 +67,7 @@ export default {
                     });
                 })
         },
+
         // 滑动验证成功回调
         onSlideVerifySuccess(token) {
             console.log('[ChangePassword] 滑动验证成功，token:', token);
@@ -109,7 +110,7 @@ export default {
 .password-form-container .tip {
     align-self: flex-start;
     font-size: 12px;
-    color: #4168e0;
+    color: var(--accent-color);
     margin-top: 10px;
 }
 
@@ -123,7 +124,7 @@ export default {
 .password-form-container .text-input {
     height: 40px;
     width: 100%;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
     outline: none;
     padding: 0 5px;
@@ -137,23 +138,23 @@ input::-webkit-inner-spin-button {
 }
 
 .password-form-container .text-input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .password-form-container .text-input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .password-form-container .confirm-button {
     height: 40px;
     width: 100%;
     margin-top: 20px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
 }
 
 .password-form-container .confirm-button:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .password-form-container .confirm-auth-code-button {

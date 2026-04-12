@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center" style="width: 100%; height: 100%; background: #292929">
+    <div class="flex-column flex-align-center flex-justify-center" style="width: 100%; height: 100%; background: var(--background-voip)">
         <h1 style="display: none">Voip-Multi 运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <p class="webrtc-tip" v-if="showWebrtcTip">
@@ -632,7 +632,7 @@ export default {
 
 .participant-container p {
     max-height: 20px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .duration-action-container {
@@ -643,7 +643,7 @@ export default {
 }
 
 .duration-action-container p {
-    color: white;
+    color: var(--text-on-accent);
     padding: 10px 0;
 }
 
@@ -662,7 +662,7 @@ export default {
     flex-direction: column;
     align-items: center;
     font-size: 12px;
-    color: white;
+    color: var(--text-on-accent);
 }
 
 .avatar {
@@ -682,7 +682,7 @@ export default {
 
 .webrtc-tip {
     position: absolute;
-    color: red;
+    color: var(--text-danger);
     left: 0;
     top: 0;
     z-index: 999;

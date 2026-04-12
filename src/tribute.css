@@ -10,9 +10,10 @@
     display: block;
     z-index: 999999;
     border-radius: 5px;
-    box-shadow: 6px 6px 28px 6px rgba(230, 230, 230, 100);
+    box-shadow: var(--shadow-tooltip);
     padding: 5px;
-    background: white;
+    background: var(--background-tooltip);
+    border: 1px solid var(--border-subtle);
 }
 
 .tribute-container ul {
@@ -25,7 +26,7 @@
 .tribute-container li {
     padding: 5px 5px;
     cursor: pointer;
-    color: #000;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     border-radius: 3px;
@@ -40,7 +41,7 @@
 }
 
 .tribute-container li.highlight {
-    background: #e5e5e5;
+    background: var(--background-item-hover);
 }
 
 .tribute-container li span {

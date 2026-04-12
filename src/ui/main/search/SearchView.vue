@@ -85,7 +85,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #fafafa;
+    background-color: var(--background-secondary);
     -webkit-app-region: drag;
     position: relative;
 }
@@ -99,18 +99,18 @@ export default {
     /* flex: 1; */
     /* 兼容Firefox 52 */
     width: 209px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
     outline: none;
-    background-color: #eeeeee;
+    background-color: var(--background-input);
 }
 
 .search-input-container input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .search-input-container input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .search-input-container i {
@@ -125,13 +125,13 @@ export default {
     width: 30px;
     height: 25px;
     margin-right: 10px;
-    background-color: #fafafa;
+    background-color: var(--background-secondary);
     border-radius: 3px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
 }
 
 .search-input-container button:active {
-    background-color: #e5e5e5;
+    background-color: var(--border-primary);
 }
 
 </style>

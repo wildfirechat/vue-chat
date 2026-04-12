@@ -131,8 +131,8 @@ export default {
 <style lang="css">
 
 :root {
-    --in-arrow-color: white;
-    --out-arrow-color: #a8bdff;
+    --in-arrow-color: var(--message-in-arrow);
+    --out-arrow-color: var(--message-out-arrow);
 }
 
 .leftarrow:before {

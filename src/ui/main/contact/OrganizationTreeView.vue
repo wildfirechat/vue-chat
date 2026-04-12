@@ -21,7 +21,6 @@
                         <p class="button" @click="loadAndShowOrganization(org)">下级</p>
                     </div>
                 </li>
-           
                 <li v-for="(employee, index) in employees" :key="employee.employeeId">
                     <div class="organization-item"
                          @click="showUserCardView($event, employee)"
@@ -131,7 +130,7 @@ export default {
 .title {
     padding: 20px;
     font-size: 20px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 .breadcrumb {
@@ -153,16 +152,16 @@ export default {
 .breadcrumb li:not(:last-child)::after {
     display: inline-block;
     margin: 0 10px;
-    color: #8f959f;
+    color: var(--text-secondary-strong);
     content: ">";
 }
 
 .breadcrumb li:not(:last-child) a {
-    color: #4168e0;
+    color: var(--accent-color);
 }
 
 .breadcrumb li:last-child a {
-    color: #8f959f;
+    color: var(--text-secondary-strong);
     pointer-events: none;
 }
 
@@ -183,7 +182,7 @@ export default {
 }
 
 .organization-item:hover {
-    background: #d6d6d6;
+    background: var(--background-item-placeholder);
 }
 
 .organization-item img {
@@ -198,11 +197,11 @@ export default {
     margin-left: auto;
     padding: 5px;
     font-size: 14px;
-    color: #4168e0;
+    color: var(--accent-color);
 }
 
 .organization-item .button:hover {
-    background: #dbe1f0;
+    background: var(--background-selected-dim);
     border-radius: 5px;
 }
 

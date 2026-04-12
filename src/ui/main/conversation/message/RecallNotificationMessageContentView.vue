@@ -34,6 +34,7 @@ export default {
     unmounted() {
         this.checkReeditInterval && clearInterval(this.checkReeditInterval)
     },
+
     methods: {
         checkReeditable() {
             let delta = wfc.getServerDeltaTime();
@@ -46,7 +47,7 @@ export default {
                     this.checkReeditInterval = setInterval(() => {
                         this.checkReeditable()
                     }, 100)
-            }
+                }
                 this.isReeditable = true
             } else {
                 this.isReeditable = false
@@ -68,7 +69,7 @@ export default {
 }
 
 .notification-container .notification {
-    color: #b8b8b8;
+    color: var(--text-placeholder);
     margin: 20px 0;
     font-size: 12px;
 }

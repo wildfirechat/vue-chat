@@ -9,7 +9,7 @@
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
                         <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
-                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc" >{{ domainName }}</p>
+                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
                     </div>
                     <div
                         v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
@@ -46,7 +46,6 @@
                     </div>
                 </div>
                 <div v-show="dragAndDropEnterCount > 0" class="drag-drop-container">
-              
                     <div class="drag-drop">
                         <p>{{ $t('conversation.drag_to_send_to', [conversationTitle]) }}</p>
                     </div>
@@ -72,7 +71,7 @@
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
                     <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>
-                    <ScaleLoader :color="'#d2d2d2'" :height="'15px'" :width="'3px'"/>
+                    <ScaleLoader :color="'var(--text-tertiary)'" :height="'15px'" :width="'3px'"/>
                 </div>
                 <div v-if="unreadMessageCount > 0" class="unread-count-tip-container" @click="showUnreadMessage">
                     {{ '' + this.unreadMessageCount + '条新消息' }}
@@ -117,7 +116,7 @@
                     class="conversation-info-container"
                 />
 
-                <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true" v-on:close="onMenuClose">
+                <vue-context ref="menu" v-slot="{data : message}" :close-on-scroll="true" v-on:close="onMenuClose">
                     <!--          更多menu item-->
                     <li v-if="isCopyable(message)">
                         <a @click.prevent="copy(message)">{{ $t('common.copy') }}</a>
@@ -215,7 +214,6 @@ import {imageThumbnail} from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
 import {vOnClickOutside} from '@vueuse/components'
 import WfcUtil from "../../../wfc/util/wfcUtil";
-
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 import MessageItemView from "./MessageItemView.vue";
@@ -359,6 +357,7 @@ export default {
                         content.imageHeight = ih;
                         wfc.sendConversationMessage(this.conversationInfo.conversation, content);
                     } else {
+
                         // TODO blob uri
                     }
                 }
@@ -424,7 +423,6 @@ export default {
         hideConversationInfo() {
             this.showConversationInfo && (this.showConversationInfo = false);
         },
-
 
         isCancelable(message) {
             return message && message.messageContent instanceof MediaMessageContent && message.status === MessageStatus.Sending;
@@ -520,6 +518,7 @@ export default {
                 virtualList.scrollToOffset(scrollSize);
             }
         },
+
         dragStart(e) {
             if (this.muted) {
                 return;
@@ -555,8 +554,7 @@ export default {
 
                 let containerTop = container.getBoundingClientRect().top;
                 let pointerRelativeYpos = this.pendingPointerY - containerTop;
-            let boxAminHeight = 150;
-
+                let boxAminHeight = 150;
                 let nextHeight = Math.max(boxAminHeight, Math.round(pointerRelativeYpos));
                 if (nextHeight === this.lastMessageListHeight) {
                     return;
@@ -673,6 +671,7 @@ export default {
             }
             return false;
         },
+
         isQuotable(message) {
             if (!message) {
                 return false;
@@ -844,7 +843,7 @@ export default {
                 }
             })
         },
-                
+
         forward(message) {
             return this.$forwardMessage({
                 forwardType: ForwardType.NORMAL,
@@ -905,7 +904,7 @@ export default {
         multiSelect(message) {
             this.toggleMessageMultiSelectionActionView(message);
         },
-     
+
         playVoice(message) {
             if (amr) {
                 amr.stop();
@@ -1001,6 +1000,7 @@ export default {
         this.popupItem = this.$refs['setting'];
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
+
         // 监听来自 MessageItemView 的事件
         this.$eventBus.$on('open-message-context-menu', this.openMessageContextMenu);
         this.$eventBus.$on('open-message-sender-context-menu', this.openMessageSenderContextMenu);
@@ -1092,7 +1092,6 @@ export default {
                 return '会话';
             }
         },
-
         isExternalDomainSingleConversation() {
             let info = this.sharedConversationState.currentConversationInfo;
             if (info.conversation.type === ConversationType.Single && WfcUtil.isExternal(info.conversation.target)) {
@@ -1175,10 +1174,10 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: var(--background-primary);
     border-top-right-radius: var(--main-border-radius);
     border-bottom-right-radius: var(--main-border-radius);
-    /*border-left: 1px solid #e6e6e6;*/
+    /*border-left: 1px solid var(--border-primary);*/
 }
 
 .conversation-empty-container h1 {
@@ -1193,8 +1192,8 @@ export default {
     padding: 0 0 0 20px;
     justify-content: space-between;
     align-items: center;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #e6e6e6;
+    background-color: var(--border-subtle);
+    border-bottom: 1px solid var(--border-primary);
     border-top-right-radius: var(--main-border-radius);
     position: relative;
 }
@@ -1211,11 +1210,11 @@ export default {
 .title-container a {
     text-decoration: none;
     padding: 15px;
-    color: #181818;
+    color: var(--text-primary);
 }
 
 .title-container a:active {
-    color: #d6d6d6;
+    color: var(--background-item-hover);
 }
 
 .conversation-container {
@@ -1234,8 +1233,8 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #e6e6e6;
+    background-color: var(--border-subtle);
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .conversation-content-container {
@@ -1245,13 +1244,13 @@ export default {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    background-color: #f3f3f3;
+    background-color: var(--background-tertiary);
     border-bottom-right-radius: var(--main-border-radius);
 }
 
 .conversation-content-container .drag-drop-container {
     position: absolute;
-    background-color: #f2f2f2a5;
+    background-color: var(--background-unconnected);
     top: 0;
     left: 0;
     width: 100%;
@@ -1261,7 +1260,7 @@ export default {
 }
 
 .conversation-content-container .drag-drop {
-    border: 2px dashed #b2b2b2;
+    border: 2px dashed var(--border-dashed-active);
     height: 100%;
     width: 100%;
     border-radius: 5px;
@@ -1278,13 +1277,13 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
-    background: white;
+    background: var(--background-primary);
 }
 
 .ongoing-call-item {
     padding: 10px 20px;
     display: flex;
-    border-bottom: 1px solid lightgrey;
+    border-bottom: 1px solid var(--border-secondary);
 }
 
 .ongoing-call-item p {
@@ -1293,12 +1292,12 @@ export default {
 
 .ongoing-call-item button {
     padding: 5px 10px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
 }
 
 .ongoing-call-item button:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .conversation-message-list {
@@ -1315,6 +1314,7 @@ export default {
 .conversation-content-container.dragging * {
     cursor: row-resize !important;
 }
+
 .header {
     padding: 10px;
     text-align: center;
@@ -1324,8 +1324,8 @@ export default {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid #4168e0;
+    border: 2px solid var(--background-tertiary);
+    border-top: 2px solid var(--border-active);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -1336,16 +1336,16 @@ export default {
 }
 
 .finished {
-    color: #999;
+    color: var(--text-hint);
     font-size: 14px;
 }
 
 .unread-count-tip-container {
     margin-left: auto;
     padding: 4px 8px;
-    background: white;
+    background: var(--background-primary);
     width: auto;
-    color: #4168e0;
+    color: var(--border-active);
     border-radius: 4px;
 }
 
@@ -1373,17 +1373,17 @@ export default {
     display: block;
     width: 100%;
     height: 3px;
-    border-top: 1px solid #e2e2e2;
+    border-top: 1px solid var(--border-strong);
     margin: 0 auto;
 }
 
 .user-online-status {
-    color: gray;
+    color: var(--text-secondary);
     font-size: 10px;
 }
 
 .domain-desc {
-    color: #F0A040;
+    color: var(--color-warning);
     font-size: 10px;
 }
 
@@ -1394,9 +1394,9 @@ export default {
     top: 0;
     right: 0;
     position: absolute;
-    background-color: #ffffffe5;
+    background-color: var(--background-info-panel);
     backdrop-filter: blur(6px);
-    border-left: 1px solid #e6e6e6;
+    border-left: 1px solid var(--border-primary);
     /**
     否则会 clip 点击会话成员时，出现的 UserCardView
      */
@@ -1408,10 +1408,11 @@ export default {
 }
 
 i:hover {
-    color: #1f64e4;
+    color: var(--accent-color);
 }
 
 i.active {
-    color: #3f64e4;
+    color: var(--accent-color-active);
 }
 </style>
+

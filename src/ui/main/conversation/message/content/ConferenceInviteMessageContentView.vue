@@ -121,7 +121,7 @@ export default {
 .conference-invite-message-container {
     margin: 0 10px;
     padding: 5px;
-    background-color: white;
+    background-color: var(--background-primary);
     width: 250px;
     max-width: 250px;
     position: relative;
@@ -139,19 +139,19 @@ export default {
 .type {
     padding-top: 5px;
     margin: 5px 10px 0 10px;
-    border-top: 1px solid rgba(211, 211, 211, 0.4);
+    border-top: 1px solid var(--border-tertiary);
     font-size: 14px;
-    color: gray;
+    color: var(--text-secondary);
 }
 
 .title {
     font-size: 16px;
-    color: black;
+    color: var(--text-primary);
 }
 
 .desc {
     font-size: 14px;
-    color: gray;
+    color: var(--text-secondary);
 }
 
 </style>

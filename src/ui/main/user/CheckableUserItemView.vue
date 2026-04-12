@@ -17,7 +17,7 @@
             <img class="avatar" :src="source.portrait" alt="">
             <div style="display: flex; align-items: center; ">
                 <p class="single-line">{{ source._displayName || (source.groupAlias ? source.groupAlias : (source.friendAlias ? source.friendAlias : (source.displayName ? source.displayName : '用户'))) }}</p>
-                <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                <p v-if="isExternalDomainUser" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
             </div>
         </div>
     </div>
@@ -157,12 +157,12 @@ ul {
 
 .contact-item .label {
     width: 100%;
-    background-color: #fafafa;
+    background-color: var(--background-secondary);
 }
 
 .contact-item .label p {
     padding: 5px 5px 5px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .contact-item .label.sticky {
@@ -182,11 +182,11 @@ ul {
 }
 
 .contact-item .content.active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .contact-item .content:active {
-    background-color: #d6d6d6;
+    background-color: var(--background-item-placeholder);
 }
 
 .disabled {

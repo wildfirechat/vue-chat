@@ -172,7 +172,7 @@ export default {
 
 .text-input {
     height: 30px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-primary);
     border-radius: 3px;
     outline: none;
     width: 100%;
@@ -180,11 +180,11 @@ export default {
 }
 
 .text-input:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .text-input:focus {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .create-conference-container button {
@@ -193,12 +193,12 @@ export default {
 }
 
 .create-conference-container button:active {
-    border: 1px solid #4168e0;
+    border: 1px solid var(--border-active);
 }
 
 .advance_desc {
     font-size: 12px;
-    color: #F95569;
+    color: var(--status-error);
 }
 
 .create-conference-container > * {
