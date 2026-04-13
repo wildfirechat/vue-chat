@@ -352,7 +352,7 @@ export default {
     background-color: var(--background-primary);
     border-radius: var(--main-border-radius);
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08),
                 0 10px 20px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(0, 0, 0, 0.02);
 }
@@ -466,6 +466,9 @@ i.active {
     box-shadow: var(--shadow-main), 0 6px 20px 0 var(--background-mask);
     display: flex;
     flex-direction: column;
+    width: 360px;
+    height: 640px;
+    overflow: hidden;
 }
 
 .voip-div-container.single {

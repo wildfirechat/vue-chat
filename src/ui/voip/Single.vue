@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center" style="background: #292929">
+    <div class="flex-column flex-align-center flex-justify-center" style="width: 100%; height: 100%">
         <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <div class="webrtc-tip" v-if="showVoipTip">
@@ -516,8 +516,9 @@ export default {
 <style lang="css" scoped>
 
 .container {
-    width: 360px;
-    height: 640px;
+    background: var(--background-voip);
+    width: 100%;
+    height: 100%;
     position: relative;
 }
 

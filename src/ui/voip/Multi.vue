@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center" style="width: 100%; height: 100%; background: var(--background-voip)">
+    <div class="flex-column flex-align-center flex-justify-center" style="width: 100%; height: 100%;">
         <h1 style="display: none">Voip-Multi 运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <p class="webrtc-tip" v-if="showWebrtcTip">
@@ -596,6 +596,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    background: var(--background-voip);
 }
 
 .content-container {
