@@ -76,7 +76,8 @@
     --background-error-subtle: rgba(255, 69, 58, 0.1);
     --background-accent-light: #1a2a4a;
     --background-selected-dim: #262c3d;
-    --background-voip: #000000;
+    --background-voip: #2E2E2E;
+    --background-action: #202020;
     --background-voip-sidebar: #1c1c1e;
     --background-active-subtle: #262c3d;
     --background-info-panel: rgba(28, 28, 30, 0.9);
@@ -138,6 +139,6 @@
     --hero-bg-blob-3: linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%);
 
     .message-input-container i {
-        color: var(--text-secondary);
+        color: var(--text-secondary) !important;
     }
 }

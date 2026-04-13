@@ -58,12 +58,6 @@
                                webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
                     </div>
-                    <!--add more-->
-                    <!--通话建立成功之后，才允许邀请新参与者-->
-                    <div v-if="status === 4/*connect*/ && participantUserInfos.length < 8"
-                         class="participant-container">
-                        <img @click="invite" class="avatar" src="@/assets/images/add.png">
-                    </div>
                 </div>
             </section>
 
@@ -113,6 +107,9 @@
                         </div>
                         <div v-if="!audioOnly && false" class="action">
                             <img @click="screenShare" class="action-img" src='@/assets/images/av_share.png'/>
+                        </div>
+                        <div v-if="participantUserInfos.length < 8" class="action">
+                            <img @click="invite" class="action-img circle" src="@/assets/images/add.png">
                         </div>
                     </div>
                 </div>
@@ -649,11 +646,9 @@ export default {
 }
 
 .action-container {
-    width: 100%;
-    bottom: 0;
-    left: 0;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    column-gap: 80px;
     padding-bottom: 20px;
 }
 
@@ -687,5 +682,10 @@ export default {
     left: 0;
     top: 0;
     z-index: 999;
+}
+
+.circle {
+    border-radius: 50%;
+    background: var(--background-action);
 }
 </style>
