@@ -18,12 +18,9 @@
 <script>
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
-import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import {gt} from "../../../wfc/util/longUtil";
-import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
-import ConversationInfo from "../../../wfc/model/conversationInfo";
 
 export default {
     name: "ConferenceConversationFloatingView",
@@ -31,28 +28,21 @@ export default {
         session: {
             type: Object,
             required: true,
+        },
+        conversationStore: {
+            type: Object,
+            required: true,
         }
     },
     data() {
         return {
-            sharedConversationState: store.state.conversation,
-            sharedMiscState: store.state.misc,
+            sharedConversationState: this.conversationStore.state.conversation,
             filteredMessages: [],
             filterInternal: 0,
             text: '',
         }
     },
     created() {
-        let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
-        console.log('setCurrentConversation ', conversation)
-        let chatroomInfo = new ChatRoomInfo();
-        chatroomInfo.chatRoomId = this.session.callId;
-        chatroomInfo.title = this.session.title;
-        conversation._target = chatroomInfo;
-        conversation._target._displayName = chatroomInfo.title;
-        let conversationInfo = new ConversationInfo();
-        conversationInfo.conversation = conversation;
-        store.setCurrentConversationInfo(conversationInfo);
         this.filterInternal = setInterval(() => {
             this.filterMessage();
         }, 1 * 1000);
@@ -64,8 +54,6 @@ export default {
     },
 
     unmounted() {
-        console.log('setCurrentConversation null')
-        store.setCurrentConversation(null);
         clearInterval(this.filterInternal)
     },
 
@@ -75,7 +63,7 @@ export default {
             this.$refs.msgInput?.focus();
         },
         sendMessage() {
-            let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
+            let conversation = this.sharedConversationState.currentConversationInfo ? this.sharedConversationState.currentConversationInfo.conversation : new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
             wfc.sendConversationMessage(conversation, new TextMessageContent(this.text))
             this.text = '';
         },

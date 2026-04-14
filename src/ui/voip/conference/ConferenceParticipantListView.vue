@@ -159,6 +159,9 @@ export default {
         },
         participantDesc(user) {
             let desc = '';
+            if(!conferenceManager.conferenceInfo){
+                return '';
+            }
             if (user.uid === conferenceManager.selfUserId) {
                 desc = "我"
                 if (user.uid === conferenceManager.conferenceInfo.owner) {

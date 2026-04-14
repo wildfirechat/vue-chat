@@ -1,6 +1,6 @@
 <template>
     <div class="conference-manage-view-container" ref="rootContainer">
-        <div class="tip-container" v-if="selfUserId === conferenceManager.conferenceInfo.owner">
+        <div class="tip-container" v-if="conferenceManager.conferenceInfo && selfUserId === conferenceManager.conferenceInfo.owner">
             <div v-if="showParticipantList && conferenceManager.applyingUnmuteAudioMembers.length > 0"
                  @click="showParticipantList = false;showAudioApplyList = true"
                  class="action-tip">{{ audioApplyUnmuteTip }}

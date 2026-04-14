@@ -5,7 +5,7 @@ import {getItem} from "./ui/util/storageHelper";
 import {isElectron} from "./platform";
 import Config from "./config";
 
-export const pstore = defineStore('store-p', () => {
+export const pstore = (id) => defineStore(id, () => {
     const conversationStore = ref({
         currentConversationInfo: null,
         conversationInfoList: [],
@@ -202,5 +202,5 @@ export const pstore = defineStore('store-p', () => {
         }
     })
 
-    return {conversationStore, contactStore, pickStore, searchStore, miscStore}
-})
+    return { conversationStore, contactStore, pickStore, searchStore, miscStore }
+})()

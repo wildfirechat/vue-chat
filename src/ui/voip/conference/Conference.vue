@@ -59,6 +59,7 @@
                 <div style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000">
                     <ConferenceConversationFloatingView
                         :session="session"
+                        :conversation-store="conferenceConversationStore"
                     />
                 </div>
                 <div class="conference-main-content-container">
@@ -205,17 +206,33 @@
                 <div class="title" style="display: none">
                     TODO
                 </div>
+                <div v-if="showConferenceManageView && showConversationView" class="slider-tabs">
+                    <div class="slider-tab"
+                         v-bind:class="{active: activeSliderTab === 'manage'}"
+                         @click="selectSliderTab('manage')">
+                        管理
+                    </div>
+                    <div class="slider-tab"
+                         v-bind:class="{active: activeSliderTab === 'conversation'}"
+                         @click="selectSliderTab('conversation')">
+                        聊天
+                    </div>
+                </div>
+                <div class="slider-content">
                 <ConferenceManageView
-                    v-if="showConferenceManageView"
+                    v-show="showConferenceManageView && activeSliderTab === 'manage'"
                     v-bind:class="{ active: showConferenceManageView}"
                     :participants="participantUserInfos"
                     :session="session"
                 />
-                <ConversationView v-if="showConversationView && sharedMiscState.isElectron"
+                <ConversationView v-show="showConversationView && activeSliderTab === 'conversation'"
+                                  ref="conferenceConversationView"
                                   class="conversation-view"
                                   style="height: 100%"
-                                  :title="conferenceManager.conferenceInfo.conferenceTitle"
+                                  :title="conferenceManager.conferenceInfo ? conferenceManager.conferenceInfo.conferenceTitle : 'Title'"
+                                  :store-instance="conferenceConversationStore"
                                   :input-options="{disableScreenShot:true, disableHistory:true, disableVoip:true, disableChannelMenu:true}"/>
+                </div>
             </div>
         </div>
     </div>
@@ -232,7 +249,7 @@ import CallEndReason from "../../../wfc/av/engine/callEndReason";
 import ScreenShareControlView from "../ScreenShareControlView";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import ElectronWindowsControlButtonView from "../../common/ElectronWindowsControlButtonView";
-import store from "../../../store";
+import store, {newStore} from "../../../store";
 import VideoType from "../../../wfc/av/engine/videoType";
 import IpcEventType from "../../../ipcEventType";
 import ConferenceParticipantVideoView from "./ConferenceParticipantVideoView";
@@ -271,6 +288,8 @@ export default {
             showSlider: false,
             showConferenceManageView: false,
             showConversationView: false,
+            activeSliderTab: 'manage',
+            conferenceConversationStore: null,
             sharedMiscState: store.state.misc,
             videoInputDeviceIndex: 0,
 
@@ -306,6 +325,20 @@ export default {
         ConversationView
     },
     methods: {
+        setupStore(){
+            let store = newStore();
+            const storeId = `conferenceStore_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+            store.init(false, {
+                loadFavGroupList: false,
+                loadChannelList: false,
+                loadFriendList: false,
+                loadFavContactList: false,
+                loadFriendRequestList: false,
+                loadDefaultConversationList: false
+            }, storeId);
+
+            this.conferenceConversationStore = store;
+        },
         // 用来解决 iOS 上，不能自动播放问题
         autoPlay() {
             if (isElectron()) {
@@ -392,6 +425,8 @@ export default {
                 if (isElectron()) {
                     document.title = session.title;
                 }
+
+                this.initConferenceConversationStore();
 
                 conferenceManager.getConferenceInfo(session.callId);
             };
@@ -730,55 +765,94 @@ export default {
 
         members() {
             this.showConferenceManageView = !this.showConferenceManageView;
-            this.toggleSliderView();
+            this.syncSliderState('manage');
         },
 
         chat() {
-            if (isElectron()) {
-            	this.showConversationView = !this.showConversationView;
-            	this.toggleSliderView();
-            } else {
-                let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0)
-                let chatroomInfo = new ChatRoomInfo();
-                chatroomInfo.chatRoomId = this.session.callId;
-                chatroomInfo.title = this.session.title;
-                conversation._target = chatroomInfo;
-                conversation._target._displayName = chatroomInfo.title;
-                let conversationInfo = new ConversationInfo();
-                conversationInfo.conversation = conversation;
-                store.setCurrentConversationInfo(conversationInfo);
-                this.$router.replace('/home');
+            this.showConversationView = !this.showConversationView;
+            this.syncSliderState('conversation');
+        },
+
+        selectSliderTab(tab) {
+            this.activeSliderTab = tab;
+            if (tab === 'conversation') {
+                this.focusConferenceConversationInput();
             }
         },
 
         hideParticipantList() {
             this.showConferenceManageView && (this.showConferenceManageView = false);
-            this.toggleSliderView();
+            this.syncSliderState();
+        },
+
+        syncSliderState(preferredTab) {
+            if (this.showConferenceManageView || this.showConversationView) {
+                if (!this.showSlider) {
+                    this.openSliderView();
+                }
+                if (preferredTab === 'manage' && this.showConferenceManageView) {
+                    this.activeSliderTab = 'manage';
+                } else if (preferredTab === 'conversation' && this.showConversationView) {
+                    this.activeSliderTab = 'conversation';
+                    this.focusConferenceConversationInput();
+                } else if (this.showConferenceManageView) {
+                    this.activeSliderTab = 'manage';
+                } else if (this.showConversationView) {
+                    this.activeSliderTab = 'conversation';
+                    this.focusConferenceConversationInput();
+                }
+                return;
+            }
+            this.closeSliderView();
+        },
+
+        focusConferenceConversationInput() {
+            this.$nextTick(() => {
+                const conversationView = this.$refs.conferenceConversationView;
+                if (conversationView && conversationView.focusMessageInput) {
+                    conversationView.focusMessageInput();
+                }
+            });
+        },
+
+        openSliderView() {
+            if (this.showSlider) {
+                return;
+            }
+            if (isElectron()) {
+                let size = currentWindow.getSize();
+                currentWindow.setSize(size[0] + 350, size[1], false)
+            } else {
+                window.resizeTo(window.innerWidth + 360, window.outerHeight);
+            }
+            this.$refs.rootContainer.style.setProperty('--slider-width', '350px');
+            this.showSlider = true;
+        },
+
+        closeSliderView() {
+            if (!this.showSlider) {
+                return;
+            }
+            if (isElectron()) {
+                let size = currentWindow.getSize();
+                this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
+                currentWindow.setSize(size[0] - 350, size[1], false)
+            } else {
+                this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
+                window.resizeTo(window.innerWidth - 350, window.outerHeight)
+            }
+
+            this.showConferenceManageView = false;
+            this.showConversationView = false;
+            this.showSlider = false;
         },
 
         toggleSliderView() {
-            if (!this.showSlider) {
-                if (isElectron()) {
-                    let size = currentWindow.getSize();
-                    currentWindow.setSize(size[0] + 350, size[1], false)
-                } else {
-                    window.resizeTo(window.innerWidth + 360, window.outerHeight);
-                }
-                this.$refs.rootContainer.style.setProperty('--slider-width', '350px');
+            if (this.showSlider) {
+                this.closeSliderView();
             } else {
-                if (isElectron()) {
-                    let size = currentWindow.getSize();
-                    this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
-                    currentWindow.setSize(size[0] - 350, size[1], false)
-                } else {
-                    this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
-                    window.resizeTo(window.innerWidth - 350, window.outerHeight)
-                }
-
-                this.showConferenceManageView = false;
-                this.showConversationView = false;
+                this.openSliderView();
             }
-            this.showSlider = !this.showSlider;
         },
 
 
@@ -1043,6 +1117,18 @@ export default {
                     Object.assign(this.participantUserInfos[i], userInfo);
                 }
             }
+        },
+
+        initConferenceConversationStore() {
+            let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
+            let chatroomInfo = new ChatRoomInfo();
+            chatroomInfo.chatRoomId = this.session.callId;
+            chatroomInfo.title = this.session.title;
+            conversation._target = chatroomInfo;
+            conversation._target._displayName = chatroomInfo.title;
+            let conversationInfo = new ConversationInfo();
+            conversationInfo.conversation = conversation;
+            this.conferenceConversationStore.setCurrentConversationInfo(conversationInfo);
         }
     },
 
@@ -1307,6 +1393,7 @@ export default {
     },
 
     created() {
+        this.setupStore();
         if (isElectron()) {
             document.title = '在线会议';
         }
@@ -1366,6 +1453,7 @@ export default {
         this.$eventBus.$off('muteVideo');
         this.$eventBus.$off('muteAudio');
         this.conferenceManager.destroy();
+        this.conferenceConversationStore && this.conferenceConversationStore.destroy();
         wfc.eventEmitter.off(EventType.UserInfosUpdate, this.onUserInfosUpdate);
     }
 }
@@ -1412,6 +1500,35 @@ i.active {
     height: 100%;
     overflow: auto;
     background: var(--background-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.slider-tabs {
+    display: flex;
+    height: 40px;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.slider-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    background: var(--background-tertiary);
+}
+
+.slider-tab.active {
+    color: var(--text-primary);
+    background: var(--background-secondary);
+}
+
+.slider-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
 }
 
 .conference-main-content-container {
@@ -1497,18 +1614,14 @@ i.active {
     padding-top: 8px;
 }
 
-.conference-main-content-container:hover footer {
+.conference-main-content-container footer {
     width: 100%;
     display: block;
     position: absolute;
     left: 0;
     bottom: 0;
     background: gray;
-}
-
-footer {
-    /*height: 100px;*/
-    display: none;
+    padding-bottom: 10px;
 }
 
 .duration-action-container {

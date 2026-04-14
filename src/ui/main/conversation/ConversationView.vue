@@ -80,6 +80,7 @@
                      class="divider-handler"></div>
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
                                   v-show="!sharedConversationState.enableMessageMultiSelection"
+                                  :store-instance="activeStore"
                                   :input-options="inputOptions"
                                   :muted="muted"
                                   :resized="messageInputViewResized"
@@ -241,16 +242,22 @@ export default {
         title: {
             type: String,
             required: false,
+        },
+        storeInstance: {
+            type: Object,
+            required: false,
         }
     },
     data() {
+        const activeStore = this.storeInstance || store;
         return {
             conversationInfo: null,
             showConversationInfo: false,
-            sharedConversationState: store.state.conversation,
-            sharedContactState: store.state.contact,
-            sharedPickState: store.state.pick,
-            sharedMiscState: store.state.misc,
+            activeStore: activeStore,
+            sharedConversationState: activeStore.state.conversation,
+            sharedContactState: activeStore.state.contact,
+            sharedPickState: activeStore.state.pick,
+            sharedMiscState: activeStore.state.misc,
             isHandlerDragging: false,
 
             savedMessageListViewHeight: -1,
@@ -332,7 +339,7 @@ export default {
                 if (length > 0 && length <= 5) {
                     for (let i = 0; i < length; i++) {
                         this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i])
-                        store.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
+                        this.activeStore.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
                     }
                 } else if (length > 5) {
                     this.$notify({
@@ -407,7 +414,7 @@ export default {
                 }
             }
             this.sharedPickState.messages.forEach(m => console.log(m.messageId));
-            store.toggleMessageMultiSelection(message);
+            this.activeStore.toggleMessageMultiSelection(message);
         },
 
         clickMessageItem(event, message) {
@@ -415,7 +422,7 @@ export default {
                 return;
             }
             if (this.sharedConversationState.enableMessageMultiSelection) {
-                store.selectOrDeselectMessage(message);
+                this.activeStore.selectOrDeselectMessage(message);
                 event.stopPropagation();
             }
         },
@@ -445,9 +452,9 @@ export default {
 
             // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
             if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
-                store.setShouldAutoScrollToBottom(false)
+                this.activeStore.setShouldAutoScrollToBottom(false)
             } else {
-                store.setShouldAutoScrollToBottom(true)
+                this.activeStore.setShouldAutoScrollToBottom(true)
                 this.clearConversationUnreadStatus();
             }
         },
@@ -469,7 +476,7 @@ export default {
             const oldMsgCount = this.sharedConversationState.currentConversationMessageList.length;
             const isInitialLoad = oldMsgCount === 0;
 
-            store.loadConversationHistoryMessages(() => {
+            this.activeStore.loadConversationHistoryMessages(() => {
                 const newMessageCount = this.sharedConversationState.currentConversationMessageList.length;
                 const loadedMessageCount = newMessageCount - oldMsgCount;
 
@@ -711,9 +718,9 @@ export default {
             }
         },
         download(message) {
-            if (!store.isDownloadingMessage(message.messageId)) {
+            if (!this.activeStore.isDownloadingMessage(message.messageId)) {
                 downloadFile(message)
-                store.addDownloadingMessage(message.messageUid)
+                this.activeStore.addDownloadingMessage(message.messageUid)
             } else {
                 // TODO toast 下载中
                 console.log('file isDownloading')
@@ -859,7 +866,7 @@ export default {
         },
 
         quoteMessage(message) {
-            store.quoteMessage(message);
+            this.activeStore.quoteMessage(message);
         },
 
         // call from child
@@ -869,7 +876,7 @@ export default {
             let title = '';
             let msgConversation = messages[0].conversation;
             if (msgConversation.type === ConversationType.Single) {
-                let users = store.getUserInfos([wfc.getUserId(), msgConversation.target], '');
+                let users = this.activeStore.getUserInfos([wfc.getUserId(), msgConversation.target], '');
                 title = users[0]._displayName + '和' + users[1]._displayName + '的聊天记录';
             } else {
                 title = '群的聊天记录';
@@ -917,7 +924,7 @@ export default {
             });
             amr.onEnded(() => {
                 message._isPlaying = false;
-                store.playVoice(null)
+                this.activeStore.playVoice(null)
                 if (message.status === MessageStatus.Unread) {
                     wfc.updateMessageStatus(message.messageId, MessageStatus.Played);
                 }
@@ -979,7 +986,7 @@ export default {
         clearConversationUnreadStatus() {
             let info = this.sharedConversationState.currentConversationInfo;
             if (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll > 0) {
-                store.clearConversationUnreadStatus(info.conversation);
+                this.activeStore.clearConversationUnreadStatus(info.conversation);
                 // this.unreadMessageCount = 0;
             }
         },
@@ -993,10 +1000,17 @@ export default {
             if (message.conversation.type === ConversationType.Group) {
                 this.$refs.messageSenderContextMenu.open(event, message);
             }
+        },
+
+        focusMessageInput() {
+            if (this.$refs.messageInputView && this.$refs.messageInputView.focusInput) {
+                this.$refs.messageInputView.focusInput();
+            }
         }
     },
 
     mounted() {
+    console.log('xxxxxxxx ', this)
         this.popupItem = this.$refs['setting'];
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
