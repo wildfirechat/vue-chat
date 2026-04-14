@@ -1364,7 +1364,7 @@ let store = {
                     conversationState.currentConversationOldestMessageUid = lmsgs[0].messageUid;
                 }
                 this._onloadConversationMessages(conversation, lmsgs)
-                if (lmsgs.length === 0) {
+                if (lmsgs.length < 20) {
                     console.log('getMessageV2, no more new local messages, try to load remote history message', enableLoadRemoteHistoryMessage);
                     if (enableLoadRemoteHistoryMessage) {
                         loadRemoteHistoryMessageFunc();
