@@ -478,7 +478,7 @@ i.active {
 
 .voip-div-container.multi {
     width: 960px;
-    height: 600px;
+    height: 640px;
 }
 
 .voip-div-container.conference {

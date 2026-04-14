@@ -594,6 +594,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     background: var(--background-voip);
+    overflow: hidden;
 }
 
 .content-container {
