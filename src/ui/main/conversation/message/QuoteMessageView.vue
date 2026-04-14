@@ -169,7 +169,7 @@ export default {
 .quoted-message {
     display: flex;
     max-width: 100%;
-    background-color: var(--background-tertiary);
+    background-color: var(--background-message-quoted);
     border-radius: 5px;
     padding: 5px 10px;
     margin-right: 10px;
