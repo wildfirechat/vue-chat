@@ -28,8 +28,9 @@
                     </div>
 
                     <tippy
-                        :to="'#infoTrigger' + this.message.messageId"
+                        :to="'#' + userCardTriggerId"
                         :animate-fill="false"
+                        interactive
                         placement="left"
                         distant="7"
                         theme="light"
@@ -42,7 +43,7 @@
                     </tippy>
 
                     <img ref="userCardTippy"
-                         :id="'infoTrigger' + this.message.messageId"
+                        :id="userCardTriggerId"
                          class="avatar"
                          @click="onClickUserPortrait(message.from)"
                          draggable="false"
@@ -182,6 +183,10 @@ export default {
     },
 
     computed: {
+        userCardTriggerId() {
+            return 'infoTrigger-' +  (this.message.messageId ? this.message.messageId : new Date().getTime());
+        },
+
         messageReceipt() {
             let conversation = this.message.conversation;
             let timestamp = this.message.timestamp;

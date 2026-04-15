@@ -6,7 +6,7 @@
             <div class="message-avatar-content-container">
                 <tippy
                     v-if="enableClickMessageSenderPortrait"
-                    :to="'#infoTrigger' + this.message.messageId"
+                    :to="'#' + userCardTriggerId"
                     interactive
                     :animate-fill="false"
                     placement="left"
@@ -25,7 +25,7 @@
                            :value="message"
                            v-model="sharedPickState.messages"/>
                     <img ref="userCardTippy"
-                         :id="'infoTrigger' + this.message.messageId"
+                        :id="userCardTriggerId"
                          @click="onClickUserPortrait(message.from)"
                          @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
                          class="avatar"
@@ -128,6 +128,10 @@ export default {
     },
 
     computed: {
+        userCardTriggerId() {
+            return 'infoTrigger-' +  (this.message.messageId ? this.message.messageId : new Date().getTime());
+        },
+
         isDownloading() {
             return store.isDownloadingMessage(this.message.messageId);
         },
