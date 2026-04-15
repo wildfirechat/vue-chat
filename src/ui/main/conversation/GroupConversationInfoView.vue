@@ -91,6 +91,11 @@ import {isElectron} from "../../../platform";
 
 export default {
     name: "GroupConversationInfoView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -98,11 +103,13 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
+            activeStore: activeStore,
             groupMemberUserInfos: [],
             filterQuery: '',
-            sharedContactState: store.state.contact,
-            sharedMiscState: store.state.misc,
+            sharedContactState: activeStore.state.contact,
+            sharedMiscState: activeStore.state.misc,
             groupAnnouncement: '',
             newGroupName: '',
             newGroupAnnouncement: '',
@@ -143,14 +150,14 @@ export default {
             }
         },
         onUserInfosUpdate() {
-            this.groupMemberUserInfos = store.getConversationMemberUsrInfos(this.conversationInfo.conversation);
+            this.groupMemberUserInfos = this.activeStore.getConversationMemberUsrInfos(this.conversationInfo.conversation);
         },
         showCreateConversationModal() {
             let successCB = users => {
                 let ids = users.map(u => u.uid);
                 wfc.addGroupMembers(this.conversationInfo.conversation.target, ids, null, [0])
             }
-            let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
+            let groupMemberUserInfos = this.activeStore.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false);
 
             this.$pickContact({
                 successCB,
@@ -166,7 +173,7 @@ export default {
                 let ids = users.map(u => u.uid);
                 wfc.kickoffGroupMembers(this.conversationInfo.conversation.target, ids, [0])
             }
-            let groupMemberUserInfos = store.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false, false);
+            let groupMemberUserInfos = this.activeStore.getGroupMemberUserInfos(this.conversationInfo.conversation.target, false, false);
             this.$pickContact({
                 successCB,
                 users: groupMemberUserInfos,
@@ -233,7 +240,7 @@ export default {
                     // do nothing
                 },
                 confirmCallback: () => {
-                    store.quitGroup(this.conversationInfo.conversation.target)
+                    this.activeStore.quitGroup(this.conversationInfo.conversation.target)
                 }
             })
         },
@@ -248,7 +255,7 @@ export default {
                     // do nothing
                 },
                 confirmCallback: () => {
-                    store.dismissGroup(this.conversationInfo.conversation.target)
+                    this.activeStore.dismissGroup(this.conversationInfo.conversation.target)
                 }
             })
         },
@@ -256,7 +263,7 @@ export default {
         setFavGroup(groupId, fav) {
             wfc.setFavGroup(groupId, fav, () => {
                 this.conversationInfo.conversation._target._isFav = fav;
-                store.reloadFavGroupList();
+                this.activeStore.reloadFavGroupList();
             }, (err) => {
                 console.log('setFavGroup error', err);
             })
@@ -290,11 +297,11 @@ export default {
 
         clearConversationHistory() {
             this.$parent.enableLoadRemoteHistoryMessage = !this.sharedMiscState.isElectron;
-            store.clearConversationHistory(this.conversationInfo.conversation)
+            this.activeStore.clearConversationHistory(this.conversationInfo.conversation)
         },
 
         clearRemoteConversationHistory() {
-            store.clearRemoteConversationHistory(this.conversationInfo.conversation);
+            this.activeStore.clearRemoteConversationHistory(this.conversationInfo.conversation);
         },
 
         async loadGroupMemberUserInfos() {
@@ -305,11 +312,11 @@ export default {
                 for (let i = 0; i < memberIds.length;) {
                     let ids = memberIds.slice(i, i + step)
                     i += step;
-                    let userInfos = await store.getPartialGroupMembersInfoAsync(groupId, ids)
+                    let userInfos = await this.activeStore.getPartialGroupMembersInfoAsync(groupId, ids)
                     this.groupMemberUserInfos.push(...userInfos);
                 }
             } else {
-                this.groupMemberUserInfos = store.getGroupMemberUserInfos(groupId);
+                this.groupMemberUserInfos = this.activeStore.getGroupMemberUserInfos(groupId);
             }
         }
     },
@@ -413,7 +420,7 @@ export default {
 
         users() {
             if (this.filterQuery) {
-                return store.filterUsers(this.groupMemberUserInfos, this.filterQuery)
+                return this.activeStore.filterUsers(this.groupMemberUserInfos, this.filterQuery)
             } else {
                 return this.groupMemberUserInfos;
             }

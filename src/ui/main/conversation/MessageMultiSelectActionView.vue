@@ -45,12 +45,16 @@
 <script>
 import store from "../../../store";
 import ForwardType from "./message/forward/ForwardType";
-import wfc from "../../../wfc/client/wfc";
 import GroupInfo from "../../../wfc/model/groupInfo";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 
 export default {
     name: "MessageMultiSelectionActionView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -58,8 +62,10 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedPickState: store.state.pick,
+            activeStore: activeStore,
+            sharedPickState: activeStore.state.pick,
         }
     },
     methods: {
@@ -69,7 +75,7 @@ export default {
             if (target instanceof GroupInfo) {
                 isSuperGroup = target.superGroup === 1;
             }
-            let isElectron = store.state.misc.isElectron;
+            let isElectron = this.activeStore.state.misc.isElectron;
             this.$alert({
                 title: ' 删除消息',
                 content: '确定删除选中的消息？',
@@ -77,21 +83,21 @@ export default {
                 cancelText: isSuperGroup || !isElectron ? '取消' : '远程删除',
                 cancelCallback: () => {
                     if (!(isSuperGroup || !isElectron)) {
-                        store.deleteSelectedMessages(true);
+                        this.activeStore.deleteSelectedMessages(true);
                     }
                 },
                 confirmCallback: () => {
                     if (this.sharedPickState.isElectron) {
-                        store.deleteSelectedMessages(false);
+                        this.activeStore.deleteSelectedMessages(false);
                     } else {
-                        store.deleteSelectedMessages(true);
+                        this.activeStore.deleteSelectedMessages(true);
                     }
                 }
             })
         },
 
         hideMultiSelectionActionView() {
-            store.toggleMessageMultiSelection();
+            this.activeStore.toggleMessageMultiSelection();
         },
 
         forwardOneByOne() {
@@ -100,7 +106,7 @@ export default {
                 forwardType: ForwardType.ONE_BY_ONE,
                 messages,
             });
-            store.toggleMessageMultiSelection();
+            this.activeStore.toggleMessageMultiSelection();
         },
 
         forwardComposite() {
@@ -109,13 +115,13 @@ export default {
                 forwardType: ForwardType.COMPOSITE,
                 messages,
             });
-            store.toggleMessageMultiSelection();
+            this.activeStore.toggleMessageMultiSelection();
         },
 
         fav() {
             let messages = [...this.sharedPickState.messages];
             this.$parent.favMessages(messages);
-            store.toggleMessageMultiSelection();
+            this.activeStore.toggleMessageMultiSelection();
         }
     },
 

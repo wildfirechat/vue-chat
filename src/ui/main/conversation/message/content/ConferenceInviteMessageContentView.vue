@@ -25,6 +25,11 @@ import Config from "../../../../../config";
 
 export default {
     name: "ConferenceInviteMessageContentView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         message: {
             type: Message,
@@ -35,6 +40,10 @@ export default {
     },
 
     methods: {
+        getActiveStore() {
+            return this.conversationActiveStore || store;
+        },
+
         joinConference() {
             if (avenginekit.sendConferenceRequest) {
                 let cmc = this.message.messageContent;
@@ -110,7 +119,7 @@ export default {
                 return Config.DEFAULT_PORTRAIT_URL;
             }
             let groupId = this.message.conversation.type === ConversationType.Group ? this.message.conversation.target : '';
-            let userInfos = store.getUserInfos([content.host], groupId)
+            let userInfos = this.getActiveStore().getUserInfos([content.host], groupId)
             return userInfos[0].portrait;
         }
     }

@@ -97,8 +97,10 @@
             <BackupView v-if="sharedMiscState.isElectron" class="backup-progress-modal"  />
             <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
                           class="voip-div-container"
+                          :style="conferenceSliderOpen ? { width: '1310px' } : undefined"
                           :initial-value="{x:'50%', y:'50%'}"
                           :prevent-default="true"
+                          :on-start="onConferenceStart"
                           v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
                 <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
@@ -144,10 +146,25 @@ export default {
             isSetting: false,
             fileWindow: null,
             voipProxy: avenginekitproxy,
+            conferenceSliderOpen: false,
         };
     },
 
     methods: {
+        onConferenceStart(pos, event) {
+            // Cancel drag (and prevent e.preventDefault()) when clicking inside
+            // the conversation slider or on any interactive element inside the
+            // conference overlay, so inputs and buttons still receive focus.
+            const target = event.target;
+            if (
+                target.isContentEditable ||
+                ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(target.tagName) ||
+                target.closest('.conference-slider') ||
+                target.closest('.conference-footer-layout')
+            ) {
+                return false;
+            }
+        },
         onClickPortrait(event) {
             wfc.getUserInfo(this.sharedContactState.selfUserInfo.uid, true);
         },
@@ -289,6 +306,8 @@ export default {
     },
 
     mounted() {
+        this.$eventBus.$on('conference-slider-opened', () => { this.conferenceSliderOpen = true; });
+        this.$eventBus.$on('conference-slider-closed', () => { this.conferenceSliderOpen = false; });
         avenginekitproxy.onVoipCallErrorCallback = (errorCode) => {
             if (errorCode === -1) {
                 this.$notify({
@@ -322,6 +341,8 @@ export default {
         }
     },
     unmounted() {
+        this.$eventBus.$off('conference-slider-opened');
+        this.$eventBus.$off('conference-slider-closed');
         wfc.eventEmitter.removeListener(EventType.ConnectionStatusChanged, this.onConnectionStatusChange);
         console.log('home destroy')
     },

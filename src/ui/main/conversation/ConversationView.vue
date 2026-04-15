@@ -85,7 +85,7 @@
                                   :muted="muted"
                                   :resized="messageInputViewResized"
                                   ref="messageInputView"/>
-                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo"/>
+                <MessageMultiSelectionActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo"/>
                 <SingleConversationInfoView
                     v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
                     v-v-on-click-outside="hideConversationInfo"
@@ -181,7 +181,7 @@ import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
 import {numberValue} from "../../../wfc/util/longUtil";
 import InfiniteLoading from '@imndx/vue-infinite-loading';
-import MultiSelectActionView from "../../main/conversation/MessageMultiSelectActionView";
+import MessageMultiSelectionActionView from "../../main/conversation/MessageMultiSelectActionView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "../../main/conversation/message/forward/ForwardType";
 import {fs, isElectron, shell} from "../../../platform";
@@ -219,6 +219,7 @@ import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageCo
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 import MessageItemView from "./MessageItemView.vue";
 import {markRaw} from "vue";
+import mitt from "mitt";
 import CollectionMessageContent from '../../../wfc/messages/collectionMessageContent'
 
 var amr;
@@ -226,7 +227,7 @@ export default {
     components: {
         ChannelConversationInfoView,
         ContextableNotificationMessageContentContainerView,
-        MultiSelectActionView,
+        MessageMultiSelectionActionView,
         MessageInputView,
         GroupConversationInfoView,
         SingleConversationInfoView,
@@ -250,9 +251,14 @@ export default {
     },
     data() {
         const activeStore = this.storeInstance || store;
+        const localConversationEventBus = mitt();
+        localConversationEventBus.$on = localConversationEventBus.on;
+        localConversationEventBus.$off = localConversationEventBus.off;
+        localConversationEventBus.$emit = localConversationEventBus.emit;
         return {
             conversationInfo: null,
             showConversationInfo: false,
+            localConversationEventBus: localConversationEventBus,
             activeStore: activeStore,
             sharedConversationState: activeStore.state.conversation,
             sharedContactState: activeStore.state.contact,
@@ -279,6 +285,13 @@ export default {
             resizeRafId: 0,
             pendingPointerY: 0,
             lastMessageListHeight: 0,
+        };
+    },
+
+    provide() {
+        return {
+            conversationEventBus: this.localConversationEventBus,
+            conversationActiveStore: this.activeStore,
         };
     },
 
@@ -584,7 +597,7 @@ export default {
         },
 
         onMenuClose() {
-            this.$eventBus.$emit('contextMenuClosed')
+            this.localConversationEventBus.$emit('contextMenuClosed')
         },
         onMessageSenderContextMenuClose() {
             console.log('onMessageSenderContextMenuClose')
@@ -866,6 +879,11 @@ export default {
         },
 
         quoteMessage(message) {
+            const current = this.sharedConversationState.currentConversationInfo;
+            if (!current || !current.conversation || !message || !message.conversation || !current.conversation.equal(message.conversation)) {
+                return;
+            }
+            console.log('quoteMessage', this.activeStore.storeId)
             this.activeStore.quoteMessage(message);
         },
 
@@ -1004,7 +1022,7 @@ export default {
 
         focusMessageInput() {
             if (this.$refs.messageInputView && this.$refs.messageInputView.focusInput) {
-                this.$refs.messageInputView.focusInput();
+                this.$refs.messageInputView.focusInput(true);
             }
         }
     },
@@ -1016,21 +1034,9 @@ export default {
         document.addEventListener('mousemove', this.drag);
 
         // 监听来自 MessageItemView 的事件
-        this.$eventBus.$on('open-message-context-menu', this.openMessageContextMenu);
-        this.$eventBus.$on('open-message-sender-context-menu', this.openMessageSenderContextMenu);
-        this.$eventBus.$on('reedit-message', this.reedit);
-
-        this.$eventBus.$on('send-file', args => {
-            let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
-            let message = new Message(null, fileMessageContent);
-            this.forward(message)
-        });
-
-        this.$eventBus.$on('forward-fav', args => {
-            let favItem = args.favItem;
-            let message = favItem.toMessage();
-            this.forward(message);
-        });
+        this.localConversationEventBus.$on('open-message-context-menu', this.openMessageContextMenu);
+        this.localConversationEventBus.$on('open-message-sender-context-menu', this.openMessageSenderContextMenu);
+        this.localConversationEventBus.$on('reedit-message', this.reedit);
 
         wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
     },
@@ -1040,11 +1046,9 @@ export default {
         document.body.style.userSelect = '';
         document.removeEventListener('mouseup', this.dragEnd);
         document.removeEventListener('mousemove', this.drag);
-        this.$eventBus.$off('send-file');
-        this.$eventBus.$off('forward-fav');
-        this.$eventBus.$off('open-message-context-menu', this.openMessageContextMenu);
-        this.$eventBus.$off('open-message-sender-context-menu', this.openMessageSenderContextMenu);
-        this.$eventBus.$off('reedit-message', this.reedit);
+        this.localConversationEventBus.$off('open-message-context-menu', this.openMessageContextMenu);
+        this.localConversationEventBus.$off('open-message-sender-context-menu', this.openMessageSenderContextMenu);
+        this.localConversationEventBus.$off('reedit-message', this.reedit);
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
@@ -1054,7 +1058,7 @@ export default {
         }
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
-        console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
+        // console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
         if (this.sharedConversationState.shouldAutoScrollToBottom && !this.sharedMiscState.isPageHidden) {
             this.scrollToBottom();
             this.clearConversationUnreadStatus();

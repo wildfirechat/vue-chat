@@ -29,13 +29,16 @@
 
                     <tippy
                         :to="'#' + userCardTriggerId"
-                        :animate-fill="false"
                         interactive
+                        :animate-fill="false"
                         placement="left"
                         distant="7"
                         theme="light"
                         animation="fade"
                         trigger="click"
+                        :append-to="tippyAppendTo"
+                        strategy="fixed"
+                        :popper-options="{ modifiers: [{ name: 'eventListeners', options: { scroll: false } }] }"
                     >
                         <template #content>
                             <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
@@ -79,10 +82,20 @@ export default {
             required: true,
         },
     },
+    inject: {
+        conversationEventBus: {
+            default: null,
+        },
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedConversationState: store.state.conversation,
-            sharedPickState: store.state.pick,
+            activeStore: activeStore,
+            sharedConversationState: activeStore.state.conversation,
+            sharedPickState: activeStore.state.pick,
             highLight: false,
             quotedMessage: null,
         }
@@ -97,14 +110,14 @@ export default {
 
     },
     mounted() {
-        this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
+        this.getConversationEventBus().$on('contextMenuClosed', this.onContextMenuClosed);
 
         if (this.message.messageContent.quoteInfo) {
             let messageUid = this.message.messageContent.quoteInfo.messageUid;
-            let msg = store.getMessageByUid(messageUid);
+            let msg = this.activeStore.getMessageByUid(messageUid);
             if (!msg) {
                 wfc.loadRemoteMessage(messageUid, (ms) => {
-                    msg = store._patchMessage(ms);
+                    msg = this.activeStore._patchMessage(ms);
                     this.quotedMessage = msg;
                     console.log('load remote message success', messageUid, msg)
                 }, err => {
@@ -116,10 +129,17 @@ export default {
         }
     },
     beforeUnmount() {
-        this.$eventBus.$off('contextMenuClosed', this.onContextMenuClosed);
+        this.getConversationEventBus().$off('contextMenuClosed', this.onContextMenuClosed);
     },
 
     methods: {
+        tippyAppendTo(ref) {
+            return ref.closest('.voip-div-container') || document.body;
+        },
+        getConversationEventBus() {
+            return this.conversationEventBus || this.$eventBus;
+        },
+
         onContextMenuClosed() {
             this.highLight = false;
         },
@@ -163,8 +183,8 @@ export default {
                             unreadUserIds.push(memberId)
                         }
                     });
-                    let readUsers = store.getUserInfos(readUserIds, conversation.target)
-                    let unreadUsers = store.getUserInfos(unreadUserIds, conversation.target)
+                    let readUsers = this.activeStore.getUserInfos(readUserIds, conversation.target)
+                    let unreadUsers = this.activeStore.getUserInfos(unreadUserIds, conversation.target)
 
                     this.$modal.show(
                         MessageReceiptDetailView,
@@ -184,7 +204,7 @@ export default {
 
     computed: {
         userCardTriggerId() {
-            return 'infoTrigger-' +  (this.message.messageId ? this.message.messageId : new Date().getTime());
+            return 'infoTrigger-' +  (this.message.messageId ? this.message.messageId : (this.message.messageUid ? stringValue(this.message.messageUid) : new Date().getTime()));
         },
 
         messageReceipt() {
@@ -228,7 +248,7 @@ export default {
         },
 
         isDownloading() {
-            return store.isDownloadingMessage(this.message.messageId);
+            return this.activeStore.isDownloadingMessage(this.message.messageId);
         },
 
         shouldShowMessageReceipt() {

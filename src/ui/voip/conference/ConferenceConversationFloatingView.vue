@@ -9,17 +9,10 @@
                 <p class="content">{{ message.messageContent.digest(message) }}</p>
             </div>
         </div>
-        <div class="send-message-container cursor-default" >
-            <input ref="msgInput" placeholder="说点什么..." @change="sendMessage" v-model.trim="text" @click="onInputClick">
-        </div>
     </div>
 </template>
 
 <script>
-import Conversation from "../../../wfc/model/conversation";
-import ConversationType from "../../../wfc/model/conversationType";
-import wfc from "../../../wfc/client/wfc";
-import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import {gt} from "../../../wfc/util/longUtil";
 
 export default {
@@ -39,7 +32,6 @@ export default {
             sharedConversationState: this.conversationStore.state.conversation,
             filteredMessages: [],
             filterInternal: 0,
-            text: '',
         }
     },
     created() {
@@ -58,16 +50,6 @@ export default {
     },
 
     methods: {
-        onInputClick(e) {
-            e.stopPropagation();
-            this.$refs.msgInput?.focus();
-        },
-        sendMessage() {
-            let conversation = this.sharedConversationState.currentConversationInfo ? this.sharedConversationState.currentConversationInfo.conversation : new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
-            wfc.sendConversationMessage(conversation, new TextMessageContent(this.text))
-            this.text = '';
-        },
-
         filterMessage() {
             let now = new Date().getTime();
             this.filteredMessages = this.sharedConversationState.currentConversationMessageList.filter(m => {
@@ -94,13 +76,19 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
 }
 
 .message-list-container {
     flex: 1 1 auto;
     overflow: scroll;
     max-height: 200px;
+    flex-direction: column;
+    background-color: rgb(128 128 128 / 50%);
+    border-radius: 4px;
+}
+
+.message-list-container:not(:empty){
+    padding: 10px;
 }
 
 .message-list-container::-webkit-scrollbar {
@@ -109,34 +97,16 @@ export default {
 
 .message {
     display: flex;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .message .sender {
-    color: var(--status-error);
+    color: var(--text-primary);
     padding-right: 5px;
 }
 
 .message .content {
-    color: lightgrey;
-}
-
-.send-message-container {
-    height: 40px;
-    z-index: 100000;
-}
-
-.send-message-container input {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    color: lightgrey;
-    padding: 0 10px;
-}
-
-.send-message-container input:focus {
-    outline: none;
+    color: white;
 }
 
 </style>

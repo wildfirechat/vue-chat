@@ -19,6 +19,11 @@ import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "SecretConversationInfoView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -26,9 +31,11 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            users: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
-            sharedContactState: store.state.contact,
+            activeStore: activeStore,
+            users: activeStore.getConversationMemberUsrInfos(this.conversationInfo.conversation),
+            sharedContactState: activeStore.state.contact,
         }
     },
     methods: {
@@ -69,7 +76,7 @@ export default {
         destroySecretChat() {
             wfc.destroySecretChat(this.conversationInfo.conversation.target, () => {
                 console.log('xxx de ss')
-                store.setCurrentConversation(null);
+                this.activeStore.setCurrentConversation(null);
             }, err => {
                 console.log('destroySecretChat failed', err)
             })

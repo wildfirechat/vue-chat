@@ -25,6 +25,11 @@ import store from "../../../../../store";
 
 export default {
     name: "FileMessageContentView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         message: {
             type: Message,
@@ -32,8 +37,10 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedConversationState: store.state.conversation,
+            activeStore: activeStore,
+            sharedConversationState: activeStore.state.conversation,
         }
     },
     methods: {
@@ -45,7 +52,7 @@ export default {
                 } else {
                     if (!this.isDownloading()) {
                         downloadFile(this.message)
-                        store.addDownloadingMessage(this.message.messageUid)
+                        this.activeStore.addDownloadingMessage(this.message.messageUid)
                     } else {
                         this.$notify({
                             title: '下载中',
@@ -69,7 +76,7 @@ export default {
             event.dataTransfer.setData('text', JSON.stringify(fileObj))
         },
         isDownloading() {
-            return store.isDownloadingMessage(this.message.messageId);
+            return this.activeStore.isDownloadingMessage(this.message.messageId);
         },
     },
 
@@ -85,11 +92,11 @@ export default {
         },
 
         downloadStats() {
-            let dm = store.getDownloadingMessageStatus(this.message.messageUid);
+            let dm = this.activeStore.getDownloadingMessageStatus(this.message.messageUid);
             return dm;
         },
         sendStats() {
-            let sm = store.getSendingStatus(this.message.messageId);
+            let sm = this.activeStore.getSendingStatus(this.message.messageId);
             return sm;
         }
     }

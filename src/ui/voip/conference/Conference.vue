@@ -56,13 +56,14 @@
                         :current-layout="computedCurrentLayout"
                         :session="session"/>
                 </div>
-                <div style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000">
+                <div style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000"
+                     @pointerdown.stop>
                     <ConferenceConversationFloatingView
                         :session="session"
                         :conversation-store="conferenceConversationStore"
                     />
                 </div>
-                <div class="conference-main-content-container">
+                <div class="conference-main-content-container" @pointerdown.capture="closeActiveTippies">
                     <!--main-->
                     <!--video-->
                     <div v-if="!audioOnly" style="width: 100%; height: 100%">
@@ -144,9 +145,20 @@
                         </section>
                     </div>
                     <!--actions-->
-                    <footer>
+                    <footer class="conference-footer-layout" @pointerdown.stop>
+                        <!-- 左侧：消息输入框 -->
+                        <div class="send-message-container">
+                            <i class="icon-ion-ios-chatboxes send-msg-icon"/>
+                            <input
+                                ref="msgInput"
+                                placeholder="说点什么…"
+                                v-model.trim="messageText"
+                                @click.stop="onInputClick"
+                                @keyup.enter.stop="sendMessage"
+                            />
+                        </div>
                         <div class="duration-action-container">
-                            <p v-if="false">{{ duration }}</p>
+                            <!-- 中间：操作按钮 -->
                             <div class="action-container">
                                 <div class="action">
                                     <img v-if="!session.audience && !session.audioMuted" @click="muteAudio" class="action-img"
@@ -191,18 +203,31 @@
                                          src='@/assets/images/av_conference_members.png'/>
                                     <p>管理</p>
                                 </div>
-                                <div class="action">
-                                    <img @click="hangup" class="action-img"
+                                <div class="action hangup-action" ref="hangupBtn" @click.stop="hangup">
+                                    <img class="action-img hangup-action-img"
                                          src='@/assets/images/av_conference_end_call.png'/>
-                                    <p>结束</p>
+                                    <p class="hangup-action-text">结束</p>
                                 </div>
                             </div>
                         </div>
                     </footer>
+                    <Teleport to="body">
+                        <div v-if="hangupMenuVisible" class="hangup-menu-overlay" @click="hangupMenuVisible = false"></div>
+                        <div v-if="hangupMenuVisible" class="hangup-menu-popup" :style="hangupMenuStyle">
+                            <div v-if="conferenceManager.isOwner()" class="hangup-menu-item hangup-menu-end" @click.stop="doEndConference">
+                                <span class="hangup-menu-title-end">结束会议</span>
+                                <span class="hangup-menu-sub">所有人将被移出会议</span>
+                            </div>
+                            <div class="hangup-menu-item hangup-menu-leave" @click.stop="doLeaveConference">
+                                <span class="hangup-menu-title-leave">离开会议</span>
+                                <span class="hangup-menu-sub">其他人可继续会议</span>
+                            </div>
+                        </div>
+                    </Teleport>
                 </div>
 
             </div>
-            <div class="slider">
+            <div class="conference-slider" @pointerdown.stop="closeActiveTippies">
                 <div class="title" style="display: none">
                     TODO
                 </div>
@@ -219,19 +244,19 @@
                     </div>
                 </div>
                 <div class="slider-content">
-                <ConferenceManageView
-                    v-show="showConferenceManageView && activeSliderTab === 'manage'"
-                    v-bind:class="{ active: showConferenceManageView}"
-                    :participants="participantUserInfos"
-                    :session="session"
-                />
-                <ConversationView v-show="showConversationView && activeSliderTab === 'conversation'"
-                                  ref="conferenceConversationView"
-                                  class="conversation-view"
-                                  style="height: 100%"
-                                  :title="conferenceManager.conferenceInfo ? conferenceManager.conferenceInfo.conferenceTitle : 'Title'"
-                                  :store-instance="conferenceConversationStore"
-                                  :input-options="{disableScreenShot:true, disableHistory:true, disableVoip:true, disableChannelMenu:true}"/>
+                    <ConferenceManageView
+                        v-show="showConferenceManageView && activeSliderTab === 'manage'"
+                        v-bind:class="{ active: showConferenceManageView}"
+                        :participants="participantUserInfos"
+                        :session="session"
+                    />
+                    <ConversationView v-show="showConversationView && activeSliderTab === 'conversation'"
+                                      ref="conferenceConversationView"
+                                      class="conversation-view"
+                                      style="height: 100%"
+                                      :title="conferenceManager.conferenceInfo ? conferenceManager.conferenceInfo.conferenceTitle : 'Title'"
+                                      :store-instance="conferenceConversationStore"
+                                      :input-options="{disableScreenShot:true, disableHistory:true, disableVoip:true, disableChannelMenu:true, disablePtt:true, disableAudio:true}"/>
                 </div>
             </div>
         </div>
@@ -265,12 +290,12 @@ import UserInfo from "../../../wfc/model/userInfo";
 import ConversationType from "../../../wfc/model/conversationType";
 import Conversation from "../../../wfc/model/conversation";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
-import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
 import {vOnClickOutside} from '@vueuse/components'
 import {markRaw} from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
 import WfcAVEngineKit from "../../../wfc/av/engine/avenginekit";
+import TextMessageContent from '../../../wfc/messages/textMessageContent';
 
 export default {
     name: 'Conference',
@@ -312,6 +337,9 @@ export default {
 
             showConferenceSimpleInfoView: false,
             showChooseLayoutView: false,
+            messageText: '',
+            hangupMenuVisible: false,
+            hangupMenuStyle: {},
         }
     },
     components: {
@@ -325,7 +353,7 @@ export default {
         ConversationView
     },
     methods: {
-        setupStore(){
+        setupStore() {
             let store = newStore();
             const storeId = `conferenceStore_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
             store.init(false, {
@@ -419,7 +447,7 @@ export default {
                 // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null);
                 this.$set(this.selfUserInfo, '_isScreenSharing', false);
-                this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
+                this.participantUserInfos.forEach(p => this.$set(p, '_stream', null))
 
                 this.session = session;
                 if (isElectron()) {
@@ -433,10 +461,10 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
                 console.log('didCreateLocalVideoTrack', screenShare)
-                if(WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare){
+                if (WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare) {
                     this.selfUserInfo._stream = stream;
                     this.selfUserInfo._isVideoMuted = false;
-                	this.selfUserInfo._isScreenSharing = screenShare;
+                    this.selfUserInfo._isScreenSharing = screenShare;
                 } else {
                     let selfScreenShareUserInfo = Object.assign(new UserInfo(), this.selfUserInfo);
                     selfScreenShareUserInfo._stream = stream;
@@ -495,7 +523,7 @@ export default {
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
                 console.log('didParticipantJoined', userId, screenSharing, this.participantUserInfos.length)
                 let index = this.participantUserInfos.findIndex(p => p.uid === userId && p._isScreenSharing === screenSharing);
-                if(index >= 0) {
+                if (index >= 0) {
                     return;
                 }
 
@@ -537,7 +565,7 @@ export default {
                 }
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
-                    let obj = {reason: reason, session: this.session};
+                    let obj = { reason: reason, session: this.session };
                     localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
                 }
                 this.session.closeVoipWindow();
@@ -657,7 +685,7 @@ export default {
                     if (uplink) {
                         let userInfos = this.participantUserInfos.filter(u => u.uid === userId && u._isScreenSharing === screenSharing);
                         if (userInfos && userInfos.length > 0) {
-                            console.log(userInfos[0].displayName, "网络不好");
+                            console.log(userInfos[0].displayName, '网络不好');
                         }
                     } else {
                         console.log('您的网络不好');
@@ -666,16 +694,51 @@ export default {
             };
 
             if (isElectron()) {
-            	avenginekit.setup(sessionCallback);
+                avenginekit.setup(sessionCallback);
             } else {
                 avenginekit.sessionCallback = sessionCallback;
             }
         },
 
-
         hangup() {
+            const btn = this.$refs.hangupBtn;
+            if (!btn) return;
+            const rect = btn.getBoundingClientRect();
+            this.hangupMenuStyle = {
+                position: 'fixed',
+                left: `${rect.left + rect.width / 2}px`,
+                bottom: `${window.innerHeight - rect.top + 8}px`,
+                transform: 'translateX(-50%)',
+            };
+            this.hangupMenuVisible = true;
+        },
+
+        doEndConference() {
+            this.hangupMenuVisible = false;
+            this.session.endConference();
+            this.$eventBus.$emit('conference-slider-closed');
+            conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000);
+        },
+
+        doLeaveConference() {
+            this.hangupMenuVisible = false;
             this.session.leaveConference(false);
-            conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000)
+            this.$eventBus.$emit('conference-slider-closed');
+            conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000);
+        },
+
+        onInputClick(e) {
+            e.stopPropagation();
+            this.$refs.msgInput?.focus();
+        },
+
+        sendMessage() {
+            if (!this.messageText) {
+                return;
+            }
+            let conversation = this.conferenceConversationStore.state.conversation.currentConversationInfo ? this.conferenceConversationStore.state.conversation.currentConversationInfo.conversation : new Conversation(ConversationType.ChatRoom, this.session.callId, 0);
+            wfc.sendConversationMessage(conversation, new TextMessageContent(this.messageText))
+            this.messageText = '';
         },
 
         muteAudio() {
@@ -823,7 +886,7 @@ export default {
                 let size = currentWindow.getSize();
                 currentWindow.setSize(size[0] + 350, size[1], false)
             } else {
-                window.resizeTo(window.innerWidth + 360, window.outerHeight);
+                this.$eventBus.$emit('conference-slider-opened');
             }
             this.$refs.rootContainer.style.setProperty('--slider-width', '350px');
             this.showSlider = true;
@@ -833,15 +896,13 @@ export default {
             if (!this.showSlider) {
                 return;
             }
+            this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
             if (isElectron()) {
                 let size = currentWindow.getSize();
-                this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
                 currentWindow.setSize(size[0] - 350, size[1], false)
             } else {
-                this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
-                window.resizeTo(window.innerWidth - 350, window.outerHeight)
+                this.$eventBus.$emit('conference-slider-closed');
             }
-
             this.showConferenceManageView = false;
             this.showConversationView = false;
             this.showSlider = false;
@@ -855,6 +916,14 @@ export default {
             }
         },
 
+        closeActiveTippies() {
+            document.querySelectorAll('[data-tippy-root]').forEach(root => {
+                const instance = root._tippy;
+                if (instance && instance.state.isVisible) {
+                    instance.hide();
+                }
+            });
+        },
 
         async screenShare() {
 
@@ -998,11 +1067,11 @@ export default {
             timestamp = ~~(timestamp / 1000);
             let str = ''
             let hour = ~~(timestamp / 3600);
-            str = hour > 0 ? ((hour < 10 ? "0" : "") + hour + ':') : '';
+            str = hour > 0 ? ((hour < 10 ? '0' : '') + hour + ':') : '';
             let min = ~~((timestamp % 3600) / 60);
-            str += (min < 10 ? "0" : "") + min + ':'
+            str += (min < 10 ? '0' : '') + min + ':'
             let sec = ~~((timestamp % 60));
-            str += (sec < 10 ? "0" : "") + sec
+            str += (sec < 10 ? '0' : '') + sec
             return str;
         },
 
@@ -1243,9 +1312,9 @@ export default {
                 sp = this.conferenceFocusUser;
             } else if (this.conferenceLocalFocusUser && !this.conferenceLocalFocusUser._isVideoMuted) {
                 sp = this.conferenceLocalFocusUser;
-            // 可能会导致焦点用户切换太快，故注释掉
-            // } else if (this.speakingVideoParticipant) {
-            //     sp = this.speakingVideoParticipant;
+                // 可能会导致焦点用户切换太快，故注释掉
+                // } else if (this.speakingVideoParticipant) {
+                //     sp = this.speakingVideoParticipant;
             } else {
                 sp = this.participantUserInfos.find(u => !u._isAudience && !u._isVideoMuted && u._isScreenSharing === true);
                 if (!sp) {
@@ -1353,7 +1422,7 @@ export default {
                     if (oldCurrentPageParticipants) {
                         oldCurrentPageParticipants.forEach(u => {
                             let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
-                            if(newIndex > -1) {
+                            if (newIndex > -1) {
                                 return;
                             }
                             if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
@@ -1365,7 +1434,7 @@ export default {
                     if (newCurrentPageParticipants) {
                         newCurrentPageParticipants.forEach(u => {
                             let oldIndex = oldCurrentPageParticipants.findIndex(ou => ou.uid === u.uid && ou._isScreenSharing === u._isScreenSharing);
-                            if(oldIndex > -1) {
+                            if (oldIndex > -1) {
                                 return;
                             }
                             if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
@@ -1425,17 +1494,17 @@ export default {
             //     this.session.stopScreenShare();
             //     this.$forceUpdate();
             // })
-            window.addEventListener("mousemove", (event) => {
+            window.addEventListener('mousemove', (event) => {
                 if (!this.session || !this.session.screenSharing) {
                     return;
                 }
-                if (event.target.id === "main-content-container") {
-                    currentWindow.setIgnoreMouseEvents(true, {forward: true});
+                if (event.target.id === 'main-content-container') {
+                    currentWindow.setIgnoreMouseEvents(true, { forward: true });
                 } else {
                     currentWindow.setIgnoreMouseEvents(false);
                 }
             });
-            window.addEventListener("mouseleave", (event) => {
+            window.addEventListener('mouseleave', (event) => {
                 currentWindow.setIgnoreMouseEvents(false);
             })
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '30px');
@@ -1448,7 +1517,7 @@ export default {
     unmounted() {
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
-        this.participantUserInfos.forEach(m => this.$set(m, "_stream", null))
+        this.participantUserInfos.forEach(m => this.$set(m, '_stream', null))
         clearInterval(this.refreshUserInfoInternal);
         this.$eventBus.$off('muteVideo');
         this.$eventBus.$off('muteAudio');
@@ -1495,7 +1564,7 @@ i.active {
     height: 100%;
 }
 
-.main-slider-container .slider {
+.main-slider-container .conference-slider {
     width: var(--slider-width);
     height: 100%;
     overflow: auto;
@@ -1616,7 +1685,6 @@ i.active {
 
 .conference-main-content-container footer {
     width: 100%;
-    display: block;
     position: absolute;
     left: 0;
     bottom: 0;
@@ -1636,10 +1704,83 @@ i.active {
     padding: 0 5px 0 0;
 }
 
+.conference-footer-layout {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px;
+}
+
+.send-message-container {
+    flex: 0 0 220px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 6px 24px 6px 12px;
+    backdrop-filter: blur(4px);
+}
+
+.send-msg-icon {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+}
+
+.send-message-container input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 13px;
+    min-width: 0;
+}
+
+.send-message-container input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.hangup-button-container {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.hangup-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: #e34d4d;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.hangup-btn:hover {
+    background: #c73c3c;
+}
+
+.hangup-btn-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.hangup-btn span {
+    color: #fff;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
 .action-container {
-    /*width: 100%;*/
+    flex: 1;
     display: flex;
     justify-content: center;
+    gap: 0;
 }
 
 .action-container .action {
@@ -1687,6 +1828,61 @@ i.active {
 .icon-ion-grid:after {
     padding-left: 5px;
     content: "\f13f";
+}
+
+/* Hangup button red styling */
+.hangup-action-img {
+    filter: invert(40%) sepia(1) saturate(9) hue-rotate(330deg) brightness(1);
+}
+
+/* Hangup context menu popup */
+.hangup-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+}
+
+.hangup-menu-popup {
+    z-index: 9999;
+    background: #2c2c2e;
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 200px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hangup-menu-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 20px;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.hangup-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hangup-menu-end {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hangup-menu-title-end {
+    color: #ff5a5a;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hangup-menu-title-leave {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hangup-menu-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
 }
 
 </style>

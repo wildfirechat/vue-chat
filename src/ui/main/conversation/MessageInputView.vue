@@ -38,7 +38,7 @@
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
                     </li>
-                    <li v-if="enablePtt" style="position: relative;">
+                    <li v-if="!inputOptions['disablePtt'] && enablePtt" style="position: relative;">
                         <!-- 对讲录音动画提示 -->
                         <transition name="fade-slide">
                             <div v-if="isPttTalking" class="recording-indicator">
@@ -56,7 +56,7 @@
                                     :title="$t('conversation.action_tip_ptt')"
                            class="icon-ion-android-radio-button-on ptt-icon"/>
                     </li>
-                    <li style="position: relative;">
+                    <li v-if="!inputOptions['disableAudio']"  style="position: relative;">
                         <!-- 录音动画提示 -->
                         <transition name="fade-slide">
                             <div v-if="isRecording"
@@ -77,10 +77,10 @@
                            :title="$t('conversation.action_tip_voice')"
                            class="icon-ion-android-microphone record-icon"/>
                     </li>
-                    <li v-if="isCollectionEnable && conversationInfo.conversation.type === 1" @click="openCollectionWindow">
+                    <li v-if="!inputOptions['disableCollecton'] && isCollectionEnable && conversationInfo.conversation.type === 1" @click="openCollectionWindow">
                         <i class="icon-ion-android-list" :title="$t('conversation.action_tip_collection')"/>
                     </li>
-                    <li v-if="isPollEnable && conversationInfo.conversation.type === 1" @click="openPollWindow">
+                    <li v-if="!inputOptions['disablePoll'] && isPollEnable && conversationInfo.conversation.type === 1" @click="openPollWindow">
                         <i class="icon-ion-stats-bars" :title="$t('conversation.action_tip_poll')"/>
                     </li>
                 </ul>
@@ -109,8 +109,6 @@
                  autofocus
                  @input="onInput"
                  @contextmenu.prevent="$refs.menu.open($event)"
-                 onmouseover="this.setAttribute('org_title', this.title); this.title='';"
-                 onmouseout="this.title = this.getAttribute('org_title');"
                  v-on:tribute-replaced="onTributeReplaced"
                  contenteditable="true">
             </div>

@@ -35,14 +35,28 @@ export default {
             required: true,
         }
     },
+    inject: {
+        conversationEventBus: {
+            default: null,
+        },
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedConversationState: store.state.conversation,
-            sharedPickState: store.state.pick,
+            activeStore: activeStore,
+            sharedConversationState: activeStore.state.conversation,
+            sharedPickState: activeStore.state.pick,
             highLight: false,
         }
     },
     methods: {
+        getConversationEventBus() {
+            return this.conversationEventBus || this.$eventBus;
+        },
+
         openMessageContextMenu(event, message) {
             this.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
@@ -52,10 +66,10 @@ export default {
         },
     },
     mounted() {
-        this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
+        this.getConversationEventBus().$on('contextMenuClosed', this.onContextMenuClosed);
     },
     beforeUnmount() {
-        this.$eventBus.$off('contextMenuClosed', this.onContextMenuClosed);
+        this.getConversationEventBus().$off('contextMenuClosed', this.onContextMenuClosed);
     },
 }
 </script>
