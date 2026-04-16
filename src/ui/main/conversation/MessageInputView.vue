@@ -1319,6 +1319,8 @@ export default {
 
     computed: {
         quotedMessage() {
+            // side affect
+            this.$refs.input && this.$refs.input.focus();
             return this.sharedConversationState.quotedMessage;
         },
 

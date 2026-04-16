@@ -1028,7 +1028,6 @@ export default {
     },
 
     mounted() {
-    console.log('xxxxxxxx ', this)
         this.popupItem = this.$refs['setting'];
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);

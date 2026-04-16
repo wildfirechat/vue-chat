@@ -20,7 +20,8 @@
         <div v-if="session" class="main-slider-container"
              v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="main">
-                <header style="background: rgba(0, 0, 0, 0.28); height: 20px; display: flex; justify-content: space-between">
+                <header style="height: 20px; display: flex; justify-content: space-between"
+                    v-bind:style="{background: audioOnly ? 'var(--background-primary)' : 'black'}">
                     <a href="#" @click.prevent>
                         <i class="icon-ion-information" style="padding: 0 10px"
                            id="info-icon"
@@ -483,9 +484,6 @@ export default {
 
             sessionCallback.didScreenShareEnded = () => {
                 console.log('didScreenShareEnded', this.session.videoMuted, this.session.audioMuted);
-                if (isElectron()) {
-                    currentWindow.setIgnoreMouseEvents(false);
-                }
                 this.selfUserInfo._isScreenSharing = false;
                 this.selfUserInfo._isVideoMuted = this.session.videoMuted;
             }
@@ -977,7 +975,6 @@ export default {
                 if (this.session.videoMuted && this.session.audioMuted) {
                     this.session.switchAudience(true);
                 }
-                // currentWindow.setIgnoreMouseEvents(false)
             } else {
                 if (isElectron()) {
                     let beforeClose = (event) => {
@@ -1494,19 +1491,6 @@ export default {
             //     this.session.stopScreenShare();
             //     this.$forceUpdate();
             // })
-            window.addEventListener('mousemove', (event) => {
-                if (!this.session || !this.session.screenSharing) {
-                    return;
-                }
-                if (event.target.id === 'main-content-container') {
-                    currentWindow.setIgnoreMouseEvents(true, { forward: true });
-                } else {
-                    currentWindow.setIgnoreMouseEvents(false);
-                }
-            });
-            window.addEventListener('mouseleave', (event) => {
-                currentWindow.setIgnoreMouseEvents(false);
-            })
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '30px');
         } else {
             this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
