@@ -20,15 +20,15 @@
         <div v-if="session" class="main-slider-container"
              v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
             <div class="main">
-                <header style="background: var(--background-primary); height: 20px; display: flex; justify-content: space-between">
+                <header style="background: rgba(0, 0, 0, 0.28); height: 20px; display: flex; justify-content: space-between">
                     <a href="#" @click.prevent>
                         <i class="icon-ion-information" style="padding: 0 10px"
                            id="info-icon"
                            v-bind:class="{active:showConferenceSimpleInfoView}"
                            @click.prevent="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
                     </a>
+                    <p style="padding-left: 10px; color: var(--text-secondary)">{{ duration }}</p>
                     <p style="flex: 1"></p>
-                    <p style="padding-right: 10px">{{ duration }}</p>
                     <div>
                         <a v-if="!audioOnly" href="#" @click.prevent>
                             <i class="icon-ion-grid" style="padding: 0 10px"

@@ -98,25 +98,28 @@
             <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
                           v-show="!conferenceMinimized"
                           class="voip-div-container"
-                          :style="conferenceSliderOpen ? { width: '1310px' } : undefined"
+                          :class="{ 'voip-minimizing': conferenceMinimizing }"
+                          :style="{
+                              ...(conferenceSliderOpen ? { width: '1310px' } : {}),
+                              transformOrigin: voipTransformOrigin
+                          }"
                           :initial-value="{x:'50%', y:'50%'}"
                           :prevent-default="true"
                           :on-start="onConferenceStart"
                           v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
             >
-                <div class="voip-inner"
-                     :class="{ 'voip-minimizing': conferenceMinimizing, 'voip-restoring': conferenceRestoring }">
-                    <div class="voip-titlebar">
-                        <span class="voip-titlebar-title">{{ voipProxy.type === 'conference' ? '会议' : '通话' }}</span>
-                        <button class="voip-minimize-btn" @click.stop="minimizeVoip" title="最小化">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="11" width="18" height="2" rx="1"/></svg>
-                        </button>
-                    </div>
-                    <div class="voip-content-wrap">
-                        <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
-                        <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
-                        <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
-                    </div>
+                <div class="voip-titlebar">
+                    <!-- just to make title center -->
+                    <span></span>
+                    <span class="voip-titlebar-title">{{ voipProxy.type === 'conference' ? '会议' : '通话' }}</span>
+                    <button class="voip-minimize-btn" @click.stop="minimizeVoip" title="最小化">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="11" width="18" height="2" rx="1"/></svg>
+                    </button>
+                </div>
+                <div class="voip-content-wrap">
+                    <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
+                    <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
+                    <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
                 </div>
             </UseDraggable>
             <!-- Minimized pip: shown above settings button when conference/call is minimized -->
@@ -170,7 +173,7 @@ export default {
             conferenceSliderOpen: false,
             conferenceMinimized: false,
             conferenceMinimizing: false,
-            conferenceRestoring: false,
+            voipTransformOrigin: '5% 95%',
         };
     },
 
@@ -191,21 +194,42 @@ export default {
         },
 
         minimizeVoip() {
+            // Calculate transform-origin in viewport coordinates
+            // so animation scales toward the pip's position
+            const voipEl = document.querySelector('.voip-div-container');
+            if (voipEl) {
+                const voipRect = voipEl.getBoundingClientRect();
+
+                // Pip position: left: calc(var(--main-margin-left) + 9px); bottom: calc(var(--main-margin-bottom) + 78px);
+                // Pip size: 42px, so center is at left+21, bottom-21
+                const mainMarginLeft = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-margin-left')) || 80;
+                const mainMarginBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-margin-bottom')) || 50;
+                const pipX = mainMarginLeft + 9 + 21; // pip center X
+                const pipY = window.innerHeight - mainMarginBottom - 78 - 21; // pip center Y
+
+                // Calculate origin as percentage relative to voip container
+                const originX = ((pipX - voipRect.left) / voipRect.width) * 100;
+                const originY = ((pipY - voipRect.top) / voipRect.height) * 100;
+
+                this.voipTransformOrigin = `${originX}% ${originY}%`;
+            }
+
             this.conferenceMinimizing = true;
             setTimeout(() => {
                 this.conferenceMinimized = true;
                 this.conferenceMinimizing = false;
-            }, 380);
+            }, 450);
         },
 
         restoreVoip() {
-            // start scaled-down so the enter animation can play
-            this.conferenceRestoring = true;
+            // 恢复前，先恢复为缩小状态，然后显示 DOM
+            this.conferenceMinimizing = true;
             this.conferenceMinimized = false;
-            // double rAF: ensure the browser renders the initial collapsed state before transitioning
+            // 等待浏览器完成渲染，确保元素已以缩小状态显示
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    this.conferenceRestoring = false;
+                    // 移除缩小类，触发 CSS 过渡回到正常大小
+                    this.conferenceMinimizing = false;
                 });
             });
         },
@@ -316,7 +340,7 @@ export default {
             if (!newVal) {
                 this.conferenceMinimized = false;
                 this.conferenceMinimizing = false;
-                this.conferenceRestoring = false;
+                this.voipTransformOrigin = '5% 95%';
             }
         },
     },
@@ -545,6 +569,12 @@ i.active {
     width: 360px;
     height: 640px;
     overflow: hidden;
+    scale: 1;
+    opacity: 1;
+    filter: brightness(1);
+    transition: scale 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.45s ease-out;
 }
 
 .voip-div-container.single {
@@ -588,6 +618,13 @@ i.active {
     border: none;
 }
 
+.voip-div-container.voip-minimizing {
+    scale: 0.065;
+    opacity: 0;
+    filter: brightness(0.7);
+    pointer-events: none;
+}
+
 /* Voip overlay titlebar */
 .voip-titlebar {
     display: flex;
@@ -629,38 +666,11 @@ i.active {
     color: #fff;
 }
 
-/* Wrapper so Single/Multi/Conference fill remaining flex height */
+/* Content wrapper so Single/Multi/Conference fill remaining flex height */
 .voip-content-wrap {
     flex: 1;
     overflow: hidden;
     min-height: 0;
-}
-
-/* Inner animation wrapper — sits inside UseDraggable's translated div.
-   Using a child avoids conflicting with the inline transform UseDraggable applies. */
-.voip-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    /* The scale origin points toward bottom-left, where the pip lives */
-    transform-origin: 5% 95%;
-    transition: transform 0.38s cubic-bezier(0.3, 0, 0.65, 0.1),
-                opacity 0.28s ease;
-}
-
-/* Minimizing out → scale to pip corner + fade */
-.voip-inner.voip-minimizing {
-    transform: scale(0.06);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* Restoring: start at collapsed state; class is removed via double-rAF to trigger transition back */
-.voip-inner.voip-restoring {
-    transform: scale(0.06);
-    opacity: 0;
-    transition: none; /* no transition on the initial collapsed frame */
 }
 
 /* Minimized pip — floats above the settings button in the left sidebar */
