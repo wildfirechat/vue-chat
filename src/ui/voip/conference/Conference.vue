@@ -363,18 +363,23 @@ export default {
             this.$eventBus.$emit('conference-screen-share-changed', !!screenSharing);
         },
         setupStore() {
-            let store = newStore();
-            const storeId = `conferenceStore_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-            store.init(false, {
-                loadFavGroupList: false,
-                loadChannelList: false,
-                loadFriendList: false,
-                loadFavContactList: false,
-                loadFriendRequestList: false,
-                loadDefaultConversationList: false
-            }, storeId);
-
-            this.conferenceConversationStore = store;
+            if (isElectron()){
+                // 因为进程隔离，直接用 main store 即可
+                this.conferenceConversationStore = store;
+            } else {
+                let cs = newStore();
+                const storeId = `conferenceStore_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+                cs.init(false, {
+                    loadFavGroupList: false,
+                    loadChannelList: false,
+                    loadFriendList: false,
+                    loadFavContactList: false,
+                    loadFriendRequestList: false,
+                    loadDefaultConversationList: false
+                }, storeId);
+                this.conferenceConversationStore = cs;
+            }
+    
         },
         // 用来解决 iOS 上，不能自动播放问题
         autoPlay() {
