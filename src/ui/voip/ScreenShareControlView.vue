@@ -155,16 +155,16 @@ export default {
 
 .screen-share-action-container {
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     position: absolute;
-    top: 30px;
     left: 0;
     z-index: 100;
 }
 
 .screen-share-panel {
-    width: min(560px, 100%);
+    width: 100%;
     min-height: 100%;
     display: flex;
     align-items: center;

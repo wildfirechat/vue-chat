@@ -7,18 +7,18 @@
 <!--}-->
 <template>
     <div class="flex-column voip-container" style="width: 100%; height: 100%" ref="rootContainer">
-        <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
-            <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px;"
+        <div ref="notClickThroughArea">
+            <ElectronWindowsControlButtonView  v-if="sharedMiscState.isElectron"  style="position: absolute; top: 0; left: 0; width: 100%; height: 30px;"
                                               :title="'野火会议'"
                                               :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
-            <ScreenShareControlView v-if="session && session.screenSharing" type="conference"/>
+            <ScreenShareControlView v-if="session && session.screenSharing" type="conference" v-bind:style="{top: sharedMiscState.isElectron ? '30px' : '0px'}"/>
             <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
         </div>
         <div v-if="endReason !== undefined && endReason === 4" @click="rejoinConference" class="rejoin-container">
             会议断开，点击重新加入
         </div>
         <div v-if="session" class="main-slider-container"
-             v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
+             v-bind:style="{display: session.screenSharing ? 'none' : 'flex'}">
             <div class="main">
                 <header style="height: 20px; display: flex; justify-content: space-between"
                     v-bind:style="{background: audioOnly ? 'var(--background-primary)' : 'black'}">
@@ -354,6 +354,14 @@ export default {
         ConversationView
     },
     methods: {
+        syncScreenShareContainerState(screenSharing) {
+            if (isElectron()) {
+                // do nothing
+                // 在 avenginekitProxy 里面处理了
+                return;
+            }
+            this.$eventBus.$emit('conference-screen-share-changed', !!screenSharing);
+        },
         setupStore() {
             let store = newStore();
             const storeId = `conferenceStore_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -451,6 +459,7 @@ export default {
                 this.participantUserInfos.forEach(p => this.$set(p, '_stream', null))
 
                 this.session = session;
+                this.syncScreenShareContainerState(session.screenSharing);
                 if (isElectron()) {
                     document.title = session.title;
                 }
@@ -486,6 +495,7 @@ export default {
                 console.log('didScreenShareEnded', this.session.videoMuted, this.session.audioMuted);
                 this.selfUserInfo._isScreenSharing = false;
                 this.selfUserInfo._isVideoMuted = this.session.videoMuted;
+                this.syncScreenShareContainerState(false);
             }
 
             sessionCallback.didCreateLocalVideoTrackError = () => {
@@ -1332,6 +1342,11 @@ export default {
     },
 
     watch: {
+        'session.screenSharing': {
+            handler(screenSharing) {
+                this.syncScreenShareContainerState(screenSharing);
+            }
+        },
         participantUserInfos: {
             deep: true,
             handler(infos) {
@@ -1499,6 +1514,7 @@ export default {
     },
 
     unmounted() {
+        this.syncScreenShareContainerState(false);
         // reset
         this.$set(this.selfUserInfo, '_stream', null)
         this.participantUserInfos.forEach(m => this.$set(m, '_stream', null))
