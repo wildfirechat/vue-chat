@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="login-container">
+        <div class="login-container" :class="{'web-login-container': !sharedMiscState.isElectron}">
             <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                               :maximizable="false"
                                               v-if="sharedMiscState.isElectronWindowsOrLinux"/>
@@ -74,7 +74,7 @@
                 </div>
                 <div class="item">
                     <input v-model.trim="authCode" class="text-input" type="number" placeholder="验证码">
-                    <button :disabled="mobile.toString().length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
+                    <button :disabled="mobile.toString().length !== 11 || authCodeCountdown > 0" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">{{ authCodeCountdown > 0 ? authCodeCountdown + 's后重新获取' : '获取验证码' }}</button>
                 </div>
                 <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
                 <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}</button>
@@ -145,6 +145,8 @@ export default {
             hasSlideVerifiedForCode: false, // 是否已通过滑动验证（用于验证码登录）
             cachedSlideVerifyToken: null,  // 缓存的验证token
             pendingLoginAction: null,      // 待执行的登录操作
+            authCodeCountdown: 0,          // 获取验证码倒计时
+            authCodeTimer: null,           // 倒计时定时器
         }
     },
     created() {
@@ -199,6 +201,19 @@ export default {
             }
         },
 
+        startAuthCodeCountdown() {
+            this.authCodeCountdown = 60;
+            if (this.authCodeTimer) {
+                clearInterval(this.authCodeTimer);
+            }
+            this.authCodeTimer = setInterval(() => {
+                this.authCodeCountdown--;
+                if (this.authCodeCountdown <= 0) {
+                    clearInterval(this.authCodeTimer);
+                    this.authCodeTimer = null;
+                }
+            }, 1000);
+        },
         async requestAuthCode() {
             // 显示滑动验证
             this.$refs.slideVerifyDialog.show();
@@ -211,6 +226,7 @@ export default {
                     });
                         // 标记已通过滑动验证
                         this.hasSlideVerifiedForCode = true;
+                        this.startAuthCodeCountdown();
                 })
                 .catch(err => {
                         // 发送失败，重置验证标志
@@ -623,6 +639,9 @@ export default {
     margin: auto;
     background: var(--background-primary);
     border-radius: 12px;
+}
+
+.web-login-container {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
                 0 10px 20px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(0, 0, 0, 0.02);

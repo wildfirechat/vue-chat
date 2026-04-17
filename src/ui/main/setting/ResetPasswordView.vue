@@ -3,7 +3,7 @@
         <p class="title">重置密码</p>
         <div class="item">
             <input v-model.trim="resetAuthCode" class="text-input" type="number" placeholder="验证码">
-            <button class="request-auth-code-button" @click="requestResetAuthCode">获取验证码</button>
+            <button class="request-auth-code-button" :disabled="authCodeCountdown > 0" @click="requestResetAuthCode">{{ authCodeCountdown > 0 ? authCodeCountdown + 's后重新获取' : '获取验证码' }}</button>
         </div>
         <div class="item">
             <input v-model="newPassword" class="text-input" type="text" placeholder="请输入新密码">
@@ -27,10 +27,25 @@ export default {
             resetAuthCode: '',
             newPassword: '',
             confirmPassword: '',
+            authCodeCountdown: 0,
+            authCodeTimer: null,
         }
     },
 
     methods: {
+        startAuthCodeCountdown() {
+            this.authCodeCountdown = 60;
+            if (this.authCodeTimer) {
+                clearInterval(this.authCodeTimer);
+            }
+            this.authCodeTimer = setInterval(() => {
+                this.authCodeCountdown--;
+                if (this.authCodeCountdown <= 0) {
+                    clearInterval(this.authCodeTimer);
+                    this.authCodeTimer = null;
+                }
+            }, 1000);
+        },
         async requestResetAuthCode() {
             this.$modal.hide('reset-password-modal')
             appServerApi.requestResetPasswordAuthCode()
@@ -39,6 +54,7 @@ export default {
                         text: '发送重置验证码成功',
                         type: 'info'
                     });
+                    this.startAuthCodeCountdown();
                 })
                 .catch(err => {
                     this.mobile = '';

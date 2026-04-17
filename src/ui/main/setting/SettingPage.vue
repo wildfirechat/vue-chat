@@ -34,7 +34,7 @@
             <label v-if="sharedMiscState.isCommercialServer">
                 {{ $t('setting.sync_draft') }}
                 <input type="checkbox" :checked="!sharedMiscState.isDisableSyncDraft"
-                       @change="sharedMiscState.wfc.setDisableSyncDraft(!$event.target.checked)">
+                       @change="enableDraftSync($event.target.checked)">
             </label>
             <div>
                 {{ $t('setting.lang') }}
@@ -221,6 +221,9 @@ export default {
 
         enableAutoLogin(enable) {
             store.setEnableAutoLogin(enable);
+        },
+        enableDraftSync(enable) {
+            wfc.setDisableSyncDraft(!enable)
         },
 
         setLang(lang) {
