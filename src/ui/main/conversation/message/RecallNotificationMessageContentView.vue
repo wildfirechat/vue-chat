@@ -21,6 +21,11 @@ export default {
             required: true
         }
     },
+    inject: {
+        conversationEventBus: {
+            default: null,
+        },
+    },
     data() {
         return {
             checkReeditInterval: 0,
@@ -36,6 +41,10 @@ export default {
     },
 
     methods: {
+        getConversationEventBus() {
+            return this.conversationEventBus || this.$eventBus;
+        },
+
         checkReeditable() {
             let delta = wfc.getServerDeltaTime();
             let now = new Date().getTime();
@@ -54,7 +63,7 @@ export default {
             }
         },
         reedit() {
-            this.$eventBus.$emit('reedit-message', this.message);
+            this.getConversationEventBus().$emit('reedit-message', this.message);
         }
     },
     components: {}

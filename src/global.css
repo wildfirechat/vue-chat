@@ -120,6 +120,11 @@ button.danger:hover {
 }
 
 /* --- Tippy.js Theme Adaptation --- */
+/* Force GPU compositing so Tippy renders above hardware-accelerated <video> elements */
+[data-tippy-root] {
+    will-change: transform;
+}
+
 .tippy-box {
     background-color: var(--background-tooltip) !important;
     color: var(--text-primary) !important;

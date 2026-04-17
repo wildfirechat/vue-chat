@@ -33,6 +33,11 @@ import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "ChannelConversationInfoView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -40,8 +45,10 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedContactState: store.state.contact,
+            activeStore: activeStore,
+            sharedContactState: activeStore.state.contact,
             newChannelName: '',
             newChannelDesc: '',
         }
@@ -63,7 +70,7 @@ export default {
         },
 
         subscribeChannel() {
-            store.subscribeChannel(this.conversationInfo.conversation.target, !this.isSubscribedChannel());
+            this.activeStore.subscribeChannel(this.conversationInfo.conversation.target, !this.isSubscribedChannel());
         },
     },
 

@@ -15,6 +15,11 @@ import {numberValue} from "../../../../../wfc/util/longUtil";
 
 export default {
     name: "CallStartMessageContentView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         message: {
             type: Message,
@@ -22,9 +27,11 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedMiscState: store.state.misc,
-            sharedContactState: store.state.contact,
+            activeStore: activeStore,
+            sharedMiscState: activeStore.state.misc,
+            sharedContactState: activeStore.state.contact,
         }
     },
     mounted() {

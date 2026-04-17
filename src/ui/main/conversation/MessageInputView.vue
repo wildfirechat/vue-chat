@@ -38,7 +38,7 @@
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
                     </li>
-                    <li v-if="enablePtt" style="position: relative;">
+                    <li v-if="!inputOptions['disablePtt'] && enablePtt" style="position: relative;">
                         <!-- 对讲录音动画提示 -->
                         <transition name="fade-slide">
                             <div v-if="isPttTalking" class="recording-indicator">
@@ -56,7 +56,7 @@
                                     :title="$t('conversation.action_tip_ptt')"
                            class="icon-ion-android-radio-button-on ptt-icon"/>
                     </li>
-                    <li style="position: relative;">
+                    <li v-if="!inputOptions['disableAudio']"  style="position: relative;">
                         <!-- 录音动画提示 -->
                         <transition name="fade-slide">
                             <div v-if="isRecording"
@@ -77,10 +77,10 @@
                            :title="$t('conversation.action_tip_voice')"
                            class="icon-ion-android-microphone record-icon"/>
                     </li>
-                    <li v-if="isCollectionEnable && conversationInfo.conversation.type === 1" @click="openCollectionWindow">
+                    <li v-if="!inputOptions['disableCollecton'] && isCollectionEnable && conversationInfo.conversation.type === 1" @click="openCollectionWindow">
                         <i class="icon-ion-android-list" :title="$t('conversation.action_tip_collection')"/>
                     </li>
-                    <li v-if="isPollEnable && conversationInfo.conversation.type === 1" @click="openPollWindow">
+                    <li v-if="!inputOptions['disablePoll'] && isPollEnable && conversationInfo.conversation.type === 1" @click="openPollWindow">
                         <i class="icon-ion-stats-bars" :title="$t('conversation.action_tip_poll')"/>
                     </li>
                 </ul>
@@ -109,8 +109,6 @@
                  autofocus
                  @input="onInput"
                  @contextmenu.prevent="$refs.menu.open($event)"
-                 onmouseover="this.setAttribute('org_title', this.title); this.title='';"
-                 onmouseout="this.title = this.getAttribute('org_title');"
                  v-on:tribute-replaced="onTributeReplaced"
                  contenteditable="true">
             </div>
@@ -202,13 +200,19 @@ export default {
             type: Boolean,
             required: false,
             default: false,
+        },
+        storeInstance: {
+            type: Object,
+            required: false,
         }
     },
     data() {
+        const activeStore = this.storeInstance || store;
         return {
-            sharedConversationState: store.state.conversation,
-            sharedContactState: store.state.contact,
-            sharedMiscState: store.state.misc,
+            activeStore: activeStore,
+            sharedConversationState: activeStore.state.conversation,
+            sharedContactState: activeStore.state.contact,
+            sharedMiscState: activeStore.state.misc,
             showEmojiDialog: false,
             tribute: null,
             recordingTime: '00:00',
@@ -260,7 +264,7 @@ export default {
 
         cancelQuoteMessage() {
             this.conversationInfo._quotedMessage = null;
-            store.quoteMessage(null)
+            this.activeStore.quoteMessage(null)
         },
 
         onInput(e) {
@@ -343,7 +347,7 @@ export default {
                     return;
                 } else if (args.hasFile) {
                     args.files.forEach(file => {
-                        store.sendFile(this.conversationInfo.conversation, file)
+                        this.activeStore.sendFile(this.conversationInfo.conversation, file)
                     })
                     return;
                 }
@@ -385,7 +389,7 @@ export default {
                                         break;
                                     }
                                 }
-                                store.sendFile(this.conversationInfo.conversation, file)
+                                this.activeStore.sendFile(this.conversationInfo.conversation, file)
                             }
                         }
                         return;
@@ -572,8 +576,8 @@ export default {
                         }
                     }
                     this.$eventBus.$emit('uploadFile', file)
-                    store.setShouldAutoScrollToBottom(true);
-                    store.sendFile(this.conversationInfo.conversation, file)
+                    this.activeStore.setShouldAutoScrollToBottom(true);
+                    this.activeStore.sendFile(this.conversationInfo.conversation, file)
                     // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
                     img.parentNode.removeChild(img);
                     URL.revokeObjectURL(img.src)
@@ -588,13 +592,13 @@ export default {
                     let quoteInfo = QuoteInfo.initWithMessage(quotedMessage);
                     textMessageContent.setQuoteInfo(quoteInfo);
                 }
-                store.setShouldAutoScrollToBottom(true);
+                this.activeStore.setShouldAutoScrollToBottom(true);
                 wfc.sendConversationMessage(conversation, textMessageContent);
                 this.$refs['input'].innerHTML = '';
             }
 
             input.innerHTML = '';
-            store.quoteMessage(null);
+            this.activeStore.quoteMessage(null);
             this.conversationInfo._quotedMessage = null;
             Draft.setConversationDraft(conversation, '', null, null);
             e.preventDefault();
@@ -722,7 +726,7 @@ export default {
                     this.$parent.$refs['conversationMessageList'].style.flexGrow = 0;
                 }
             }
-            store.toggleChannelMenu(toggle);
+            this.activeStore.toggleChannelMenu(toggle);
         },
 
         onPickFile(event) {
@@ -773,7 +777,7 @@ export default {
             for (let i = 0; i < files.length; i++) {
                 let file = files[i]
                 this.$eventBus.$emit('uploadFile', file)
-                store.sendFile(this.conversationInfo.conversation, file);
+                this.activeStore.sendFile(this.conversationInfo.conversation, file);
             }
         },
 
@@ -802,7 +806,7 @@ export default {
             let mentionMenuItems = [];
             if(Config.AI_ROBOT){
                 let aiRobotId = Config.AI_ROBOT;
-                let aiUserInfos = store.getUserInfos([aiRobotId]);
+                let aiUserInfos = this.activeStore.getUserInfos([aiRobotId]);
                 for (let aiInfo of aiUserInfos) {
                     mentionMenuItems.push({
                         key: aiInfo._displayName,
@@ -831,9 +835,9 @@ export default {
                 if(groupInfo.memberCount  < 500){
                     let groupMemberUserInfos;
                     if(isElectron()){
-                        groupMemberUserInfos = await store.getGroupMemberUserInfosAsync(conversation.target, false);
+                        groupMemberUserInfos = await this.activeStore.getGroupMemberUserInfosAsync(conversation.target, false);
                     } else {
-                        groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false);
+                        groupMemberUserInfos = this.activeStore.getGroupMemberUserInfos(conversation.target, false);
                     }
                     groupMemberUserInfos.forEach((e) => {
                         mentionMenuItems.push({
@@ -906,8 +910,9 @@ export default {
 
         focusInput() {
             this.$nextTick(() => {
-                if (this.$refs['input']) {
-                    this.$refs['input'].focus();
+                const input = this.$refs['input'];
+                if (input && input.offsetParent !== null) {
+                    input.focus();
                     console.log('focus end')
                 }
             })
@@ -925,11 +930,11 @@ export default {
 
         restoreDraft() {
             let draft = Draft.getConversationDraftEx(this.conversationInfo);
-            if (!draft) {
+            if (!draft || (!draft.text && !draft.quotedMessage)) {
                 return;
             }
             console.log('restore draft', this.conversationInfo, draft);
-            store.quoteMessage(draft.quotedMessage);
+            this.activeStore.quoteMessage(draft.quotedMessage);
             let input = this.$refs['input'];
             if (input.innerHTML.trim()) {
                 console.log('inputting, ignore', draft.text)

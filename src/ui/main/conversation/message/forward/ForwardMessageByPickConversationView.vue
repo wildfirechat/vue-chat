@@ -59,6 +59,11 @@ import {markRaw} from "vue";
 
 export default {
     name: "ForwardMessageByPickConversationView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         forwardType: {
             // 可参考ForwardType
@@ -71,20 +76,22 @@ export default {
         },
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedConversation: store.state.conversation,
-            sharedPickState: store.state.pick,
+            activeStore: activeStore,
+            sharedConversation: activeStore.state.conversation,
+            sharedPickState: activeStore.state.pick,
             query: '',
-            sharedSearchState: store.state.search,
+            sharedSearchState: activeStore.state.search,
             conversationItemComponent: markRaw(ConversationPickItem),
         }
     },
     methods: {
         onConversationItemClick(conversation) {
-            store.pickOrUnpickConversation(conversation, true)
+            this.activeStore.pickOrUnpickConversation(conversation, true)
         },
         unpConversation(conversation) {
-            store.pickOrUnpickConversation(conversation, false);
+            this.activeStore.pickOrUnpickConversation(conversation, false);
         },
 
         conversationKey(conversationInfo) {
@@ -124,7 +131,7 @@ export default {
         conversationInfos() {
             let infos;
             if (this.query && this.query.trim()) {
-                infos = store.filterConversation(this.query)
+                infos = this.activeStore.filterConversation(this.query)
             } else {
                 infos = this.sharedConversation.conversationInfoList;
             }

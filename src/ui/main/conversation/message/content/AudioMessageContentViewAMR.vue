@@ -21,6 +21,11 @@ import store from "../../../../../store";
 
 export default {
     name: "AudioMessageContentView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         message: {
             type: Message,
@@ -45,13 +50,17 @@ export default {
         }
     },
     methods: {
+        getActiveStore() {
+            return this.conversationActiveStore || store;
+        },
+
         playVoice() {
             if (this.message._isPlaying) {
-                store.playVoice(null)
+                this.getActiveStore().playVoice(null)
             } else {
                 // make message._isPlaying reactive
                 this.$set(this.message, '_isPlaying', true)
-                store.playVoice(this.message)
+                this.getActiveStore().playVoice(this.message)
             }
         },
     },

@@ -57,11 +57,13 @@
             <button :disabled="conferenceManager.isMuteAll" @click="requestMuteAll">全员静音</button>
             <button :disabled="!conferenceManager.isMuteAll" @click="requestUnMuteAll">取消全员静音</button>
         </div>
-        <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true" v-on:close="onContextMenuClose">
-            <li v-for="(item,i) in buildParticipantContextMenu(participant)" :key="i">
-                <a @click.prevent="item.handler" v-bind:style="item.styleObject">{{ item.title }}</a>
-            </li>
-        </vue-context>
+        <Teleport to="body">
+            <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true" v-on:close="onContextMenuClose">
+                <li v-for="(item,i) in buildParticipantContextMenu(participant)" :key="i">
+                    <a @click.prevent="item.handler" v-bind:style="item.styleObject">{{ item.title }}</a>
+                </li>
+            </vue-context>
+        </Teleport>
 
     </div>
 </template>
@@ -69,13 +71,9 @@
 <script>
 import ConferenceInviteMessageContent from "../../../wfc/av/messages/conferenceInviteMessageContent";
 import Message from "../../../wfc/messages/message";
-import {isElectron} from "../../../platform";
 import ForwardType from "../../main/conversation/message/forward/ForwardType";
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import UserCardView from "../../main/user/UserCardView";
 import conferenceManager from "./conferenceManager";
-import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
-import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "ConferenceParticipantListView",
@@ -159,6 +157,9 @@ export default {
         },
         participantDesc(user) {
             let desc = '';
+            if(!conferenceManager.conferenceInfo){
+                return '';
+            }
             if (user.uid === conferenceManager.selfUserId) {
                 desc = "我"
                 if (user.uid === conferenceManager.conferenceInfo.owner) {
@@ -322,18 +323,7 @@ export default {
                 this.currentParticipant = {};
                 return;
             }
-            let ne = {
-                type: 'contextmenu'
-            }
-
-            ne.clientX = event.clientX - this.$refs.rootContainer.parentElement.offsetLeft;
-            // 160 menu width
-            // 360 slider width
-            if (ne.clientX + 160 > 350) {
-                ne.clientX = ne.clientX - 160;
-            }
-            ne.clientY = event.clientY - this.$refs.rootContainer.offsetTop;
-            this.$refs.menu.open(ne, participant);
+            this.$refs.menu.open(event, participant);
             this.isContextMenuShow = true;
             this.currentParticipant = participant;
         },

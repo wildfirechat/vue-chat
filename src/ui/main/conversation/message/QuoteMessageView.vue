@@ -46,6 +46,11 @@ import {downloadFile, previewMM} from "../../../../platformHelper";
 
 export default {
     name: "QuoteMessageView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         showCloseButton: {
             type: Boolean,
@@ -75,8 +80,10 @@ export default {
     },
 
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            shareConversation: store.state.conversation,
+            activeStore: activeStore,
+            shareConversation: activeStore.state.conversation,
         }
     },
     methods: {
@@ -117,9 +124,9 @@ export default {
                 if (localPath && fs.existsSync(localPath)) {
                     shell.openPath(localPath);
                 } else {
-                    if (!store.isDownloadingMessage(quotedFileMessage.messageUid)) {
+                    if (!this.activeStore.isDownloadingMessage(quotedFileMessage.messageUid)) {
                         downloadFile(quotedFileMessage)
-                        store.addDownloadingMessage(quotedFileMessage.messageUid)
+                        this.activeStore.addDownloadingMessage(quotedFileMessage.messageUid)
                     } else {
                         // TODO toast 下载中
                         console.log('file isDownloading')

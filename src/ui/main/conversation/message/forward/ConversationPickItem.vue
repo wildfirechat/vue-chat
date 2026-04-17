@@ -15,6 +15,11 @@ import store from "../../../../../store";
 
 export default {
     name: "ConversationPickItem",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         source: {
             type: Object,
@@ -22,19 +27,23 @@ export default {
         },
     },
     computed: {
+        activeStore() {
+            return this.conversationActiveStore || store;
+        },
+
         pickedConversations: {
             get() {
-                return store.state.pick.conversations;
+                return this.activeStore.state.pick.conversations;
             },
             set(value) {
                 // 更新选择状态
-                store.state.pick.conversations = value;
+                this.activeStore.state.pick.conversations = value;
             }
         }
     },
     methods: {
         onConversationItemClick(conversation) {
-            store.pickOrUnpickConversation(conversation, true)
+            this.activeStore.pickOrUnpickConversation(conversation, true)
         },
     }
 }

@@ -23,6 +23,11 @@ import wfc from "../../../wfc/client/wfc";
 
 export default {
     name: "SingleConversationInfoView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -30,10 +35,12 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            users: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
-            sharedContactState: store.state.contact,
-            sharedMiscState: store.state.misc,
+            activeStore: activeStore,
+            users: activeStore.getConversationMemberUsrInfos(this.conversationInfo.conversation),
+            sharedContactState: activeStore.state.contact,
+            sharedMiscState: activeStore.state.misc,
         }
     },
     components: {UserListView},
@@ -41,7 +48,7 @@ export default {
         showCreateConversationModal() {
             let successCB = users => {
                 users.push(this.conversationInfo.conversation._target)
-                store.createConversation(users)
+                this.activeStore.createConversation(users)
             }
             this.$pickContact({
                 successCB,
@@ -58,11 +65,11 @@ export default {
 
         clearConversationHistory() {
             this.$parent.enableLoadRemoteHistoryMessage = !this.sharedMiscState.isElectron;
-            store.clearConversationHistory(this.conversationInfo.conversation);
+            this.activeStore.clearConversationHistory(this.conversationInfo.conversation);
         },
 
         clearRemoteConversationHistory(){
-            store.clearRemoteConversationHistory(this.conversationInfo.conversation);
+            this.activeStore.clearRemoteConversationHistory(this.conversationInfo.conversation);
         }
     },
 

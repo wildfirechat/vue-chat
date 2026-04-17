@@ -50,6 +50,11 @@ import Config from "../../../../../config";
 
 export default {
     name: "ForwardMessageByCreateConversationView",
+    inject: {
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     props: {
         users: {
             type: Array,
@@ -66,14 +71,16 @@ export default {
         }
     },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
-            sharedPickState: store.state.pick,
+            activeStore: activeStore,
+            sharedPickState: activeStore.state.pick,
             query: '',
         }
     },
     methods: {
         unpick(user) {
-            store.pickOrUnpickUser(user, false);
+            this.activeStore.pickOrUnpickUser(user, false);
         },
 
         backPickConversation() {
@@ -109,7 +116,7 @@ export default {
         filteredUsers() {
             let result ;
             if (this.query && this.query.trim()) {
-                result = store.filterContact(this.query)
+                result = this.activeStore.filterContact(this.query)
             } else {
                 result = this.users;
             }

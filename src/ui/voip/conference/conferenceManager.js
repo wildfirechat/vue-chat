@@ -46,7 +46,7 @@ class ConferenceManager {
             wfc.quitChatroom(this.conferenceInfo.conferenceId);
         }
         this.vueInstance = null;
-        this.conferenceInfo = null;
+        this.conferenceInfo = {};
     }
 
     getConferenceInfo(conferenceId) {

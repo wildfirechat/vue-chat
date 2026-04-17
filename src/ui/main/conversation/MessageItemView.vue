@@ -52,14 +52,24 @@ export default {
             required: true,
         },
     },
+    inject: {
+        conversationEventBus: {
+            default: null,
+        },
+        conversationActiveStore: {
+            default: null,
+        },
+    },
     data() {
+        const activeStore = this.conversationActiveStore || store;
         return {
             conversationInfo: null,
             showConversationInfo: false,
-            sharedConversationState: store.state.conversation,
-            sharedContactState: store.state.contact,
-            sharedPickState: store.state.pick,
-            sharedMiscState: store.state.misc,
+            activeStore: activeStore,
+            sharedConversationState: activeStore.state.conversation,
+            sharedContactState: activeStore.state.contact,
+            sharedPickState: activeStore.state.pick,
+            sharedMiscState: activeStore.state.misc,
             isHandlerDragging: false,
 
             savedMessageListViewHeight: -1,
@@ -76,6 +86,10 @@ export default {
         };
     },
     methods: {
+        getConversationEventBus() {
+            return this.conversationEventBus || this.$eventBus;
+        },
+
         isNotificationMessage(message) {
             return message && message.messageContent instanceof NotificationMessageContent
                 && message.messageContent.type !== MessageContentType.RecallMessage_Notification
@@ -99,17 +113,17 @@ export default {
                 return;
             }
             if (this.sharedConversationState.enableMessageMultiSelection) {
-                store.selectOrDeselectMessage(message);
+                this.activeStore.selectOrDeselectMessage(message);
                 event.stopPropagation();
             }
         },
 
         handleOpenMessageContextMenu(event, message) {
-            this.$eventBus.$emit('open-message-context-menu', {event, message});
+            this.getConversationEventBus().$emit('open-message-context-menu', {event, message});
         },
 
         handleOpenMessageSenderContextMenu(event, message) {
-            this.$eventBus.$emit('open-message-sender-context-menu', {event, message});
+            this.getConversationEventBus().$emit('open-message-sender-context-menu', {event, message});
         },
     }
 }
