@@ -118,6 +118,7 @@ export default {
         async destroyConference(){
             await conferenceApi.destroyConference(this.conferenceInfo.conferenceId)
             conferenceManager.removeHistory(this.conferenceInfo)
+            this.$eventBus.$emit('conferenceListUpdated');
             this.$modal.hide('conference-info-modal', {destroy: true});
         }
     },

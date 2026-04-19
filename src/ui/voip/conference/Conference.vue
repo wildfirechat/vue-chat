@@ -297,6 +297,7 @@ import {markRaw} from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
 import WfcAVEngineKit from "../../../wfc/av/engine/avenginekit";
 import TextMessageContent from '../../../wfc/messages/textMessageContent';
+import conferenceApi from '../../../api/conferenceApi';
 
 export default {
     name: 'Conference',
@@ -726,12 +727,14 @@ export default {
             this.hangupMenuVisible = true;
         },
 
-        doEndConference() {
+        async doEndConference() {
             this.hangupMenuVisible = false;
             this.session.leaveConference(true);
             this.$eventBus.$emit('conference-slider-closed');
-            conferenceManager.destroyConference(conferenceManager.conferenceInfo.conferenceId);
+            await conferenceApi.destroyConference(conferenceManager.conferenceInfo.conferenceId)
+
             conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000);
+            this.$eventBus.$emit('conferenceListUpdated');
         },
 
         doLeaveConference() {
