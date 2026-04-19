@@ -379,7 +379,7 @@ export default {
                 }, storeId);
                 this.conferenceConversationStore = cs;
             }
-    
+
         },
         // 用来解决 iOS 上，不能自动播放问题
         autoPlay() {
@@ -728,8 +728,9 @@ export default {
 
         doEndConference() {
             this.hangupMenuVisible = false;
-            this.session.endConference();
+            this.session.leaveConference(true);
             this.$eventBus.$emit('conference-slider-closed');
+            conferenceManager.destroyConference(conferenceManager.conferenceInfo.conferenceId);
             conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000);
         },
 

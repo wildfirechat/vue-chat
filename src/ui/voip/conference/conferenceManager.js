@@ -42,7 +42,7 @@ class ConferenceManager {
         if (!isElectron()) {
             avenginekitproxy.events.removeListener('message', this.onReceiveMessage);
         }
-        if (this.conferenceInfo) {
+        if (this.conferenceInfo && this.conferenceInfo.conferenceId) {
             wfc.quitChatroom(this.conferenceInfo.conferenceId);
         }
         this.vueInstance = null;
@@ -58,6 +58,10 @@ class ConferenceManager {
             .catch(err => {
                 console.log(err)
             })
+    }
+
+    destroyConference(conferenceId) {
+        conferenceApi.destroyConference(conferenceId)
     }
 
     onReceiveMessage = async (event, msg) => {
@@ -490,7 +494,7 @@ class ConferenceManager {
         console.log('addHistory', conferenceInfo, durationMS);
         let tmp = localStorage.getItem('historyConfList');
         let historyList = JSON.parse(tmp);
-        historyList = historyList ? historyList : [];
+        historyList = historyList && Array.isArray(historyList) ? historyList : [];
         conferenceInfo.endTime = Math.ceil(conferenceInfo.startTime + durationMS / 1000);
         let index = historyList.findIndex(info => info.conferenceId === conferenceInfo.conferenceId)
         if (index >= 0) {
