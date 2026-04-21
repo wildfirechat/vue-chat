@@ -580,7 +580,10 @@ export default {
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
                     let obj = { reason: reason, session: this.session };
-                    localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
+                    // 目前仅 pc 端，弹出重新开启对话框，未来可能都禁用了
+                    if (isElectron()){
+                    	localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
+                	}
                 }
                 this.session.closeVoipWindow();
                 this.session = null;

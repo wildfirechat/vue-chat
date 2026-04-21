@@ -78,8 +78,6 @@ import conferenceApi from "../../../api/conferenceApi";
 import ConferenceInfoView from "./ConferenceInfoView";
 import conferenceManager from "./conferenceManager";
 import wfc from "../../../wfc/client/wfc";
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 
 export default {
     name: "ConferencePortalPage",

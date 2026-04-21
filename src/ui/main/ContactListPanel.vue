@@ -1,10 +1,7 @@
 <template>
     <section class="contact-list-panel-container">
-        <SearchView/>
+        <SearchView :show-add-button="false" :search-type="'contact'"/>
         <div class="panel">
-            <SearchResultView v-bind:query="sharedSearchState.query"
-                              v-if="sharedSearchState.query"
-                              class="search-result-container"/>
             <ContactListView class="contact-list-container"/>
         </div>
 
@@ -15,7 +12,6 @@
 import SearchView from "./search/SearchView.vue";
 import ContactListView from "./contact/ContactListView.vue";
 import store from "../../store";
-import SearchResultView from "./search/SearchResultView.vue";
 
 export default {
     name: 'ContactListPanel',
@@ -27,7 +23,6 @@ export default {
 
     methods: {},
     components: {
-        SearchResultView,
         ContactListView,
         SearchView,
     },
@@ -50,13 +45,6 @@ export default {
     flex: 1;
 }
 
-.search-result-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-}
 
 
 </style>

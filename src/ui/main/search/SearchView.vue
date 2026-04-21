@@ -8,6 +8,7 @@
                type="text" :placeholder="placeHolder"/>
         <i class="icon-ion-ios-search"></i>
         <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
+        <SearchResultView v-bind:query="sharedSearchState.query" v-if="sharedSearchState.query"/>
     </div>
 </template>
 
@@ -15,9 +16,11 @@
 import store from "../../../store";
 import Config from "../../../config";
 import wfc from "../../../wfc/client/wfc";
+import SearchResultView from './SearchResultView.vue';
 
 export default {
     name: "SearchView",
+    components: { SearchResultView },
     props: {
         showAddButton: {
             type: Boolean,
@@ -83,7 +86,7 @@ export default {
 .search-input-container {
     height: 60px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     background-color: var(--background-secondary);
     -webkit-app-region: drag;
@@ -96,7 +99,7 @@ export default {
     margin-right: 10px;
     padding: 0 10px 0 20px;
     text-align: left;
-    /* flex: 1; */
+    flex: 1;
     /* 兼容Firefox 52 */
     width: 209px;
     border: 1px solid var(--border-primary);

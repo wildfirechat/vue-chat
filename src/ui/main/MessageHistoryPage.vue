@@ -141,7 +141,7 @@ export default {
 
         openConversation() {
             let conversation = this.currentConversationSearchResult.conversation;
-            IpcSub.openConversation(conversation);
+            IpcSub.startConversation(conversation, true);
         },
 
         showContextMessages(message) {

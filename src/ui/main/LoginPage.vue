@@ -94,6 +94,7 @@
         </div>
         <!-- 滑动验证对话框 -->
         <SlideVerifyDialog
+            v-if="enableLoginSlideVerify"
             ref="slideVerifyDialog"
             @verify-success="onSlideVerifySuccess"
             @verify-failed="onSlideVerifyFailed"
@@ -141,6 +142,7 @@ export default {
             firstTimeConnect: false,
             diagnoseResult: '',
             showDiagnoseOverlay: false,
+            enableLoginSlideVerify: Config.ENABLE_LOGIN_SLIDE_VERIFY,
             // 滑动验证相关
             hasSlideVerifiedForCode: false, // 是否已通过滑动验证（用于验证码登录）
             cachedSlideVerifyToken: null,  // 缓存的验证token
@@ -215,8 +217,6 @@ export default {
             }, 1000);
         },
         async requestAuthCode() {
-            // 显示滑动验证
-            this.$refs.slideVerifyDialog.show();
             this.pendingLoginAction = () => {
                 appServerApi.requestAuthCode(this.mobile, this.cachedSlideVerifyToken)
                 .then(response => {
@@ -239,6 +239,12 @@ export default {
                     });
                 })
             };
+            if (this.enableLoginSlideVerify) {
+                this.$refs.slideVerifyDialog.show();
+            } else {
+                this.pendingLoginAction();
+                this.pendingLoginAction = null;
+            }
         },
 
         async loginWithPassword() {
@@ -249,8 +255,6 @@ export default {
             // 特殊用途，请勿打开
             // 必须在 getClientId 之前调用，createPCLoginSession 会触发调用 getClientId，打开时，需重新设计起逻辑
             // wfc.setAppName('wfc-' + this.mobile);
-            // 显示滑动验证
-            this.$refs.slideVerifyDialog.show();
             this.pendingLoginAction = () => {
             this.$refs.loginWithPasswordButton.disabled = true;
             this.loginStatus = 3;
@@ -277,6 +281,12 @@ export default {
                     });
                 })
             };
+            if (this.enableLoginSlideVerify) {
+                this.$refs.slideVerifyDialog.show();
+            } else {
+                this.pendingLoginAction();
+                this.pendingLoginAction = null;
+            }
         },
 
         async loginWithAuthCode() {
@@ -284,6 +294,11 @@ export default {
                 return;
             }
 
+            if (!this.enableLoginSlideVerify) {
+                this.cachedSlideVerifyToken = null;
+                this.performAuthCodeLogin();
+                return;
+            }
             // 如果已经通过滑动验证（发送验证码时已验证），直接登录
             if (this.hasSlideVerifiedForCode && this.cachedSlideVerifyToken) {
                 this.performAuthCodeLogin();

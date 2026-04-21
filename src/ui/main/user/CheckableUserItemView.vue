@@ -185,6 +185,10 @@ ul {
     background-color: var(--background-item-placeholder);
 }
 
+.contact-item .content:hover {
+    background-color: var(--background-item-hover);
+}
+
 .contact-item .content:active {
     background-color: var(--background-item-placeholder);
 }

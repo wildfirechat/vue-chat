@@ -4,9 +4,6 @@
         <section class="fav-category-list-panel-container">
             <SearchView :show-add-button="false" :search-type="'fav'"/>
             <div class="panel">
-                <SearchResultView v-bind:query="sharedSearchState.query"
-                                  v-if="sharedSearchState.query"
-                                  class="search-result-container"/>
                 <div class="category-container">
                     <ul>
                         <li>
@@ -50,7 +47,6 @@
 <script>
 import FavListView from "./FavListView.vue";
 import store from "../../../store";
-import SearchResultView from "../search/SearchResultView.vue";
 import SearchView from "../search/SearchView.vue";
 
 export default {
@@ -105,7 +101,6 @@ export default {
 
     components: {
         FavListView,
-        SearchResultView,
         SearchView,
     },
 };
@@ -136,14 +131,6 @@ export default {
     background-color: var(--background-secondary);
     flex: 1;
     overflow-y: auto;
-}
-
-.search-result-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
 }
 
 .category-container {

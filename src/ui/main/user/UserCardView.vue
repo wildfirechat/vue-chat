@@ -85,15 +85,15 @@ export default {
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
             if (store.isConversationInCurrentWindow(conversation)) {
                 store.setCurrentConversation(conversation)
+
+                // 跳转到会话列表页
+            if (this.$router.currentRoute.path !== '/home') {
+                this.$router.replace('/home');
+            }
             } else {
                 IpcSub.startConversation(conversation);
             }
             this.close();
-            // 跳转到会话列表页
-
-            if (this.$router.currentRoute.path !== '/home') {
-                this.$router.replace('/home');
-            }
         },
         startAudioCall() {
             this.close();
