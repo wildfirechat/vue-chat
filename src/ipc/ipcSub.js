@@ -1,13 +1,14 @@
 import localStorageEmitter from "./localStorageEmitter";
 import LocalStorageIpcEventType from "./localStorageIpcEventType";
 
-// pc 端，可以直接使用 wfc.js 里面的接口，这儿的实现，已经没有意义，应尽量避免使用
-// web 端，实现音视频窗口和主窗口通信
+// pc 端，用于跨窗口通信
+// web 端，现在是单窗口，已经无意义
 export default class IpcSub {
 
-    static startConversation(conversation) {
+    static startConversation(conversation, focusConversationWindow = false) {
         localStorageEmitter.send(LocalStorageIpcEventType.startConversation, {
-            conversation: conversation
+            conversation: conversation,
+            focusConversationWindow
         })
     }
 
@@ -16,9 +17,5 @@ export default class IpcSub {
             conversation: conversation,
             audioOnly: audioOnly,
         })
-    }
-
-    static openConversation(conversation){
-        localStorageEmitter.send(LocalStorageIpcEventType.openConversation, {conversation: conversation})
     }
 }

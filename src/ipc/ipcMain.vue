@@ -20,6 +20,10 @@ export default {
         localStorageEmitter.on(LocalStorageIpcEventType.startConversation, (ev, args) => {
             let conversation = Object.assign(new Conversation(), args.conversation);
             store.setCurrentConversation(conversation);
+            if(args.focusConversationWindow){
+                let win = remote.getCurrentWindow();
+                win.focus();
+            }
         })
 
         localStorageEmitter.on(LocalStorageIpcEventType.startVoipCall, (ev, args) => {
@@ -30,13 +34,6 @@ export default {
             } else {
                 this.startGroupVoip(conversation, audioOnly);
             }
-        })
-
-        localStorageEmitter.on(LocalStorageIpcEventType.openConversation, (events, args) => {
-            let conversation = args.conversation;
-            let win = remote.getCurrentWindow();
-            win.focus();
-            store.setCurrentConversation(Object.assign(new Conversation(), conversation));
         })
 
         localStorageEmitter.on(LocalStorageIpcEventType.joinConferenceFailed, (sender, args) => {
