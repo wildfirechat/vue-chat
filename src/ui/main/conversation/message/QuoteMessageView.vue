@@ -171,11 +171,12 @@ export default {
 .quoted-message-container {
     display: flex;
     align-items: center;
+    max-width: 400px;
+    overflow: hidden;
 }
 
 .quoted-message {
     display: flex;
-    max-width: 100%;
     background-color: var(--background-message-quoted);
     border-radius: 5px;
     padding: 5px 10px;

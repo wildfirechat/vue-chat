@@ -52,13 +52,16 @@ export default {
 <style lang="css" scoped>
 .conversation-item {
     width: 100%;
-    height: 70px;
+    height: 60px;
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid var(--border-secondary);
     align-items: center;
     justify-content: flex-start;
     padding-left: 15px;
+}
+
+.conversation-item:hover {
+    background-color: var(--background-item-hover);
 }
 
 .conversation-item:active {

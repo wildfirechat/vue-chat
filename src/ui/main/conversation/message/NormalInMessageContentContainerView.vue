@@ -45,7 +45,7 @@
                                                          :message="message"
                                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
                         </div>
-                        <QuoteMessageView style="padding: 5px 0; max-width: 80%"
+                        <QuoteMessageView style="padding: 5px 0; max-width: 400px"
                                           v-if="quotedMessage"
                                           :message="message"
                                           :quoted-message="quotedMessage"
