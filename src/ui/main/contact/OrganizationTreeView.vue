@@ -182,7 +182,7 @@ export default {
 }
 
 .organization-item:hover {
-    background: var(--background-item-placeholder);
+    background: var(--background-item-hover);
 }
 
 .organization-item img {
