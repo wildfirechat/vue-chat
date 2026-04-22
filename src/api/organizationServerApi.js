@@ -6,7 +6,7 @@ import OrganizationServerError from "./organizationServerError";
 import UserInfo from "../wfc/model/userInfo";
 
 export class OrganizationServerApi {
-    isServiceAvailable = false;
+    isServiceAvailable = true;
     serviceUnavailbelError = new OrganizationServerError(-1, '未登录或服务不可用');
 
     constructor() {
