@@ -113,7 +113,8 @@
         "new_user": "User",
         "view_all": "View All",
         "message_history": "Chat History",
-        "search_message_history": "Search chat history..."
+        "search_message_history": "Search chat history...",
+        "result_empty": "No search result"
     },
     "file_record": {
         "no_more": "No more files",

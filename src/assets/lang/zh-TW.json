@@ -114,7 +114,8 @@
     "new_user": "用戶",
     "view_all": "查看全部",
     "message_history": "聊天記錄",
-    "search_message_history": "搜索聊天記錄..."
+    "search_message_history": "搜索聊天記錄...",
+    "result_empty": "沒有搜尋結果"
   },
   "file_record": {
     "no_more": "沒有更多文件",

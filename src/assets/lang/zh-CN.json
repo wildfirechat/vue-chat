@@ -126,7 +126,8 @@
         "new_user": "用户",
         "view_all": "查看全部",
         "message_history": "聊天记录",
-        "search_message_history": "搜索聊天记录..."
+        "search_message_history": "搜索聊天记录...",
+        "result_empty": "没有搜索结果"
     },
     "file_record": {
         "no_more": "没有更多文件",
