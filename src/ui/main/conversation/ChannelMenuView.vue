@@ -143,7 +143,8 @@ export default {
 }
 
 .sub-menu-item:hover {
-    background: var(--border-primary);
+    background: var(--accent-color);
+    color: var(--text-on-accent);
 }
 
 i {
@@ -151,6 +152,10 @@ i {
     font-size: 24px;
     color: var(--text-primary);
     cursor: pointer;
+}
+
+>>> .tippy-content{
+    padding: 5px 0 !important;
 }
 
 >>> .tippy-arrow {

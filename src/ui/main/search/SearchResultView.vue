@@ -58,7 +58,7 @@
                     <label>{{ $t('contact.group') }}</label>
                     <ul>
                         <li v-for="(group, index) in toShowGroupList" :key="index">
-                            <div class="search-result-item group" @click="chatToGroup(group)">
+                            <div class="search-result-item group" @click.stop="chatToGroup(group)">
                                 <img :src="group.portrait">
                                 <span class="single-line">{{ group.remark ? group.remark : group.name }}</span>
                             </div>
@@ -74,7 +74,7 @@
                     <label>{{ '会话' }}</label>
                     <ul>
                         <li v-for="(conv, index) in toShowConversationList" :key="index">
-                            <div class="search-result-item group" @click="chatToConversation(conv.conversation)">
+                            <div class="search-result-item group" @click.stop="chatToConversation(conv.conversation)">
                                 <img :src="conv.conversation._target.portrait">
                                 <span class="single-line">{{ conv.conversation._target._displayName }}</span>
                             </div>
@@ -88,7 +88,7 @@
                 </li>
                 <li class="category-item" v-if="sharedMiscState.isElectron">
                     <label>{{ $t('search.message_history') }}</label>
-                    <div class="search-result-item message" @click="showMessageHistoryPage">
+                    <div class="search-result-item message" @click.stop="showMessageHistoryPage">
                         <p>{{ $t('search.search_message_history') }} </p>
                     </div>
                 </li>
