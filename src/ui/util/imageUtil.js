@@ -260,13 +260,47 @@ async function genGroupPortrait(groupMemberUsers) {
     return await mergeImages(groupMemberPortraits);
 }
 
+function getImageSizeByOrgSizeToWeChat(orgWidth, orgHeight) {
+    const maxWidth = 540;
+    const maxHeight = 540;
+    const minWidth = 160;
+    const minHeight = 160;
+
+    if (orgWidth <= 0 || orgHeight <= 0) {
+        return { width: 300, height: 300 };
+    }
+
+    const ratio = orgWidth / orgHeight;
+    let width;
+    let height;
+
+    if (ratio >= 1.0) {
+        width = maxWidth;
+        height = Math.floor(width / ratio);
+        if (height < minHeight) {
+            height = minHeight;
+        }
+    } else {
+        height = maxHeight;
+        width = Math.floor(height * ratio);
+        if (width < minWidth) {
+            width = minWidth;
+        }
+    }
+
+    return {
+        width: Math.min(width, maxWidth),
+        height: Math.min(height, maxHeight),
+    };
+}
 // return {data uri, width, height}
 function imageThumbnail(file) {
     return new Promise((resolve, reject) => {
         var img = new Image();
         img.setAttribute('crossOrigin', 'anonymous');
         img.onload = () => {
-            let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
+            const thumbnailSize = getImageSizeByOrgSizeToWeChat(img.naturalWidth, img.naturalHeight);
+            let resizedCanvas = resizeImage.resize2Canvas(img, thumbnailSize.width, thumbnailSize.height);
 
             // 递归函数，循环降低质量直到大小小于 7K
             const compressToTarget = (quality) => {
@@ -330,7 +364,8 @@ function videoThumbnail(file) {
                 let img = document.createElement("img");
                 img.src = canvas.toDataURL();
                 img.onload = () => {
-                    let resizedCanvas = resizeImage.resize2Canvas(img, 200, 200);
+                    const thumbnailSize = getImageSizeByOrgSizeToWeChat(video.videoWidth, video.videoHeight);
+                    let resizedCanvas = resizeImage.resize2Canvas(img, thumbnailSize.width, thumbnailSize.height);
 
                     // 递归函数，循环降低质量直到大小小于 10K
                     const compressToTarget = (quality) => {
