@@ -20,7 +20,7 @@ import MessageConfig from "./wfc/client/messageConfig";
 import PersistFlag from "./wfc/messages/persistFlag";
 import ForwardType from "./ui/main/conversation/message/forward/ForwardType";
 import TextMessageContent from "./wfc/messages/textMessageContent";
-import {currentWindow, ipcRenderer, isElectron, remote} from "./platform";
+import {currentWindow, ipcRenderer, isElectron} from "./platform";
 import SearchType from "./wfc/model/searchType";
 import Config from "./config";
 import {getItem, setItem} from "./ui/util/storageHelper";
@@ -339,6 +339,7 @@ let store = {
             })
             // 更新在线状态
             this.state.contact.friendList = this._patchAndSortUserInfos(this.state.contact.friendList, '');
+            this._patchCurrentConversationOnlineStatus();
         })
         // 服务端删除
         this._addWfcListener(EventType.MessageDeleted, (messageUid) => {
@@ -541,6 +542,7 @@ let store = {
         (isMainWindow || loadOptions.loadChannelList) && this._loadChannelList();
         (isMainWindow || loadOptions.loadFriendList) && this._loadFriendList();
         (isMainWindow || loadOptions.loadFavContactList) && this._loadFavContactList();
+        isMainWindow && this._loadAiRobotList();
         (isMainWindow || loadOptions.loadFriendRequestList) && this._loadFriendRequest();
         (isMainWindow || loadOptions.loadDefaultConversationList) && this._loadDefaultConversationList();
         this._loadSelfUserInfo();
@@ -1727,6 +1729,18 @@ let store = {
             })
         } else {
             this.state.contact.favContactList = [];
+        }
+    },
+
+    _loadAiRobotList() {
+        if (Config.AI_ROBOT) {
+            let aiUserInfos = this.getUserInfos([Config.AI_ROBOT], '');
+            aiUserInfos.forEach(u => {
+                u._category = 'AI 助手';
+            });
+            this.state.contact.aiRobotList = aiUserInfos;
+        } else {
+            this.state.contact.aiRobotList = [];
         }
     },
 

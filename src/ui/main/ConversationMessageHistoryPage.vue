@@ -44,7 +44,7 @@
                 </infinite-loading>
                 <ul>
                     <li v-for="(message, index) in filteredMessages"
-                        :key="message.uid">
+                        :key="message.messageId">
                         <div class="message-container">
                             <div class="portrait-container">
                                 <img

@@ -90,6 +90,7 @@ export const pstore = (id) => defineStore(id, () => {
         favGroupList: [],
         channelList: [],
         favContactList: [],
+        aiRobotList: [],
 
         selfUserInfo: null,
         contextMenuUserInfo: null,
@@ -116,6 +117,7 @@ export const pstore = (id) => defineStore(id, () => {
             this.favGroupList = [];
             this.channelList = [];
             this.favContactList = [];
+            this.aiRobotList = [];
 
             this.selfUserInfo = null;
             this.contextMenuUserInfo = null;

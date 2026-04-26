@@ -6,7 +6,7 @@
         <h2 v-if="title" class="title">{{ this.title }}</h2>
         <p v-if="content" class="content">{{ this.content }}</p>
         <div class="action-container">
-            <button class="confirm" @click="confirm">{{ this.confirmText }}</button>
+            <button :class="['confirm', confirmButtonType]" @click="confirm">{{ this.confirmText }}</button>
             <button class="cancel" @click="cancel">{{ this.cancelText }}</button>
         </div>
     </section>
@@ -45,6 +45,11 @@ export default {
             type: String,
             required: false,
             default: '确定',
+        },
+        confirmButtonType: {
+            type: String,
+            required: false,
+            default: 'primary',
         },
 
         cancelCallback: {
@@ -118,26 +123,48 @@ export default {
     padding: 5px 0;
     margin: 0 15px;
     border: 1px solid var(--border-primary);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.action-container .confirm {
-    background: var(--accent-color);
-    color: var(--text-on-accent);
+.action-container .confirm.primary {
+    background: var(--button-primary-bg);
+    color: var(--button-primary-text);
+    border-color: var(--button-primary-bg);
+}
+
+.action-container .confirm.primary:hover {
+    background: var(--button-primary-hover);
+    border-color: var(--button-primary-hover);
+}
+
+.action-container .confirm.danger {
+    background: var(--button-danger-bg);
+    color: var(--button-danger-text);
+    border-color: var(--button-danger-bg);
+}
+
+.action-container .confirm.danger:hover {
+    background: var(--button-danger-hover);
+    border-color: var(--button-danger-hover);
 }
 
 .action-container .cancel {
-    color: var(--text-primary);
-    background: var(--background-primary);
+    color: var(--button-default-text);
+    background: var(--button-default-bg);
+    border-color: var(--button-default-border);
+}
+
+.action-container .cancel:hover {
+    background: var(--button-default-hover);
 }
 
 .action-container .cancel:active {
-    background: lightgrey;
-    color: var(--text-primary);
+    background: var(--button-default-hover);
+    color: var(--button-default-text);
 }
 
 .action-container .confirm:active {
-    background: var(--accent-color);
-    color: var(--text-on-accent);
+    opacity: 0.9;
 }
 
 </style>

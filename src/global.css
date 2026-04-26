@@ -30,6 +30,14 @@
     background-color: var(--accent-color) !important;
     color: var(--text-on-accent) !important;
 }
+.v-context > li > a.danger-action {
+    color: var(--text-danger) !important;
+}
+
+.v-context > li > a.danger-action:hover {
+    background-color: var(--button-danger-bg) !important;
+    color: var(--text-on-accent) !important;
+}
 * {
     margin: 0;
     padding: 0;

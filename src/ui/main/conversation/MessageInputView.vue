@@ -872,7 +872,11 @@ export default {
                     return ' @' + item.original.keyIgnoreFriendAlias;
                 },
                 menuItemTemplate: function (item) {
-                    return '<img width="24" height="24" src="' + item.original.avatar + ' "> ' + item.original.key;
+                    let categoryLabel = '';
+                    if (item.original.robot) {
+                        categoryLabel = '<span style="font-size:10px; color: var(--text-tertiary); margin-left: 4px; border: 1px solid var(--border-secondary); border-radius: 3px; padding: 1px 3px;">AI</span>';
+                    }
+                    return '<img width="24" height="24" src="' + item.original.avatar + ' "> ' + item.original.key + categoryLabel;
                 },
                 noMatchTemplate: function () {
                     return '<span style:"visibility: hidden;"></span>';

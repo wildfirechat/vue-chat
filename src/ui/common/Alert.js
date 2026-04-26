@@ -30,6 +30,8 @@ export default {
                     content: options.content,
                     cancelText: options.cancelText,
                     confirmText: options.confirmText,
+                    // 可选 primary 和 danger，默认primary
+                    confirmButtonType: options.confirmButtonType,
                 },
                 null,
                 {

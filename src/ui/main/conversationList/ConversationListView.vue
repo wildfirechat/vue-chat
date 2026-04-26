@@ -25,9 +25,6 @@
                         conversationInfo && conversationInfo.isSilent ? $t('conversation.enable_notification') : $t('conversation.disable_notification')
                     }}</a>
             </li>
-            <li>
-                <a @click.prevent="removeConversation(conversationInfo)">{{ $t('common.delete') }}</a>
-            </li>
             <li v-show="conversationInfo
                 && (!sharedConversationState.currentConversationInfo || !sharedConversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation))
                 && conversationInfo._unread === 0"
@@ -39,6 +36,9 @@
                 && conversationInfo._unread > 0"
                 @click.prevent="clearConversationUnreadStatus(conversationInfo.conversation)">
                 <a>{{ $t('conversation.mark_as_read') }}</a>
+            </li>
+            <li>
+                <a class="danger-action" @click.prevent="removeConversation(conversationInfo)">{{ $t('common.delete') }}</a>
             </li>
         </vue-context>
     </section>
@@ -87,7 +87,19 @@ export default {
         },
 
         removeConversation(conversationInfo) {
-            store.removeConversation(conversationInfo.conversation);
+            this.$alert({
+                title: '删除会话?',
+                content: '删除会话后，聊天记录也将被清空',
+                confirmText: '确定',
+                confirmButtonType: 'danger',
+                cancelText: '取消',
+                cancelCallback: () => {
+                    // do nothing
+                },
+                confirmCallback: () => {
+                    store.removeConversation(conversationInfo.conversation);
+                }
+            })
         },
 
         conversationInfoKey(conversationInfo) {

@@ -64,12 +64,36 @@ export default {
         },
 
         clearConversationHistory() {
-            this.$parent.enableLoadRemoteHistoryMessage = !this.sharedMiscState.isElectron;
-            this.activeStore.clearConversationHistory(this.conversationInfo.conversation);
+            this.$alert({
+                title: '清空本地聊天记录',
+                content: '确定清空本地聊天记录？',
+                confirmText: '确定',
+                confirmButtonType: 'danger',
+                cancelText: '取消',
+                cancelCallback: () => {
+                    // do nothing
+                },
+                confirmCallback: () => {
+                    this.$parent.enableLoadRemoteHistoryMessage = !this.sharedMiscState.isElectron;
+                    this.activeStore.clearConversationHistory(this.conversationInfo.conversation);
+                }
+            })
         },
 
         clearRemoteConversationHistory(){
-            this.activeStore.clearRemoteConversationHistory(this.conversationInfo.conversation);
+            this.$alert({
+                title: '清空远程聊天记录',
+                content: '确定清空远程聊天记录？',
+                confirmText: '确定',
+                confirmButtonType: 'danger',
+                cancelText: '取消',
+                cancelCallback: () => {
+                    // do nothing
+                },
+                confirmCallback: () => {
+                    this.activeStore.clearRemoteConversationHistory(this.conversationInfo.conversation);
+                }
+            })
         }
     },
 

@@ -122,6 +122,7 @@ import CardMessageContent from "../../../wfc/messages/cardMessageContent";
 import wfc from "../../../wfc/client/wfc";
 import Message from "../../../wfc/messages/message";
 import ChatroomListView from "./ChatroomListView.vue";
+import Config from "../../../config";
 import {markRaw} from "vue";
 import ExternalDomainListView from "./ExternalDomainListView.vue";
 
@@ -227,7 +228,7 @@ export default {
         },
 
         users() {
-            return store.state.contact.favContactList.concat(store.state.contact.friendList);
+            return store.state.contact.aiRobotList.concat(store.state.contact.favContactList).concat(store.state.contact.friendList);
         },
     }
 }
