@@ -151,6 +151,16 @@ export default {
         store.setSearchQuery('')
     },
 
+    activated() {
+        this.bindFloatingEvents()
+        this.$nextTick(() => {
+            this.updateFloatingPosition()
+        })
+    },
+
+    deactivated() {
+        this.unbindFloatingEvents()
+    },
     watch: {
         // "query":function (val, oldVal){
         //   console.log('searchView query changed:', val, oldVal)
@@ -183,7 +193,12 @@ export default {
         },
         onGlobalPointerDown(e) {
             const panel = this.$refs.floatingPanel
-            if (panel && panel.contains(e.target)) {
+            // Skip if this instance's panel is not in the document
+            // (e.g., the parent component is deactivated by <keep-alive>)
+            if (!panel || !document.contains(panel)) {
+                return
+            }
+            if (panel.contains(e.target)) {
                 return
             }
             const anchorEl = this.getAnchorElement()
