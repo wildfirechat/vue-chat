@@ -35,6 +35,8 @@ export default class MessageContentType {
     // 投票消息类型
     static Poll = 18;           // 投票创建消息
     static Poll_Result = 19;    // 投票结果消息
+    static Meeting_Minutes = 25; // 会议纪要消息
+    static Transcription = 26;          // 转录消息（语音转文字）
     static Mark_Unread_Sync = 31;
 
     static StartSecretChat_Notification = 40;
