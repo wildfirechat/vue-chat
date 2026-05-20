@@ -83,8 +83,6 @@ function handleMessage(event) {
 
     const { requestId, handlerName, args, appUrl } = data;
 
-    console.log('[BridgeServer] Received request:', handlerName, 'from', appUrl);
-
     // 3. 查找并执行 handler
     const handler = handlers[handlerName];
     if (!handler) {
@@ -270,10 +268,12 @@ async function _notify(handlerName, appUrl, args, source, origin) {
         args
     };
 
-    console.log('[BridgeServer] Send event:', handlerName);
-
     if (source && !source.closed) {
-        source.postMessage(event, origin);
+        try {
+            source.postMessage(event, origin);
+        } catch (e) {
+            console.error('[BridgeServer] Failed to send event:', e);
+        }
     }
 }
 

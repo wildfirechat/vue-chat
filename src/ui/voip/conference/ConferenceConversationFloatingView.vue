@@ -53,7 +53,7 @@ export default {
         filterMessage() {
             let now = new Date().getTime();
             this.filteredMessages = this.sharedConversationState.currentConversationMessageList.filter(m => {
-                return gt(m.timestamp, now - 30 * 1000)
+                return m.messageId !== 0 && gt(m.timestamp, now - 30 * 1000)
             })
         }
     },
@@ -62,7 +62,7 @@ export default {
             handler(newValue) {
                 let now = new Date().getTime();
                 this.filteredMessages = this.sharedConversationState.currentConversationMessageList.filter(m => {
-                    return gt(m.timestamp, now - 30 * 1000)
+                    return m.messageId !== 0 && gt(m.timestamp, now - 30 * 1000)
                 })
             }
         }

@@ -43,6 +43,13 @@
                         </a>
                     </div>
                 </header>
+                <div v-if="transcriptionMessages.length > 0" 
+                     style="position: absolute; top: 40px; left: 10%; width: 80%; max-height: 120px; overflow-y: auto; border-radius: 4px; padding: 8px; z-index: 1000;">
+                    <div v-for="(msg, index) in transcriptionMessages" :key="index" style="margin-bottom: 4px; word-break: break-word;">
+                        <span style="color: #FFA500; font-size: 13px;">{{ getUserDisplayName(msg.messageContent.userId) }}:</span>
+                        <span style="color: #FFFFFF; font-size: 13px;">{{ msg.messageContent.content }}</span>
+                    </div>
+                </div>
                 <div v-if="showConferenceSimpleInfoView"
                      v-v-on-click-outside="hideConferenceSimpleInfoView"
                      style="position: absolute; left: 10px; top: 50px; z-index: 1000">
@@ -297,6 +304,7 @@ import {markRaw} from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
 import WfcAVEngineKit from "../../../wfc/av/engine/avenginekit";
 import TextMessageContent from '../../../wfc/messages/textMessageContent';
+import TranscriptionMessageContent from "../../../wfc/messages/transcriptionMessageContent";
 import conferenceApi from '../../../api/conferenceApi';
 
 export default {
@@ -342,6 +350,7 @@ export default {
             messageText: '',
             hangupMenuVisible: false,
             hangupMenuStyle: {},
+            transcriptionMessages: [],
         }
     },
     components: {
@@ -1082,6 +1091,11 @@ export default {
             return name;
         },
 
+        getUserDisplayName(userId) {
+            let userInfo = wfc.getUserInfo(userId);
+            return userInfo ? userInfo.displayName : userId;
+        },
+
         timestampFormat(timestamp) {
             timestamp = ~~(timestamp / 1000);
             let str = ''
@@ -1507,6 +1521,15 @@ export default {
                 this.enableAudio(enable);
             }
         })
+        this.$watch(() => this.conferenceConversationStore.state.conversation.currentConversationMessageList, (newVal) => {
+            if (!newVal) return;
+            const msgs = newVal.filter(m => {
+                return m.messageContent instanceof TranscriptionMessageContent 
+                    && m.conversation.type === ConversationType.ChatRoom
+                    && m.conversation.target === this.session.callId;
+            });
+            this.transcriptionMessages = msgs.slice(-5);
+        }, { deep: true, immediate: true });
     },
 
     mounted() {

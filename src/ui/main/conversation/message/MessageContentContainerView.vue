@@ -45,6 +45,9 @@
         <PollResultMessageContentView :message="message"
                                       v-else-if="message.messageContent.type === MessageContentType.Poll_Result"
                                       v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
+        <MeetingMinutesMessageContentView :message="message"
+                                          v-else-if="message.messageContent.type === MessageContentType.Meeting_Minutes"
+                                          v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
         <UnsupportMessageContentView :message="message"
                                      v-else-if="[/* todo un support message types */].indexOf(message.messageContent.type) >= 0"/>
         <TestCustomMessageContentView :message="message"
@@ -86,6 +89,7 @@ import MixFileTextMessageContentView from "./content/MixFileTextMessageContentVi
 import CollectionMessageContentView from "./content/CollectionMessageContentView";
 import PollMessageContentView from "./content/PollMessageContentView";
 import PollResultMessageContentView from "./content/PollResultMessageContentView";
+import MeetingMinutesMessageContentView from "./content/MeetingMinutesMessageContentView";
 
 export default {
     name: "MessageContentContainerView",
@@ -104,6 +108,7 @@ export default {
         }
     },
     components: {
+        MeetingMinutesMessageContentView,
         PollResultMessageContentView,
         PollMessageContentView,
         CollectionMessageContentView,

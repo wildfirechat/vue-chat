@@ -182,6 +182,10 @@ export default class Config {
     static ENABLE_LOGIN_SLIDE_VERIFY = true
     // AI机器人ID
     static AI_ROBOT = "FireRobot";
+    // AI会议纪要机器人ID，为空时不启用会议纪要跳转功能
+    static AI_MINUTES_ROBOT_ID = "robotminutes";
+    // 会议纪要页面URL
+    static MINUTES_URL = "http://101.42.4.222:8883/index.html";
     static getWFCPlatform() {
         if (isElectron()) {
             if (window.process && window.process.platform === 'darwin') {

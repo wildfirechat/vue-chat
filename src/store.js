@@ -561,7 +561,9 @@ let store = {
 
     _isDisplayMessage(message) {
         // return [PersistFlag.Persist, PersistFlag.Persist_And_Count].indexOf(MessageConfig.getMessageContentPersitFlag(message.messageContent.type)) > -1;
-        return message.messageId !== 0 || message.messageContent.type === MessageContentType.Streaming_Text_Generating;
+        return message.messageId !== 0
+            || message.messageContent.type === MessageContentType.Streaming_Text_Generating
+            || message.messageContent.type === MessageContentType.Transcription;
     },
 
     _loadDefaultConversationList() {
