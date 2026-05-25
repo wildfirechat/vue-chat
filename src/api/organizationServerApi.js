@@ -92,8 +92,9 @@ export class OrganizationServerApi {
         return this._post('/api/employee/query_list', {employeeIds: employeeIds})
     }
 
-    searchEmployee(orgId, keyword) {
-        return this._post('/api/employee/search', {organizationId: orgId, keyword: keyword});
+    async searchEmployee(orgId, keyword) {
+        let pageResponse = await this._post('/api/employee/search', {organizationId: orgId, keyword: keyword});
+        return pageResponse.contents || [];
     }
 
     async getOrganizationPath(organizationId) {
