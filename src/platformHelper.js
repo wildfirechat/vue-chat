@@ -3,6 +3,7 @@ import { remote, screen } from './platform';
 import IPCEventType from './ipcEventType';
 import IpcEventType from './ipcEventType';
 import store from './store';
+import Config from './config';
 import ImageMessageContent from './wfc/messages/imageMessageContent';
 import { scaleDown } from './ui/util/imageUtil';
 
@@ -98,6 +99,17 @@ export function downloadFile(message) {
 }
 
 export function downloadFile2(url, name, messageUid) {
+    // 检查禁止接收的文件类型
+    let fileName = name || '';
+    let ext = fileName.split('.').pop().toLowerCase();
+    if (Config.DISABLED_RECEIVE_FILE_TYPES.includes(ext)) {
+        console.log('file type not allowed to receive', ext);
+        window.dispatchEvent(new CustomEvent('app-toast', {
+            detail: { title: '提示', text: '不能接收该类型文件', type: 'warn' }
+        }));
+        return;
+    }
+
     if (isElectron()) {
         ipcRenderer.send(IPCEventType.DOWNLOAD_FILE, {
             messageUid: stringValue(messageUid),

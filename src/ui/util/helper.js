@@ -97,6 +97,10 @@ const helper = {
             .replace(/<iframe/gi, "&lt;iframe");
     },
 
+    linkify: (text) => {
+        return text.replace(/(https?:\/\/[^\s<>"']+)/g, '<a href="$1">$1</a>');
+    },
+
     isImage: (ext) => {
         return ['bmp', 'gif', 'jpeg', 'jpg', 'png'].includes(ext);
     },

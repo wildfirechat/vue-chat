@@ -102,6 +102,13 @@ export default class Config {
     // 选2时，支持web端快速登录
     static CLIENT_ID_STRATEGY = 1;
 
+    // 禁止发送的文件类型
+    static DISABLED_SEND_FILE_TYPES = ['exe', 'bat', 'apk'];
+    // 禁止接收的文件类型
+    static DISABLED_RECEIVE_FILE_TYPES = ['exe', 'bat', 'apk'];
+    // 打开消息链接的策略，0=不限制, 1=提醒, 2=禁止
+    static OPEN_LINK_POLICY = 1;
+
     static SDK_PLATFORM_WINDOWS = 3;
     static SDK_PLATFORM_OSX = 4;
     static SDK_PLATFORM_WEB = 5;

@@ -13,6 +13,7 @@
 <script>
 import Message from "../../../../../wfc/messages/message";
 import {isElectron, shell} from "../../../../../platform";
+import Config from "../../../../../config";
 
 export default {
     name: "LinkMessageContentView",
@@ -25,10 +26,37 @@ export default {
 
     methods: {
         clickLink() {
-            if (isElectron()){
-                shell.openExternal(this.message.messageContent.url);
-            }else {
-                window.open(this.message.messageContent.url);
+            let url = this.message.messageContent.url;
+            if (Config.OPEN_LINK_POLICY === 2) {
+                this.$notify({
+                    title: '提示',
+                    text: '禁止打开外部链接',
+                    type: 'warn'
+                });
+                return;
+            }
+            if (Config.OPEN_LINK_POLICY === 1) {
+                this.$alert({
+                    showIcon: false,
+                    content: '谨防钓鱼网站或者带毒网站，只有确认已知安全的链接才可以打开。请确实该链接是否是已知安全的？',
+                    confirmText: '确认安全',
+                    cancelText: '关闭',
+                    confirmCallback: () => {
+                        this._doOpenExternal(url);
+                    },
+                    cancelCallback: () => {
+                        // do nothing
+                    }
+                });
+                return;
+            }
+            this._doOpenExternal(url);
+        },
+        _doOpenExternal(url) {
+            if (isElectron()) {
+                shell.openExternal(url);
+            } else {
+                window.open(url);
             }
         }
     },

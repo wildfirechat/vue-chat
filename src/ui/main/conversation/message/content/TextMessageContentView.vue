@@ -1,7 +1,7 @@
 <template>
     <div class="text-message-container"
          v-bind:class="{out:message.direction === 0}">
-        <p class="text" v-html="this.$xss(this.textContent)" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
+        <p class="text" v-html="this.$xss(this.textContent)" @click="handleLinkClick" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
     </div>
 </template>
 
@@ -9,6 +9,8 @@
 import Message from "../../../../../wfc/messages/message";
 import {parser as emojiParse} from "../../../../util/emoji";
 import helper from "../../../../util/helper";
+import Config from "../../../../../config";
+import {isElectron, shell} from "../../../../../platform";
 //import {marked} from "marked";
 
 export default {
@@ -45,6 +47,48 @@ export default {
                     document.selection.empty();
                 }
             }
+        },
+        handleLinkClick(event) {
+            let target = event.target;
+            while (target && target !== event.currentTarget) {
+                if (target.tagName === 'A') {
+                    event.preventDefault();
+                    let url = target.getAttribute('href');
+                    if (Config.OPEN_LINK_POLICY === 2) {
+                        this.$notify({
+                            title: '提示',
+                            text: '禁止打开外部链接',
+                            type: 'warn'
+                        });
+                        return;
+                    }
+                    if (Config.OPEN_LINK_POLICY === 1) {
+                        this.$alert({
+                            showIcon: false,
+                            content: '谨防钓鱼网站或者带毒网站，只有确认已知安全的链接才可以打开。请确实该链接是否是已知安全的？',
+                            confirmText: '确认安全',
+                            cancelText: '关闭',
+                            confirmCallback: () => {
+                                this._openExternal(url);
+                            },
+                            cancelCallback: () => {
+                                // do nothing
+                            }
+                        });
+                        return;
+                    }
+                    this._openExternal(url);
+                    return;
+                }
+                target = target.parentElement;
+            }
+        },
+        _openExternal(url) {
+            if (isElectron()) {
+                shell.openExternal(url);
+            } else {
+                window.open(url);
+            }
         }
     },
 
@@ -58,6 +102,7 @@ export default {
                 content = helper.escapeHtml(content)
             }
 
+            content = helper.linkify(content);
             content = emojiParse(content);
             // tmp = marked.parse(tmp);
             if (content.indexOf('<img') >= 0) {

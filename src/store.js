@@ -1170,6 +1170,17 @@ let store = {
         let msg = new Message();
         msg.conversation = conversation;
 
+        // 检查禁止发送的文件类型
+        let fileName = file.name || '';
+        let ext = fileName.split('.').pop().toLowerCase();
+        if (Config.DISABLED_SEND_FILE_TYPES.includes(ext)) {
+            console.log('file type not allowed to send', ext);
+            window.dispatchEvent(new CustomEvent('app-toast', {
+                detail: { title: '提示', text: '不能发送该类型文件', type: 'warn' }
+            }));
+            return true;
+        }
+
         let mediaType = helper.getMediaType(file.name.split('.').slice(-1).pop());
         // todo other file type
         let messageContentmediaType = {

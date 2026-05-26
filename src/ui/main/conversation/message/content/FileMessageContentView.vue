@@ -22,6 +22,7 @@ import helper from "../../../../util/helper";
 import {downloadFile} from "../../../../../platformHelper";
 import {fs, isElectron, shell} from "../../../../../platform";
 import store from "../../../../../store";
+import Config from "../../../../../config";
 
 export default {
     name: "FileMessageContentView",
@@ -45,6 +46,16 @@ export default {
     },
     methods: {
         clickFile() {
+            let fileName = this.message.messageContent.name || '';
+            let ext = fileName.split('.').pop().toLowerCase();
+            if (Config.DISABLED_RECEIVE_FILE_TYPES.includes(ext)) {
+                this.$notify({
+                    title: '提示',
+                    text: '禁止打开此类型',
+                    type: 'warn'
+                });
+                return;
+            }
             if (isElectron()) {
                 let localPath = this.message.messageContent.localPath;
                 if (localPath && fs.existsSync(localPath)) {

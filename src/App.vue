@@ -154,8 +154,14 @@ export default {
         if(Config.ENABLE_WATER_MARK){
             waterMark.init()
         }
+
+        this._toastListener = (e) => {
+            this.$notify(e.detail);
+        };
+        window.addEventListener('app-toast', this._toastListener);
     },
     beforeUnmount() {
+        window.removeEventListener('app-toast', this._toastListener);
         this.$eventBus.$off('uploadFile');
         this.$eventBus.$off('forward-fav');
         window.removeEventListener('blur', this.onblur)
