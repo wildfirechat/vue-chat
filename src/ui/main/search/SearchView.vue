@@ -1,12 +1,15 @@
 <template>
     <div class="search-input-container">
-        <input id="searchInput"
-               ref="input"
-               autocomplete="off"
-               v-model.trim="sharedSearchState.query"
-               @keydown.esc="cancel"
-               type="text" :placeholder="placeHolder"/>
-        <i class="icon-ion-ios-search"></i>
+        <div class="input-wrapper">
+            <i class="icon-ion-ios-search"></i>
+            <input id="searchInput"
+                   ref="input"
+                   autocomplete="off"
+                   v-model.trim="sharedSearchState.query"
+                   @keydown.esc="cancel"
+                   type="text" :placeholder="placeHolder"/>
+            <span v-if="sharedSearchState.query" class="clear-btn" @click="sharedSearchState.query = ''">&#215;</span>
+        </div>
         <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
         <SearchResultView v-bind:query="sharedSearchState.query" v-if="sharedSearchState.query"/>
     </div>
@@ -48,6 +51,7 @@ export default {
                 return u.uid !== Config.FILE_HELPER_ID
             });
             this.$pickContact({
+                title: '发起群聊',
                 users,
                 successCB,
                 showOrganization: true,
@@ -93,15 +97,21 @@ export default {
     position: relative;
 }
 
-.search-input-container input {
-    height: 25px;
+.input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
     margin-left: 10px;
     margin-right: 10px;
-    padding: 0 10px 0 20px;
+}
+
+.search-input-container input {
+    height: 25px;
+    padding: 0 24px 0 20px;
     text-align: left;
     flex: 1;
-    /* 兼容Firefox 52 */
-    width: 209px;
+    width: 100%;
     border: 1px solid var(--border-primary);
     border-radius: 3px;
     outline: none;
@@ -118,8 +128,7 @@ export default {
 
 .search-input-container i {
     position: absolute;
-    left: 15px;
-    /* 兼容Firefox 52 */
+    left: 5px;
     top: 50%;
     transform: translate(0, -50%);
 }
@@ -131,6 +140,18 @@ export default {
     background-color: var(--background-secondary);
     border-radius: 3px;
     border: 1px solid var(--border-primary);
+}
+
+.search-input-container .clear-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translate(0, -50%);
+    cursor: pointer;
+    color: var(--text-secondary-strong);
+    -webkit-app-region: no-drag;
+    font-size: 16px;
+    line-height: 1;
 }
 
 .search-input-container button:active {

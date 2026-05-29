@@ -20,8 +20,13 @@
                        :placeholder="conversationInfo.conversation._target.desc">
             </label>
         </header>
-        <div @click="subscribeChannel" class="unsubscribe-channel-item">
-            {{ isSubscribedChannel() ? $t('conversation.unsubscribe_channel') : $t('conversation.subscribe_channel') }}
+        <div class="conversation-action-container">
+            <div @click="subscribeChannel" class="conversation-action-item">
+                {{ isSubscribedChannel() ? $t('conversation.unsubscribe_channel') : $t('conversation.subscribe_channel') }}
+            </div>
+            <div @click="complain" class="conversation-action-item">
+                {{ $t('conversation.complain') }}
+            </div>
         </div>
     </div>
 </template>
@@ -30,6 +35,7 @@
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
+import {showComplainAlert} from "./conversationComplainHelper";
 
 export default {
     name: "ChannelConversationInfoView",
@@ -71,6 +77,10 @@ export default {
 
         subscribeChannel() {
             this.activeStore.subscribeChannel(this.conversationInfo.conversation.target, !this.isSubscribedChannel());
+        },
+
+        complain() {
+            showComplainAlert(this, this.activeStore);
         },
     },
 
@@ -123,21 +133,23 @@ header label input {
     background-color: transparent;
 }
 
-.unsubscribe-channel-item {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0;
+.conversation-action-container {
+    margin-top: auto;
+}
+
+.conversation-action-item {
     display: flex;
     color: var(--text-danger);
     align-items: center;
+    font-size: 12px;
     justify-content: center;
-    height: 54px;
+    height: 42px;
     width: 100%;
     border-top: 1px solid var(--border-tertiary);
+    margin: 0 10px;
 }
 
-.unsubscribe-channel-item:active {
+.conversation-action-item:active {
     background: var(--background-item-placeholder);
 }
 

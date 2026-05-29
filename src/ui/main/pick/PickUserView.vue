@@ -2,41 +2,52 @@
     <div class="pick-contact-container">
         <section class="contact-list-container">
             <div class="input-container">
-                <input type="text" :placeholder="$t('common.search')" v-model="filterQuery" :disabled="!showOrganization">
+                <input type="text" :placeholder="$t('common.search')" v-model="filterQuery">
                 <i class="icon-ion-ios-search"></i>
+                <span v-if="filterQuery" class="clear-btn" @click="filterQuery = ''">×</span>
             </div>
-            <div v-if="showOrganization && orgServiceAvailable" class="pick-source-container">
-                <div v-if="pickSource" class="pick-source-nav">
-                    <ul>
-                        <li @click.prevent="pickSource = null">
-                            <a href="#" @click.prevent>联系人</a>
-                        </li>
-                        <li v-if="pickSource === 'friend'">
-                            <a href="#" @click.prevent>好友</a>
-                        </li>
-                        <li v-for="org in organizationPathList" :key="org.id">
-                            <a href="#" @click.prevent="loadAndShowOrganization(org)">{{ org.name }}</a>
-                        </li>
-                    </ul>
+            <template v-if="showOrganization && orgServiceAvailable">
+                <div class="pick-category-container">
+                    <div @click="toggleOrganizationSection" class="category-item-container">
+                        <i class="arrow right" v-bind:class="{down: expandOrganizationSection}"></i>
+                        <div class="category-item">
+                            <span class="title">组织结构</span>
+                        </div>
+                    </div>
+                    <div v-show="expandOrganizationSection" class="organization-section">
+                        <div v-if="organizationPathList.length" class="pick-source-nav">
+                            <ul>
+                                <li v-for="org in organizationPathList" :key="org.id">
+                                    <a href="#" @click.prevent="loadAndShowOrganization(org)">{{ org.name }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <CheckableOrganizationTreeView
+                            ref="checkableOrganizationTreeView"
+                            :search-query="filterQuery"
+                            @organization-path-update="onOrganizationPathUpdate"/>
+                    </div>
+
+                    <div @click="toggleContactSection" class="category-item-container">
+                        <i class="arrow right" v-bind:class="{down: expandContactSection}"></i>
+                        <div class="category-item">
+                            <span class="title">联系人</span>
+                            <span class="desc">{{ filterUsers.length }}</span>
+                        </div>
+                    </div>
+                    <div v-show="expandContactSection" class="friend-list-container">
+                        <CheckableUserListView :enable-pick="true"
+                                               :users="filterUsers"
+                                               :initial-checked-users="initialCheckedUsers"
+                                               :uncheckable-users="uncheckableUsers"
+                                               :show-category-label="showCategoryLabel && !filterQuery"
+                                               :padding-left="'20px'"
+                                               :virtual-list-style="{ 'max-height': '600px', 'overflow-y': 'auto' }"
+                                               enable-category-label-sticky/>
+                    </div>
                 </div>
-                <div class="pick-source-list">
-                    <ul v-if="!pickSource">
-                        <li @click="pickSource = 'friend'; organizationPathList = []">
-                            <a href="#" @click.prevent>
-                                <i class="icon-ion-android-contacts"/>
-                                选择好友
-                            </a>
-                        </li>
-                        <li @click="pickSource = 'organization'">
-                            <a href="#" @click.prevent>
-                                <i class="icon-ion-android-document"/>
-                                选择组织联系人
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div v-if="!(showOrganization && orgServiceAvailable) || pickSource === 'friend'" class="friend-list-container">
+            </template>
+            <div v-else class="friend-list-container">
                 <CheckableUserListView :enable-pick="true"
                                        :users="filterUsers"
                                        :initial-checked-users="initialCheckedUsers"
@@ -45,14 +56,10 @@
                                        :padding-left="'20px'"
                                        enable-category-label-sticky/>
             </div>
-            <CheckableOrganizationTreeView
-                ref="checkableOrganizationTreeView"
-                v-if="pickSource === 'organization'"
-                @organization-path-update="onOrganizationPathUpdate"/>
         </section>
         <section class="checked-contact-list-container">
             <header>
-                <h2>{{ $t('pick.pick_contact') }}</h2>
+                <h2>{{ this.title ? this.title : $t('pick.pick_contact') }}</h2>
                 <div style="display: flex; justify-content: flex-end">
                     <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
                     <span v-else>{{ $t('pick.picked_contact') + ':' + this.checkedUsers.length }}</span>
@@ -141,13 +148,22 @@ export default {
         return {
             sharedPickState: store.state.pick,
             filterQuery: '',
-            pickSource: null,
             organizationPathList: [],
+            expandOrganizationSection: false,
+            expandContactSection: true,
             defaultOrganizationPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
             orgServiceAvailable: organizationServerApi.isServiceAvailable,
         }
     },
     methods: {
+        toggleOrganizationSection() {
+            this.expandOrganizationSection = !this.expandOrganizationSection;
+        },
+
+        toggleContactSection() {
+            this.expandContactSection = !this.expandContactSection;
+        },
+
         onPickUser(user) {
             if (this.isUserUncheckable(user)) {
                 return;
@@ -276,6 +292,7 @@ export default {
     border: 1px solid var(--border-tertiary);
     background-color: var(--background-primary);
     padding-left: 20px;
+    padding-right: 20px;
     text-align: left;
     outline: none;
 }
@@ -294,8 +311,79 @@ export default {
     left: 20px;
 }
 
-.pick-source-container {
+.input-container .clear-btn {
+    position: absolute;
+    top: 15px;
+    right: 28px;
+    height: 25px;
+    line-height: 25px;
+    cursor: pointer;
+    color: var(--text-secondary-strong);
+    font-size: 16px;
+}
+
+.pick-category-container {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
+.category-item-container {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    color: var(--text-primary);
+    font-size: 14px;
+    border-top: 1px solid var(--border-tertiary);
+    background-color: var(--background-secondary);
+}
+
+.category-item {
+    display: flex;
     width: 100%;
+    justify-content: space-between;
+}
+
+.category-item .desc {
+    margin-right: 15px;
+    color: var(--text-secondary-strong);
+}
+
+.arrow {
+    border: solid var(--contact-arrow-border);
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    margin-right: 10px;
+}
+
+.right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+
+.organization-section {
+    border-top: 1px solid var(--border-tertiary);
+}
+
+.organization-section :deep(.organization-tree-container) {
+    height: auto;
+    max-height: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.organization-section :deep(.member-list-container) {
+    margin: 5px;
+    max-height: none;
+    overflow: visible;
+    height: auto;
 }
 
 .pick-source-nav {
@@ -334,41 +422,13 @@ export default {
     pointer-events: none;
 }
 
-.pick-source-list {
-    padding: 5px 10px;
+.pick-category-container .friend-list-container {
+    overflow: visible;
 }
 
-.pick-source-list ul li {
-    padding: 0 10px;
-    height: 40px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.pick-source-list ul li:hover {
-    background: var(--background-item-placeholder);
-    border-radius: 5px;
-}
-
-.pick-source-list ul li a {
-    width: 100%;
-}
-
-.pick-source-list ul li::after {
-    display: inline-block;
-    color: var(--text-secondary-strong);
-    content: ">";
-}
-
-.pick-source-list a {
-    text-decoration: none;
-    color: var(--text-primary);
-    font-size: 14px;
-}
-
-.contact-list-container .friend-list-container {
-    height: 100%;
+.contact-list-container > .friend-list-container {
+    flex: 1;
+    min-height: 0;
     overflow: auto;
 }
 

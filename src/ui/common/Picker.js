@@ -18,6 +18,7 @@ export default {
             this.$modal.show(
                 PickUserView,
                 {
+                    title: options.title,
                     users: options.users ? options.users : store.state.contact.favContactList.concat(store.state.contact.friendList),
                     initialCheckedUsers: options.initialCheckedUsers,
                     uncheckableUsers: options.uncheckableUsers,

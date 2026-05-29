@@ -10,7 +10,8 @@
         <div ref="notClickThroughArea">
             <ElectronWindowsControlButtonView  v-if="sharedMiscState.isElectron"  style="position: absolute; top: 0; left: 0; width: 100%; height: 30px;"
                                               :title="'野火会议'"
-                                              :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
+                                              :ohos="sharedMiscState.isOhos"
+                                              :macos="!(sharedMiscState.isElectronWindowsOrLinux && sharedMiscState.isOhos)"/>
             <ScreenShareControlView v-if="session && session.screenSharing" type="conference" v-bind:style="{top: sharedMiscState.isElectron ? '30px' : '0px'}"/>
             <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
         </div>

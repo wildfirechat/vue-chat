@@ -12,6 +12,7 @@
         />
         <div v-if="sharedMiscState.isElectron" class="conversation-action-item" @click="clearConversationHistory">{{ $t('conversation.clear_conversation_history') }}</div>
         <div class="conversation-action-item" @click="clearRemoteConversationHistory">{{ $t('conversation.clear_remote_conversation_history') }}</div>
+        <div class="conversation-action-item" @click="complain">{{ $t('conversation.complain') }}</div>
     </div>
 </template>
 
@@ -19,7 +20,7 @@
 import UserListView from "../user/UserListView.vue";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
-import wfc from "../../../wfc/client/wfc";
+import {showComplainAlert} from "./conversationComplainHelper";
 
 export default {
     name: "SingleConversationInfoView",
@@ -94,7 +95,10 @@ export default {
                     this.activeStore.clearRemoteConversationHistory(this.conversationInfo.conversation);
                 }
             })
-        }
+        },
+        complain(){
+            showComplainAlert(this, this.activeStore);
+        },
     },
 
     computed: {}
@@ -151,6 +155,7 @@ export default {
     height: 42px;
     max-height: 42px;
     border-top: 1px solid var(--border-tertiary);
+    margin: 0 10px;
 }
 
 .conversation-action-item:active {

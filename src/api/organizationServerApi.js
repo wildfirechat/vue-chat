@@ -19,6 +19,7 @@ export class OrganizationServerApi {
 //        int ApplicationType_Channel = 1;
 //        int ApplicationType_Admin = 2;
             if (!Config.ORGANIZATION_SERVER) {
+                this.isServiceAvailable = false;
                 reject(this.serviceUnavailbelError)
                 return
             }
@@ -44,13 +45,14 @@ export class OrganizationServerApi {
                         }
                     })
                     .catch(error => {
+                        this.isServiceAvailable = false;
                         reject(error);
                     })
 
             }, error => {
                 console.error('getAuthCode error', error);
+                this.isServiceAvailable = false;
                 reject(this.serviceUnavailbelError)
-
             })
         })
     }
@@ -143,6 +145,7 @@ export class OrganizationServerApi {
         if(!this.isServiceAvailable){
             throw new Error("service not available");
         }
+
         let response;
         path = Config.ORGANIZATION_SERVER + path;
         response = await axios.post(path, data, {

@@ -12,7 +12,7 @@
                         <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
                     </div>
                     <div
-                        v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
+                        v-bind:style="{marginTop:(sharedMiscState.isElectronWindowsOrLinux || sharedMiscState.isOhos) ?  '30px' : '0'}"
                     >
                         <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
                             <i class="icon-ion-pin"

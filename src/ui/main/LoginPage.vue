@@ -3,7 +3,8 @@
         <div class="login-container" :class="{'web-login-container': !sharedMiscState.isElectron}">
             <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
                                               :maximizable="false"
-                                              v-if="sharedMiscState.isElectronWindowsOrLinux"/>
+                                              :ohos="sharedMiscState.isOhos"
+                                              v-if="sharedMiscState.isElectronWindowsOrLinux || sharedMiscState.isOhos"/>
 
             <div class="drag-area"/>
             <div v-if="loginType === 0" class="qrcode-login-container">

@@ -26,6 +26,7 @@ const IpcEventType = {
     SHOW_COLLECTION_WINDOW: 'show-collection-window',
     SHOW_POLL_WINDOW: 'show-poll-window',
     OPEN_MAIN_DEV_TOOLS: 'open-main-dev-tools',
+    CHECK_FOR_UPDATES: 'check-for-updates',
 }
 
 module.exports = IpcEventType

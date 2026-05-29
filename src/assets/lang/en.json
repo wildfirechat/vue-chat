@@ -87,7 +87,8 @@
         "action_tip_audio_call": "Voice Call",
         "action_tip_video_call": "Video Call",
         "clear_conversation_history": "Clear local history",
-        "clear_remote_conversation_history": "Clear remote history"
+        "clear_remote_conversation_history": "Clear remote history",
+        "complain": "Complain"
     },
     "fav": {
         "fav": "Collection",

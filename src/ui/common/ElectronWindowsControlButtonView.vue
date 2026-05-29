@@ -28,6 +28,11 @@
             </div>
         </div>
     </div>
+    <div v-else-if="ohos" class="titlebar webkit-draggable">
+        <div class="title">
+            <p class="single-line">{{ title }}</p>
+        </div>
+    </div>
     <div v-else class="titlebar webkit-draggable">
         <div class="title">
             <p class="single-line">{{ title }}</p>
@@ -81,6 +86,11 @@ export default {
             required: false,
             default: false,
         },
+        ohos: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
         title: {
             type: String,
             required: false,
@@ -117,10 +127,10 @@ export default {
             });
         },
         close() {
-                const win = remote.getCurrentWindow();
-                win.close();
-                if (!wfc.isLogin() && this.sharedMiscState.isMainWindow) {
-                    app.exit(0)
+            const win = remote.getCurrentWindow();
+            win.close();
+            if (!wfc.isLogin() && this.sharedMiscState.isMainWindow) {
+                app.exit(0)
             }
         },
         toggleMaxRestoreButtons() {

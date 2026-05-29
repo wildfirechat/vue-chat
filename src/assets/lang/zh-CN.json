@@ -100,7 +100,8 @@
         "action_tip_video_call": "视频通话",
         "show_in_float_window": "在独立窗口打开",
         "clear_conversation_history": "清空本地聊天记录",
-        "clear_remote_conversation_history": "清空远程聊天记录"
+        "clear_remote_conversation_history": "清空远程聊天记录",
+        "complain": "举报"
     },
     "fav": {
         "fav": "收藏",

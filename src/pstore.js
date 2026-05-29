@@ -170,6 +170,7 @@ export const pstore = (id) => defineStore(id, () => {
         enableAutoLogin: false,
         isElectron: isElectron(),
         isElectronWindowsOrLinux: process && (process.platform === 'win32' || process.platform === 'linux'),
+        isOhos: process && (process.platform === 'openharmony'),
         isMainWindow: false,
         linuxUpdateTitleInterval: 0,
         isCommercialServer: false,
@@ -191,6 +192,7 @@ export const pstore = (id) => defineStore(id, () => {
             this.enableAutoLogin = false;
             this.isElectron = isElectron();
             this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
+            this.isOhos = process && (process.platform === 'openharmony');
             // this.isMainWindow = false;
             this.linuxUpdateTitleInterval = 0;
             this.isCommercialServer = false;

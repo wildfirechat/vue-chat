@@ -43,7 +43,7 @@
                 enableCategoryLabelSticky: enableCategoryLabelSticky,
                 paddingLeft: paddingLeft,
             }"
-        style="max-height: 100%; height: 100%; overflow-y: auto"/>
+        :style="virtualListStyle"/>
 </template>
 
 <script>
@@ -85,6 +85,10 @@ export default {
             type: String,
             required: false,
             default: '5px'
+        },
+        virtualListStyle: {
+            type: Object,
+            default: () => ({ 'max-height': '100%', height: '100%', 'overflow-y': 'auto' }),
         }
     },
     data() {

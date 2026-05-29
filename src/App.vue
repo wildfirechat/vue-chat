@@ -59,6 +59,16 @@ export default {
         }
     },
     methods: {
+        syncLinuxWindowBorderState() {
+            if (!isElectron() || process.platform !== 'linux') {
+                return;
+            }
+            try {
+                document.body.classList.toggle('maximized', !!currentWindow.isMaximized());
+            } catch (e) {
+                console.log('syncLinuxWindowBorderState error', e);
+            }
+        },
         visibilityChange(event, hidden) {
             store.setPageVisibility(!hidden);
             console.log('page visibilityChange', hidden);
@@ -107,8 +117,13 @@ export default {
             root.style.setProperty('--main-border-radius', '0px')
             root.style.setProperty('--home-menu-padding-top', '0px')
         }
+        if (isElectron() && process.platform === 'linux') {
+            root.style.setProperty('--linux-window-border-width', '1px')
+            root.style.setProperty('--linux-window-border-color', 'var(--border-strong)')
+        }
         window.addEventListener('blur', this.onblur);
         window.addEventListener('focus', this.onfocus);
+        window.addEventListener('resize', this.syncLinuxWindowBorderState);
         window.addEventListener('beforeunload', this.onBeforeUnload);
         if (isElectron()){
             currentWindow.minimizable = this.sharedMiscState.enableMinimize;
@@ -155,6 +170,7 @@ export default {
             waterMark.init()
         }
 
+        this.syncLinuxWindowBorderState();
         this._toastListener = (e) => {
             this.$notify(e.detail);
         };
@@ -166,6 +182,7 @@ export default {
         this.$eventBus.$off('forward-fav');
         window.removeEventListener('blur', this.onblur)
         window.removeEventListener('focus', this.onfocus)
+        window.removeEventListener('resize', this.syncLinuxWindowBorderState)
         window.removeEventListener('beforeunload', this.onBeforeUnload)
         if(Config.ENABLE_WATER_MARK) {
             waterMark.remove()
@@ -193,6 +210,8 @@ export default {
     --home-menu-padding-top: 60px;
     --composite-message-page-width: 100%;
     --composite-message-page-height: 100%;
+    --linux-window-border-width: 0;
+    --linux-window-border-color: transparent;
 }
 
 .tippy-tooltip {
@@ -204,6 +223,24 @@ export default {
 
 #app {
     position: relative;
+}
+
+#app-main {
+    position: relative;
+}
+
+#app-main::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: var(--linux-window-border-width) solid var(--linux-window-border-color);
+    z-index: 2147483647;
+}
+
+body.maximized #app-main::after {
+    border-width: 0;
 }
 
 .blur-container {

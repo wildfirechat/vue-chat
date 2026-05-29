@@ -2,27 +2,44 @@
     <section class="organization-tree-container">
         <div class="member-list-container">
             <ul>
-                <li v-for="(org, index) in subOrganizations" :key="org.id">
-                    <div class="organization-item"
-                         @click.stop="clickOrganizationItem(org)">
-                        <input type="checkbox" style="margin-right: 10px"
-                               v-bind:value="org"
-                               :checked="isOrganizationChecked(org)">
-                        <img :src="org.portrait ? org.portrait : defaultDepartmentPortraitUrl">
-                        <p class="name">{{ org.name }}</p>
-                        <p class="button" v-bind:class="{disabled: isOrganizationChecked(org)}" @click.stop="onShowSubOrganizationButtonClick(org)">下级</p>
-                    </div>
-                </li>
-                <li v-for="(employee, index) in employees" :key="employee.employeeId">
-                    <div class="organization-item "
-                         @click.stop="clickEmployeeItem(employee)">
-                        <input type="checkbox" style="margin-right: 10px"
-                               v-bind:value="employee"
-                               :checked="isEmployeeChecked(employee)">
-                        <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">
-                        <p class="name">{{ employee.name }}</p>
-                    </div>
-                </li>
+                <template v-if="!searchMode">
+                    <li v-for="(org, index) in subOrganizations" :key="org.id">
+                        <div class="organization-item"
+                             @click.stop="clickOrganizationItem(org)">
+                            <input type="checkbox" style="margin-right: 10px"
+                                   v-bind:value="org"
+                                   :checked="isOrganizationChecked(org)">
+                            <img :src="org.portrait ? org.portrait : defaultDepartmentPortraitUrl">
+                            <p class="name">{{ org.name }}</p>
+                            <p class="button" v-bind:class="{disabled: isOrganizationChecked(org)}" @click.stop="onShowSubOrganizationButtonClick(org)">下级</p>
+                        </div>
+                    </li>
+                    <li v-for="(employee, index) in employees" :key="employee.employeeId">
+                        <div class="organization-item "
+                             @click.stop="clickEmployeeItem(employee)">
+                            <input type="checkbox" style="margin-right: 10px"
+                                   v-bind:value="employee"
+                                   :checked="isEmployeeChecked(employee)">
+                            <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">
+                            <p class="name">{{ employee.name }}</p>
+                        </div>
+                    </li>
+                </template>
+                <template v-else>
+                    <li v-if="searchResults.length === 0">
+                        <p class="no-result">无搜索结果</p>
+                    </li>
+                    <li v-for="(employee, index) in searchResults" :key="'search-' + employee.employeeId">
+                        <div class="organization-item"
+                             @click.stop="clickEmployeeItem(employee)">
+                            <input type="checkbox" style="margin-right: 10px"
+                                   v-bind:value="employee"
+                                   :checked="isEmployeeChecked(employee)">
+                            <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">
+                            <p class="name">{{ employee.name }}</p>
+                        </div>
+                    </li>
+                </template>
             </ul>
         </div>
     </section>
@@ -35,7 +52,12 @@ import store from "../../../store";
 
 export default {
     name: "CheckableOrganizationTreeView",
-    props: {},
+    props: {
+        searchQuery: {
+            type: String,
+            default: '',
+        }
+    },
     components: {},
     data() {
         return {
@@ -45,6 +67,25 @@ export default {
             defaultDepartmentPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
             defaultEmployeePortraitUrl: Config.DEFAULT_PORTRAIT_URL,
             activeTippy: null,
+            searchResults: [],
+            searchMode: false,
+            currentOrgId: null,
+        }
+    },
+    watch: {
+        searchQuery(newVal) {
+            if (this._searchTimer) {
+                clearTimeout(this._searchTimer);
+            }
+            const keyword = newVal.trim();
+            if (keyword) {
+                this._searchTimer = setTimeout(() => {
+                    this.search(keyword);
+                }, 300);
+            } else {
+                this.searchMode = false;
+                this.searchResults = [];
+            }
         }
     },
     mounted() {
@@ -52,6 +93,7 @@ export default {
         organizationServerApi.getRootOrganization()
             .then(orgs => {
                 if (orgs.length > 0) {
+                    this.currentOrgId = orgs[0].id;
                     this.loadAndShowOrganization(orgs[0])
                 }
             })
@@ -67,6 +109,7 @@ export default {
             this.loadAndShowOrganizationById(org.id);
         },
         loadAndShowOrganizationById(orgId) {
+            this.currentOrgId = orgId;
             organizationServerApi.getOrganizationEx(orgId)
                 .then(res => {
                     this.subOrganizations = res.subOrganizations;
@@ -77,6 +120,15 @@ export default {
                     this.currentOrganizationPathList = orgs.reverse();
                     this.$emit('organization-path-update', this.currentOrganizationPathList);
                 })
+        },
+        async search(keyword) {
+            if (!this.currentOrgId) return;
+            try {
+                this.searchResults = await organizationServerApi.searchEmployee(this.currentOrgId, keyword);
+                this.searchMode = true;
+            } catch (e) {
+                console.error('search employee error', e);
+            }
         },
         onShowSubOrganizationButtonClick(org) {
             if (this.isOrganizationChecked(org)) {
@@ -157,6 +209,13 @@ export default {
 
 .organization-item .button.disabled {
     color: var(--text-secondary);
+}
+
+.no-result {
+    padding: 20px;
+    color: var(--text-secondary);
+    text-align: center;
+    font-size: 14px;
 }
 
 </style>

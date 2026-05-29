@@ -66,6 +66,9 @@
         <div class="conversation-action-item" @click="clearRemoteConversationHistory">
             {{ $t('conversation.clear_remote_conversation_history') }}
         </div>
+        <div class="conversation-action-item" @click="complain">
+            {{ $t('conversation.complain') }}
+        </div>
         <div v-if="enableQuitGroup" @click="quitGroup" class="conversation-action-item">
             {{ $t('conversation.quit_group') }}
         </div>
@@ -88,6 +91,7 @@ import appServerApi from "../../../api/appServerApi";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
 import MessageContentType from "../../../wfc/messages/messageContentType";
 import {isElectron} from "../../../platform";
+import {showComplainAlert} from "./conversationComplainHelper";
 
 export default {
     name: "GroupConversationInfoView",
@@ -260,6 +264,10 @@ export default {
                     this.activeStore.dismissGroup(this.conversationInfo.conversation.target)
                 }
             })
+        },
+
+        complain() {
+            showComplainAlert(this, this.activeStore);
         },
 
         setFavGroup(groupId, fav) {
@@ -602,6 +610,7 @@ header label input::-webkit-input-placeholder {
     height: 42px;
     max-height: 42px;
     border-top: 1px solid var(--border-tertiary);
+    margin: 0 10px;
 }
 
 .conversation-action-item:active {
