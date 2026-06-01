@@ -55,7 +55,7 @@
                                         :user-info="employeeToUserInfo(employee)"/>
                                 </template>
                             </tippy>
-                            <img :src="employee.portrait ? employee.portrait : defaultPortraitUrl(employee.name)"
+                            <img :src="portraitUrl(employee)"
                                  :ref="'ref-employee-' + employee.employeeId"
                                  :id="'infoTrigger-' + employee.employeeId">
                             <p class="name">{{ employee.name }}</p>
@@ -88,7 +88,7 @@
                                         :user-info="employeeToUserInfo(employee)"/>
                                 </template>
                             </tippy>
-                            <img :src="employee.portrait ? employee.portrait : defaultPortraitUrl(employee.name)"
+                            <img :src="portraitUrl(employee)"
                                  :ref="'ref-employee-' + employee.employeeId"
                                  :id="'infoTrigger-' + employee.employeeId">
                             <p class="name">{{ employee.name }}</p>
@@ -193,8 +193,8 @@ export default {
         employeeToUserInfo(employee) {
             return organizationServerApi.employeeToUserInfo(employee);
         },
-        defaultPortraitUrl(name) {
-            return Config.APP_SERVER + '/avatar?name=' + encodeURIComponent(name);
+        portraitUrl(employee) {
+            return organizationServerApi.employeePortraitUrl(employee)
         },
         showUserCardView(evt, employee) {
             if (this.activeTippy) {

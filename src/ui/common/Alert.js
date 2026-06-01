@@ -20,7 +20,7 @@ export default {
             let closed = (event) => {
                 console.log('Close...', event)
             };
-            let showIcon = options.showIcon !== undefined;
+            let showIcon = !!options.showIcon;
             this.$modal.show(
                 AlertView,
                 {

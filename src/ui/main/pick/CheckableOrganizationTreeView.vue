@@ -20,7 +20,7 @@
                             <input type="checkbox" style="margin-right: 10px"
                                    v-bind:value="employee"
                                    :checked="isEmployeeChecked(employee)">
-                            <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">
+                            <img :src="employeePortraitUrl(employee)">
                             <p class="name">{{ employee.name }}</p>
                         </div>
                     </li>
@@ -35,7 +35,7 @@
                             <input type="checkbox" style="margin-right: 10px"
                                    v-bind:value="employee"
                                    :checked="isEmployeeChecked(employee)">
-                            <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl">
+                            <img :src="employeePortraitUrl(employee)">
                             <p class="name">{{ employee.name }}</p>
                         </div>
                     </li>
@@ -65,7 +65,6 @@ export default {
             employees: [],
             currentOrganizationPathList: [],
             defaultDepartmentPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
-            defaultEmployeePortraitUrl: Config.DEFAULT_PORTRAIT_URL,
             activeTippy: null,
             searchResults: [],
             searchMode: false,
@@ -151,6 +150,10 @@ export default {
 
         clickEmployeeItem(employee) {
             store.pickOrUnpickUser(organizationServerApi.employeeToUserInfo(employee));
+        },
+
+        employeePortraitUrl(employee) {
+            return organizationServerApi.employeePortraitUrl(employee);
         }
     },
 

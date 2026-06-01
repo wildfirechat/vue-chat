@@ -1,8 +1,9 @@
 <template>
-    <section v-if="sharedSearchState.query.length"
+    <section v-if="(query && query.length) || showHint"
              ref="floatingPanel"
              class="search-result-floating"
-             :style="floatingStyle">
+             :style="floatingStyle"
+             @mousedown.prevent>
         <div class="search-result">
             <ul>
                 <li class="category-item" v-if="sharedSearchState.userSearchResult.length > 0">
@@ -86,14 +87,33 @@
                         {{ $t('search.view_all') + this.sharedSearchState.conversationSearchResult.length }}
                     </div>
                 </li>
-                <li class="category-item" v-if="sharedMiscState.isElectron">
+                <li class="category-item" v-if="employeeSearchResult.length > 0">
+                    <label>组织结构</label>
+                    <ul>
+                        <li v-for="(employee, index) in toShowOrgEmployeeList" :key="'emp-' + index">
+                            <div class="search-result-item contact" @click.stop="chatToEmployee(employee)">
+                                <img :src="employeePortrait(employee)">
+                                <span class="single-line">{{ employee.name }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div v-if="!shouldShowAllOrgEmployee && employeeSearchResult.length > 5"
+                         class="show-all"
+                         @click.stop="showAllOrgEmployee">
+                        {{ $t('search.view_all') + employeeSearchResult.length }}
+                    </div>
+                </li>
+                <li class="category-item" v-if="query && query.length && sharedMiscState.isElectron">
                     <label>{{ $t('search.message_history') }}</label>
                     <div class="search-result-item message" @click.stop="showMessageHistoryPage">
                         <p>{{ $t('search.search_message_history') }} </p>
                     </div>
                 </li>
-                <li class="category-item" v-else-if="isSearchResultEmpty">
+                <li class="category-item" v-else-if="isSearchResultEmpty && query && query.length">
                     <label style="padding-bottom: 8px">{{ $t('search.result_empty') }}</label>
+                </li>
+                <li class="category-item" v-if="showHint && (!query || !query.length)">
+                    <label style="padding: 12px 12px; font-size: 14px; color: var(--text-secondary);">搜索内容或用户</label>
                 </li>
             </ul>
         </div>
@@ -108,16 +128,19 @@ import FriendRequestView from '../contact/FriendRequestView.vue';
 import IpcEventType from '../../../ipcEventType';
 import { ipcRenderer } from '../../../platform';
 import wfc from '../../../wfc/client/wfc';
+import organizationServerApi from '../../../api/organizationServerApi';
 
 const FLOATING_PANEL_MIN_WIDTH = 320;
 const FLOATING_PANEL_MIN_HEIGHT = 180;
 const FLOATING_PANEL_VIEWPORT_PADDING = 8;
 const FLOATING_PANEL_OFFSET_Y = 6;
 const FLOATING_PANEL_FALLBACK_TOP = 66;
+
 export default {
     name: 'SearchResultView',
     props: [
-        'query'
+        'query',
+        'showHint',
     ],
     data() {
         return {
@@ -128,18 +151,31 @@ export default {
             shouldShowAllContact: false,
             shouldShowAllGroup: false,
             shouldShowAllConversation: false,
+            shouldShowAllOrgEmployee: false,
+            employeeSearchResult: [],
+            rootOrgId: null,
             floatingStyle: {
                 left: '0px',
                 top: '0px',
                 width: '320px',
                 maxHeight: '320px',
-                visibility: 'visible',
+                visibility: 'hidden',
             },
         }
     },
 
-    mounted() {
-        store.setSearchQuery(this.query)
+    async mounted() {
+        if (organizationServerApi.isServiceAvailable) {
+            try {
+                const orgs = await organizationServerApi.getRootOrganization();
+                if (orgs && orgs.length > 0) {
+                    this.rootOrgId = orgs[0].id;
+                }
+            } catch (e) {
+                // org service not available
+            }
+        }
+        this.search(this.query);
         this.bindFloatingEvents()
         this.$nextTick(() => {
             this.updateFloatingPosition()
@@ -161,6 +197,7 @@ export default {
     deactivated() {
         this.unbindFloatingEvents()
     },
+
     watch: {
         // "query":function (val, oldVal){
         //   console.log('searchView query changed:', val, oldVal)
@@ -168,7 +205,12 @@ export default {
         // or
         query() {
             console.log('searchView query changed:', this.query)
-            store.setSearchQuery(this.query)
+            this.search(this.query)
+            this.$nextTick(() => {
+                this.updateFloatingPosition()
+            })
+        },
+        showHint() {
             this.$nextTick(() => {
                 this.updateFloatingPosition()
             })
@@ -259,11 +301,12 @@ export default {
             }
         },
         updateFloatingPosition() {
-            if (!this.sharedSearchState.query || !this.sharedSearchState.query.length) {
+            if ((!this.sharedSearchState.query || !this.sharedSearchState.query.length) && !this.showHint) {
                 return
             }
             const anchorEl = this.getAnchorElement()
             const contentRect = this.getMainContentContainerRect()
+
             if (!anchorEl) {
                 const top = Math.max(contentRect.top + FLOATING_PANEL_FALLBACK_TOP, FLOATING_PANEL_FALLBACK_TOP)
                 const maxHeight = Math.max(FLOATING_PANEL_MIN_HEIGHT, contentRect.bottom - FLOATING_PANEL_VIEWPORT_PADDING - top)
@@ -360,8 +403,42 @@ export default {
                 url: url,
             });
             console.log(IpcEventType.showMessageHistoryPage, url)
-        }
+            store.hideSearchView();
+        },
 
+        search(query) {
+            store.setSearchQuery(query);
+            this.shouldShowAllOrgEmployee = false;
+            this.searchEmployee(query);
+        },
+
+        async searchEmployee(keyword) {
+            if (!keyword || !this.rootOrgId) {
+                this.employeeSearchResult = [];
+                return;
+            }
+            if (!organizationServerApi.isServiceAvailable) {
+                return;
+            }
+            try {
+                this.employeeSearchResult = await organizationServerApi.searchEmployee(this.rootOrgId, keyword);
+            } catch (e) {
+                console.error('search employee error', e);
+                this.employeeSearchResult = [];
+            }
+        },
+
+        showAllOrgEmployee() {
+            this.shouldShowAllOrgEmployee = true;
+        },
+
+        chatToEmployee(employee) {
+            let userInfo = organizationServerApi.employeeToUserInfo(employee);
+            this.chatToContact(userInfo);
+        },
+        employeePortrait(employee) {
+            return organizationServerApi.employeePortraitUrl(employee);
+        }
     },
 
     computed: {
@@ -380,12 +457,16 @@ export default {
         toShowConversationList() {
             return !this.shouldShowAllConversation && this.sharedSearchState.conversationSearchResult.length > 5 ? this.sharedSearchState.conversationSearchResult.slice(0, 4) : this.sharedSearchState.conversationSearchResult;
         },
+        toShowOrgEmployeeList() {
+            return !this.shouldShowAllOrgEmployee && this.employeeSearchResult.length > 5 ? this.employeeSearchResult.slice(0, 4) : this.employeeSearchResult;
+        },
         isSearchResultEmpty() {
-            return this.sharedSearchState.userSearchResult.length ===0
+            return this.sharedSearchState.userSearchResult.length === 0
                 && this.sharedSearchState.channelSearchResult.length === 0
                 && this.sharedSearchState.contactSearchResult.length === 0
                 && this.sharedSearchState.groupSearchResult.length === 0
-                && this.sharedSearchState.conversationSearchResult.length === 0;
+                && this.sharedSearchState.conversationSearchResult.length === 0
+                && this.employeeSearchResult.length === 0;
         }
     },
 

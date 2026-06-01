@@ -4,7 +4,7 @@
             <img :src="require(`@/assets/images/icon.png`)" alt="">
         </div>
         <h2 v-if="title" class="title">{{ this.title }}</h2>
-        <p v-if="content" class="content">{{ this.content }}</p>
+        <p v-if="content" :class="['content', {alone: !title}]">{{ this.content }}</p>
         <div class="action-container">
             <button :class="['confirm', confirmButtonType]" @click="confirm">{{ this.confirmText }}</button>
             <button class="cancel" @click="cancel">{{ this.cancelText }}</button>
@@ -79,9 +79,7 @@ export default {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 8px 0 var(--background-mask), 0 6px 20px 0 var(--background-mask);
+    background-color: var(--background-primary);
 }
 
 .portrait-container {
@@ -105,6 +103,12 @@ export default {
     font-size: 12px;
     padding: 10px;
     flex: 1;
+}
+
+.content.alone {
+    color: var(--text-primary);
+    font-size: 13px;
+    padding-top: 14px;
 }
 
 .action-container {

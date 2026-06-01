@@ -286,7 +286,7 @@ export default {
 
 .input-container input {
     height: 25px;
-    margin: 15px 20px 0 15px;
+    margin: 15px;
     flex: 1;
     border-radius: 3px;
     border: 1px solid var(--border-tertiary);
@@ -332,7 +332,7 @@ export default {
     height: 40px;
     display: flex;
     align-items: center;
-    padding-left: 15px;
+    margin-left: 15px;
     color: var(--text-primary);
     font-size: 14px;
     border-top: 1px solid var(--border-tertiary);
@@ -369,7 +369,7 @@ export default {
 }
 
 .organization-section {
-    border-top: 1px solid var(--border-tertiary);
+    //border-top: 1px solid var(--border-tertiary);
 }
 
 .organization-section :deep(.organization-tree-container) {

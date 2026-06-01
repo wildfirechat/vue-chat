@@ -116,15 +116,19 @@ export class OrganizationServerApi {
         userInfo.uid = employee.employeeId;
         userInfo.name = employee.name;
         userInfo.displayName = employee.name;
-        userInfo.portrait = employee.portrait ? employee.portrait : Config.DEFAULT_PORTRAIT_URL;
+        userInfo.portrait = this.employeePortraitUrl(employee);
         userInfo.gender = employee.gender;
         userInfo.mobile = employee.mobile;
         userInfo.email = employee.email;
         userInfo.updateDt = employee.updateDt;
         //0 normal; 1 robot; 2 thing;
-        userInfo.type = 1;
+        userInfo.type = 0;
         userInfo.deleted = 0;
         return userInfo;
+    }
+
+    employeePortraitUrl(employee) {
+        return employee.portrait ? employee.portrait :Config.APP_SERVER + '/avatar?name=' + encodeURIComponent(employee.name);
     }
 
     async _getOrganizationSync(orgId) {

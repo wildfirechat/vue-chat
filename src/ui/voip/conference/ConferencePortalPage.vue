@@ -103,7 +103,7 @@ export default {
         loadFavConferences() {
             conferenceApi.getFavConferences()
                 .then(favConferenceInfos => {
-                    this.favConferenceInfos = favConferenceInfos;
+                    this.favConferenceInfos = favConferenceInfos.filter(c => c.startTime > 0);
                 })
                 .catch(err => {
                     console.log('getFavConferences error', err)
