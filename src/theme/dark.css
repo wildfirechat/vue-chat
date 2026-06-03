@@ -104,7 +104,9 @@
     --mac-yellow-dark: #664400;
 
     --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
     --scrollbar-track: transparent;
+    --scrollbar-track-hover: transparent;
 
     /* Third-party */
     --ep-color-bg: #2c2c2e;
@@ -114,10 +116,6 @@
     --ep-color-active: #0a84ff;
 
     /* Button Variables Dark */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
     --button-primary-bg: #007aff;
     --button-primary-text: #ffffff;
     --button-primary-hover: #0063d1;

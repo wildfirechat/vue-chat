@@ -101,7 +101,9 @@
     --mac-close-hover: #e2463f;
 
     --scrollbar-thumb: #c1c1c1;
+    --scrollbar-thumb-hover: #a8a8a8;
     --scrollbar-track: transparent;
+    --scrollbar-track-hover: transparent;
 
     /* Emoji Picker Variables (Third-party) */
     --ep-color-bg: #ffffff;
@@ -134,6 +136,4 @@
     --hero-bg-blob-2: linear-gradient(135deg, #00c6ff 0%, #3f64e4 100%);
     --hero-bg-blob-3: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
-    ::-webkit-scrollbar {
-    }
 }

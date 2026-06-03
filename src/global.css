@@ -45,15 +45,57 @@
     -webkit-app-region: no-drag;
 }
 
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
 ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
     border-radius: 4px;
+    -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-hover, var(--scrollbar-thumb));
 }
     /* todo */
 ::-webkit-scrollbar-track {
     background: var(--scrollbar-track);
+    -webkit-appearance: none;
 }
     /*width: 350px;*/
+::-webkit-scrollbar-track:hover,
+::-webkit-scrollbar-track:active {
+    background: var(--scrollbar-track-hover, var(--scrollbar-track));
+}
+
+
+ /*实现 scrollbar draw over content*/
+/*electron 28+ 时生效*/
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* Overlay (floating) scrollbars — Electron 22 / Chromium 108 supports overflow:overlay.
+   These selectors catch elements with inline overflow styles (e.g. virtual-list, forward views). */
+[style*="overflow-y: auto"],
+[style*="overflow-y:auto"] {
+    overflow-y: overlay !important;
+}
+[style*="overflow: auto"],
+[style*="overflow:auto"] {
+    overflow: overlay !important;
+}
+[style*="overflow-y: scroll"],
+[style*="overflow-y:scroll"] {
+    overflow-y: overlay !important;
+}
+[style*="overflow: scroll"],
+[style*="overflow:scroll"] {
+    overflow: overlay !important;
+}
     /*height: 350px;*/
 input, textarea {
     background-color: var(--background-input);
