@@ -6,39 +6,41 @@
                 {{ $t('setting.enable_notification') }}
                 <input type="checkbox"
                        :checked="sharedMiscState.enableNotification"
+                       role="switch"
                        @change="enableNotification($event.target.checked)">
             </label>
             <label>
                 {{ $t('setting.enable_notification_detail') }}
                 <input v-bind:disabled="!sharedMiscState.enableNotification"
                        type="checkbox"
+                       role="switch"
                        :checked="sharedMiscState.enableNotificationMessageDetail"
                        @change="enableNotificationDetail($event.target.checked)">
             </label>
             <label v-if="sharedMiscState.isElectron">
                 {{ $t('setting.close_window_to_exit') }}
-                <input type="checkbox" :checked="sharedMiscState.enableCloseWindowToExit"
+                <input type="checkbox" role="switch" :checked="sharedMiscState.enableCloseWindowToExit"
                        @change="enableCloseWindowToExit($event.target.checked)">
             </label>
             <label v-if="sharedMiscState.isElectron">
                 {{ $t('setting.enable_minimize') }}
-                <input type="checkbox" :checked="sharedMiscState.enableMinimize"
+                <input type="checkbox" role="switch" :checked="sharedMiscState.enableMinimize"
                        @change="enableMinimize($event.target.checked)">
             </label>
             <label
                 v-if="sharedMiscState.isElectron || (sharedMiscState.config.CLIENT_ID_STRATEGY === 1 || sharedMiscState.config.CLIENT_ID_STRATEGY === 2)">
                 {{ $t('setting.auto_login') }}
-                <input type="checkbox" :checked="sharedMiscState.enableAutoLogin"
+                <input type="checkbox" role="switch" :checked="sharedMiscState.enableAutoLogin"
                        @change="enableAutoLogin($event.target.checked)">
             </label>
             <label v-if="sharedMiscState.isCommercialServer">
                 {{ $t('setting.sync_draft') }}
-                <input type="checkbox" :checked="!sharedMiscState.isDisableSyncDraft"
+                <input type="checkbox" role="switch" :checked="!sharedMiscState.isDisableSyncDraft"
                        @change="enableDraftSync($event.target.checked)">
             </label>
-            <div>
+            <div class="dropdown-toggle-container">
                 {{ $t('setting.lang') }}
-                <dropdown class="my-dropdown-toggle"
+                <dropdown
                           :options="langs"
                           :selected="currentLang"
                           v-on:updateOption="setLang"
@@ -46,9 +48,9 @@
                           :closeOnOutsideClick="true">
                 </dropdown>
             </div>
-            <div>
+            <div class="dropdown-toggle-container">
                 {{ $t('setting.theme') || '外观' }}
-                <dropdown class="my-dropdown-toggle"
+                <dropdown
                           :options="themes"
                           :selected="currentTheme"
                           v-on:updateOption="setTheme"
@@ -56,6 +58,13 @@
                           :closeOnOutsideClick="true">
                 </dropdown>
             </div>
+        </div>
+        <div class="ad-container">
+            <p>
+                <a target="_blank" href="https://wildfirechat.cn/">野火IM</a>
+                ，安全可靠、运维部署简单、方便二开和对接现有系统。
+            </p>
+            <p>私有化部署，请微信联系：wildfirechat 或 wfchat </p>
         </div>
         <footer>
             <p class="proto-version-info">{{ protoRevision() }}</p>
@@ -116,19 +125,19 @@
 </template>
 
 <script>
-import wfc from "../../../wfc/client/wfc";
-import store from "../../../store";
+import wfc from '../../../wfc/client/wfc';
+import store from '../../../store';
 import dropdown from 'vue-dropdowns';
-import {clear} from "../../util/storageHelper";
-import {ipcRenderer, isElectron} from "../../../platform";
-import {getItem, setItem} from "../../util/storageHelper";
-import ChangePasswordView from "./ChangePasswordView";
-import ResetPasswordView from "./ResetPasswordView";
-import IpcEventType from "../../../ipcEventType";
-import avenginekit from "../../../wfc/av/internal/engine.min";
+import { clear } from '../../util/storageHelper';
+import { ipcRenderer, isElectron } from '../../../platform';
+import { getItem, setItem } from '../../util/storageHelper';
+import ChangePasswordView from './ChangePasswordView';
+import ResetPasswordView from './ResetPasswordView';
+import IpcEventType from '../../../ipcEventType';
+import avenginekit from '../../../wfc/av/internal/engine.min';
 
 export default {
-    name: "SettingPage",
+    name: 'SettingPage',
     data() {
         return {
             sharedMiscState: store.state.misc,
@@ -333,12 +342,35 @@ export default {
 
 .setting-container .content label {
     padding: 10px 0;
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 14px;
 }
 
 .setting-container .content label input {
     margin: 0 10px;
-    display: inline-block;
+}
+
+.setting-container .dropdown-toggle-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.setting-container .ad-container {
+    padding: 10px;
+    font-size: 15px;
+    background: var(--background-secondary);
+    margin: 10px;
+    border-radius: 5px;
+    /*box-shadow: 0 2px 4px 0 var(--background-mask), 0 6px 20px 0 var(--background-mask);*/
+}
+
+.ad-container p {
+    padding: 5px 0;
 }
 
 .setting-container footer {

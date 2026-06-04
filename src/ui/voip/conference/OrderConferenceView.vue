@@ -13,23 +13,23 @@
         </label>
         <label>
             参与者开启摄像头、麦克风入会
-            <input v-model="audience" type="checkbox">
+            <input v-model="audience" type="checkbox" role="switch">
         </label>
         <label>
             允许参与者自主开启摄像头和麦克风
-            <input :disabled="audience" v-model="allowTurnOnMic" type="checkbox">
+            <input :disabled="audience" v-model="allowTurnOnMic" type="checkbox" role="switch">
         </label>
         <div>
             <label>
                 启用密码
-                <input v-model="enablePin" type="checkbox">
+                <input v-model="enablePin" type="checkbox" role="switch">
             </label>
             <input v-if="enablePin" v-model="pin" class="text-input" style="margin-top: 10px" type="tel" maxlength="4" placeholder="123456">
         </div>
         <div>
             <label>
                 大规模会议
-                <input v-model="advance" type="checkbox">
+                <input v-model="advance" type="checkbox" role="switch">
             </label>
             <p class="advance_desc">参会人数大于50人</p>
         </div>

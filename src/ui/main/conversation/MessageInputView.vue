@@ -146,7 +146,7 @@ import store from "../../../store";
 import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker-vue3"
 import '@imndx/v-emoji-picker-vue3/lib/v-emoji-picker.esm.css'
 import Tribute from "tributejs";
-import '../../../tribute.css'
+import '../../../style/tribute.css'
 import ConversationType from "../../../wfc/model/conversationType";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import GroupInfo from "../../../wfc/model/groupInfo";
@@ -1425,7 +1425,6 @@ export default {
 
 i {
     font-size: 24px;
-    color: var(--text-primary);
     cursor: pointer;
 }
 
@@ -1468,18 +1467,9 @@ i:hover {
     }
 }
 
-.ptt-icon {
-    color: var(--text-primary);
-}
-
 .ptt-icon.active {
     color: var(--text-danger);
     animation: glow 2s infinite;
-}
-
-
-.record-icon {
-    color: var(--text-primary);
 }
 
 .record-icon.active {

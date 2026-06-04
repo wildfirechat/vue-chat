@@ -29,7 +29,7 @@
     --message-out-arrow: #409cff;
 
     /* Text Colors */
-    --text-primary: #f5f5f7;            /* 主文字：Off-white，不刺眼 */
+    --text-primary: #E0E0E4;
     --text-secondary: #8e8e93;          /* 次要文字：系统灰 */
     --text-secondary-strong: #aeaeb2;
     --text-tertiary: #636366;
@@ -137,7 +137,6 @@
     --hero-bg-blob-2: linear-gradient(135deg, #64d2ff 0%, #0a84ff 100%);
     --hero-bg-blob-3: linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%);
 
-    .message-input-container i {
-        color: var(--text-secondary) !important;
-    }
+    --switch-foreground: #FEFEFE;
+    --i-color: var(--text-secondary)
 }

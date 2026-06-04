@@ -1,0 +1,53 @@
+
+label:has([role=switch]) {
+    zoom: var(--switch-zoom, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 1em;
+    cursor: pointer;
+    user-select: none;
+}
+
+input[role=switch] {
+    --switch-handle-size: 6px;
+    --switch-bg-size: 16px;
+    --switch-handle-gap: 2px;
+    --switch-fg: var(--switch-foreground);
+    --switch-bg: var(--button-primary-bg);
+
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: content-box;
+    display: inline-flex;
+    padding-inline: 0 var(--switch-bg-size);
+    border: none;
+    font-size: 0;
+    margin: 0;
+    height: auto;
+    width: auto;
+    border-radius: 100px;
+    background: var(--switch-bg);
+    transition: var(--switch-duration, .2s) cubic-bezier(.65, 0, .5, 1);;
+    user-select: none;
+    outline: none;
+    filter: grayscale(1); /* de-colorize the switch */
+    cursor: pointer;
+}
+
+input[role=switch]:checked {
+    padding-inline: var(--switch-bg-size) 0;
+    filter: none;
+}
+
+input[role=switch]:not(:checked) {
+    background: var(--background-sidebar);;
+}
+
+input[role=switch]::before {
+    content: '';
+    padding: var(--switch-handle-size);
+    margin: var(--switch-handle-gap);
+    background: var(--switch-fg);
+    border-radius: 50%;
+    transition: inherit;
+}

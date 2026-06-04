@@ -12,8 +12,8 @@ import 'tippy.js/themes/light.css'
 import VueContext from '@madogai/vue-context/dist/vue-context';
 
 import VModal from './vendor/vue-js-modal'
-import './global.css'
-import './wfc.css'
+import './style/global.css'
+import './style/wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "./store";
 import visibility from './vendor/vue-visibility-change';

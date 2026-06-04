@@ -53,7 +53,7 @@
             <div class="section-divider"></div>
 
             <!-- 群信息 -->
-            <header>
+            <section class="group-info-section">
                 <div class="group-portrait-container">
                     <p>群头像</p>
                     <img :src="conversationInfo.conversation._target.portrait" @click="pickFile"/>
@@ -63,36 +63,45 @@
                 </div>
                 <label>
                     {{ $t('conversation.group_name') }}
-                    <input type="text"
-                           ref="groupNameInput"
-                           :disabled="!enableModifyGroupNameAndPortrait"
-                           v-model="newGroupName"
-                           @keyup.enter="updateGroupName"
-                           :placeholder="conversationInfo.conversation._target._displayName">
+                    <div class="input-wrapper">
+                        <input type="text"
+                               ref="groupNameInput"
+                               :disabled="!enableModifyGroupNameAndPortrait"
+                               v-model="newGroupName"
+                               @keyup.enter="updateGroupName"
+                               :placeholder="conversationInfo.conversation._target._displayName">
+                        <span class="edit-icon">&#9998;</span>
+                    </div>
                 </label>
                 <label>
                     {{ $t('conversation.group_announcement') }}
-                    <input type="text"
-                           ref="groupAnnouncementInput"
-                           :disabled="!enableModifyAnnouncement"
-                           @keyup.enter='updateGroupAnnouncement'
-                           v-model.trim="newGroupAnnouncement"
-                           :placeholder="groupAnnouncement">
+                    <div class="input-wrapper">
+                        <input type="text"
+                               ref="groupAnnouncementInput"
+                               :disabled="!enableModifyAnnouncement"
+                               @keyup.enter='updateGroupAnnouncement'
+                               v-model.trim="newGroupAnnouncement"
+                               :placeholder="groupAnnouncement">
+                        <span class="edit-icon">&#9998;</span>
+                    </div>
                 </label>
                 <label>
                     {{ $t('group.alias') }}
-                    <input type="text"
-                           @keyup.enter='updateGroupAlias'
-                           v-model.trim="newGroupAlias"
-                           :placeholder="groupAlias">
+                    <div class="input-wrapper">
+                        <input type="text"
+                               @keyup.enter='updateGroupAlias'
+                               v-model.trim="newGroupAlias"
+                               :placeholder="groupAlias">
+                        <span class="edit-icon">&#9998;</span>
+                    </div>
                 </label>
                 <label class="switch">
                     <span>保存到通讯录</span>
-                    <input type="checkbox"
+                    <input type="checkbox" role="switch"
                            :checked="conversationInfo.conversation._target._isFav"
                            @change="setFavGroup(conversationInfo.conversation.target, $event.target.checked)">
                 </label>
-            </header>
+            </section>
 
             <!-- 操作按钮 -->
             <div v-if="sharedMiscState.isElectron" @click="clearConversationHistory" class="conversation-action-item">
@@ -177,7 +186,7 @@ export default {
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
-    components: {UserCardView},
+    components: { UserCardView },
     methods: {
         onReceiveMessage(msg, hasMore) {
             if (msg.conversation.equal(this.conversationInfo.conversation) && msg.messageContent.type === MessageContentType.RejectJoinGroup) {
@@ -685,7 +694,7 @@ export default {
 }
 
 /* 群信息 header */
-header {
+.group-info-section {
     padding: 12px 20px;
     display: flex;
     flex-direction: column;
@@ -694,19 +703,20 @@ header {
     flex-shrink: 0;
 }
 
-header .group-portrait-container {
+.group-info-section .group-portrait-container {
     display: flex;
     width: 100%;
     justify-content: flex-start;
     align-items: center;
+    padding: 10px 0;
 }
 
-header .group-portrait-container p {
+.group-info-section .group-portrait-container p {
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: 12px;
 }
 
-header .group-portrait-container img {
+.group-info-section .group-portrait-container img {
     width: 30px;
     height: 30px;
     border-radius: 5px;
@@ -714,31 +724,56 @@ header .group-portrait-container img {
     cursor: pointer;
 }
 
-header label {
+.group-info-section label {
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-primary);
 }
 
-header label:not(:first-of-type) {
+.group-info-section label:not(:first-of-type) {
     margin-top: 15px;
 }
 
-header label input {
-    flex: 1;
+.group-info-section .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
     margin-top: 5px;
+}
+
+.group-info-section label .input-wrapper input {
+    flex: 1;
     border: none;
     outline: none;
     width: 100%;
-    font-size: 13px;
+    font-size: 11px;
     background-color: transparent;
+    padding: 0;
+    min-width: 0;
 }
 
-header label input::-webkit-input-placeholder {
+.group-info-section .edit-icon {
+    position: absolute;
+    right: 0;
+    font-size: 13px;
+    color: var(--text-secondary-strong);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    line-height: 1;
+    transform: rotateZ(90deg);
+}
+
+.group-info-section .input-wrapper:has(input:not(:disabled)):hover .edit-icon {
+    opacity: 1;
+}
+
+.group-info-section label input::-webkit-input-placeholder {
     color: var(--text-secondary-strong);
 }
 
@@ -760,7 +795,7 @@ header label input::-webkit-input-placeholder {
     background: var(--background-item-placeholder);
 }
 
-.switch {
+.group-info-section .switch {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -770,8 +805,4 @@ header label input::-webkit-input-placeholder {
     margin-top: 15px;
 }
 
-.switch input {
-    margin: 0;
-    flex: 0;
-}
 </style>

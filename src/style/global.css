@@ -1,4 +1,7 @@
-@import './theme/index.css';
+@import '../theme/index.css';
+
+@import '~@madogai/vue-context/dist/css/vue-context.css';
+@import "./checkbox-switch.css";
 
 :root {
     /* Layout Variables (Theme Independent) */
@@ -12,7 +15,6 @@
     --composite-message-page-width: 100%;
     --composite-message-page-height: 100%;
 }
-@import '~@madogai/vue-context/dist/css/vue-context.css';
 
 .v-context {
     font-size: 14px;
@@ -26,10 +28,12 @@
     padding: .4rem 1rem;
     color: var(--text-primary) !important;
 }
+
 .v-context > li > a:hover {
     background-color: var(--accent-color) !important;
     color: var(--text-on-accent) !important;
 }
+
 .v-context > li > a.danger-action {
     color: var(--text-danger) !important;
 }
@@ -38,6 +42,7 @@
     background-color: var(--button-danger-bg) !important;
     color: var(--text-on-accent) !important;
 }
+
 * {
     margin: 0;
     padding: 0;
@@ -49,6 +54,7 @@
     width: 6px;
     height: 6px;
 }
+
 ::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
     border-radius: 4px;
@@ -59,12 +65,12 @@
 ::-webkit-scrollbar-thumb:active {
     background-color: var(--scrollbar-thumb-hover, var(--scrollbar-thumb));
 }
-    /* todo */
+
 ::-webkit-scrollbar-track {
     background: var(--scrollbar-track);
     -webkit-appearance: none;
 }
-    /*width: 350px;*/
+
 ::-webkit-scrollbar-track:hover,
 ::-webkit-scrollbar-track:active {
     background: var(--scrollbar-track-hover, var(--scrollbar-track));
@@ -72,7 +78,7 @@
 
 
  /*实现 scrollbar draw over content*/
-/*electron 28+ 时生效*/
+/*electron 28+ / chrome 121+ 时生效*/
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) transparent;
@@ -96,8 +102,10 @@
 [style*="overflow:scroll"] {
     overflow: overlay !important;
 }
-    /*height: 350px;*/
-input, textarea {
+
+
+/* --- Global Input/Textarea Styling --- */
+input:not([role=switch]), textarea {
     background-color: var(--background-input);
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
@@ -170,11 +178,9 @@ button.danger:hover {
 }
 
 /* --- Tippy.js Theme Adaptation --- */
-/* Force GPU compositing so Tippy renders above hardware-accelerated <video> elements */
 [data-tippy-root] {
     will-change: transform;
 }
-
 .tippy-box {
     background-color: var(--background-tooltip) !important;
     color: var(--text-primary) !important;
@@ -195,7 +201,7 @@ button.danger:hover {
 
 /* Tippy Arrow Adaptation */
 .tippy-box[data-placement^='top'] > .tippy-arrow::before,
-.tippy-popper[x-placement^=top] .tippy-arrow{
+.tippy-popper[x-placement^=top] .tippy-arrow {
     border-top-color: var(--background-tooltip) !important;
 }
 .tippy-box[data-placement^='bottom'] > .tippy-arrow::before {
@@ -259,6 +265,10 @@ button.danger:hover {
     /*border: 1px solid var(--border-primary) !important;*/
 }
 
+.dropdown-toggle:hover{
+    background-color: var(--background-tooltip) !important;
+}
+
 .dropdown-menu {
     background-color: var(--background-tooltip) !important;
     border: 1px solid var(--border-subtle) !important;
@@ -272,10 +282,10 @@ button.danger:hover {
 .dropdown-menu li a:hover {
     background-color: var(--background-item-hover) !important;
 }
+
 .vue-notification-group {
     margin: var(--main-margin-top) var(--main-margin-right) 0 0;
 }
-
 
 img.emoji {
     height: 1em !important;
@@ -324,4 +334,8 @@ a {
 
 a:hover {
     color: var(--text-link-hover);
+}
+
+i {
+    color: var(--i-color);
 }
