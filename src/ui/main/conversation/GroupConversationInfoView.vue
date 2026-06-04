@@ -1,85 +1,121 @@
 <template>
     <div class="conversation-info">
-        <header>
-            <div class="group-portrait-container">
-                <p>群头像</p>
-                <img :src="conversationInfo.conversation._target.portrait" @click="pickFile"/>
-                <input v-if="enableModifyGroupNameAndPortrait" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
-                       accept="image/png, image/jpeg"
-                       style="display: none">
+        <div class="scroll-container">
+            <!-- 搜索框 -->
+            <div class="search-item">
+                <input type="text" v-model="filterQuery" :placeholder="$t('common.search')">
+                <i class="icon-ion-ios-search"></i>
             </div>
-            <label>
-                {{ $t('conversation.group_name') }}
-                <input type="text"
-                       ref="groupNameInput"
-                       :disabled="!enableModifyGroupNameAndPortrait"
-                       v-model="newGroupName"
-                       @keyup.enter="updateGroupName"
-                       :placeholder="conversationInfo.conversation._target._displayName">
-            </label>
-            <label>
-                {{ $t('conversation.group_announcement') }}
-                <input type="text"
-                       ref="groupAnnouncementInput"
-                       :disabled="!enableModifyAnnouncement"
-                       @keyup.enter='updateGroupAnnouncement'
-                       v-model.trim="newGroupAnnouncement"
-                       :placeholder="groupAnnouncement">
-            </label>
-            <label>
-                {{ $t('group.alias') }}
-                <input type="text"
-                       @keyup.enter='updateGroupAlias'
-                       v-model.trim="newGroupAlias"
-                       :placeholder="groupAlias">
-            </label>
-            <label class="switch">
-                保存到通讯录
-                <input type="checkbox"
-                       :checked="conversationInfo.conversation._target._isFav"
-                       @change="setFavGroup(conversationInfo.conversation.target, $event.target.checked)">
-                <span class="slider"></span>
-            </label>
-        </header>
-        <div class="search-item">
-            <input type="text" v-model="filterQuery" :placeholder="$t('common.search')">
-            <i class="icon-ion-ios-search"></i>
-        </div>
-        <div class="member-container">
-            <div v-if="enableAddGroupMember && !filterQuery" @click="showCreateConversationModal" class="action-item">
-                <div class="icon">+</div>
-                <p>{{ $t('conversation.add_member') }}</p>
+
+            <!-- 群成员 Grid -->
+            <div class="member-section">
+                <div class="member-grid">
+                    <tippy
+                        v-for="user in displayedMembers"
+                        :key="user.uid"
+                        :ref="'memberTippy-' + user.uid.replace('@', '#')"
+                        theme="light"
+                        :animate-fill="false"
+                        animation="fade"
+                        interactive
+                        :trigger="clickGroupMemberItemFunc ? 'manual' : 'click'"
+                        placement="left-start"
+                    >
+                        <div
+                            class="member-grid-item"
+                            @click="onClickMember(user)"
+                        >
+                            <img :src="user.portrait" @error="onImgError($event)" class="member-avatar"/>
+                            <p class="member-name">{{ user._displayName || user.displayName }}</p>
+                        </div>
+                        <template #content>
+                            <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
+                        </template>
+                    </tippy>
+                    <!-- 添加按钮 -->
+                    <div v-if="enableAddGroupMember && !filterQuery" class="member-grid-item action-grid-item" @click="showCreateConversationModal">
+                        <div class="action-icon add-icon">+</div>
+                        <p class="member-name">{{ $t('conversation.add_member') }}</p>
+                    </div>
+                    <!-- 删除按钮 -->
+                    <div v-if="enableRemoveGroupMember && !filterQuery" class="member-grid-item action-grid-item" @click="showRemoveGroupMemberModal">
+                        <div class="action-icon remove-icon">-</div>
+                        <p class="member-name">{{ $t('conversation.remove_member') }}</p>
+                    </div>
+                </div>
+                <!-- 查看更多 -->
+                <div v-if="!showAllMembers && hasMoreMembers" class="show-more-btn" @click="showAllMembers = true">
+                    查看全部群成员 ({{ users.length }}) &gt;
+                </div>
             </div>
-            <div v-if="enableRemoveGroupMember && !filterQuery" @click="showRemoveGroupMemberModal" class="action-item">
-                <div class="icon">-</div>
-                <p>{{ $t('conversation.remove_member') }}</p>
+
+            <!-- 分隔线 -->
+            <div class="section-divider"></div>
+
+            <!-- 群信息 -->
+            <header>
+                <div class="group-portrait-container">
+                    <p>群头像</p>
+                    <img :src="conversationInfo.conversation._target.portrait" @click="pickFile"/>
+                    <input v-if="enableModifyGroupNameAndPortrait" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                           accept="image/png, image/jpeg"
+                           style="display: none">
+                </div>
+                <label>
+                    {{ $t('conversation.group_name') }}
+                    <input type="text"
+                           ref="groupNameInput"
+                           :disabled="!enableModifyGroupNameAndPortrait"
+                           v-model="newGroupName"
+                           @keyup.enter="updateGroupName"
+                           :placeholder="conversationInfo.conversation._target._displayName">
+                </label>
+                <label>
+                    {{ $t('conversation.group_announcement') }}
+                    <input type="text"
+                           ref="groupAnnouncementInput"
+                           :disabled="!enableModifyAnnouncement"
+                           @keyup.enter='updateGroupAnnouncement'
+                           v-model.trim="newGroupAnnouncement"
+                           :placeholder="groupAnnouncement">
+                </label>
+                <label>
+                    {{ $t('group.alias') }}
+                    <input type="text"
+                           @keyup.enter='updateGroupAlias'
+                           v-model.trim="newGroupAlias"
+                           :placeholder="groupAlias">
+                </label>
+                <label class="switch">
+                    <span>保存到通讯录</span>
+                    <input type="checkbox"
+                           :checked="conversationInfo.conversation._target._isFav"
+                           @change="setFavGroup(conversationInfo.conversation.target, $event.target.checked)">
+                </label>
+            </header>
+
+            <!-- 操作按钮 -->
+            <div v-if="sharedMiscState.isElectron" @click="clearConversationHistory" class="conversation-action-item">
+                {{ $t('conversation.clear_conversation_history') }}
             </div>
-            <UserListView :users="users"
-                          :show-category-label="false"
-                          :click-user-item-func="clickGroupMemberItemFunc"
-                          :padding-left="'20px'"
-            />
-        </div>
-        <div v-if="sharedMiscState.isElectron" @click="clearConversationHistory" class="conversation-action-item">
-            {{ $t('conversation.clear_conversation_history') }}
-        </div>
-        <div class="conversation-action-item" @click="clearRemoteConversationHistory">
-            {{ $t('conversation.clear_remote_conversation_history') }}
-        </div>
-        <div class="conversation-action-item" @click="complain">
-            {{ $t('conversation.complain') }}
-        </div>
-        <div v-if="enableQuitGroup" @click="quitGroup" class="conversation-action-item">
-            {{ $t('conversation.quit_group') }}
-        </div>
-        <div v-if="enableDismissGroup" @click="dismissGroup" class="conversation-action-item">
-            {{ $t('conversation.dismiss_group') }}
+            <div class="conversation-action-item" @click="clearRemoteConversationHistory">
+                {{ $t('conversation.clear_remote_conversation_history') }}
+            </div>
+            <div class="conversation-action-item" @click="complain">
+                {{ $t('conversation.complain') }}
+            </div>
+            <div v-if="enableQuitGroup" @click="quitGroup" class="conversation-action-item">
+                {{ $t('conversation.quit_group') }}
+            </div>
+            <div v-if="enableDismissGroup" @click="dismissGroup" class="conversation-action-item">
+                {{ $t('conversation.dismiss_group') }}
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import UserListView from "../user/UserListView.vue";
+import UserCardView from "../user/UserCardView.vue";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
@@ -119,6 +155,7 @@ export default {
             newGroupAnnouncement: '',
             newGroupAlias: '',
             groupAlias: '',
+            showAllMembers: false,
         }
     },
 
@@ -140,7 +177,7 @@ export default {
         wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
-    components: {UserListView},
+    components: {UserCardView},
     methods: {
         onReceiveMessage(msg, hasMore) {
             if (msg.conversation.equal(this.conversationInfo.conversation) && msg.messageContent.type === MessageContentType.RejectJoinGroup) {
@@ -338,6 +375,23 @@ export default {
             })
         },
 
+        closeUserCard(user) {
+            const ref = this.$refs['memberTippy-' + user.uid.replace('@', '#')];
+            const inst = Array.isArray(ref) ? ref[0] : ref;
+            if (inst && inst.$el && inst.$el._tippy) inst.$el._tippy.hide();
+        },
+
+        onClickMember(user) {
+            const fn = this.clickGroupMemberItemFunc;
+            if (fn) fn(user);
+            // else: tippy is triggered by the click directly
+        },
+
+        onImgError(e) {
+            const Config = require('../../../config').default;
+            e.target.src = Config.DEFAULT_PORTRAIT_URL;
+        },
+
         async loadGroupMemberUserInfos() {
             let groupId = this.conversationInfo.conversation.target;
             if (isElectron()) {
@@ -458,7 +512,36 @@ export default {
             } else {
                 return this.groupMemberUserInfos;
             }
-        }
+        },
+
+        // 每行4个，预留最后2个位置给添加/删除按钮，最多4行=16个格子
+        // 实际成员区域：格子总数16，减去操作按钮占位数
+        maxRows() {
+            return 4;
+        },
+
+        actionCount() {
+            let count = 0;
+            if (this.enableAddGroupMember && !this.filterQuery) count++;
+            if (this.enableRemoveGroupMember && !this.filterQuery) count++;
+            return count;
+        },
+
+        maxMembersInGrid() {
+            // 4列 * 4行，减去操作按钮占位数
+            return this.maxRows * 4 - this.actionCount;
+        },
+
+        hasMoreMembers() {
+            return this.users.length > this.maxMembersInGrid;
+        },
+
+        displayedMembers() {
+            if (this.filterQuery || this.showAllMembers) {
+                return this.users;
+            }
+            return this.users.slice(0, this.maxMembersInGrid);
+        },
     },
 };
 </script>
@@ -468,25 +551,153 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
-    justify-content: flex-start;
     height: 100%;
     overflow: hidden;
 }
 
+.scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 搜索框 */
+.search-item {
+    position: relative;
+    padding: 10px 20px;
+    flex-shrink: 0;
+}
+
+.search-item input {
+    width: 100%;
+    padding: 0 10px 0 20px;
+    height: 25px;
+    border-radius: 3px;
+    border: 1px solid var(--border-tertiary);
+    background-color: var(--background-primary);
+    text-align: left;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-item input:active,
+.search-item input:focus {
+    border: 1px solid var(--border-active);
+}
+
+.search-item i {
+    position: absolute;
+    left: 25px;
+    top: 15px;
+}
+
+/* 群成员区域 */
+.member-section {
+    padding: 0 8px 8px;
+    flex-shrink: 0;
+}
+
+.member-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px 4px;
+}
+
+.member-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* no hover background for regular members */
+
+/* action grid item hover: change icon color and border */
+.action-grid-item:hover .action-icon {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.member-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.member-name {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-secondary-strong);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 添加/删除操作格子 */
+.action-grid-item .action-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: 1px dashed var(--border-dashed);
+    font-size: 22px;
+    color: var(--text-secondary-strong);
+}
+
+.add-icon {
+    color: var(--text-secondary-strong);
+}
+
+.remove-icon {
+    color: var(--text-secondary-strong);
+}
+
+.show-more-btn {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary-strong);
+    cursor: pointer;
+    padding: 6px 0;
+}
+
+.show-more-btn:hover {
+    color: var(--text-primary);
+}
+
+/* 分隔线 */
+.section-divider {
+    height: 1px;
+    background-color: var(--border-tertiary);
+    margin: 4px 0;
+    flex-shrink: 0;
+}
+
+/* 群信息 header */
 header {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 12px 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
 }
 
 header .group-portrait-container {
     display: flex;
     width: 100%;
     justify-content: flex-start;
-    padding-top: 10px;
     align-items: center;
 }
 
@@ -500,6 +711,7 @@ header .group-portrait-container img {
     height: 30px;
     border-radius: 5px;
     margin-left: auto;
+    cursor: pointer;
 }
 
 header label {
@@ -516,11 +728,6 @@ header label:not(:first-of-type) {
     margin-top: 15px;
 }
 
-header label:last-of-type {
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-tertiary);
-}
-
 header label input {
     flex: 1;
     margin-top: 5px;
@@ -535,72 +742,7 @@ header label input::-webkit-input-placeholder {
     color: var(--text-secondary-strong);
 }
 
-.member-container {
-    flex: 1;
-    overflow: auto;
-}
-
-.search-item {
-    position: relative;
-    padding: 10px 20px;
-}
-
-.search-item input {
-    width: 100%;
-    padding: 0 10px 0 20px;
-    height: 25px;
-    border-radius: 3px;
-    border: 1px solid var(--border-tertiary);
-    background-color: var(--background-primary);
-    text-align: left;
-    outline: none;
-}
-
-.search-item input:active {
-    border: 1px solid var(--border-active);
-}
-
-.search-item input:focus {
-    border: 1px solid var(--border-active);
-}
-
-.search-item i {
-    position: absolute;
-    left: 25px;
-    top: 15px;
-}
-
-.action-item {
-    height: 50px;
-    display: flex;
-    padding-left: 20px;
-    align-items: center;
-}
-
-.action-item .icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 3px;
-    border: 1px dashed var(--border-dashed);
-}
-
-.action-item img {
-    width: 40px;
-    height: 40px;
-}
-
-.action-item p {
-    margin-left: 10px;
-    font-size: 13px;
-}
-
-.action-item:active {
-    background-color: var(--background-item-placeholder);
-}
-
+/* 操作项 */
 .conversation-action-item {
     display: flex;
     color: var(--text-danger);
@@ -608,9 +750,10 @@ header label input::-webkit-input-placeholder {
     justify-content: center;
     font-size: 12px;
     height: 42px;
-    max-height: 42px;
+    flex-shrink: 0;
     border-top: 1px solid var(--border-tertiary);
     margin: 0 10px;
+    cursor: pointer;
 }
 
 .conversation-action-item:active {
@@ -620,10 +763,15 @@ header label input::-webkit-input-placeholder {
 .switch {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 15px;
+    margin-top: 15px;
 }
 
 .switch input {
-    margin-left: 20px;
+    margin: 0;
+    flex: 0;
 }
-
 </style>
