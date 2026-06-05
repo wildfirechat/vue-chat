@@ -137,6 +137,8 @@
     --hero-bg-blob-3: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
     --switch-foreground: #FFFFFF;
-    --i-color: var(--text-primary)
+    --i-color: var(--text-primary);
+
+    --i-button-hover-bg: #D7D7D5;
 
 }

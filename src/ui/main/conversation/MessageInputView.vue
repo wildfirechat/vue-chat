@@ -17,18 +17,24 @@
                     :customCategories="emojiCategories"
                     @select="onSelectEmoji"
                 />
-                <ul>
+                <ul style="display: flex; align-content: center; padding: 0 10px">
                     <li v-if="!inputOptions['disableEmoji']">
-                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disableFile']">
-                        <i @click="pickFile" class="icon-ion-android-attach" :title="$t('conversation.action_tip_file')"/>
-                        <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
-                               style="display: none">
+                        <div class="i-button-wrapper i-button-small">
+                            <i @click="pickFile" class="icon-ion-android-attach" :title="$t('conversation.action_tip_file')"/>
+                            <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
+                                   style="display: none">
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
-                        <div style="display: inline-block; text-align: center" class="screen-shot-wrapper">
-                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
+                        <div style="display: flex; text-align: center; align-items: flex-end" class="screen-shot-wrapper">
+                            <div class="i-button-wrapper i-button-small">
+                                <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
+                            </div>
                             <span class="screen-shot-more">
                                 <i class="icon-ion-chevron-down" style="font-size: 10px; color: var(--text-primary); padding-left: 5px;"/>
                                 <span @click="screenShot(true)" class="screen-shot-button">{{ $t('conversation.action_tip_screenshot_hide') }}</span>
@@ -36,7 +42,9 @@
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
-                        <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disablePtt'] && enablePtt" style="position: relative;">
                         <!-- 对讲录音动画提示 -->
@@ -52,9 +60,11 @@
                                 <div class="recording-tip">松开结束</div>
                             </div>
                         </transition>
-                        <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
-                                    :title="$t('conversation.action_tip_ptt')"
-                           class="icon-ion-android-radio-button-on ptt-icon"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
+                                        :title="$t('conversation.action_tip_ptt')"
+                               class="icon-ion-android-radio-button-on ptt-icon"/>
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disableAudio']"  style="position: relative;">
                         <!-- 录音动画提示 -->
@@ -73,31 +83,45 @@
                                 <div class="recording-tip" :class="{cancel: isRecordingCancelMode}">{{ isRecordingCancelMode ? '松开取消发送' : '松开发送' }}</div>
                             </div>
                         </transition>
-                        <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
-                           :title="$t('conversation.action_tip_voice')"
-                           class="icon-ion-android-microphone record-icon"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
+                               :title="$t('conversation.action_tip_voice')"
+                               class="icon-ion-android-microphone record-icon"/>
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disableCollecton'] && isCollectionEnable && conversationInfo.conversation.type === 1" @click="openCollectionWindow">
-                        <i class="icon-ion-android-list" :title="$t('conversation.action_tip_collection')"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i class="icon-ion-android-list" :title="$t('conversation.action_tip_collection')"/>
+                        </div>
                     </li>
                     <li v-if="!inputOptions['disablePoll'] && isPollEnable && conversationInfo.conversation.type === 1" @click="openPollWindow">
-                        <i class="icon-ion-stats-bars" :title="$t('conversation.action_tip_poll')"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i class="icon-ion-stats-bars" :title="$t('conversation.action_tip_poll')"/>
+                        </div>
                     </li>
                 </ul>
-                <ul>
+                <ul style="display: flex; padding: 0 10px">
                     <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
                         <li v-if="!inputOptions['disableAudioCall']">
-                            <i @click="startAudioCall" class="icon-ion-ios-telephone" :title="$t('conversation.action_tip_audio_call')"/>
+                            <div class="i-button-wrapper i-button-small">
+                                <i @click="startAudioCall" class="icon-ion-ios-telephone" :title="$t('conversation.action_tip_audio_call')"/>
+                            </div>
                         </li>
                         <li v-if="!inputOptions['disableVideoCall']">
-                            <i @click="startVideoCall" class="icon-ion-ios-videocam" :title="$t('conversation.action_tip_video_call')"/>
+                            <div class="i-button-wrapper i-button-small">
+                                <i @click="startVideoCall" class="icon-ion-ios-videocam" :title="$t('conversation.action_tip_video_call')"/>
+                            </div>
                         </li>
                         <li v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
-                            <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
+                            <div class="i-button-wrapper i-button-small">
+                                <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
+                            </div>
                         </li>
                     </template>
                     <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
-                        <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
+                        <div class="i-button-wrapper i-button-small">
+                            <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
+                        </div>
                     </li>
                 </ul>
             </section>
@@ -1383,6 +1407,10 @@ export default {
     position: relative;
 }
 
+.input-action-container i{
+    font-size: 18px;
+}
+
 .input {
     flex: 1 1 auto;
     min-height: 130px;
@@ -1412,24 +1440,8 @@ export default {
     color: var(--text-hint);
     font-size: 13px;
 }
-
 .input-action-container ul li {
-    display: inline;
-    margin-left: 20px;
-    position: relative;
-}
-
-.input-action-container ul li:last-of-type {
-    margin-right: 20px;
-}
-
-i {
-    font-size: 24px;
-    cursor: pointer;
-}
-
-i:hover {
-    color: var(--accent-color);
+    padding: 0 5px;
 }
 
 .input-action-container ul li .screen-shot-button {

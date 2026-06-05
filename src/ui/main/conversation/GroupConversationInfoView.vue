@@ -619,7 +619,6 @@ export default {
     flex-direction: column;
     align-items: center;
     padding: 6px 4px;
-    cursor: pointer;
     border-radius: 4px;
     min-width: 0;
     overflow: hidden;
@@ -677,7 +676,6 @@ export default {
     text-align: center;
     font-size: 12px;
     color: var(--text-secondary-strong);
-    cursor: pointer;
     padding: 6px 0;
 }
 
@@ -788,7 +786,6 @@ export default {
     flex-shrink: 0;
     border-top: 1px solid var(--border-tertiary);
     margin: 0 10px;
-    cursor: pointer;
 }
 
 .conversation-action-item:active {

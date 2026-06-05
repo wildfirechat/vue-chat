@@ -38,28 +38,40 @@
         </div>
         <div class="action">
             <!--            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>-->
-            <a href="#" @click.prevent><i class="icon-ion-ios-chatboxes-outline" @click.prevent="chat"></i></a>
-            <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-telephone-outline" @click.prevent="startAudioCall"></i></a>
-            <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-videocam-outline" @click.prevent="startVideoCall"></i></a>
-            <a v-if="!isFriend" href="#" @click.prevent><i class="icon-ion-ios-personadd-outline" @click.prevent="addFriend"></i></a>
+            <div class="i-button-wrapper i-button-large" @click.prevent>
+                <i class="icon-ion-ios-chatboxes-outline" @click.prevent="chat"></i>
+                发消息
+            </div>
+            <div class="i-button-wrapper i-button-large" v-if="!isSelf" @click.prevent>
+                <i class="icon-ion-ios-telephone-outline" @click.prevent="startAudioCall"></i>
+                语音通话
+            </div>
+            <div class="i-button-wrapper i-button-large" v-if="!isSelf" @click.prevent>
+                <i class="icon-ion-ios-videocam-outline" @click.prevent="startVideoCall"></i>
+                视频通话
+            </div>
+            <div class="i-button-wrapper i-button-large" v-if="!isFriend" @click.prevent>
+                <i class="icon-ion-ios-personadd-outline" @click.prevent="addFriend"></i>
+                添加好友
+            </div>
         </div>
     </section>
 </template>
 
 <script>
-import store from "../../../store";
-import Conversation from "../../../wfc/model/conversation";
-import ConversationType from "../../../wfc/model/conversationType";
-import FriendRequestView from "../../main/contact/FriendRequestView";
-import wfc from "../../../wfc/client/wfc";
-import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
-import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
-import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";
-import IpcSub from "../../../ipc/ipcSub";
-import WfcUtil from "../../../wfc/util/wfcUtil";
+import store from '../../../store';
+import Conversation from '../../../wfc/model/conversation';
+import ConversationType from '../../../wfc/model/conversationType';
+import FriendRequestView from '../../main/contact/FriendRequestView';
+import wfc from '../../../wfc/client/wfc';
+import MessageContentMediaType from '../../../wfc/messages/messageContentMediaType';
+import ModifyMyInfoEntry from '../../../wfc/model/modifyMyInfoEntry';
+import ModifyMyInfoType from '../../../wfc/model/modifyMyInfoType';
+import IpcSub from '../../../ipc/ipcSub';
+import WfcUtil from '../../../wfc/util/wfcUtil';
 
 export default {
-    name: "UserCardView",
+    name: 'UserCardView',
     props: {
         userInfo: {
             type: Object,
@@ -87,9 +99,9 @@ export default {
                 store.setCurrentConversation(conversation)
 
                 // 跳转到会话列表页
-            if (this.$router.currentRoute.path !== '/home') {
-                this.$router.replace('/home');
-            }
+                if (this.$router.currentRoute.path !== '/home') {
+                    this.$router.replace('/home');
+                }
             } else {
                 IpcSub.startConversation(conversation);
             }
@@ -98,13 +110,13 @@ export default {
         startAudioCall() {
             this.close();
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
-            this.$startVoipCall({audioOnly: true, conversation: conversation});
+            this.$startVoipCall({ audioOnly: true, conversation: conversation });
         },
 
         startVideoCall() {
             this.close();
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
-            this.$startVoipCall({audioOnly: false, conversation: conversation});
+            this.$startVoipCall({ audioOnly: false, conversation: conversation });
         },
         addFriend() {
             this.close();
@@ -287,33 +299,22 @@ export default {
 }
 
 .action {
-    width: calc(100% - 40px);
+    width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
 
     padding-top: 20px;
     padding-bottom: 10px;
 }
 
-.action a {
-    display: inline-block;
-    text-decoration: none;
-    color: var(--text-primary);
+.action i {
+    font-size: 20px;
+    color: var(--text-link);
 }
 
-.action a i {
-    font-size: 24px;
-    padding: 5px 30px;
-    color: var(--text-secondary);
+.action div {
+    margin: 0 4px;
+    color: var(--text-link);
 }
-
-.action a i:last-of-type {
-    padding-right: 0;
-}
-
-i:hover {
-    color: var(--accent-color);
-}
-
 
 </style>

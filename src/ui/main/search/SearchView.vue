@@ -277,7 +277,6 @@ export default {
 .add-menu-item {
     padding: .4rem 1rem;
     color: var(--text-primary);
-    cursor: pointer;
     white-space: nowrap;
 }
 
@@ -296,6 +295,10 @@ export default {
     -webkit-app-region: no-drag;
     font-size: 16px;
     line-height: 1;
+}
+
+.search-input-container button:hover {
+    background-color: var(--border-primary);
 }
 
 .search-input-container button:active {

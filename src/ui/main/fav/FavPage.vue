@@ -146,12 +146,16 @@ export default {
     align-items: center;
 }
 
+.category-item:hover {
+    background-color: var(--background-item-hover);
+}
+
 .category-item:active {
-    background-color: var(--background-item-placeholder);
+    background-color: var(--background-item-active);
 }
 
 .category-item.active {
-    background-color: var(--background-item-placeholder);
+    background-color: var(--background-item-active);
 }
 
 .category-item p {

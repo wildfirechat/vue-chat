@@ -13,22 +13,23 @@
                     </div>
                     <div
                         v-bind:style="{marginTop:(sharedMiscState.isElectronWindowsOrLinux || sharedMiscState.isOhos) ?  '30px' : '0'}"
+                        class="conversation-action-container"
                     >
-                        <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
+                        <div class="i-button-wrapper action" v-if="sharedMiscState.isElectron" href="#" @click.prevent>
                             <i class="icon-ion-pin"
                                style="display: inline-block"
                                v-bind:class="{active : isWindowAlwaysTop}"
                                @click.prevent="setWindowAlwaysTop"
                             />
-                        </a>
-                        <a href="#" @click.prevent>
+                        </div>
+                        <div class="i-button-wrapper action" href="#" @click.prevent>
                             <i class="icon-ion-ios-settings-strong"
                                style="display: inline-block"
                                ref="setting"
                                v-bind:class="{active : showConversationInfo}"
                                @click.prevent="toggleConversationInfo"
                             />
-                        </a>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -1254,6 +1255,17 @@ export default {
     align-items: center;
     background-color: var(--border-subtle);
     border-bottom: 1px solid var(--border-primary);
+}
+
+.conversation-action-container {
+    display: flex;
+    margin: 0 10px;
+}
+
+.conversation-action-container .action{
+    margin: 0 5px;
+    width: 30px !important;
+    height: 30px !important;
 }
 
 .conversation-content-container {

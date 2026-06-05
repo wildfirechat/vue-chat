@@ -4,8 +4,8 @@ label:has([role=switch]) {
     display: inline-flex;
     align-items: center;
     gap: 1em;
-    cursor: pointer;
     user-select: none;
+    cursor: default;
 }
 
 input[role=switch] {
@@ -31,7 +31,7 @@ input[role=switch] {
     user-select: none;
     outline: none;
     filter: grayscale(1); /* de-colorize the switch */
-    cursor: pointer;
+    cursor: default;
 }
 
 input[role=switch]:checked {

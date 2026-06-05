@@ -20,7 +20,7 @@ export function openComplainServiceChat(activeStore, router) {
 export function showComplainAlert(vm, activeStore) {
     vm.$alert({
         title: '',
-        content: '如果您发现有违反法律和道德的内容，或者您的合法权益受到侵犯，请截图之后发送给我们。我们会在24小时之内处理。处理办法包括，但不限于删除内容，对作者进行警告，冻结账号，甚至报警处理。',
+        content: '如果您发现有违反法律和道德的内容，请截图之后发送给我们，我们会在24小时之内处理',
         confirmText: '举报',
         confirmButtonType: 'danger',
         cancelText: '取消',
