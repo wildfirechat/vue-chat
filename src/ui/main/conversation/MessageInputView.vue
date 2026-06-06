@@ -6,17 +6,25 @@
         </div>
         <section v-else-if="!sharedConversationState.showChannelMenu" class="message-input-section">
             <section class="input-action-container">
-                <VEmojiPicker
-                    id="emoji"
-                    ref="emojiPicker"
-                    v-if="showEmojiDialog"
-                    labelSearch="Search"
-                    lang="pt-BR"
-                    v-v-on-click-outside="hideEmojiView"
-                    :customEmojis="emojis"
-                    :customCategories="emojiCategories"
-                    @select="onSelectEmoji"
-                />
+                <Teleport to="body">
+                    <div
+                        v-if="showEmojiDialog"
+                        class="emoji-popup"
+                        :style="emojiPickerStyle"
+                        v-v-on-click-outside="hideEmojiView"
+                    >
+                        <VEmojiPicker
+                            id="emoji"
+                            ref="emojiPicker"
+                            labelSearch="Search"
+                            lang="pt-BR"
+                            :customEmojis="emojis"
+                            :customCategories="emojiCategories"
+                            @select="onSelectEmoji"
+                        />
+                        <div class="emoji-arrow" :style="{ left: emojiPickerPos.arrowOffset + 'px' }"></div>
+                    </div>
+                </Teleport>
                 <ul style="display: flex; align-content: center; padding: 0 10px">
                     <li v-if="!inputOptions['disableEmoji']">
                         <div class="i-button-wrapper i-button-small">
@@ -31,11 +39,9 @@
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
-                        <div style="display: flex; text-align: center; align-items: flex-end" class="screen-shot-wrapper">
-                            <div class="i-button-wrapper i-button-small">
-                                <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
-                            </div>
-                            <span class="screen-shot-more">
+                        <div class="screen-shot-wrapper">
+                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
+                            <span style="align-self: flex-end; padding-bottom: 4px" class="screen-shot-more">
                                 <i class="icon-ion-chevron-down" style="font-size: 10px; color: var(--text-primary); padding-left: 5px;"/>
                                 <span @click="screenShot(true)" class="screen-shot-button">{{ $t('conversation.action_tip_screenshot_hide') }}</span>
                             </span>
@@ -125,7 +131,33 @@
                     </li>
                 </ul>
             </section>
-            <div @keydown.enter="send($event)"
+            <!-- sticker 智能提示栏 -->
+            <Teleport to="body">
+                <div v-if="stickerSuggestions.length"
+                    class="sticker-suggestion-bar"
+                    :style="stickerBarStyle"
+                    v-v-on-click-outside="hideStickerSuggestions"
+                    >
+                    <div class="sticker-suggestion-hint">↑ 选择，↓ 取消选择，Enter 发送，Esc 关闭</div>
+                    <div class="sticker-suggestion-list" ref="stickerList">
+                        <div
+                            v-for="(sticker, idx) in stickerSuggestions"
+                            :key="idx"
+                            class="sticker-suggestion-item"
+                            :class="{ active: idx === selectedStickerIdx }"
+                            @click="sendStickerSuggestion(sticker)"
+                        >
+                            <img :src="sticker.data" :alt="sticker.aliases && sticker.aliases[0]"/>
+                        </div>
+                    </div>
+                </div>
+            </Teleport>
+            <div @keydown.enter="onEnterKey($event)"
+                 @keydown.left="onLeftKey($event)"
+                 @keydown.right="onRightKey($event)"
+                 @keydown.down="onDownKey($event)"
+                 @keydown.up="onUpKey($event)"
+                 @keydown.esc="onEscKey($event)"
                  ref="input" class="input"
                  @paste="handlePaste"
                  draggable="false"
@@ -238,6 +270,18 @@ export default {
             sharedContactState: activeStore.state.contact,
             sharedMiscState: activeStore.state.misc,
             showEmojiDialog: false,
+            emojiPickerPos: { left: 0, bottom: 0, arrowOffset: 0 },
+            stickerSuggestions: [],
+            selectedStickerIdx: -1,
+            stickerBarPos: { left: 0, bottom: 0, width: 0 },
+            allStickers: (() => {
+                try {
+                    const conf = emojiConfig();
+                    return (conf.emojis || []).filter(e => e.category && e.category.startsWith('Sticker-'));
+                } catch (e) {
+                    return [];
+                }
+            })(),
             tribute: null,
             recordingTime: '00:00',
             recordingTimer: null,
@@ -293,6 +337,105 @@ export default {
 
         onInput(e) {
             this.notifyTyping(TypingMessageContent.TYPING_TEXT);
+            this.updateStickerSuggestions();
+        },
+
+        updateStickerSuggestions() {
+            const text = (this.$refs.input?.textContent || '').trim();
+            if (!text) {
+                this.stickerSuggestions = [];
+                return;
+            }
+            const matched = this.allStickers.filter(s =>
+                s.aliases && s.aliases.some(alias => alias === text)
+            );
+            this.stickerSuggestions = matched;
+            this.selectedStickerIdx = -1;
+            if (matched.length) {
+                this.$nextTick(() => {
+                    const inputEl = this.$refs.input;
+                    if (inputEl) {
+                        const rect = inputEl.getBoundingClientRect();
+                        this.stickerBarPos = {
+                            left: rect.left,
+                            bottom: window.innerHeight - rect.top,
+                            width: rect.width,
+                        };
+                    }
+                });
+            }
+        },
+
+        onEnterKey(e) {
+            if (this.stickerSuggestions.length && this.selectedStickerIdx >= 0) {
+                e.preventDefault();
+                this.sendStickerSuggestion(this.stickerSuggestions[this.selectedStickerIdx]);
+                return;
+            }
+            this.send(e);
+        },
+
+        onLeftKey(e) {
+            if (!this.stickerSuggestions.length || this.selectedStickerIdx === -1) return;
+            e.preventDefault();
+            this.selectedStickerIdx = (this.selectedStickerIdx - 1 + this.stickerSuggestions.length) % this.stickerSuggestions.length;
+            this.scrollStickerItemIntoView();
+        },
+
+        onRightKey(e) {
+            if (!this.stickerSuggestions.length || this.selectedStickerIdx === -1) return;
+            e.preventDefault();
+            this.selectedStickerIdx = (this.selectedStickerIdx + 1) % this.stickerSuggestions.length;
+            this.scrollStickerItemIntoView();
+        },
+
+        onDownKey(e) {
+            if (!this.stickerSuggestions.length || this.selectedStickerIdx === -1) return;
+            e.preventDefault();
+            this.selectedStickerIdx = -1;
+            this.scrollStickerItemIntoView();
+        },
+
+        onUpKey(e) {
+            if (!this.stickerSuggestions.length) return;
+            e.preventDefault();
+            if (this.selectedStickerIdx === -1) {
+                this.selectedStickerIdx = 0;
+            } else {
+                this.selectedStickerIdx = (this.selectedStickerIdx + 1) % this.stickerSuggestions.length;
+            }
+            this.scrollStickerItemIntoView();
+        },
+
+        onEscKey(e) {
+            this.hideEmojiView(e);
+            this.hideStickerSuggestions();
+        },
+
+        hideStickerSuggestions() {
+            this.stickerSuggestions = [];
+            this.selectedStickerIdx = -1;
+        },
+
+        scrollStickerItemIntoView() {
+            if (this.selectedStickerIdx === -1) return;
+            this.$nextTick(() => {
+                const list = this.$refs.stickerList;
+                if (!list) return;
+                const item = list.children[this.selectedStickerIdx];
+                if (item) item.scrollIntoView({ inline: 'nearest', behavior: 'instant' });
+            });
+        },
+
+        sendStickerSuggestion(sticker) {
+            if (!sticker) return;
+            const stk = new StickerMessageContent('', sticker.data, 200, 200);
+            wfc.sendConversationMessage(this.conversationInfo.conversation, stk);
+            // 清空输入框
+            this.$refs.input.innerHTML = '';
+            this.stickerSuggestions = [];
+            this.selectedStickerIdx = -1;
+            this.focusInput();
         },
 
         notifyTyping(type) {
@@ -630,6 +773,21 @@ export default {
 
         toggleEmojiView() {
             this.showEmojiDialog = !this.showEmojiDialog;
+            if (this.showEmojiDialog) {
+                this.$nextTick(() => {
+                    const btn = document.getElementById('showEmoji');
+                    if (btn) {
+                        const rect = btn.getBoundingClientRect();
+                        this.emojiPickerPos = {
+                            left: rect.left - 80,
+                            bottom: window.innerHeight - rect.top + 20,
+                            // picker left = rect.left - 50; btn center = rect.left + rect.width/2
+                            // arrow offset from picker left = 50 + rect.width/2, minus half arrow width (9px)
+                            arrowOffset: Math.round(80 + rect.width / 2) - 9,
+                        };
+                    }
+                });
+            }
             this.focusInput();
         },
 
@@ -1346,6 +1504,22 @@ export default {
     },
 
     computed: {
+        emojiPickerStyle() {
+            return {
+                position: 'fixed',
+                left: this.emojiPickerPos.left + 'px',
+                bottom: this.emojiPickerPos.bottom + 'px',
+                zIndex: 100000,
+            };
+        },
+
+        stickerBarStyle() {
+            return {
+                left: this.stickerBarPos.left + 'px',
+                bottom: this.stickerBarPos.bottom + 8 + 'px',
+            };
+        },
+
         quotedMessage() {
             // side affect
             this.$refs.input && this.$refs.input.focus();
@@ -1388,14 +1562,103 @@ export default {
     min-height: 150px;
 }
 
-#emoji {
-    position: absolute;
-    bottom: 55px;
-}
-
 /*pls refer to https://vue-loader.vuejs.org/guide/scoped-css.html#child-component-root-elements*/
 #emoji >>> .container-emoji {
     height: 280px;
+}
+
+.emoji-popup {
+    position: relative;
+}
+
+.emoji-arrow {
+    position: absolute;
+    bottom: -9px;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 9px solid var(--ep-color-border, rgba(0, 0, 0, 0.12));
+}
+
+.emoji-arrow::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--ep-color-bg, #f0f0f0);
+}
+
+/* ---- Sticker suggestion bar (floating) ---- */
+.sticker-suggestion-bar {
+    position: fixed;
+    z-index: 99999;
+    background-color: var(--background-secondary, var(--background-primary));
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    padding: 8px 8px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 400px;
+}
+
+.sticker-suggestion-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding-left: 2px;
+}
+
+.sticker-suggestion-list {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.sticker-suggestion-list::-webkit-scrollbar {
+    height: 3px;
+}
+
+.sticker-suggestion-list::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 2px;
+}
+
+.sticker-suggestion-item {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.12s, background-color 0.12s;
+    background-color: var(--background-item-placeholder);
+    overflow: hidden;
+}
+
+.sticker-suggestion-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sticker-suggestion-item:hover {
+    border-color: var(--border-active);
+}
+
+.sticker-suggestion-item.active {
+    border-color: var(--accent-color);
+    background-color: var(--background-item-hover, var(--background-item-placeholder));
 }
 
 .input-action-container {
@@ -1454,6 +1717,23 @@ export default {
     background-color: var(--text-placeholder);
     border-radius: 5px;
     color: var(--text-on-accent);
+}
+
+.screen-shot-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-around;
+    border-radius: 8px;
+    width: 40px;
+    height: 28px;
+    transition: background-color 0.15s ease;
+    font-size: 12px;
+}
+
+.screen-shot-wrapper:hover {
+    background-color: var(--i-button-hover-bg);
 }
 
 .input-action-container ul li .screen-shot-more:hover .screen-shot-button {
@@ -1603,11 +1883,5 @@ export default {
         opacity: 0;
         transform: translateX(-50%) translateY(5px);
     }
-}
-</style>
-
-<style scoped>
-.emoji-picker {
-    box-shadow: var(--shadow-tooltip);
 }
 </style>

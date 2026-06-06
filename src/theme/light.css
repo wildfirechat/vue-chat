@@ -80,7 +80,7 @@
     --background-trans-muted: rgba(0, 0, 0, 0.1);
 
     --shadow-main: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    --shadow-tooltip: 0 0 25px rgba(0, 0, 0, 0.125);
+    --shadow-tooltip:5px 5px 20px 0 #C0C0C0;
     --shadow-accent: 0 4px 12px rgba(31, 100, 228, 0.3);
     --shadow-accent-strong: 0 6px 16px rgba(31, 100, 228, 0.4);
     --shadow-accent-focus: 0 0 0 3px rgba(31, 100, 228, 0.1);

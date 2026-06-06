@@ -280,16 +280,22 @@ i {
 
 /* --- v-emoji-picker Adaptation --- */
 #emojiPicker, .v-emoji-picker, .vemoji-picker, .emoji-picker {
-    --ep-color-bg: var(--background-tooltip) !important;
+    --ep-color-bg: var(--ep-color-bg) !important;
     --ep-color-sbg: var(--background-input) !important;
     --ep-color-border: var(--border-subtle) !important;
     --ep-color-text: var(--text-primary) !important;
     --ep-color-active: var(--accent-color) !important;
     background-color: var(--background-tooltip) !important;
+    box-shadow: var(--shadow-tooltip);
 }
 
 .v-emoji-picker *, .vemoji-picker *, .emoji-picker * {
     /*border-color: var(--border-subtle) !important;*/
+    cursor: default;
+}
+
+#Emojis > div > div > span {
+    font-size: 20px !important;
 }
 
 .v-emoji-picker .category, .vemoji-picker .category {
@@ -326,8 +332,8 @@ i {
 }
 
 img.emoji {
-    height: 1em !important;
-    width: 1em !important;
+    height: 1.1em !important;
+    width: 1.1em !important;
     margin: 0 .05em 0 .1em;
     vertical-align: -0.1em;
     user-select: none;
