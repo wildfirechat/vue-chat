@@ -37,62 +37,55 @@
                 <nav class="menu">
                     <ul>
                         <li>
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2Conversation">
                                 <i class="icon-ion-ios-chatboxes"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home'}"
-                                   @click="go2Conversation"></i>
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home'}"></i>
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
                         </li>
                         <li>
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2Contact">
                                 <i class="icon-ion-android-contact"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/contact'}"
-                                   @click="go2Contact"></i>
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/contact'}"></i>
                                 <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
                         <li>
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2Fav">
                                 <i class="icon-ion-android-favorite"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"
-                                   @click="go2Fav"></i>
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"></i>
                             </div>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2Files">
                                 <i class="icon-ion-ios-folder"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/files'}"
-                                   @click="go2Files"></i>
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/files'}"></i>
                             </div>
                         </li>
                         <li v-if="sharedMiscState.enableOpenWorkSpace">
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2Workspace">
                                 <i class="icon-ion-code-working"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}"
-                                   @click="go2Workspace"></i>
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}"></i>
                             </div>
                         </li>
                         <li v-if="supportConference">
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2Conference">
                                 <i class="icon-ion-speakerphone"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/conference'}"
-                                   @click="go2Conference"></i>
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/conference'}"></i>
                             </div>
                         </li>
                         <li v-if="aiPortalUrl">
-                            <div class="i-button-wrapper">
+                            <div class="i-button-wrapper" @click="go2AI">
                                 <i class="icon-ion-android-sunny"
-                                   v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai'}"
-                                   @click="go2AI"></i>
+                                   v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai'}"></i>
                             </div>
                         </li>
                         <li>
-                            <div class="i-button-wrapper">
-                                <i v-show="this.$router.currentRoute.value.path !== '/home/ai'"
-                                   class="icon-ion-android-settings"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/setting'}"
-                                   @click="go2Setting"></i>
+                            <div class="i-button-wrapper"
+                                 v-show="this.$router.currentRoute.value.path !== '/home/ai'"
+                                 @click="go2Setting">
+                                <i class="icon-ion-android-settings"
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/setting'}"></i>
                             </div>
                         </li>
                     </ul>
@@ -511,11 +504,8 @@ export default {
 
 .avatar {
     background-color: var(--text-secondary);
-    width: 35px;
-    height: 35px;
     display: block;
-    margin: 10px auto;
-    border-radius: 3px;
+    margin: 8px auto;
 }
 
 .menu {
@@ -530,7 +520,7 @@ export default {
 }
 
 .menu ul li {
-    margin: 10px;
+    margin: 8px;
     height: 40px;
     line-height: 50px;
 }
@@ -545,10 +535,10 @@ export default {
     color: var(--text-on-accent);
     font-size: 10px;
     background-color: var(--background-badge);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     min-width: 16px;
     height: 16px;
-    padding: 0 5px;
+    padding: 0 4px;
     line-height: 16px;
     font-style: normal;
     text-align: center;
@@ -581,7 +571,7 @@ i.active {
     left: 60px;
     right: 0;
     color: var(--text-danger);
-    padding: 15px 0;
+    padding: 16px 0;
     text-align: center;
     background: var(--background-tertiary);
     /*box-shadow: 0 0 1px #000;*/
@@ -591,7 +581,7 @@ i.active {
     background: var(--background-voip);
     position: fixed;
     margin: auto;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-main), 0 6px 20px 0 var(--background-mask);
     display: flex;
     flex-direction: column;
@@ -623,7 +613,7 @@ i.active {
 
 .voip-div-container .title {
     text-align: center;
-    padding: 5px 0;
+    padding: 4px 0;
     background: var(--background-item-placeholder);
     display: flex;
     justify-content: center;
@@ -668,7 +658,7 @@ i.active {
 }
 
 .voip-titlebar-title {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: rgba(255, 255, 255, 0.65);
     user-select: none;
     pointer-events: none;
@@ -682,7 +672,7 @@ i.active {
     height: 22px;
     border: none;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     color: rgba(255, 255, 255, 0.75);
     padding: 0;
@@ -691,7 +681,7 @@ i.active {
 
 .voip-minimize-btn:hover {
     background: rgba(255, 255, 255, 0.25);
-    color: #fff;
+    color: var(--text-on-accent);
 }
 
 /* Content wrapper so Single/Multi/Conference fill remaining flex height */
@@ -708,8 +698,8 @@ i.active {
     bottom: calc(var(--main-margin-bottom) + 78px);
     width: 42px;
     height: 42px;
-    border-radius: 10px;
-    background: #4a7cf7;
+    border-radius: var(--main-border-radius);
+    background: var(--voip-pip-bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -730,8 +720,8 @@ i.active {
 }
 
 .voip-minimized-pip .icon-ion-ios-telephone {
-    font-size: 20px;
-    color: #fff;
+    font-size: var(--font-size-2xl);
+    color: var(--text-on-accent);
 }
 
 .voip-pip-label {

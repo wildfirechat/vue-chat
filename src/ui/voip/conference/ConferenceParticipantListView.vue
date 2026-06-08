@@ -58,11 +58,11 @@
             <button :disabled="!conferenceManager.isMuteAll" @click="requestUnMuteAll">取消全员静音</button>
         </div>
         <Teleport to="body">
-            <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true" v-on:close="onContextMenuClose">
-                <li v-for="(item,i) in buildParticipantContextMenu(participant)" :key="i">
-                    <a @click.prevent="item.handler" v-bind:style="item.styleObject">{{ item.title }}</a>
-                </li>
-            </vue-context>
+		    <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true" v-on:close="onContextMenuClose">
+		        <li v-for="(item,i) in buildParticipantContextMenu(participant)" :key="i">
+		            <a @click.prevent="item.handler" v-bind:style="item.styleObject">{{ item.title }}</a>
+		        </li>
+		    </vue-context>
         </Teleport>
 
     </div>
@@ -366,7 +366,7 @@ export default {
 .participant-list-container .action-item {
     height: 50px;
     display: flex;
-    padding: 5px 0 0 10px;
+    padding: 4px 0 0 8px;
     align-items: center;
 }
 
@@ -376,16 +376,16 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px dashed var(--border-dashed);
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .participant-user {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px 0 5px 10px;
+    padding: 4px 0 4px 8px;
 }
 
 .participant-user.active {
@@ -397,23 +397,23 @@ export default {
 }
 
 .participant-user .name-desc .desc {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .audio-video {
     color: var(--text-primary);
-    padding: 0 10px;
+    padding: 0 8px;
 }
 
 .audio-video i {
-    padding: 5px;
+    padding: 4px;
 }
 
 .participant-user .avatar {
     width: 40px;
     height: 40px;
-    border-radius: 3px;
-    margin-right: 10px;
+    border-radius: var(--radius-sm);
+    margin-right: 8px;
 }
 
 .avatar-container {
@@ -429,9 +429,9 @@ export default {
     display: none;
     justify-content: center;
     align-items: center;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px dashed var(--border-dashed);
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .avatar-container:hover .icon {
@@ -449,13 +449,13 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    padding: 10px;
+    padding: 8px;
     bottom: 0;
     left: 0;
 }
 
 .action-container button {
-    padding: 5px 10px;
+    padding: 4px 8px;
 }
 
 </style>

@@ -67,7 +67,7 @@
             <p>私有化部署，请微信联系：wildfirechat 或 wfchat </p>
         </div>
         <footer>
-            <p class="proto-version-info">{{ protoRevision() }}</p>
+            <p class="proto-version-info single-line">{{ protoRevision() }}</p>
             <a
                 class="button"
                 href="https://github.com/wildfirechat/vue-chat/issues"
@@ -330,26 +330,26 @@ export default {
 
 .setting-container .content {
     flex: 1;
-    margin-left: 20px;
-    margin-top: 10px;
+    margin: 8px 20px 0;
 }
 
 .setting-container .content h2 {
     font-weight: normal;
     font-style: normal;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .setting-container .content label {
-    padding: 10px 0;
+    padding: 8px 0;
     display: flex;
     justify-content: space-between;
     width: 100%;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .setting-container .content label input {
-    margin: 0 10px;
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .setting-container .dropdown-toggle-container {
@@ -357,25 +357,26 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .setting-container .ad-container {
-    padding: 10px;
-    font-size: 15px;
+    padding: 10px 20px;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
     background: var(--background-secondary);
-    margin: 10px;
-    border-radius: 5px;
+    border-top: 1px solid var(--border-separator);
     /*box-shadow: 0 2px 4px 0 var(--background-mask), 0 6px 20px 0 var(--background-mask);*/
 }
 
 .ad-container p {
-    padding: 5px 0;
+    padding: 2px 0;
+    line-height: 1.6;
 }
 
 .setting-container footer {
     width: 100%;
-    height: 60px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -383,32 +384,32 @@ export default {
 }
 
 .proto-version-info {
-    justify-self: flex-start;
     margin-right: auto;
-    padding-left: 10px;
+    padding-left: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
+    max-width: 200px;
 }
 
 .setting-container .button {
     /* position: relative; */
-    margin-right: 17px;
-    color: var(--text-primary);
-    font-size: 14px;
-    padding: 9px 8px;
+    margin-right: 4px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    padding: 6px 10px;
     border: 0;
-    border-radius: 2px;
-    background: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
     outline: 0;
-    text-transform: uppercase;
-    text-align: left;
     cursor: pointer;
     text-decoration: none;
-    transform: translateY(0px);
-    transition: .2s;
+    transition: background-color var(--duration-fast), color var(--duration-fast);
+    white-space: nowrap;
 }
 
 .setting-container .button:hover {
     background: var(--background-item-hover);
+    color: var(--text-primary);
 }
 
 </style>

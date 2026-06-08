@@ -50,6 +50,7 @@ export default {
     },
 
     methods: {
+
         filterMessage() {
             let now = new Date().getTime();
             this.filteredMessages = this.sharedConversationState.currentConversationMessageList.filter(m => {
@@ -84,11 +85,11 @@ export default {
     max-height: 200px;
     flex-direction: column;
     background-color: rgb(128 128 128 / 50%);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .message-list-container:not(:empty){
-    padding: 10px;
+    padding: 8px;
 }
 
 .message-list-container::-webkit-scrollbar {
@@ -97,12 +98,12 @@ export default {
 
 .message {
     display: flex;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .message .sender {
     color: var(--text-primary);
-    padding-right: 5px;
+    padding-right: 4px;
 }
 
 .message .content {

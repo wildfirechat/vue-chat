@@ -9,7 +9,7 @@
             <!--        <div class="dot"></div>-->
             <p v-if="message.direction === 1" class="duration">{{ duration }}"</p>
         </div>
-        <ScaleLoader v-if="!message.messageContent._speechText && message.messageContent._speechToTextInProgress" :color="'var(--text-tertiary)'" :height="'15px'" :width="'3px'" style="margin: 8px 10px"/>
+        <ScaleLoader v-if="!message.messageContent._speechText && message.messageContent._speechToTextInProgress" :color="'var(--text-tertiary)'" :height="'15px'" :width="'3px'" style="margin: 8px 8px"/>
         <p v-if="message.messageContent._speechText" class="speechText">{{ message.messageContent._speechText }}</p>
     </div>
 </template>
@@ -53,7 +53,6 @@ export default {
         getActiveStore() {
             return this.conversationActiveStore || store;
         },
-
         playVoice() {
             if (this.message._isPlaying) {
                 this.getActiveStore().playVoice(null)
@@ -88,7 +87,7 @@ export default {
 <style lang="css" scoped>
 
 .audio-message-container {
-    margin: 0 10px;
+    margin: 0 8px;
     display: flex;
     align-items: center;
     --voice-width: 200px;
@@ -106,8 +105,8 @@ export default {
     width: var(--voice-width);
     min-width: 55px;
     background: var(--background-primary);
-    border-radius: 5px;
-    padding: 5px 10px;
+    border-radius: var(--radius-md);
+    padding: 4px 8px;
     align-items: center;
 }
 
@@ -116,7 +115,7 @@ export default {
 }
 
 .volume-container div {
-    margin-top: 5px;
+    margin-top: 4px;
 }
 
 .duration {
@@ -126,11 +125,11 @@ export default {
 
 .speechText {
     color: var(--text-hint);
-    margin: 8px 10px;
+    margin: 8px 8px;
     padding: 8px 4px 8px 8px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     background-color: var(--background-tertiary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 </style>

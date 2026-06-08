@@ -170,16 +170,17 @@ export default {
     flex-direction: column;
     align-items: center;
     padding: 6px 4px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     min-width: 0;
     overflow: hidden;
 }
 
 .member-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 5px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
+    -webkit-user-drag: none;
 }
 
 .member-name {
@@ -205,7 +206,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
+    border-radius: var(--default-portrait-border-radius);
     border: 1px dashed var(--border-dashed);
     font-size: 22px;
     color: var(--text-secondary-strong);
@@ -224,12 +225,12 @@ export default {
     display: flex;
     color: var(--text-danger);
     align-items: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     justify-content: center;
     height: 42px;
     flex-shrink: 0;
     border-top: 1px solid var(--border-tertiary);
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .conversation-action-item:active {

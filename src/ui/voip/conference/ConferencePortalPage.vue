@@ -97,9 +97,9 @@ export default {
     },
     methods: {
         reload() {
-            this.loadFavConferences();
-            this.historyConferenceInfos = conferenceManager.getHistoryConference();
-        },
+        	this.loadFavConferences();
+        	this.historyConferenceInfos = conferenceManager.getHistoryConference();
+    	},
         loadFavConferences() {
             conferenceApi.getFavConferences()
                 .then(favConferenceInfos => {
@@ -261,12 +261,14 @@ export default {
     height: 100%;
     width: 30%;
     background: var(--background-primary);
-    padding: 20px;
+    padding: 8px 20px 0;
 }
 
 
 .left-slider > .title {
-    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+    padding-bottom: 8px;
 }
 
 .action-container {
@@ -281,13 +283,23 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    border-radius: 10px;
-    padding: 15px;
-    margin: 10px 10px 10px 0;
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin: 8px 8px 8px 0;
+    cursor: pointer;
+    user-select: none;
+    transition: filter var(--duration-fast), box-shadow var(--duration-fast), transform var(--duration-fast);
 }
 
 .action:hover {
-    filter: invert(25%);
+    filter: brightness(0.9);
+    box-shadow: var(--shadow-main);
+}
+
+.action:active {
+    transform: scale(0.97);
+    filter: brightness(0.82);
+    box-shadow: none;
 }
 
 .action .icon {
@@ -297,15 +309,19 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .action .icon i {
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
 }
 
 .action .title {
-    margin-top: 15px;
+    margin-top: 12px;
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .right-slider {
@@ -319,40 +335,61 @@ export default {
 .fav-container {
 }
 
+.fav-container > p,
+.history-container > p {
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.2px;
+    padding-bottom: 6px;
+}
+
 .empty {
     display: flex;
     align-items: center;
-    padding: 15px;
+    justify-content: center;
+    padding: 16px;
     background: var(--background-primary);
-    border-radius: 10px;
-    font-size: 12px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    margin: 8px 0;
+    min-height: 48px;
 }
 
-.fav-container .fav-list {
+.fav-list {
     background: var(--background-primary);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
+    margin: 8px 0;
+    overflow: hidden;
 }
 
 .fav-conference {
     display: flex;
     align-items: center;
-    padding: 15px;
-    box-sizing: content-box;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background var(--duration-fast);
+}
+
+.fav-conference:hover {
+    background: var(--background-item-hover);
 }
 
 .fav-conference:active {
-    background: var(--background-tertiary);
+    background: var(--background-item-active);
 }
 
 .fav-conference .icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-circle);
     background: var(--background-accent-subtle);
     display: flex;
     justify-content: center;
     align-items: center;
     margin-right: 10px;
+    flex-shrink: 0;
 }
 
 .fav-conference:not(:last-of-type) {
@@ -360,13 +397,15 @@ export default {
 }
 
 .fav-conference .title {
-
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .fav-conference .desc {
     color: var(--text-secondary);
     margin-top: 3px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .history-container {

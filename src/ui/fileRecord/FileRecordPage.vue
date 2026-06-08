@@ -49,17 +49,15 @@
                 <div v-if="category === CATEGORY_CONVERSATION && !fileQuery"
                      class="conversation-list-container">
                     <!--      聊天列表-->
-                    <ul>
-                        <li v-for="conversationInfo in sharedConversationState.conversationInfoList"
-                            @click="showConversationFiles(conversationInfo.conversation)"
-                            :key="conversationInfoKey(conversationInfo)">
-                            <div class="conversation-item"
-                                 v-bind:class="{active:currentConversation && currentConversation.equal(conversationInfo.conversation)}">
-                                <img :src="conversationInfo.conversation._target.portrait" alt="">
-                                <p class="single-line">{{ conversationInfo.conversation._target._displayName }}</p>
-                            </div>
-                        </li>
-                    </ul>
+                    <virtual-list :data-component="conversationItemView" :data-sources="sharedConversationState.conversationInfoList" :data-key="conversationInfoKey"
+                                  ref="virtualList"
+                                  :estimate-size="30"
+                                  :extra-props="{
+                                        clickConversationItemFunc:showConversationFiles,
+                                        showLastMessage: false
+                                  }"
+                                  style="height: 100%; overflow-y: auto;"/>
+
                 </div>
                 <div v-if="category === CATEGORY_SENDER && !fileQuery"
                      class="conversation-list-container">
@@ -67,6 +65,7 @@
                     <UserListView :users="sharedContactState.friendList"
                                  :show-category-label="false"
                                  :current-user="currentUser"
+                                 :padding-left="'15px'"
                                  :click-user-item-func="showUserFiles"
                     />
                 </div>
@@ -111,13 +110,15 @@ import InfiniteLoading from "@imndx/vue-infinite-loading";
 import {ipcRenderer, isElectron, currentWindow} from "../../platform";
 import UserListView from "../main/user/UserListView.vue";
 import IpcEventType from "../../ipcEventType";
+import { markRaw } from 'vue';
+import ConversationItemLiteView from '../main/conversationList/ConversationItemLiteView.vue';
 
 export default {
     name: "FileRecordPage",
     data() {
         return {
             category: 'all',
-            currentConversation: null,
+            currentConversationInfo: null,
             currentUser: null,
             sharedConversationState: store.state.conversation,
             sharedContactState: store.state.contact,
@@ -130,6 +131,8 @@ export default {
             CATEGORY_ALL: 'all',
             CATEGORY_CONVERSATION: 'conversation',
             CATEGORY_SENDER: 'sender',
+
+            conversationItemView: markRaw(ConversationItemLiteView),
         }
     },
     methods: {
@@ -165,8 +168,8 @@ export default {
             }
             this.category = this.CATEGORY_CONVERSATION;
             this.fileRecords = [];
-            if (this.currentConversation) {
-                this.showConversationFiles(this.currentConversation, true);
+            if (this.currentConversationInfo) {
+                this.showConversationFiles(this.currentConversationInfo, true);
             }
         },
 
@@ -178,17 +181,18 @@ export default {
             this.category = this.CATEGORY_SENDER;
             this.fileRecords = [];
             if (this.currentUser) {
-                this.showUserFiles(this.currentUser)
+                this.showUserFiles(this.currentUser, true)
             }
         },
 
-        showConversationFiles(conversation, force = false) {
-            if (!force && this.currentConversation && this.currentConversation.equal(conversation)) {
+        showConversationFiles(conversationInfo, force = false) {
+            if (!force && this.currentConversationInfo && this.currentConversationInfo.conversation.equal(conversationInfo.conversation)) {
                 return;
             }
-            this.currentConversation = conversation;
+            this.currentConversationInfo = conversationInfo;
+            this.sharedConversationState.currentConversationInfo = conversationInfo;
             this.fileRecords = [];
-            this.getConversationFileRecords(conversation, '')
+            this.getConversationFileRecords(conversationInfo.conversation, '')
         },
 
         showUserFiles(user, force = false) {
@@ -196,14 +200,16 @@ export default {
                 return;
             }
             this.currentUser = user;
+            this.sharedContactState.currentFriend = user;
             this.fileRecords = [];
             this.getConversationFileRecords('', user.uid)
         },
 
 
         getMyFileRecords() {
+            this.fileRecords = [];
             store.getMyFileRecords(0, 20, fileRecords => {
-                this.fileRecords = this.fileRecords.concat(fileRecords);
+                this.fileRecords = fileRecords;
             }, err => {
                 // TODO
 
@@ -247,7 +253,7 @@ export default {
                     store.getMyFileRecords(lastMessageUid, 20, successCB, failCB);
                     break;
                 case this.CATEGORY_CONVERSATION:
-                    store.getConversationFileRecords(this.currentConversation, '', lastMessageUid, 20, successCB, failCB)
+                    store.getConversationFileRecords(this.currentConversationInfo.conversation, '', lastMessageUid, 20, successCB, failCB)
                     break;
                 case this.CATEGORY_SENDER:
                     store.getConversationFileRecords('', this.currentUser.uid, lastMessageUid, 20, successCB, failCB)
@@ -303,7 +309,7 @@ export default {
                     identifier = 'me'
                     break;
                 case this.CATEGORY_CONVERSATION:
-                    identifier = 'conversation-' + this.currentConversation.type + '-' + this.currentConversation.target + '-' + this.currentConversation.line;
+                    identifier = this.currentConversationInfo ?  'conversation-' + this.currentConversationInfo.conversation.type + '-' + this.currentConversationInfo.conversation.target + '-' + this.currentConversationInfo.conversation.line : 'conversation';
                     break;
                 case this.CATEGORY_SENDER:
                     identifier = 'user-' + this.currentUser.uid;
@@ -318,7 +324,7 @@ export default {
             if (this.fileQuery) {
                 return desc;
             }
-            if (this.category === this.CATEGORY_CONVERSATION && this.currentConversation === null) {
+            if (this.category === this.CATEGORY_CONVERSATION && this.currentConversationInfo === null) {
                 desc = '没有选择会话'
             } else if (this.category === this.CATEGORY_SENDER && this.currentUser === null) {
                 desc = '没有选择发送者';
@@ -390,12 +396,12 @@ export default {
 .search-input-container input {
     height: 25px;
     width: 110px;
-    margin: 0 10px;
-    padding: 0 10px 0 20px;
+    margin: 0 8px;
+    padding: 0 8px 0 20px;
     text-align: left;
     flex: 1;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
     background-color: var(--background-input);
 }
@@ -416,27 +422,34 @@ export default {
 .category-item {
     display: flex;
     flex-direction: row;
-    padding: 5px 0 5px 20px;
-    height: 50px;
+    padding: 4px 0 4px 20px;
+    height: 44px;
     align-items: center;
+    transition: background var(--duration-fast);
 }
 
 .category-item:hover{
     background-color: var(--background-item-hover);
 }
 
-.category-item:active {
-    background-color: var(--background-item-active);
-}
-
 .category-item.active {
     background-color: var(--background-item-active);
 }
 
+.category-item i {
+    color: var(--text-secondary);
+}
+
 .category-item p {
-    margin-left: 10px;
-    font-size: 14px;
+    margin-left: 8px;
     flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    transition: color var(--duration-fast);
+}
+
+.category-item.active p{
+    font-weight: 500;
 }
 
 .conversation-list-container {
@@ -444,7 +457,7 @@ export default {
     border-right: 1px solid var(--border-muted);
     width: 185px;
     height: 100%;
-    overflow: auto;
+    overflow: overlay;
 }
 
 .conversation-item {
@@ -452,28 +465,6 @@ export default {
     width: 100%;
     display: flex;
     align-items: center;
-}
-
-.conversation-item img {
-    width: 36px;
-    height: 36px;
-    margin: 8px 16px;
-    min-width: 36px;
-    min-height: 36px;
-}
-
-.conversation-item p {
-    flex: 1;
-    font-size: 14px;
-    margin-right: 16px;
-}
-
-.conversation-item:active {
-    background-color: var(--background-item-placeholder);
-}
-
-.conversation-item.active {
-    background-color: var(--background-item-placeholder);
 }
 
 .file-record-container .file-record-list-container {
@@ -521,7 +512,7 @@ export default {
 .file-record-item img {
     width: 40px;
     height: 40px;
-    margin: 0 15px 0 0;
+    margin: 0 16px 0 0;
 }
 
 .file-name-sender-container {
@@ -533,14 +524,14 @@ export default {
 }
 
 .file-name-sender-container .name {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-primary);
     padding-bottom: 3px;
 }
 
 .file-name-sender-container .sender {
     padding-top: 3px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
 }
 
@@ -553,14 +544,14 @@ export default {
 }
 
 .file-date-size-container .date {
-    font-size: 12px;
-    padding-left: 15px;
+    font-size: var(--font-size-xs);
+    padding-left: 16px;
     color: var(--text-hint);
     padding-bottom: 3px;
 }
 
 .file-date-size-container .size {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
     padding-top: 3px;
 }

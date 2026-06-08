@@ -60,7 +60,7 @@
         <section class="checked-contact-list-container">
             <header>
                 <h2>{{ this.title ? this.title : $t('pick.pick_contact') }}</h2>
-                <div style="display: flex; justify-content: flex-end">
+                <div class="flex-row flex-justify-end">
                     <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
                     <span v-else>{{ $t('pick.picked_contact') + ':' + this.checkedUsers.length }}</span>
                     <span v-if="sharedPickState.organizations.length">{{ '组织: ' + sharedPickState.organizations.length }}</span>
@@ -72,7 +72,7 @@
                         <img class="avatar" :src="user.portrait" alt="">
                         <button @click="onPickUser(user)" class="unpick-button">X</button>
                     </div>
-                    <div style="display: flex; align-items: center; ">
+                    <div class="flex-row flex-align-center">
                         <p class="name single-line">{{ user._displayName }}</p>
                         <p v-if="isExternalDomainUser(user)" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
                     </div>
@@ -286,15 +286,22 @@ export default {
 
 .input-container input {
     height: 25px;
-    margin: 15px;
+    margin: 16px;
     flex: 1;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-tertiary);
     background-color: var(--background-primary);
     padding-left: 20px;
     padding-right: 20px;
     text-align: left;
     outline: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--duration-fast);
+}
+
+.input-container input::placeholder {
+    color: var(--text-placeholder);
 }
 
 .input-container input:active {
@@ -309,6 +316,8 @@ export default {
     position: absolute;
     top: 20px;
     left: 20px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
 }
 
 .input-container .clear-btn {
@@ -319,35 +328,50 @@ export default {
     line-height: 25px;
     cursor: pointer;
     color: var(--text-secondary-strong);
-    font-size: 16px;
+    font-size: var(--font-size-lg);
 }
 
 .pick-category-container {
     flex: 1;
     min-height: 0;
     overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.pick-category-container::-webkit-scrollbar {
+    display: none;
 }
 
 .category-item-container {
     height: 40px;
     display: flex;
     align-items: center;
-    margin-left: 15px;
+    margin-left: 16px;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: var(--font-size-base);
     border-top: 1px solid var(--border-tertiary);
     background-color: var(--background-secondary);
+    transition: background var(--duration-fast);
 }
 
 .category-item {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
+}
+
+.category-item .title {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .category-item .desc {
-    margin-right: 15px;
-    color: var(--text-secondary-strong);
+    margin-right: 16px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
 }
 
 .arrow {
@@ -355,7 +379,9 @@ export default {
     border-width: 0 1px 1px 0;
     display: inline-block;
     padding: 3px;
-    margin-right: 10px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    transition: transform var(--duration-fast);
 }
 
 .right {
@@ -368,9 +394,6 @@ export default {
     -webkit-transform: rotate(45deg);
 }
 
-.organization-section {
-    //border-top: 1px solid var(--border-tertiary);
-}
 
 .organization-section :deep(.organization-tree-container) {
     height: auto;
@@ -379,15 +402,8 @@ export default {
     border-bottom-right-radius: 0;
 }
 
-.organization-section :deep(.member-list-container) {
-    margin: 5px;
-    max-height: none;
-    overflow: visible;
-    height: auto;
-}
-
 .pick-source-nav {
-    padding: 10px 0 0 20px;
+    padding: 8px 0 0 20px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -403,12 +419,12 @@ export default {
 
 .pick-source-nav a {
     text-decoration: none;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .pick-source-nav li:not(:last-child)::after {
     display: inline-block;
-    margin: 0 10px;
+    margin: 0 8px;
     color: var(--text-secondary-strong);
     content: ">";
 }
@@ -444,16 +460,20 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid var(--border-primary);
+    flex-shrink: 0;
 }
 
 .checked-contact-list-container header h2 {
-    font-size: 16px;
-    font-weight: normal;
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--text-primary);
     margin-left: 30px;
 }
 
 .checked-contact-list-container header span {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
     margin-right: 20px;
 }
 
@@ -477,41 +497,52 @@ export default {
     column-count: 1;
     justify-content: center;
     align-items: center;
-    padding: 5px 10px;
+    padding: 4px 8px;
 }
 
 .checked-contact-list-container .content .picked-user-container .name {
     text-align: center;
     max-width: 80px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .checked-contact-list-container .content .picked-user-container .picked-user {
     position: relative;
-    height: 65px;
-    width: 65px;
+    height: 64px;
+    width: 64px;
 }
 
 .checked-contact-list-container .content .avatar {
-    width: 45px;
-    height: 45px;
-    margin: 10px 10px;
-    border-radius: 3px;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--default-portrait-border-radius);
+    object-fit: cover;
+    margin: 8px;
 }
 
 .checked-contact-list-container .content .unpick-button {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    border: 1px solid white;
-    border-radius: 10px;
-    background-color: var(--background-tertiary);
-    top: 0;
-    right: 0;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border-primary);
+    padding: 0;
+    border-radius: var(--radius-circle);
+    background-color: var(--background-secondary);
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background var(--duration-fast), color var(--duration-fast);
 }
 
-.checked-contact-list-container .content .unpick-button:active {
-    background-color: var(--border-primary);
+.checked-contact-list-container .content .unpick-button:hover {
+    background-color: var(--background-error-subtle);
+    color: var(--text-danger);
+    border-color: var(--text-danger);
 }
 
 .checked-contact-list-container footer {
@@ -519,24 +550,39 @@ export default {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 footer button {
     padding: 5px 30px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-primary);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    background: transparent;
+    transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+
+footer button.cancel:hover {
+    background-color: var(--background-item-hover);
 }
 
 footer button.confirm {
     background-color: var(--accent-color);
+    border-color: var(--accent-color);
     margin-left: 20px;
     margin-right: 20px;
     color: var(--text-on-accent);
 }
 
+footer button.confirm:hover {
+    background-color: var(--accent-color-active);
+    border-color: var(--accent-color-active);
+}
+
 footer button.confirm.disable {
     background-color: var(--background-tertiary);
+    border-color: transparent;
     color: var(--text-tertiary);
 }
 

@@ -349,7 +349,7 @@ export default {
 .file-item .icon {
     max-width: 80px;
     max-height: 80px;
-    border-radius: 8px;
+    border-radius: var(--default-portrait-border-radius);
 }
 
 .file-item .name-size {
@@ -361,12 +361,12 @@ export default {
 }
 
 .file-item .name {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
 }
 
 .file-item .size {
-    font-size: 14px;
-    padding-top: 5px;
+    font-size: var(--font-size-base);
+    padding-top: 4px;
     color: var(--text-secondary);
 }
 
@@ -384,9 +384,9 @@ export default {
 .footer input {
     flex: 1;
     height: 30px;
-    padding-left: 10px;
+    padding-left: 8px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
     background-color: var(--background-input);
 }
@@ -406,7 +406,7 @@ video {
 }
 
 i {
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     color: var(--text-primary);
     cursor: pointer;
 }

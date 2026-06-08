@@ -138,10 +138,10 @@ export default {
 }
 
 .category {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     flex: 1;
     text-align: center;
-    padding: 5px;
+    padding: 4px;
 }
 
 .category.active {
@@ -161,10 +161,10 @@ export default {
 }
 
 .source {
-    margin-top: 5px;
+    margin-top: 4px;
     width: var(--source-width);
     height: 200px;
-    padding: 5px;
+    padding: 4px;
 }
 
 .source.active {
@@ -172,7 +172,7 @@ export default {
 }
 
 .source .thumbnail {
-    margin: 10px;
+    margin: 8px;
     height: 120px;
     overflow: hidden;
     display: flex;
@@ -181,7 +181,7 @@ export default {
 }
 
 .source .source-icon-name-container {
-    padding: 10px;
+    padding: 8px;
     display: flex;
     flex-direction: row;
 }
@@ -189,7 +189,7 @@ export default {
 .source-icon-name-container .icon {
     width: 20px;
     height: 20px;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .action-container {
@@ -198,10 +198,10 @@ export default {
 }
 
 .action-container button {
-    padding: 10px 25px;
-    border-radius: 3px;
-    font-size: 15px;
-    margin: 20px 0 0 10px;
+    padding: 8px 25px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-lg);
+    margin: 20px 0 0 8px;
     background: none;
 }
 

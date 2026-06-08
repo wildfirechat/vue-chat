@@ -62,15 +62,15 @@ export default {
 .choose-layout-container {
     width: 300px;
     height: 145px;
-    padding: 10px;
+    padding: 8px;
     background: var(--background-primary);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     box-shadow: var(--shadow-main);
 }
 
 .choose-layout-container .title {
-    font-size: 14px;
-    padding-bottom: 5px;
+    font-size: var(--font-size-base);
+    padding-bottom: 4px;
 }
 
 .category-container {
@@ -84,15 +84,15 @@ export default {
 }
 
 .category:not(:first-of-type) {
-    margin-left: 10px;
+    margin-left: 8px;
 }
 
 .category .category-name {
-    font-size: 14px;
-    padding: 5px;
+    font-size: var(--font-size-base);
+    padding: 4px;
     background: var(--background-secondary);
-    border-radius: 5px;
-    margin-bottom: 10px;
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
 }
 
 .category-name {
@@ -102,8 +102,8 @@ export default {
 
 .grid-layout {
     border: 1px solid var(--border-primary);
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: var(--radius-md);
+    padding: 8px;
 }
 
 .grid-layout.active {
@@ -115,9 +115,9 @@ export default {
 }
 
 .grid-layout .desc {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     text-align: center;
-    padding: 5px 0 0 0;
+    padding: 4px 0 0 0;
 }
 
 .grid-container {
@@ -125,7 +125,7 @@ export default {
     height: 55px;
     display: grid;
     grid-template-columns: auto auto auto;
-    gap: 5px;
+    gap: 4px;
 }
 
 .grid-container .item {
@@ -136,8 +136,8 @@ export default {
 
 .focus-layout {
     border: 1px solid var(--border-primary);
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: var(--radius-md);
+    padding: 8px;
 }
 
 .focus-layout.active {
@@ -149,9 +149,9 @@ export default {
 }
 
 .focus-layout .desc {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     text-align: center;
-    padding: 5px 0 0 0;
+    padding: 4px 0 0 0;
 }
 
 .focus-layout .item-container {
@@ -168,10 +168,10 @@ export default {
 
 .focus-layout .right-item-container {
     flex: 1;
-    padding-left: 5px;
+    padding-left: 4px;
     display: inline-flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 }
 
 .focus-layout .right-item-container .item {

@@ -90,7 +90,7 @@ export default {
 
 .home-menu {
     background: var(--background-primary);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
 }
 
@@ -113,11 +113,11 @@ export default {
 .menu-icon {
     width: 40px;
     height: 40px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     margin-right: 12px;
 }
 
@@ -131,12 +131,12 @@ export default {
 
 .menu-text {
     flex: 1;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
 }
 
 .menu-arrow {
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     color: var(--text-hint);
 }
 </style>

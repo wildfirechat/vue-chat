@@ -1,7 +1,7 @@
 <template>
     <div ref="message-input-container" class="message-input-container" :class="{resized: resized}">
         <div v-if="convMuted"
-             style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
+             class="flex-center" style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey">
             <p style="color: white">群禁言或者群已被解散</p>
         </div>
         <section v-else-if="!sharedConversationState.showChannelMenu" class="message-input-section">
@@ -25,15 +25,15 @@
                         <div class="emoji-arrow" :style="{ left: emojiPickerPos.arrowOffset + 'px' }"></div>
                     </div>
                 </Teleport>
-                <ul style="display: flex; align-content: center; padding: 0 10px">
+                <ul class="flex-row" style="align-content: center; padding: 0 8px">
                     <li v-if="!inputOptions['disableEmoji']">
-                        <div class="i-button-wrapper i-button-small">
-                            <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
+                        <div class="i-button-wrapper i-button-small" @click="toggleEmojiView">
+                            <i id="showEmoji" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableFile']">
-                        <div class="i-button-wrapper i-button-small">
-                            <i @click="pickFile" class="icon-ion-android-attach" :title="$t('conversation.action_tip_file')"/>
+                        <div class="i-button-wrapper i-button-small" @click="pickFile">
+                            <i class="icon-ion-android-attach" :title="$t('conversation.action_tip_file')"/>
                             <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                                    style="display: none">
                         </div>
@@ -42,14 +42,14 @@
                         <div class="screen-shot-wrapper">
                             <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" :title="$t('conversation.action_tip_screenshot')"/>
                             <span style="align-self: flex-end; padding-bottom: 4px" class="screen-shot-more">
-                                <i class="icon-ion-chevron-down" style="font-size: 10px; color: var(--text-primary); padding-left: 5px;"/>
+                                <i class="icon-ion-chevron-down" style="font-size: 10px; color: var(--text-primary); padding-left: 4px;"/>
                                 <span @click="screenShot(true)" class="screen-shot-button">{{ $t('conversation.action_tip_screenshot_hide') }}</span>
                             </span>
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
-                        <div class="i-button-wrapper i-button-small">
-                            <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
+                        <div class="i-button-wrapper i-button-small" @click="showMessageHistory">
+                            <i id="messageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
                         </div>
                     </li>
                     <li v-if="!inputOptions['disablePtt'] && enablePtt" style="position: relative;">
@@ -66,9 +66,9 @@
                                 <div class="recording-tip">松开结束</div>
                             </div>
                         </transition>
-                        <div class="i-button-wrapper i-button-small">
-                            <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
-                                        :title="$t('conversation.action_tip_ptt')"
+                        <div class="i-button-wrapper i-button-small" @mousedown="requestPttTalk(true)">
+                            <i id="ptt" v-bind:class="{active: isPttTalking}"
+                               :title="$t('conversation.action_tip_ptt')"
                                class="icon-ion-android-radio-button-on ptt-icon"/>
                         </div>
                     </li>
@@ -89,8 +89,8 @@
                                 <div class="recording-tip" :class="{cancel: isRecordingCancelMode}">{{ isRecordingCancelMode ? '松开取消发送' : '松开发送' }}</div>
                             </div>
                         </transition>
-                        <div class="i-button-wrapper i-button-small">
-                            <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
+                        <div class="i-button-wrapper i-button-small" @mousedown="recordAudio(true)">
+                            <i id="voice" v-bind:class="{active: isRecording}"
                                :title="$t('conversation.action_tip_voice')"
                                class="icon-ion-android-microphone record-icon"/>
                         </div>
@@ -106,27 +106,27 @@
                         </div>
                     </li>
                 </ul>
-                <ul style="display: flex; padding: 0 10px">
+                <ul class="flex-row" style="padding: 0 8px">
                     <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
                         <li v-if="!inputOptions['disableAudioCall']">
-                            <div class="i-button-wrapper i-button-small">
-                                <i @click="startAudioCall" class="icon-ion-ios-telephone" :title="$t('conversation.action_tip_audio_call')"/>
+                            <div class="i-button-wrapper i-button-small" @click="startAudioCall">
+                                <i class="icon-ion-ios-telephone" :title="$t('conversation.action_tip_audio_call')"/>
                             </div>
                         </li>
                         <li v-if="!inputOptions['disableVideoCall']">
-                            <div class="i-button-wrapper i-button-small">
-                                <i @click="startVideoCall" class="icon-ion-ios-videocam" :title="$t('conversation.action_tip_video_call')"/>
+                            <div class="i-button-wrapper i-button-small" @click="startVideoCall">
+                                <i class="icon-ion-ios-videocam" :title="$t('conversation.action_tip_video_call')"/>
                             </div>
                         </li>
                         <li v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
-                            <div class="i-button-wrapper i-button-small">
-                                <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
+                            <div class="i-button-wrapper i-button-small" @click="requestRemoteControl">
+                                <i class="icon-ion-android-desktop"/>
                             </div>
                         </li>
                     </template>
                     <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
-                        <div class="i-button-wrapper i-button-small">
-                            <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
+                        <div class="i-button-wrapper i-button-small" @click="toggleChannelMenu">
+                            <i class="icon-ion-android-menu"/>
                         </div>
                     </li>
                 </ul>
@@ -185,7 +185,7 @@
             </vue-context>
             <QuoteMessageView
                 v-if="quotedMessage"
-                style="padding: 10px 20px"
+                style="padding: 8px 20px"
                 v-on:cancelQuoteMessage="cancelQuoteMessage"
                 :enable-message-preview="false"
                 :quoted-message="quotedMessage" :show-close-button="true"/>
@@ -1599,7 +1599,7 @@ export default {
     z-index: 99999;
     background-color: var(--background-secondary, var(--background-primary));
     border: 1px solid var(--border-primary);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     padding: 8px 8px 6px;
     display: flex;
@@ -1628,14 +1628,14 @@ export default {
 
 .sticker-suggestion-list::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thumb);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
 }
 
 .sticker-suggestion-item {
     flex-shrink: 0;
     width: 56px;
     height: 56px;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     border: 2px solid transparent;
     display: flex;
     align-items: center;
@@ -1671,7 +1671,7 @@ export default {
 }
 
 .input-action-container i{
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
 }
 
 .input {
@@ -1685,7 +1685,7 @@ export default {
     overflow-x: hidden;
     user-select: text;
     -webkit-user-select: text;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .message-input-container.resized .input {
@@ -1701,10 +1701,10 @@ export default {
 .input:empty:before {
     content: attr(title);
     color: var(--text-hint);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 .input-action-container ul li {
-    padding: 0 5px;
+    padding: 0 4px;
 }
 
 .input-action-container ul li .screen-shot-button {
@@ -1712,10 +1712,10 @@ export default {
     left: 0;
     top: 100%;
     display: none;
-    padding: 5px 10px;
-    font-size: 12px;
+    padding: 4px 8px;
+    font-size: var(--font-size-xs);
     background-color: var(--text-placeholder);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     color: var(--text-on-accent);
 }
 
@@ -1725,11 +1725,11 @@ export default {
     align-items: center;
     flex-direction: row;
     justify-content: space-around;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     width: 40px;
     height: 28px;
     transition: background-color 0.15s ease;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .screen-shot-wrapper:hover {
@@ -1775,9 +1775,9 @@ export default {
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     background: var(--gradient-recording);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     padding: 12px 20px;
     box-shadow: var(--shadow-accent-recording);
     min-width: 180px;
@@ -1797,7 +1797,7 @@ export default {
 .recording-content {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 4px;
 }
 
@@ -1812,7 +1812,7 @@ export default {
     width: 3px;
     height: 100%;
     background: var(--background-primary);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     animation: wave 1s ease-in-out infinite;
 }
 
@@ -1827,14 +1827,14 @@ export default {
 
 .recording-text {
     color: var(--text-on-accent);
-    font-size: 14px;
+    font-size: var(--font-size-base);
     font-weight: 500;
     letter-spacing: 0.5px;
 }
 
 .recording-time {
     color: var(--background-trans-light);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     font-weight: 600;
     font-family: 'Monaco', 'Courier New', monospace;
     margin-left: auto;

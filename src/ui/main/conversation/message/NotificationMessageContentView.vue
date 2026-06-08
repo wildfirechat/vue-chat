@@ -37,7 +37,7 @@ export default {
 .notification-container .notification {
     color: var(--text-placeholder);
     margin: 20px 20px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 </style>

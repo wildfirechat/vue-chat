@@ -62,16 +62,16 @@ export default {
 
 <style lang="css" scoped>
 .image-content-container {
-    margin: 0 10px;
+    margin: 0 8px;
     position: relative;
     border: 1px solid var(--border-tertiary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .image-content-container img {
     max-height: 300px;
     max-width: 300px;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     object-fit: scale-down;
 }

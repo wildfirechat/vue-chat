@@ -415,13 +415,14 @@ export default {
 .fav-list-container h2 {
     width: 100%;
     height: 60px;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     font-style: normal;
-    font-weight: normal;
+    font-weight: 500;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     padding-left: 20px;
-    border-bottom: 1px solid var(--border-light-strong);
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .fav-list-container div {
@@ -448,7 +449,7 @@ export default {
     left: 80px;
     right: 80px;
     bottom: 0;
-    border-bottom: 1px solid var(--border-muted);
+    border-bottom: 1px solid var(--border-tertiary);
 }
 
 .fav-item-container:active {
@@ -469,7 +470,7 @@ export default {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-primary);
 }
 
@@ -484,11 +485,12 @@ export default {
     height: 70px;
     width: 140px;
     object-fit: cover;
+    border-radius: var(--radius-sm);
 }
 
 .fav-item-file {
     display: flex;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     height: 110px;
     align-items: center;
 }
@@ -496,7 +498,7 @@ export default {
 .fav-item-file img {
     width: 60px;
     height: 60px;
-    margin: 0 20px 0 10px;
+    margin: 0 20px 0 8px;
 }
 
 .fav-item-file .name-size {
@@ -531,22 +533,25 @@ export default {
 }
 
 .fav-item-video video {
-    background-color: lightgrey;
+    background-color: var(--background-item-placeholder);
     height: 70px;
     width: 140px;
     object-fit: cover;
+    border-radius: var(--radius-sm);
 }
 
 .fav-item-video i {
     position: absolute;
-    left: 68px;
-    right: 0;
-    width: 10px;
-    margin-right: auto;
+    top: 50%;
+    left: 70px;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .fav-item-audio {
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .fav-item-audio audio {
@@ -560,12 +565,12 @@ export default {
 }
 
 .fav-item-sender-time .time {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
 }
 
 .fav-item-sender-time .sender {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
     padding-top: 3px;
 }
@@ -577,8 +582,10 @@ export default {
 }
 
 .media-category-container p {
-    font-size: 14px;
-    padding: 20px 0 10px 0;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 16px 0 8px 0;
 }
 
 .media-category-items {
@@ -595,6 +602,7 @@ export default {
     height: 70px;
     object-fit: cover;
     padding: 2px;
+    border-radius: var(--radius-sm);
 }
 
 .media-item-video {
@@ -606,14 +614,17 @@ export default {
     height: 70px;
     object-fit: cover;
     padding: 2px;
+    border-radius: var(--radius-sm);
 }
 
 .media-item-video i {
     position: absolute;
-    top: 32px;
-    left: 32px;
-    width: 10px;
-    margin-right: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 </style>

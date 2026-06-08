@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex; justify-content: center">
+    <div class="flex-row flex-justify-center">
         <div class="notification-container" @click="onClickRichNotification">
             <p class="title">{{ message.messageContent.title }}</p>
             <p class="desc">{{ message.messageContent.desc }}</p>
@@ -65,9 +65,9 @@ export default {
 .notification-container {
     background-color: var(--background-primary);
     width: 400px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin: 5px 0;
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
+    margin: 4px 0;
 }
 
 .notification-container:active {
@@ -75,11 +75,11 @@ export default {
 }
 
 .notification-container .title {
-    margin: 5px 0;
+    margin: 4px 0;
 }
 
 .desc {
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .data {
@@ -88,7 +88,7 @@ export default {
 
 .data .key {
     width: 100px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .data .value {
@@ -101,9 +101,9 @@ export default {
 
 .ex-info-container {
     border-top: 1px solid var(--border-tertiary);
-    padding-top: 5px;
-    margin: 5px 0;
-    font-size: 14px;
+    padding-top: 4px;
+    margin: 4px 0;
+    font-size: var(--font-size-base);
 }
 
 </style>

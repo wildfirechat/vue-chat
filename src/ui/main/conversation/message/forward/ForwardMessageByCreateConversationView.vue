@@ -154,27 +154,45 @@ export default {
 
 .user-list-panel input {
     height: 25px;
-    margin: 15px 20px 0 15px;
+    margin: 16px 20px 0 16px;
     flex: 1;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-tertiary);
     background-color: var(--background-primary);
-    padding-left: 10px;
+    padding-left: 8px;
     text-align: left;
+    outline: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--duration-fast);
+}
+
+.user-list-panel input::placeholder {
+    color: var(--text-hint);
+}
+
+.user-list-panel input:focus {
+    border-color: var(--accent-color);
 }
 
 .user-list-panel .user-list-container {
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .user-list-container .back {
     background-color: var(--background-item-normal);
     height: 40px;
-    font-size: 13px;
-    padding-left: 15px;
+    font-size: var(--font-size-sm);
+    padding-left: 16px;
     display: flex;
     align-items: center;
+    color: var(--text-secondary);
+    transition: background var(--duration-fast);
+}
+
+.user-list-container .back:hover {
+    background-color: var(--background-item-hover);
 }
 
 .user-list-container .back:active {
@@ -192,16 +210,20 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .checked-user-list-container header h2 {
-    font-size: 16px;
-    font-weight: normal;
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--text-primary);
     margin-left: 30px;
 }
 
 .checked-user-list-container header span {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
     margin-right: 20px;
 }
 
@@ -225,14 +247,14 @@ export default {
     column-count: 1;
     justify-content: center;
     align-items: center;
-    padding: 5px 10px;
+    padding: 4px 8px;
     overflow: hidden;
 }
 
 .checked-user-list-container .content .picked-user-container .name {
     text-align: center;
     max-width: 80px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .checked-user-list-container .content .picked-user-container .picked-user {
@@ -242,20 +264,34 @@ export default {
 }
 
 .checked-user-list-container .content .avatar {
-    width: 45px;
-    height: 45px;
-    margin: 10px 10px;
-    border-radius: 3px;
+    width: 48px;
+    height: 48px;
+    margin: 8px 8px;
+    border-radius: var(--default-portrait-border-radius);
+    object-fit: cover;
 }
 
 .checked-user-list-container .content .unpick-button {
     position: absolute;
     width: 20px;
     height: 20px;
-    border: 1px solid white;
-    border-radius: 10px;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-sm);
     top: 0;
     right: 0;
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.checked-user-list-container .content .unpick-button:hover {
+    background: var(--background-error-subtle);
+    color: var(--text-danger);
+    border-color: var(--text-danger);
 }
 
 .checked-user-list-container .content .unpick-button:active {
@@ -267,20 +303,36 @@ export default {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+    border-top: 1px solid var(--border-primary);
 }
 
 .checked-user-list-container footer button {
-    padding: 5px 30px;
-    border-radius: 4px;
+    padding: 4px 30px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-primary);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.checked-user-list-container footer button.cancel:hover {
+    background: var(--background-item-hover);
 }
 
 .checked-user-list-container footer button.confirm {
     background-color: var(--accent-color);
+    border-color: var(--accent-color);
     color: var(--text-on-accent);
     margin-left: 20px;
     margin-right: 20px;
+}
+
+.checked-user-list-container footer button.confirm:hover {
+    background-color: var(--accent-color-active);
+    border-color: var(--accent-color-active);
 }
 
 

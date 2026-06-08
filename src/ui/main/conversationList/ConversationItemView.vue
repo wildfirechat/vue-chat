@@ -4,7 +4,7 @@
          @dragleave="dragEvent($event, 'dragleave')"
          @dragenter="dragEvent($event,'dragenter')"
          @drop="dragEvent($event, 'drop')"
-         @click="showConversation"
+         @click="onClickConversationItem"
          v-bind:class="{
              drag: dragAndDropEnterCount > 0,
              active: shareConversationState.currentConversationInfo && shareConversationState.currentConversationInfo.conversation.equal(source.conversation),
@@ -20,12 +20,12 @@
             </div>
             <div class="content-container">
                 <div class="title-time-container">
-                    <i v-if="source.conversation.type === 5" class="icon-ion-android-lock" style="padding-right: 5px"></i>
-                    <div v-if="isOrganizationGroupConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
+                    <i v-if="source.conversation.type === 5" class="icon-ion-android-lock" style="padding-right: 4px"></i>
+                    <div v-if="isOrganizationGroupConversation" class="flex-row flex-align-center" style="max-width: calc(100% - 60px)">
                         <h2 class="title single-line">{{ conversationTitle }}</h2>
                         <p class="single-line" style="background: var(--accent-color); border-radius: 2px; color: var(--text-on-accent); padding: 1px 2px; font-size: 9px">官方</p>
                     </div>
-                    <div v-else-if="isExternalDomainSingleConversation" style="display: flex; align-items: center; max-width: calc(100% - 60px)">
+                    <div v-else-if="isExternalDomainSingleConversation" class="flex-row flex-align-center" style="max-width: calc(100% - 60px)">
                         <h2 class="title single-line">{{ conversationTitle }}</h2>
                         <p class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                     </div>
@@ -65,6 +65,11 @@ export default {
         source: {
             type: Object,
             required: true,
+        },
+        clickConversationItemFunc: {
+            type: Function,
+            required: false,
+            default: null,
         },
     },
     data() {
@@ -137,7 +142,15 @@ export default {
             }
         },
 
-        showConversation() {
+        onClickConversationItem() {
+            if (this.clickConversationItemFunc) {
+                this.clickConversationItemFunc(this.source);
+                return;
+            }
+            if(this.shareConversationState.currentConversationInfo && this.shareConversationState.currentConversationInfo.conversation.equal(this.source.conversation)) {
+                store.setCurrentConversationInfo(null);
+                return;
+            }
             store.setCurrentConversationInfo(this.source);
             if (this.unread > 0) {
                 wfc.clearConversationUnreadStatus(this.source.conversation);
@@ -310,22 +323,18 @@ export default {
 
 .header {
     height: 100%;
-    padding: 10px 12px 10px 0;
+    padding: 8px 12px 8px 0;
     margin-right: 2px;
     position: relative;
 }
 
 .header .avatar {
     position: relative;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
+    min-width: var(--size-avatar);
+    min-height: var(--size-avatar);
     background: var(--background-tertiary);
     top: 50%;
     transform: translateY(-50%);
-    border-radius: 3px;
-    object-fit: cover;
 }
 
 .header .badge {
@@ -333,10 +342,10 @@ export default {
     color: var(--text-on-accent);
     font-size: 10px;
     background-color: var(--background-badge);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     min-width: 16px;
     height: 16px;
-    padding: 0 5px;
+    padding: 0 4px;
     line-height: 16px;
     font-style: normal;
     text-align: center;
@@ -373,7 +382,7 @@ export default {
 
 .content-container .title-time-container .title {
     display: inline-block;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-primary);
     font-style: normal;
     font-weight: normal;
@@ -392,7 +401,7 @@ export default {
 }
 
 .content .draft {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     height: 20px;
     color: var(--text-placeholder);
 }
@@ -401,7 +410,7 @@ export default {
 >>> .content .draft em {
     color: var(--text-danger);
     font-style: normal;
-    padding-right: 5px;
+    padding-right: 4px;
 }
 
 .conversation-item-container.top .content .last-message-desc {
@@ -410,7 +419,7 @@ export default {
 
 .content .last-message-desc {
     color: var(--text-tertiary);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .content .last-message-desc i {

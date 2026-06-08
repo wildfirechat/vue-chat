@@ -271,14 +271,14 @@ export default {
 }
 .header-title {
     font-weight: 600;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
 }
 .back-btn {
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-muted);
-    padding: 5px 0;
+    padding: 4px 0;
 }
 .back-btn:hover {
     color: var(--text-primary);
@@ -293,10 +293,10 @@ export default {
     border: 3px solid var(--background-trans-muted);
     width: 30px;
     height: 30px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     border-left-color: var(--accent-color);
     animation: spin 1s linear infinite;
-    margin: 0 auto 10px;
+    margin: 0 auto 8px;
 }
 @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -328,7 +328,7 @@ export default {
 .creator-avatar {
     width: 36px;
     height: 36px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     margin-right: 12px;
 }
 .creator-text {
@@ -336,36 +336,36 @@ export default {
     flex-direction: column;
 }
 .creator-name {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     font-weight: 600;
     color: var(--text-primary);
 }
 .meta-info {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
     margin-top: 2px;
 }
 .collection-title {
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     font-weight: bold;
     color: var(--text-primary);
     margin-bottom: 12px;
     line-height: 1.3;
 }
 .collection-desc {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-muted);
     margin-bottom: 12px;
     white-space: pre-wrap;
     line-height: 1.6;
 }
 .collection-template {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--accent-color);
     background: var(--background-item-selected);
     display: inline-block;
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 .divider {
     height: 8px;
@@ -377,7 +377,7 @@ export default {
 .entry-list {
     background: var(--background-primary);
     flex: 1;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 .entry-item {
     display: flex;
@@ -394,11 +394,11 @@ export default {
     height: 24px;
     background: var(--background-secondary);
     color: var(--text-link);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     font-weight: 600;
     margin-right: 16px;
     flex-shrink: 0;
@@ -415,7 +415,7 @@ export default {
 }
 .entry-text {
     flex: 1;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
     line-height: 1.6;
     word-break: break-word;
@@ -424,9 +424,9 @@ export default {
 .edit-input {
     width: 100%;
     border: 1px solid var(--border-primary);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 16px;
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: var(--font-size-lg);
     line-height: 1.5;
     outline: none;
     resize: none;
@@ -454,7 +454,7 @@ export default {
     border: none;
     padding: 12px 60px;
     border-radius: 24px;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     cursor: pointer;
     box-shadow: var(--shadow-accent);

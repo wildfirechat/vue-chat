@@ -78,14 +78,15 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
-    background-color: var(--background-primary);
+    padding: 20px 20px 16px;
+    background-color: var(--background-modal);
+    box-sizing: border-box;
 }
 
 .portrait-container {
-    width: 60px;
-    height: 60px;
-    margin: 10px 0;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px;
 }
 
 .portrait-container > img {
@@ -94,40 +95,45 @@ export default {
 }
 
 .title {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
     text-align: center;
-    padding-top: 10px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
 }
 
 .content {
-    font-size: 12px;
-    padding: 10px;
-    flex: 1;
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    color: var(--text-secondary);
+    word-break: break-word;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-bottom: 20px;
 }
 
 .content.alone {
+    font-size: var(--font-size-sm);
     color: var(--text-primary);
-    font-size: 13px;
-    padding-top: 14px;
+    text-align: center;
 }
 
 .action-container {
     display: flex;
-    width: 100%;
-    height: 40px;
-    margin-bottom: 20px;
+    gap: 8px;
     flex-direction: row-reverse;
-    justify-content: space-around;
-    align-items: center;
 }
 
 .action-container button {
     flex: 1;
-    border-radius: 4px;
-    padding: 5px 0;
-    margin: 0 15px;
+    height: 34px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-primary);
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: background-color var(--duration-fast) ease,
+                border-color var(--duration-fast) ease,
+                box-shadow var(--duration-fast) ease;
 }
 
 .action-container .confirm.primary {
@@ -139,6 +145,7 @@ export default {
 .action-container .confirm.primary:hover {
     background: var(--button-primary-hover);
     border-color: var(--button-primary-hover);
+    box-shadow: var(--shadow-accent);
 }
 
 .action-container .confirm.danger {
@@ -150,25 +157,23 @@ export default {
 .action-container .confirm.danger:hover {
     background: var(--button-danger-hover);
     border-color: var(--button-danger-hover);
+    box-shadow: 0 2px 8px rgba(249, 85, 105, 0.35);
 }
 
 .action-container .cancel {
-    color: var(--button-default-text);
-    background: var(--button-default-bg);
-    border-color: var(--button-default-border);
+    color: var(--text-primary);
+    background: var(--background-input);
+    border-color: var(--border-primary);
 }
 
 .action-container .cancel:hover {
-    background: var(--button-default-hover);
+    background: var(--background-item-active);
+    border-color: var(--border-strong);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-.action-container .cancel:active {
-    background: var(--button-default-hover);
-    color: var(--button-default-text);
+.action-container button:active {
+    opacity: 0.85;
+    box-shadow: none;
 }
-
-.action-container .confirm:active {
-    opacity: 0.9;
-}
-
 </style>

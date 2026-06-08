@@ -160,7 +160,7 @@ export default {
     justify-content: center;
     font-weight: normal;
     font-style: normal;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     background: var(--background-primary);
     text-align: center;
     padding: 20px 0;
@@ -169,7 +169,7 @@ export default {
 .item-container {
     background: var(--background-primary);
     margin-bottom: 20px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .item {
@@ -201,7 +201,7 @@ export default {
 
 .action-container {
     display: flex;
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 button {
@@ -219,7 +219,7 @@ button:active {
 }
 
 button.destroy {
-    margin-right: 10px;
+    margin-right: 8px;
     color: var(--text-danger);
 }
 

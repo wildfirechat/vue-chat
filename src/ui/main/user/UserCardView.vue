@@ -2,7 +2,7 @@
     <section @click.stop="" class="user-info-container">
         <div class="header">
             <div class="desc">
-                <div style="display: flex; align-items: center">
+                <div class="flex-row flex-align-center">
                     <h2>{{ userInfo.displayName }}</h2>
                     <p v-if="isExternalDomainUser" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                 </div>
@@ -19,11 +19,12 @@
             <ul>
                 <li v-if="isFriend">
                     <label>{{ $t('common.alias') }}</label>
-                    <div class="alias">
+                    <div class="input-wrapper">
                         <input @click.stop="" type="text"
                                v-model.trim="friendAlias"
                                @keyup.enter="updateFriendAlias"
                                placeholder="备注名"/>
+                        <span class="edit-icon">&#9998;</span>
                     </div>
                 </li>
                 <li>
@@ -38,20 +39,20 @@
         </div>
         <div class="action">
             <!--            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>-->
-            <div class="i-button-wrapper i-button-large" @click.prevent>
-                <i class="icon-ion-ios-chatboxes-outline" @click.prevent="chat"></i>
+            <div class="i-button-wrapper i-button-large" @click.prevent="chat">
+                <i class="icon-ion-ios-chatboxes-outline"></i>
                 发消息
             </div>
-            <div class="i-button-wrapper i-button-large" v-if="!isSelf" @click.prevent>
-                <i class="icon-ion-ios-telephone-outline" @click.prevent="startAudioCall"></i>
+            <div class="i-button-wrapper i-button-large" v-if="!isSelf" @click.prevent="startAudioCall">
+                <i class="icon-ion-ios-telephone-outline"></i>
                 语音通话
             </div>
-            <div class="i-button-wrapper i-button-large" v-if="!isSelf" @click.prevent>
-                <i class="icon-ion-ios-videocam-outline" @click.prevent="startVideoCall"></i>
+            <div class="i-button-wrapper i-button-large" v-if="!isSelf" @click.prevent="startVideoCall">
+                <i class="icon-ion-ios-videocam-outline"></i>
                 视频通话
             </div>
-            <div class="i-button-wrapper i-button-large" v-if="!isFriend" @click.prevent>
-                <i class="icon-ion-ios-personadd-outline" @click.prevent="addFriend"></i>
+            <div class="i-button-wrapper i-button-large" v-if="!isFriend" @click.prevent="addFriend">
+                <i class="icon-ion-ios-personadd-outline"></i>
                 添加好友
             </div>
         </div>
@@ -227,13 +228,12 @@ export default {
 .user-info-container .avatar {
     width: 60px;
     height: 60px;
-    border-radius: 3px;
-    object-fit: cover;
+    cursor: pointer;
 }
 
 .header {
     width: calc(100% - 40px);
-    margin: 10px 20px;
+    margin: 8px 20px;
     padding-bottom: 20px;
     display: flex;
     justify-content: space-between;
@@ -255,7 +255,7 @@ export default {
 
 .content ul {
     list-style: none;
-    margin: 10px 20px;
+    margin: 8px 20px;
 }
 
 .content ul li {
@@ -266,33 +266,22 @@ export default {
 }
 
 .content ul li label {
-    margin-right: 20px;
+    width: 40px;
     color: var(--text-secondary);
 }
 
-.content ul li .alias {
-    border: none;
-    background: none;
-}
-
-.content ul li .alias > input {
-    width: 100%;
-    outline: none;
-    border: none;
-    background-color: var(--background-tooltip);
-    padding: 2px 5px;
+.content ul li .input-wrapper > input {
+    padding: 2px 4px;
     color: var(--text-primary);
+    font-size: var(--font-size-sm);
 }
 
-.content ul li .alias > input:focus {
+.content ul li .input-wrapper > input:focus,
+.content ul li .input-wrapper > input:active {
     border: 1px solid var(--border-active);
 }
 
-.content ul li .alias > input:active {
-    border: 1px solid var(--border-active);
-}
-
-.content ul li > div {
+.content ul li > div:not(.input-wrapper) {
     display: inline-block;
     flex: 1;
     color: var(--text-primary);
@@ -304,16 +293,16 @@ export default {
     justify-content: center;
 
     padding-top: 20px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .action i {
-    font-size: 20px;
+    font-size: 26px;
     color: var(--text-link);
 }
 
 .action div {
-    margin: 0 4px;
+    margin: 0 8px;
     color: var(--text-link);
 }
 

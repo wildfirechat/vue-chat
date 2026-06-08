@@ -77,16 +77,8 @@
                         <span class="desc">{{ sharedContactState.friendList.length }}</span>
                     </div>
                 </div>
-                <UserListView
-                    v-if="sharedContactState.expandFriendList && users.length < 100 && false"
-                    :enable-pick="false"
-                    :users="users"
-                    :click-user-item-func="setCurrentUser"
-                    :padding-left="'30px'"
-                    :enable-contact-context-menu="true"
-                />
                 <virtual-list
-                    v-else-if="sharedContactState.expandFriendList"
+                    v-if="sharedContactState.expandFriendList"
                     :data-component="contactItemView" :data-sources="groupedContacts" :data-key="'uid'"
                     :estimate-size="30"
                     style="max-height: 700px; overflow-y: auto"/>
@@ -122,7 +114,6 @@ import CardMessageContent from "../../../wfc/messages/cardMessageContent";
 import wfc from "../../../wfc/client/wfc";
 import Message from "../../../wfc/messages/message";
 import ChatroomListView from "./ChatroomListView.vue";
-import Config from "../../../config";
 import {markRaw} from "vue";
 import ExternalDomainListView from "./ExternalDomainListView.vue";
 
@@ -249,28 +240,45 @@ export default {
     height: 40px;
     display: flex;
     align-items: center;
-    padding-left: 15px;
+    padding-left: 16px;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: var(--font-size-base);
     position: sticky;
     background-color: var(--background-secondary);
     top: 0;
+    user-select: none;
+    transition: background var(--duration-fast);
 }
 
 .category-item {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
 }
 
 .category-item span:last-of-type {
-    margin-right: 15px;
+    margin-right: 16px;
+}
+
+.category-item .title {
+    font-size: var(--font-size-base);
+    font-weight: normal;
+    font-style: normal;
+    color: var(--text-primary);
+}
+
+.category-item .desc {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    min-width: 20px;
+    text-align: right;
 }
 
 .category-item .tip {
     font-size: 10px;
-    padding-left: 5px;
-    color: var(--text-secondary-strong);
+    padding-left: 4px;
+    color: var(--text-secondary);
 }
 
 .arrow {
@@ -278,7 +286,9 @@ export default {
     border-width: 0 1px 1px 0;
     display: inline-block;
     padding: 3px;
-    margin-right: 10px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    transition: transform var(--duration-fast);
 }
 
 .right {

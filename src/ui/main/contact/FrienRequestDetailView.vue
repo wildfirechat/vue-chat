@@ -14,8 +14,9 @@
                 <ul>
                     <li v-if="isFriend">
                         <label>{{ $t('common.alias') }}</label>
-                        <div class="alias">
+                        <div class="input-wrapper">
                             <input type="text" ref="input" :value="user.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias"/>
+                            <span class="edit-icon">&#9998;</span>
                         </div>
                     </li>
                     <li v-if="!isFriend">
@@ -37,17 +38,17 @@
                 </ul>
             </div>
             <div class="footer" v-if="isFriend">
-                <div class="action" @click="chat">
+                <div class="i-button-wrapper i-button-large" @click="chat">
                     <i class="icon-ion-ios-chatboxes-outline"></i>
-                    <a>{{ $t('message.send_message') }}</a>
+                    {{ $t('message.send_message') }}
                 </div>
-                <div class="action" @click="startAudioCall">
+                <div class="i-button-wrapper i-button-large" @click="startAudioCall">
                     <i class="icon-ion-ios-telephone-outline"></i>
-                    <a>语音通话</a>
+                    语音通话
                 </div>
-                <div class="action" @click="startVideoCall">
+                <div class="i-button-wrapper i-button-large" @click="startVideoCall">
                     <i class="icon-ion-ios-videocam-outline"></i>
-                    <a>视频通话</a>
+                    视频通话
                 </div>
             </div>
         </div>
@@ -141,15 +142,16 @@ export default {
     height: 75px;
     display: flex;
     align-items: center;
-    padding-bottom: 15px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border-primary);
 }
 
 .header .avatar {
     width: 60px;
     height: 60px;
-    border-radius: 5px;
     margin-right: 20px;
+    border-radius: var(--default-portrait-border-radius);
+    object-fit: cover;
 }
 
 .header .name {
@@ -160,14 +162,14 @@ export default {
 }
 
 .header .name h2 {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     font-style: normal;
     font-weight: normal;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .header .name p {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-secondary-strong);
 }
 
@@ -179,7 +181,7 @@ export default {
 
 .content ul {
     list-style: none;
-    margin: 20px 0 10px 0;
+    margin: 20px 0 8px 0;
 }
 
 .content ul li {
@@ -187,7 +189,7 @@ export default {
     height: 40px;
     line-height: 40px;
     display: flex;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .content ul li label {
@@ -199,28 +201,10 @@ export default {
 }
 
 .content ul li p {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
-.content ul li .alias > input {
-    width: 100%;
-    border: none;
-    border-radius: 3px;
-    outline: none;
-    padding: 5px;
-    color: var(--text-hint);
-    font-size: 13px;
-}
-
-.content ul li .alias > input:active {
-    border: 1px solid var(--border-active);
-}
-
-.content ul li .alias input:focus {
-    border: 1px solid var(--border-active);
-}
-
-.content ul li > div {
+.content ul li > div:not(.input-wrapper) {
     display: inline-block;
     flex: 1;
 }
@@ -231,22 +215,14 @@ export default {
     padding-top: 30px;
 }
 
-.footer .action {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    color: var(--accent-color);
+.footer i {
+    font-size: var(--font-size-2xl);
+    color: var(--text-link);
 }
 
-.footer .action a {
-    font-size: 10px;
-    padding-top: 1px;
-}
-
-.footer .action i {
-    font-size: 20px;
+.footer div {
+    margin: 0 8px;
+    color: var(--text-link);
 }
 
 </style>

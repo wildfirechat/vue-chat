@@ -24,7 +24,7 @@
                 启用密码
                 <input v-model="enablePin" type="checkbox" role="switch">
             </label>
-            <input v-if="enablePin" v-model="pin" class="text-input" style="margin-top: 10px" type="tel" maxlength="4" placeholder="123456">
+            <input v-if="enablePin" v-model="pin" class="text-input" style="margin-top: 8px" type="tel" maxlength="4" placeholder="123456">
         </div>
         <div>
             <label>
@@ -159,7 +159,7 @@ export default {
     justify-content: center;
     font-weight: normal;
     font-style: normal;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     text-align: center;
 }
 
@@ -167,16 +167,16 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .text-input {
     height: 30px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
     width: 100%;
-    padding: 0 5px;
+    padding: 0 4px;
 }
 
 .text-input:active {
@@ -197,7 +197,7 @@ export default {
 }
 
 .advance_desc {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--status-error);
 }
 

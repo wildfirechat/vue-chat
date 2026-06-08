@@ -48,7 +48,7 @@ export default {
     display: block;
     height: 50%;
     background: var(--text-hint); /*jow loading的颜色*/
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .loading .line div:nth-child(2) {

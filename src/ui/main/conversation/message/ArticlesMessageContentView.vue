@@ -46,7 +46,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px 0;
+    margin: 8px 0;
     justify-content: center;
 }
 
@@ -54,9 +54,9 @@ export default {
     position: relative;
     width: 400px;
     background: var(--background-primary);
-    padding: 10px;
-    border-radius: 5px;
-    margin: 5px 0;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    margin: 4px 0;
 }
 
 .top-article:hover {
@@ -100,7 +100,7 @@ export default {
     width: 400px;
     height: 80px;
     background: var(--background-primary);
-    padding: 0 10px;
+    padding: 0 8px;
 }
 
 .sub-article:hover {
@@ -125,7 +125,7 @@ export default {
 .sub-article img {
     width: 60px;
     height: 60px;
-    margin-left: 10px;
+    margin-left: 8px;
 }
 
 </style>

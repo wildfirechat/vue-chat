@@ -168,14 +168,14 @@ export default {
 }
 .header-title {
     font-weight: 600;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
 }
 .back-btn {
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-muted);
-    padding: 5px 0;
+    padding: 4px 0;
 }
 .back-btn:hover {
     color: var(--text-primary);
@@ -194,7 +194,7 @@ export default {
     width: 100%;
 }
 .page-title {
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     font-weight: bold;
     margin-bottom: 24px;
     color: var(--text-primary);
@@ -207,16 +207,16 @@ export default {
     display: block;
     margin-bottom: 8px;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: var(--font-size-base);
     font-weight: 600;
 }
 .input-field {
     width: 100%;
     padding: 12px 14px;
     border: 1px solid var(--border-primary);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     background: var(--background-primary);
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
     box-sizing: border-box;
     outline: none;
@@ -237,7 +237,7 @@ export default {
 /* Radio Cards */
 .radio-group {
     display: flex;
-    gap: 15px;
+    gap: 16px;
 }
 .radio-card {
     flex: 1;
@@ -246,7 +246,7 @@ export default {
     justify-content: center;
     padding: 12px;
     border: 1px solid var(--border-primary);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: all 0.2s;
     background: var(--background-primary);
@@ -263,7 +263,7 @@ export default {
     display: none;
 }
 .radio-label {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     font-weight: 500;
 }
 
@@ -284,7 +284,7 @@ export default {
     border: none;
     padding: 12px 60px;
     border-radius: 24px;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     cursor: pointer;
     box-shadow: var(--shadow-accent);

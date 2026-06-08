@@ -56,7 +56,6 @@ export default {
         getConversationEventBus() {
             return this.conversationEventBus || this.$eventBus;
         },
-
         openMessageContextMenu(event, message) {
             this.$emit('openMessageContextMenu', event, message)
             this.highLight = true;
@@ -99,14 +98,14 @@ export default {
 
 .message-time-container .receipt {
     margin-right: 70px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-time);
 }
 
 .message-content-container {
     width: 100%;
     display: flex;
-    padding: 10px 20px 4px 20px;
+    padding: 8px 20px 4px 20px;
     justify-content: center;
     align-items: center;
     position: relative;

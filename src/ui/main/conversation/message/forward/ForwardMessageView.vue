@@ -89,19 +89,19 @@ export default {
 .forward-message {
     display: flex;
     max-width: 100%;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     justify-content: center;
     max-height: 100px;
     overflow: hidden;
 }
 
 .forward-message p {
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
     word-wrap: break-word;
     word-break: break-all;
     color: var(--text-tertiary);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     overflow: hidden;
     background-color: var(--background-item-placeholder);
     text-overflow: ellipsis;
@@ -110,7 +110,7 @@ export default {
 .forward-message img {
     max-width: 200px;
     max-height: 200px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .forward-message-container label input {
@@ -121,6 +121,18 @@ export default {
     border-right: 0;
     border-left: 0;
     border-bottom: 1px solid var(--border-primary);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--duration-fast);
+}
+
+.forward-message-container label input::placeholder {
+    color: var(--text-hint);
+}
+
+.forward-message-container label input:focus {
+    border-bottom-color: var(--accent-color);
 }
 
 </style>

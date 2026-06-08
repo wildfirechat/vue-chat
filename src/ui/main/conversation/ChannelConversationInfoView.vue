@@ -110,26 +110,26 @@ header {
 header label {
     width: 100%;
     display: flex;
-    margin-top: 15px;
+    margin-top: 16px;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-hint);
 }
 
 header label:last-of-type {
-    padding-bottom: 15px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border-tertiary);
 }
 
 header label input {
     flex: 1;
-    margin-top: 5px;
+    margin-top: 4px;
     border: none;
     outline: none;
     width: 100%;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     background-color: transparent;
 }
 
@@ -141,12 +141,12 @@ header label input {
     display: flex;
     color: var(--text-danger);
     align-items: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     justify-content: center;
     height: 42px;
     width: 100%;
     border-top: 1px solid var(--border-tertiary);
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .conversation-action-item:active {

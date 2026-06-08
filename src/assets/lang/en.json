@@ -15,7 +15,9 @@
     "contact": {
         "new_friend": "New friend",
         "group": "Group Chat",
-        "contact": "Contact"
+        "contact": "Contact",
+        "empty_title": "View contacts",
+        "empty_hint": "Select a contact or group from the left to view details"
     },
     "friend_request": {
         "request": "Friend Request",
@@ -88,7 +90,9 @@
         "action_tip_video_call": "Video Call",
         "clear_conversation_history": "Clear local history",
         "clear_remote_conversation_history": "Clear remote history",
-        "complain": "Complain"
+        "complain": "Complain",
+        "empty_title": "Start a conversation",
+        "empty_hint": "Select a chat from the left, or start a new one"
     },
     "fav": {
         "fav": "Collection",

@@ -117,11 +117,11 @@ export default {
 
 <style lang="css" scoped>
 .composite-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     overflow: hidden;
 }
 
@@ -132,18 +132,18 @@ export default {
 
 .composite-message-container .title {
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: var(--font-size-lg);
 }
 
 .composite-message-container .content, .desc {
-    padding: 5px 0;
-    font-size: 14px;
+    padding: 4px 0;
+    font-size: var(--font-size-base);
     color: var(--text-hint);
 }
 
 .composite-message-container .desc {
     border-top: 1px solid var(--border-separator);
-    padding: 5px 0 0 0;
+    padding: 4px 0 0 0;
 }
 
 .composite-message-container .content >>> img {

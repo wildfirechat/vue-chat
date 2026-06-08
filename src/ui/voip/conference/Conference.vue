@@ -21,34 +21,34 @@
         <div v-if="session" class="main-slider-container"
              v-bind:style="{display: session.screenSharing ? 'none' : 'flex'}">
             <div class="main">
-                <header style="height: 20px; display: flex; justify-content: space-between"
+                <header class="flex-row flex-justify-between" style="height: 20px"
                     v-bind:style="{background: audioOnly ? 'var(--background-primary)' : 'black'}">
                     <a href="#" @click.prevent>
-                        <i class="icon-ion-information" style="padding: 0 10px"
+                        <i class="icon-ion-information" style="padding: 0 8px"
                            id="info-icon"
                            v-bind:class="{active:showConferenceSimpleInfoView}"
                            @click.prevent="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
                     </a>
-                    <p style="padding-left: 10px; color: var(--text-secondary)">{{ duration }}</p>
+                    <p style="padding-left: 8px; color: var(--text-secondary)">{{ duration }}</p>
                     <p style="flex: 1"></p>
                     <div>
                         <a v-if="!audioOnly" href="#" @click.prevent>
-                            <i class="icon-ion-grid" style="padding: 0 10px"
+                            <i class="icon-ion-grid" style="padding: 0 8px"
                                id="grid-icon"
                                v-bind:class="{active:showChooseLayoutView}"
                                @click.prevent="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
                         </a>
                         <!--                        TODO 条件显示，展示聊天界面，或者参与者列表界面时，才展示-->
                         <a href="#" v-if="showSlider" @click.prevent>
-                            <i :class="showSlider? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'" style="padding: 0 10px" @click="toggleSliderView"></i>
+                            <i :class="showSlider? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'" style="padding: 0 8px" @click="toggleSliderView"></i>
                         </a>
                     </div>
                 </header>
-                <div v-if="transcriptionMessages.length > 0" 
-                     style="position: absolute; top: 40px; left: 10%; width: 80%; max-height: 120px; overflow-y: auto; border-radius: 4px; padding: 8px; z-index: 1000;">
+                <div v-if="transcriptionMessages.length > 0"
+                     style="position: absolute; top: 40px; left: 10%; width: 80%; max-height: 120px; overflow-y: auto; border-radius: var(--radius-sm); padding: 8px; z-index: 1000;">
                     <div v-for="(msg, index) in transcriptionMessages" :key="index" style="margin-bottom: 4px; word-break: break-word;">
-                        <span style="color: #FFA500; font-size: 13px;">{{ getUserDisplayName(msg.messageContent.userId) }}:</span>
-                        <span style="color: #FFFFFF; font-size: 13px;">{{ msg.messageContent.content }}</span>
+                        <span style="color: var(--voip-chat-username); font-size: 13px;">{{ getUserDisplayName(msg.messageContent.userId) }}:</span>
+                        <span style="color: var(--text-on-accent); font-size: 13px;">{{ msg.messageContent.content }}</span>
                     </div>
                 </div>
                 <div v-if="showConferenceSimpleInfoView"
@@ -76,9 +76,9 @@
                     <!--main-->
                     <!--video-->
                     <div v-if="!audioOnly" style="width: 100%; height: 100%">
-                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex > 0" style="position: absolute; top: 50%; left: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-left-c"
+                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex > 0" style="position: absolute; top: 50%; left: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px; padding: 0 8px" class="icon-ion-arrow-left-c"
                            @click="prePage"></i>
-                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex < gridPageCount - 1" style="position: absolute; top: 50%; right: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-right-c"
+                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex < gridPageCount - 1" style="position: absolute; top: 50%; right: 0; color: var(--text-tertiary); z-index: 1000; font-size: 40px; padding: 0 8px" class="icon-ion-arrow-right-c"
                            @click="nextPage"></i>
                         <!--                    宫格布局-->
                         <section v-if="computedCurrentLayout=== 0" class="content-container grid video">
@@ -119,9 +119,9 @@
                     <!--audio-->
                     <div v-else style="width: 100%; height: 100%">
                         <div
-                            style="background: var(--background-primary); height: 50px; display: flex; justify-content: center; align-items: center">
+                            class="flex-center" style="background: var(--background-primary); height: 50px">
                             <div
-                                style="background: var(--accent-color-subtle); width: 300px; height: 40px; padding: 0 5px; border-radius: 3px; display: flex; flex-direction: column; justify-content: center">
+                                class="flex-column flex-justify-center" style="background: var(--accent-color-subtle); width: 300px; height: 40px; padding: 0 4px; border-radius: var(--radius-sm)">
                                 <p class="single-line"> {{ '正在讲话: ' + speakingUserName }}</p>
                             </div>
                         </div>
@@ -253,12 +253,12 @@
                     </div>
                 </div>
                 <div class="slider-content">
-                    <ConferenceManageView
-                        v-show="showConferenceManageView && activeSliderTab === 'manage'"
-                        v-bind:class="{ active: showConferenceManageView}"
-                        :participants="participantUserInfos"
-                        :session="session"
-                    />
+                <ConferenceManageView
+                    v-show="showConferenceManageView && activeSliderTab === 'manage'"
+                    v-bind:class="{ active: showConferenceManageView}"
+                    :participants="participantUserInfos"
+                    :session="session"
+                />
                     <ConversationView v-show="showConversationView && activeSliderTab === 'conversation'"
                                       ref="conferenceConversationView"
                                       class="conversation-view"
@@ -479,7 +479,6 @@ export default {
                 if (isElectron()) {
                     document.title = session.title;
                 }
-
                 this.initConferenceConversationStore();
 
                 conferenceManager.getConferenceInfo(session.callId);
@@ -487,10 +486,10 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
                 console.log('didCreateLocalVideoTrack', screenShare)
-                if (WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare) {
+                if(WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare){
                     this.selfUserInfo._stream = stream;
                     this.selfUserInfo._isVideoMuted = false;
-                    this.selfUserInfo._isScreenSharing = screenShare;
+                	this.selfUserInfo._isScreenSharing = screenShare;
                 } else {
                     let selfScreenShareUserInfo = Object.assign(new UserInfo(), this.selfUserInfo);
                     selfScreenShareUserInfo._stream = stream;
@@ -547,7 +546,7 @@ export default {
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
                 console.log('didParticipantJoined', userId, screenSharing, this.participantUserInfos.length)
                 let index = this.participantUserInfos.findIndex(p => p.uid === userId && p._isScreenSharing === screenSharing);
-                if (index >= 0) {
+                if(index >= 0) {
                     return;
                 }
 
@@ -589,11 +588,11 @@ export default {
                 }
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
-                    let obj = { reason: reason, session: this.session };
+                    let obj = {reason: reason, session: this.session};
                     // 目前仅 pc 端，弹出重新开启对话框，未来可能都禁用了
                     if (isElectron()){
-                    	localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
-                	}
+                        localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
+                    }
                 }
                 this.session.closeVoipWindow();
                 this.session = null;
@@ -721,7 +720,7 @@ export default {
             };
 
             if (isElectron()) {
-                avenginekit.setup(sessionCallback);
+            	avenginekit.setup(sessionCallback);
             } else {
                 avenginekit.sessionCallback = sessionCallback;
             }
@@ -745,7 +744,6 @@ export default {
             this.session.leaveConference(true);
             this.$eventBus.$emit('conference-slider-closed');
             await conferenceApi.destroyConference(conferenceManager.conferenceInfo.conferenceId)
-
             conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000);
             this.$eventBus.$emit('conferenceListUpdated');
         },
@@ -880,7 +878,7 @@ export default {
 
         syncSliderState(preferredTab) {
             if (this.showConferenceManageView || this.showConversationView) {
-                if (!this.showSlider) {
+            if (!this.showSlider) {
                     this.openSliderView();
                 }
                 if (preferredTab === 'manage' && this.showConferenceManageView) {
@@ -912,13 +910,13 @@ export default {
             if (this.showSlider) {
                 return;
             }
-            if (isElectron()) {
-                let size = currentWindow.getSize();
-                currentWindow.setSize(size[0] + 350, size[1], false)
-            } else {
+                if (isElectron()) {
+                    let size = currentWindow.getSize();
+                    currentWindow.setSize(size[0] + 350, size[1], false)
+                } else {
                 this.$eventBus.$emit('conference-slider-opened');
-            }
-            this.$refs.rootContainer.style.setProperty('--slider-width', '350px');
+                }
+                this.$refs.rootContainer.style.setProperty('--slider-width', '350px');
             this.showSlider = true;
         },
 
@@ -927,14 +925,15 @@ export default {
                 return;
             }
             this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
-            if (isElectron()) {
-                let size = currentWindow.getSize();
-                currentWindow.setSize(size[0] - 350, size[1], false)
-            } else {
+                if (isElectron()) {
+                    let size = currentWindow.getSize();
+                    currentWindow.setSize(size[0] - 350, size[1], false)
+                } else {
                 this.$eventBus.$emit('conference-slider-closed');
-            }
-            this.showConferenceManageView = false;
-            this.showConversationView = false;
+                }
+
+                this.showConferenceManageView = false;
+                this.showConversationView = false;
             this.showSlider = false;
         },
 
@@ -1096,7 +1095,6 @@ export default {
             let userInfo = wfc.getUserInfo(userId);
             return userInfo ? userInfo.displayName : userId;
         },
-
         timestampFormat(timestamp) {
             timestamp = ~~(timestamp / 1000);
             let str = ''
@@ -1346,9 +1344,9 @@ export default {
                 sp = this.conferenceFocusUser;
             } else if (this.conferenceLocalFocusUser && !this.conferenceLocalFocusUser._isVideoMuted) {
                 sp = this.conferenceLocalFocusUser;
-                // 可能会导致焦点用户切换太快，故注释掉
-                // } else if (this.speakingVideoParticipant) {
-                //     sp = this.speakingVideoParticipant;
+            // 可能会导致焦点用户切换太快，故注释掉
+            // } else if (this.speakingVideoParticipant) {
+            //     sp = this.speakingVideoParticipant;
             } else {
                 sp = this.participantUserInfos.find(u => !u._isAudience && !u._isVideoMuted && u._isScreenSharing === true);
                 if (!sp) {
@@ -1461,7 +1459,7 @@ export default {
                     if (oldCurrentPageParticipants) {
                         oldCurrentPageParticipants.forEach(u => {
                             let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
-                            if (newIndex > -1) {
+                            if(newIndex > -1) {
                                 return;
                             }
                             if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
@@ -1473,7 +1471,7 @@ export default {
                     if (newCurrentPageParticipants) {
                         newCurrentPageParticipants.forEach(u => {
                             let oldIndex = oldCurrentPageParticipants.findIndex(ou => ou.uid === u.uid && ou._isScreenSharing === u._isScreenSharing);
-                            if (oldIndex > -1) {
+                            if(oldIndex > -1) {
                                 return;
                             }
                             if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
@@ -1525,7 +1523,7 @@ export default {
         this.$watch(() => this.conferenceConversationStore.state.conversation.currentConversationMessageList, (newVal) => {
             if (!newVal) return;
             const msgs = newVal.filter(m => {
-                return m.messageContent instanceof TranscriptionMessageContent 
+                return m.messageContent instanceof TranscriptionMessageContent
                     && m.conversation.type === ConversationType.ChatRoom
                     && m.conversation.target === this.session.callId;
             });
@@ -1686,7 +1684,7 @@ i.active {
     background: var(--background-primary);
     height: calc(100% - 50px);
     overflow: auto;
-    padding: 10px 0 50px 0;
+    padding: 8px 0 50px 0;
 }
 
 .participant-audio-item {
@@ -1709,7 +1707,7 @@ i.active {
     color: var(--text-on-accent);
     text-align: center;
     vertical-align: center;
-    border-radius: 9px;
+    border-radius: var(--radius-md);
     bottom: 0;
     background: var(--background-item-placeholder);
     transform: translateX(-50%) translateY(25%);
@@ -1725,7 +1723,7 @@ i.active {
     left: 0;
     bottom: 0;
     background: gray;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .duration-action-container {
@@ -1737,7 +1735,7 @@ i.active {
 
 .duration-action-container p {
     color: var(--text-on-accent);
-    padding: 0 5px 0 0;
+    padding: 0 4px 0 0;
 }
 
 .conference-footer-layout {
@@ -1746,7 +1744,7 @@ i.active {
     gap: 4px;
     padding: 0 12px;
 }
-
+    /*width: 100%;*/
 .send-message-container {
     flex: 0 0 220px;
     display: flex;
@@ -1754,13 +1752,13 @@ i.active {
     gap: 6px;
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     padding: 6px 24px 6px 12px;
     backdrop-filter: blur(4px);
 }
 
 .send-msg-icon {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: rgba(255, 255, 255, 0.5);
     flex-shrink: 0;
 }
@@ -1770,8 +1768,8 @@ i.active {
     background: transparent;
     border: none;
     outline: none;
-    color: #fff;
-    font-size: 13px;
+    color: var(--text-on-accent);
+    font-size: var(--font-size-sm);
     min-width: 0;
 }
 
@@ -1789,16 +1787,16 @@ i.active {
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    background: #e34d4d;
+    background: var(--voip-danger-bg);
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     padding: 8px 18px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background var(--duration-fast);
 }
 
 .hangup-btn:hover {
-    background: #c73c3c;
+    background: var(--voip-danger-hover);
 }
 
 .hangup-btn-icon {
@@ -1807,8 +1805,8 @@ i.active {
 }
 
 .hangup-btn span {
-    color: #fff;
-    font-size: 12px;
+    color: var(--text-on-accent);
+    font-size: var(--font-size-xs);
     white-space: nowrap;
 }
 
@@ -1824,7 +1822,7 @@ i.active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-on-accent);
     padding: 0 25px 0 25px;
 }
@@ -1832,7 +1830,7 @@ i.active {
 .avatar {
     width: 90px;
     height: 90px;
-    border-radius: 45px;
+    border-radius: var(--radius-circle);
 }
 
 .avatar.highlight {
@@ -1862,7 +1860,7 @@ i.active {
 }
 
 .icon-ion-grid:after {
-    padding-left: 5px;
+    padding-left: 4px;
     content: "\f13f";
 }
 
@@ -1880,8 +1878,8 @@ i.active {
 
 .hangup-menu-popup {
     z-index: 9999;
-    background: #2c2c2e;
-    border-radius: 10px;
+    background: var(--voip-panel-bg);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     min-width: 200px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
@@ -1905,19 +1903,19 @@ i.active {
 }
 
 .hangup-menu-title-end {
-    color: #ff5a5a;
-    font-size: 14px;
+    color: var(--voip-error-strong);
+    font-size: var(--font-size-base);
     font-weight: 600;
 }
 
 .hangup-menu-title-leave {
-    color: #fff;
-    font-size: 14px;
+    color: var(--text-on-accent);
+    font-size: var(--font-size-base);
     font-weight: 600;
 }
 
 .hangup-menu-sub {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: rgba(255, 255, 255, 0.45);
 }
 

@@ -2283,14 +2283,17 @@ let store = {
             let conversationInfo = wfc.getConversationInfo(fileRecord.conversation);
             this._patchConversationInfo(conversationInfo, false);
 
-            if (fileRecord.conversation.type === 0) {
-                fileRecord._conversationDisplayName = '与' + conversationInfo.conversation._target._displayName + '的聊天';
+            let convName = ''
+            if(conversationInfo.conversation._target && conversationInfo.conversation._target._displayName){
+                if (fileRecord.conversation.type === 0) {
+                    convName = '与' + conversationInfo.conversation._target._displayName + '的聊天';
+                } else {
+                    convName = conversationInfo.conversation._target._displayName;
+                }
             } else {
-                fileRecord._conversationDisplayName = conversationInfo.conversation._target._displayName;
+                convName = `<${conversationInfo.conversation.target}>`
             }
-            if (fileRecord.name.indexOf(FileMessageContent.FILE_NAME_PREFIX) === 0) {
-                fileRecord.name = fileRecord.name.substring(fileRecord.name.indexOf(FileMessageContent.FILE_NAME_PREFIX) + FileMessageContent.FILE_NAME_PREFIX.length);
-            }
+             fileRecord._conversationDisplayName = convName
             fileRecord._timeStr = helper.dateFormat(fileRecord.timestamp);
             fileRecord._sizeStr = helper.humanSize(fileRecord.size)
             fileRecord._fileIconName = helper.getFiletypeIcon(fileRecord.name.substring(fileRecord.name.lastIndexOf('.')))

@@ -25,11 +25,11 @@ export default {
 
 <style lang="css" scoped>
 .text-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .text-message-container.out {
@@ -39,7 +39,7 @@ export default {
 
 .text-message-container .text {
     color: var(--text-primary);
-    font-size: 16px;
+    font-size: var(--font-size-lg);
 }
 
 </style>

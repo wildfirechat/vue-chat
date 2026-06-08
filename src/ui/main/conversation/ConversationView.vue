@@ -1,13 +1,20 @@
 <template>
     <section>
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
-            <h1>^~^</h1>
+            <div class="empty-state">
+                <div class="empty-icon-wrap">
+                    <div class="empty-icon-glow"></div>
+                    <i class="icon-ion-chatbubbles empty-icon"></i>
+                </div>
+                <p class="empty-title">{{ $t('conversation.empty_title') }}</p>
+                <p class="empty-hint">{{ $t('conversation.empty_hint') }}</p>
+            </div>
         </div>
         <div v-else class="conversation-container">
             <header>
                 <div class="title-container">
                     <div>
-                        <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
+                        <h1 ref="titleEl" class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
                         <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
                         <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
                     </div>
@@ -15,19 +22,17 @@
                         v-bind:style="{marginTop:(sharedMiscState.isElectronWindowsOrLinux || sharedMiscState.isOhos) ?  '30px' : '0'}"
                         class="conversation-action-container"
                     >
-                        <div class="i-button-wrapper action" v-if="sharedMiscState.isElectron" href="#" @click.prevent>
+                        <div class="i-button-wrapper action" v-if="sharedMiscState.isElectron" @click.prevent="setWindowAlwaysTop">
                             <i class="icon-ion-pin"
                                style="display: inline-block"
                                v-bind:class="{active : isWindowAlwaysTop}"
-                               @click.prevent="setWindowAlwaysTop"
                             />
                         </div>
-                        <div class="i-button-wrapper action" href="#" @click.prevent>
+                        <div ref="settingBtn" class="i-button-wrapper action" @click.prevent="toggleConversationInfo">
                             <i class="icon-ion-ios-settings-strong"
                                style="display: inline-block"
                                ref="setting"
                                v-bind:class="{active : showConversationInfo}"
-                               @click.prevent="toggleConversationInfo"
                             />
                         </div>
                     </div>
@@ -441,8 +446,11 @@ export default {
             }
         },
 
-        hideConversationInfo() {
-            this.showConversationInfo && (this.showConversationInfo = false);
+        hideConversationInfo(event) {
+            const path = event.composedPath();
+            if (this.$refs.settingBtn && path.includes(this.$refs.settingBtn)) return;
+            if (this.$refs.titleEl && path.includes(this.$refs.titleEl)) return;
+            this.showConversationInfo = false;
         },
 
         isCancelable(message) {
@@ -1195,14 +1203,73 @@ export default {
     justify-content: center;
     align-items: center;
     background-color: var(--background-primary);
+    background-image: var(--hero-bg-pattern);
+    background-size: 20px 20px;
     border-top-right-radius: var(--main-border-radius);
     border-bottom-right-radius: var(--main-border-radius);
-    /*border-left: 1px solid var(--border-primary);*/
 }
 
-.conversation-empty-container h1 {
-    font-size: 17px;
-    font-weight: normal;
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: empty-fade-in 0.4s ease both;
+}
+
+.empty-icon-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: empty-float 4s ease-in-out infinite;
+}
+
+.empty-icon-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-color-subtle) 0%, transparent 70%);
+    opacity: 0.8;
+}
+
+.empty-icon {
+    position: relative;
+    font-size: 40px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #5b8ef0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 8px rgba(31, 100, 228, 0.25));
+}
+
+.empty-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+}
+
+.empty-hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    text-align: center;
+    line-height: 1.5;
+    max-width: 260px;
+}
+
+@keyframes empty-float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-6px); }
+}
+
+@keyframes empty-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .title-container {
@@ -1220,7 +1287,7 @@ export default {
 
 
 .title-container h1 {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     word-wrap: break-word;
     max-width: 500px;
     text-overflow: ellipsis;
@@ -1229,7 +1296,7 @@ export default {
 
 .title-container a {
     text-decoration: none;
-    padding: 15px;
+    padding: 16px;
     color: var(--text-primary);
 }
 
@@ -1259,11 +1326,11 @@ export default {
 
 .conversation-action-container {
     display: flex;
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .conversation-action-container .action{
-    margin: 0 5px;
+    margin: 0 4px;
     width: 30px !important;
     height: 30px !important;
 }
@@ -1287,14 +1354,14 @@ export default {
     width: 100%;
     z-index: 100;
     height: 100%;
-    padding: 20px 15px 15px 15px;
+    padding: 20px 16px 16px 16px;
 }
 
 .conversation-content-container .drag-drop {
     border: 2px dashed var(--border-dashed-active);
     height: 100%;
     width: 100%;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1312,7 +1379,7 @@ export default {
 }
 
 .ongoing-call-item {
-    padding: 10px 20px;
+    padding: 8px 20px;
     display: flex;
     border-bottom: 1px solid var(--border-secondary);
 }
@@ -1322,9 +1389,9 @@ export default {
 }
 
 .ongoing-call-item button {
-    padding: 5px 10px;
+    padding: 4px 8px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .ongoing-call-item button:active {
@@ -1347,7 +1414,7 @@ export default {
 }
 
 .header {
-    padding: 10px;
+    padding: 8px;
     text-align: center;
 }
 
@@ -1357,7 +1424,7 @@ export default {
     height: 20px;
     border: 2px solid var(--background-tertiary);
     border-top: 2px solid var(--border-active);
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     animation: spin 1s linear infinite;
 }
 
@@ -1368,7 +1435,7 @@ export default {
 
 .finished {
     color: var(--text-hint);
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .unread-count-tip-container {
@@ -1377,7 +1444,7 @@ export default {
     background: var(--background-primary);
     width: auto;
     color: var(--border-active);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 /*.handler {*/
@@ -1387,14 +1454,13 @@ export default {
 
 .inputting-container {
     display: flex;
-    padding: 10px 20px;
+    padding: 8px 20px;
     align-items: center;
 }
 
 .inputting-container .avatar {
     width: 40px;
     height: 40px;
-    border-radius: 3px;
     margin-right: 20px;
 }
 

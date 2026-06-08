@@ -318,13 +318,13 @@ export default {
 }
 
 .back-btn {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--accent-color);
     cursor: pointer;
 }
 
 .create-title {
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     font-weight: 600;
 }
 
@@ -346,16 +346,16 @@ export default {
     display: block;
     margin-bottom: 8px;
     color: var(--text-hint);
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .input-field {
     width: 100%;
     padding: 12px 14px;
     border: 1px solid var(--border-primary);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     background: var(--background-primary);
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
     box-sizing: border-box;
     outline: none;
@@ -394,7 +394,7 @@ export default {
     border: none;
     background: transparent;
     color: var(--text-hint);
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -410,10 +410,10 @@ export default {
     padding: 12px;
     margin-top: 8px;
     border: 1px dashed var(--border-primary);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     background: var(--background-primary);
     color: var(--accent-color);
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -424,14 +424,14 @@ export default {
 }
 
 .option-hint {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
     margin-top: 8px;
 }
 
 .settings-list {
     background: var(--background-primary);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-primary);
 }
 
@@ -449,17 +449,17 @@ export default {
 
 .setting-label {
     flex: 1;
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
 }
 
 .setting-value {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-hint);
 }
 
 .setting-arrow {
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     color: var(--text-hint);
     margin-left: 4px;
 }
@@ -498,7 +498,7 @@ export default {
     bottom: 3px;
     background-color: var(--background-primary);
     transition: .4s;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 }
 
 input:checked + .slider {
@@ -527,7 +527,7 @@ input:checked + .slider:before {
     border: none;
     padding: 12px 40px;
     border-radius: 24px;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     cursor: pointer;
     box-shadow: var(--shadow-main);
@@ -562,7 +562,7 @@ input:checked + .slider:before {
 
 .dialog-content {
     background: var(--background-primary);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     width: 80%;
     max-width: 300px;
     overflow: hidden;
@@ -571,7 +571,7 @@ input:checked + .slider:before {
 .dialog-title {
     padding: 16px;
     text-align: center;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     color: var(--text-primary);
     border-bottom: 1px solid var(--border-secondary);
@@ -585,7 +585,7 @@ input:checked + .slider:before {
 .dialog-option {
     padding: 14px 16px;
     text-align: center;
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
     cursor: pointer;
     border-bottom: 1px solid var(--border-secondary);
@@ -609,8 +609,8 @@ input:checked + .slider:before {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--border-primary);
-    border-radius: 6px;
-    font-size: 15px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
     outline: none;
 }
@@ -630,7 +630,7 @@ input:checked + .slider:before {
     padding: 14px;
     border: none;
     background: var(--background-primary);
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     cursor: pointer;
 }
 

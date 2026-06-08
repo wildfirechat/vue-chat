@@ -190,7 +190,7 @@ export default {
     float: left;
     width: 12px;
     height: 12px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     margin: 6px 4px;
     line-height: 0;
 }
@@ -270,7 +270,7 @@ export default {
     position: absolute;
     left: 60px;
     width: calc(100% - 60px);
-    padding: 5px 0;
+    padding: 4px 0;
     display: flex;
     align-content: center;
     justify-content: center;

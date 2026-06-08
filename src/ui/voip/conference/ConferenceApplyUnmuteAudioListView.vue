@@ -72,15 +72,15 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px 0 5px 10px;
+    padding: 4px 0 4px 8px;
     width: 100%;
 }
 
 .participant-user .avatar {
     width: 40px;
     height: 40px;
-    border-radius: 3px;
-    margin-right: 10px;
+    border-radius: var(--radius-sm);
+    margin-right: 8px;
 }
 
 .participant-user .name {
@@ -89,22 +89,22 @@ export default {
 
 
 .participant-user .action-container button {
-    padding: 5px 10px;
-    margin-right: 10px;
+    padding: 4px 8px;
+    margin-right: 8px;
 }
 
 .action-all-container {
     width: 100%;
     display: flex;
-    padding: 5px 10px;
+    padding: 4px 8px;
     background: var(--background-primary);
     justify-content: center;
 }
 
 .action-all-container button {
-    margin-right: 10px;
+    margin-right: 8px;
     width: 45%;
-    padding: 5px 0;
+    padding: 4px 0;
 }
 
 </style>

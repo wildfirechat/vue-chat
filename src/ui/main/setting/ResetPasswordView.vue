@@ -46,6 +46,7 @@ export default {
                 }
             }, 1000);
         },
+
         async requestResetAuthCode() {
             this.$modal.hide('reset-password-modal')
             appServerApi.requestResetPasswordAuthCode()
@@ -101,19 +102,19 @@ export default {
 
 .password-form-container .title {
     padding-top: 20px;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
 }
 
 .password-form-container .tip {
     align-self: flex-start;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--accent-color);
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .password-form-container .item {
     width: 100%;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     margin-top: 20px;
     position: relative;
 }
@@ -122,9 +123,9 @@ export default {
     height: 40px;
     width: 100%;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
-    padding: 0 5px;
+    padding: 0 4px;
     -moz-appearance: textfield;
 }
 
@@ -147,7 +148,7 @@ input::-webkit-inner-spin-button {
     width: 100%;
     margin-top: 20px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .password-form-container .confirm-button:active {
@@ -156,11 +157,11 @@ input::-webkit-inner-spin-button {
 
 .password-form-container .request-auth-code-button {
     position: absolute;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     top: 50%;
     right: 0;
     transform: translateY(-50%);
-    margin: 0 5px;
+    margin: 0 4px;
 }
 
 </style>

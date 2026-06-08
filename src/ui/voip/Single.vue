@@ -543,14 +543,14 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-on-accent);
 }
 
 .avatar {
     width: 60px;
     height: 60px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .action-img {
@@ -603,7 +603,7 @@ export default {
 .audio-input-device-item {
     flex: 1;
     height: 30px;
-    padding: 0 10px;
+    padding: 0 8px;
     display: flex;
     justify-content: center;
     align-items: center;

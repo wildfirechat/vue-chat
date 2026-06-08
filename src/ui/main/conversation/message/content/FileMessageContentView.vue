@@ -116,11 +116,11 @@ export default {
 
 <style lang="css" scoped>
 .file-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -131,9 +131,9 @@ export default {
 .file-message-container img {
     width: 32px;
     height: 32px;
-    margin-right: 10px;
+    margin-right: 8px;
     min-width: 32px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .file-message-container .file-name {
@@ -146,12 +146,12 @@ export default {
 
 .file-message-container .file-size {
     color: var(--text-hint);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .file-message-container .text {
     color: var(--text-primary);
-    font-size: 16px;
+    font-size: var(--font-size-lg);
 }
 
 .rightarrow:before {

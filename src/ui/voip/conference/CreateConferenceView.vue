@@ -24,7 +24,7 @@
                 启用密码
                 <input v-model="enablePassword" type="checkbox" role="switch">
             </label>
-            <input v-if="enablePassword" v-model="password" class="text-input" style="margin-top: 10px" type="tel" maxlength="4" placeholder="123456">
+            <input v-if="enablePassword" v-model="password" class="text-input" style="margin-top: 8px" type="tel" maxlength="4" placeholder="123456">
         </div>
         <div>
             <label>
@@ -155,23 +155,23 @@ export default {
     justify-content: center;
     font-weight: normal;
     font-style: normal;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     text-align: center;
 }
 
 .create-conference-container label {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .text-input {
     height: 30px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
     width: 100%;
-    padding: 0 5px;
+    padding: 0 4px;
 }
 
 .text-input:active {
@@ -185,7 +185,7 @@ export default {
 .create-conference-container button {
     height: 30px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .create-conference-container button:active {
@@ -193,7 +193,7 @@ export default {
 }
 
 .advance_desc {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--status-error);
 }
 
@@ -213,7 +213,7 @@ export default {
 }
 
 .create-button {
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .create-button:enabled {

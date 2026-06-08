@@ -479,7 +479,7 @@ export default {
     position: fixed;
     z-index: 9999;
     overflow: auto;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18), 0 2px 10px rgba(0, 0, 0, 0.08);
     border: 1px solid var(--border-primary);
     background-color: var(--background-primary);
@@ -494,16 +494,16 @@ export default {
 .category-item label {
     color: var(--text-hint);
     display: block;
-    padding-top: 10px;
+    padding-top: 8px;
     padding-bottom: 2px;
     margin-left: 12px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     border-bottom: 1px solid var(--border-secondary);
 }
 
 .search-result-item {
     background-color: var(--background-primary);
-    padding: 10px 12px;
+    padding: 8px 12px;
 }
 
 .search-result-item:hover {
@@ -523,18 +523,18 @@ export default {
 .search-result-item.contact img {
     width: 34px;
     height: 34px;
-    border-radius: 2px;
+    border-radius: var(--default-portrait-border-radius);
 }
 
 .search-result-item.contact span {
-    font-size: 14px;
-    padding-left: 10px;
+    font-size: var(--font-size-base);
+    padding-left: 8px;
 }
 
 .search-result-item.contact button {
     margin-left: auto;
-    padding: 3px 10px;
-    border-radius: 3px;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-primary);
     outline: none;
 }
@@ -552,25 +552,25 @@ export default {
 .search-result-item.group img {
     width: 34px;
     height: 34px;
-    border-radius: 2px;
+    border-radius: var(--default-portrait-border-radius);
 }
 
 .search-result-item.group span {
-    font-size: 14px;
-    padding-left: 10px;
+    font-size: var(--font-size-base);
+    padding-left: 8px;
 }
 
 .search-result-item.message {
     height: 54px;
     display: flex;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .show-all {
-    padding: 10px 12px;
+    padding: 8px 12px;
     color: var(--text-link);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 .show-all:hover {
     background-color: var(--background-item-hover);

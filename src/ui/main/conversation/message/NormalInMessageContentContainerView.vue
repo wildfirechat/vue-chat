@@ -45,7 +45,7 @@
                                                          :message="message"
                                                          @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
                         </div>
-                        <QuoteMessageView style="padding: 5px 0; max-width: 400px"
+                        <QuoteMessageView style="padding: 4px 0; max-width: 400px"
                                           v-if="quotedMessage"
                                           :message="message"
                                           :quoted-message="quotedMessage"
@@ -100,7 +100,6 @@ export default {
         getConversationEventBus() {
             return this.conversationEventBus || this.$eventBus;
         },
-
         onClickUserPortrait(userId) {
             if (this.message.conversation.type === ConversationType.Channel) {
                 wfc.getChannelInfo(this.message.conversation.target, true);
@@ -151,7 +150,6 @@ export default {
         userCardTriggerId() {
             return 'infoTrigger-' +  (this.message.messageId ? this.message.messageId : (this.message.messageUid ? stringValue(this.message.messageUid) : new Date().getTime()));
         },
-
         isDownloading() {
             return this.activeStore.isDownloadingMessage(this.message.messageId);
         },
@@ -195,7 +193,7 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 10px 20px;
+    padding: 8px 20px;
     align-items: flex-start;
 }
 
@@ -220,13 +218,6 @@ export default {
     text-overflow: ellipsis;
 }
 
-.avatar-container .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 3px;
-    object-fit: cover;
-}
-
 .avatar-container {
     display: flex;
     padding-left: 2px;
@@ -245,9 +236,9 @@ export default {
 }
 
 .message-name-content-container .name {
-    margin-left: 10px;
+    margin-left: 8px;
     color: var(--text-hint);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     margin-bottom: 2px;
 }
 

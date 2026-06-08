@@ -193,22 +193,22 @@ export default {
     gap: 8px;
     padding: 7px 12px;
     border-radius: 999px;
-    background: rgba(53, 198, 106, 0.14);
-    color: #8ff0b1;
-    font-size: 12px;
+    background: var(--voip-screen-active-bg);
+    color: var(--voip-screen-active);
+    font-size: var(--font-size-xs);
     font-weight: 600;
     letter-spacing: 0.02em;
 }
 
 .screen-share-status.paused {
-    background: rgba(255, 184, 77, 0.16);
-    color: #ffd18d;
+    background: var(--voip-screen-paused-bg);
+    color: var(--voip-screen-paused);
 }
 
 .screen-share-status-dot {
     width: 8px;
     height: 8px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     background: currentColor;
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
 }
@@ -219,7 +219,7 @@ export default {
 
 .screen-share-subtitle {
     color: rgba(255, 255, 255, 0.72);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     line-height: 1.4;
 }
 
@@ -274,7 +274,7 @@ export default {
 }
 
 .action-label {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     white-space: nowrap;
 }

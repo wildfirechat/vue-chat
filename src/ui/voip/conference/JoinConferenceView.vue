@@ -87,14 +87,14 @@ export default {
     justify-content: center;
     font-weight: normal;
     font-style: normal;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     text-align: center;
 }
 
 .join-conference-container label {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .conf-item {
@@ -104,11 +104,11 @@ export default {
 .conf-item input {
     width: 100%;
     height: 30px;
-    margin-top: 10px;
+    margin-top: 8px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
-    padding: 0 5px;
+    padding: 0 4px;
 }
 
 .conf-item input:active {
@@ -130,7 +130,7 @@ export default {
 }
 
 .action-container button.join {
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .action-container button:active {
@@ -139,7 +139,7 @@ export default {
 }
 
 .advance_desc {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--status-error);
 }
 

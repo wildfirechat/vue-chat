@@ -5,7 +5,7 @@
                 <div class="channel-item"
                      v-bind:class="{active: sharedContactState.currentChannel && sharedContactState.currentChannel.channelId === channel.channelId}">
                     <img class="avatar" :src="channel.portrait">
-                    <div style="padding-left: 10px">
+                    <div class="item-info">
                         <p class="single-line">{{ channel.remark ? channel.remark : channel.name }}</p>
                     </div>
                 </div>
@@ -38,14 +38,15 @@ export default {
 .avatar {
     width: 32px;
     height: 32px;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .channel-item {
-    padding: 10px 5px 10px 30px;
+    padding: 8px 4px 8px 30px;
     display: flex;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     align-items: center;
 }
 
@@ -57,8 +58,15 @@ export default {
     background-color: var(--background-item-placeholder);
 }
 
+.item-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding-left: 8px;
+}
+
 .channel-item span {
-    margin-left: 10px;
+    margin-left: 8px;
 }
 
 </style>

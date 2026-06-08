@@ -72,7 +72,7 @@ export default {
 <style lang="css" scoped>
 
 .audio-message-container {
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .audio-message-container audio {

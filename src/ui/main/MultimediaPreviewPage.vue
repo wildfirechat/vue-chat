@@ -3,7 +3,7 @@
         <div v-if="!message">
             加载中...
         </div>
-        <div v-else style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center">
+        <div v-else class="flex-center" style="width: 100vw; height: 100vh">
             <img v-show="mediaLoaded === false"
                  alt=""
                  v-bind:src="'data:video/jpeg;base64,' + currentMedia.thumbnail">
@@ -259,7 +259,7 @@ export default {
 .image-content-container img {
     width: 100%;
     height: 100%;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     object-fit: contain;
 }
@@ -267,7 +267,7 @@ export default {
 .image-content-container video {
     width: 100%;
     height: 100%;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     object-fit: scale-down;
 }

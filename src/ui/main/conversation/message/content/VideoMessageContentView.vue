@@ -57,16 +57,16 @@ export default {
 
 <style lang="css" scoped>
 .video-content-container {
-    margin: 0 10px;
+    margin: 0 8px;
     position: relative;
     border: 1px solid var(--border-tertiary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .video-content-container video {
     max-height: 300px;
     max-width: 300px;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     object-fit: scale-down;
     overflow: hidden;
 }

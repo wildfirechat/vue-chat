@@ -101,15 +101,15 @@ export default {
 .mix-file-message-view-container {
     width: 400px;
     max-width: 400px;
-    margin: 0 10px;
+    margin: 0 8px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     background-color: var(--background-primary);
-    padding: 5px 5px 0 5px;
-    border-radius: 5px;
+    padding: 4px 4px 0 4px;
+    border-radius: var(--radius-md);
 }
 
 .file-content {
@@ -127,7 +127,7 @@ export default {
     justify-content: flex-start;
     align-items: center;
     padding-left: 8px;
-    gap: 10px;
+    gap: 8px;
     min-height: 100px;
 }
 
@@ -136,7 +136,7 @@ export default {
     max-height: 80px;
     min-width: 80px;
     min-height: 80px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     background-color: var(--background-item-placeholder);
 }
 
@@ -151,14 +151,14 @@ export default {
 }
 
 .file-item .name {
-    font-size: 16px;
-    padding-right: 10px;
+    font-size: var(--font-size-lg);
+    padding-right: 8px;
     max-width: 100%;
 }
 
 .file-item .size {
-    font-size: 14px;
-    padding-top: 5px;
+    font-size: var(--font-size-base);
+    padding-top: 4px;
     color: var(--text-secondary);
 }
 
@@ -169,7 +169,7 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 img {
@@ -180,7 +180,7 @@ img {
 }
 
 i {
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     color: var(--text-primary);
     cursor: pointer;
 }

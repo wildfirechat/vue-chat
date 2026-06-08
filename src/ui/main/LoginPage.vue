@@ -16,9 +16,9 @@
                 </div>
                 <!--    等待扫码-->
                 <div v-if="loginStatus === 0" class="pending-scan">
-                    <p style="font-size: 20px; color: var(--text-primary); padding-bottom: 10px">{{ $t('login.desc') }}</p>
+                    <p style="font-size: 20px; color: var(--text-primary); padding-bottom: 8px">{{ $t('login.desc') }}</p>
                     <p style="font-size: 15px; color: var(--text-secondary)">{{ $t('login.tip_web') }}</p>
-                    <p style="font-size: 15px; color: var(--text-secondary); padding-bottom: 5px">{{ $t('login.warning') }}</p>
+                    <p style="font-size: 15px; color: var(--text-secondary); padding-bottom: 4px">{{ $t('login.warning') }}</p>
                     <a style="font-size: 15px; color: var(--accent-color)" target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
                 </div>
                 <!--    已经扫码-->
@@ -59,7 +59,7 @@
                 <div class="item">
                     <input v-model.trim="password" class="text-input" @keydown.enter="loginWithPassword" type="password" placeholder="请输入密码">
                 </div>
-                <div v-if="loginStatus === 0" style="display: flex; justify-content: space-between; width: 100%; ">
+                <div v-if="loginStatus === 0" class="flex-row" style="justify-content: space-between; width: 100%;">
                     <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
                     <p class="tip" @click="register">注册</p>
                 </div>
@@ -79,7 +79,7 @@
                 </div>
                 <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
                 <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}</button>
-                <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'"/>
+                <ClipLoader v-if="loginStatus === 3" style="margin-top: 8px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'"/>
             </div>
             <div v-if="loginStatus === 0" class="switch-login-type-container">
                 <p class="tip" @click="switchLoginType( loginType === 0 ? 1 : 0)">{{ loginType === 0 ? '使用密码/验证码登录' : '扫码登录' }}</p>
@@ -654,7 +654,7 @@ export default {
     height: 500px;
     margin: auto;
     background: var(--background-primary);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
 }
 
 .web-login-container {
@@ -664,20 +664,20 @@ export default {
 }
 
 .qr-container {
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     width: 250px;
     height: 250px;
     background-color: var(--background-tertiary);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .qr-container img {
     width: 250px;
     height: 250px;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
 }
 
@@ -707,21 +707,21 @@ export default {
 }
 
 .qrcode-login-container label {
-    margin-top: 5px;
-    padding: 5px;
-    font-size: 14px;
+    margin-top: 4px;
+    padding: 4px;
+    font-size: var(--font-size-base);
     color: var(--text-secondary);
 }
 
 .qrcode-login-container button {
     outline: none;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     border: none;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .button-cancel {
-    margin-top: 10px;
+    margin-top: 8px;
     background-color: transparent;
     color: var(--text-secondary);
 }
@@ -761,8 +761,8 @@ export default {
 }
 
 .switch-login-type-container {
-    padding-top: 10px;
-    font-size: 14px;
+    padding-top: 8px;
+    font-size: var(--font-size-base);
     color: var(--border-active);
 }
 
@@ -777,13 +777,13 @@ export default {
 
 .login-form-container .title {
     align-self: flex-start;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     color: var(--text-on-accent);
 }
 
 .login-form-container .item {
     width: 100%;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     margin-top: 20px;
     position: relative;
 }
@@ -792,9 +792,9 @@ export default {
     height: 40px;
     width: 100%;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
-    padding: 0 5px;
+    padding: 0 4px;
     -moz-appearance: textfield;
 }
 
@@ -817,7 +817,7 @@ input::-webkit-inner-spin-button {
     width: 100%;
     margin-top: 20px;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .login-form-container .login-button:active {
@@ -826,11 +826,11 @@ input::-webkit-inner-spin-button {
 
 .login-form-container .request-auth-code-button {
     position: absolute;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     top: 50%;
     right: 0;
     transform: translateY(-50%);
-    margin: 0 5px;
+    margin: 0 4px;
 }
 
 .login-form-container .syncing {
@@ -841,9 +841,9 @@ input::-webkit-inner-spin-button {
 
 .tip {
     align-self: flex-start;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--border-active);
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .logo {
@@ -856,7 +856,7 @@ input::-webkit-inner-spin-button {
     right: 10px;
     bottom: 10px;
     align-self: flex-start;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: lightcoral;
 }
 
@@ -876,7 +876,7 @@ input::-webkit-inner-spin-button {
 .diagnose-content {
     background: var(--background-primary);
     padding: 20px;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     max-width: 100%;
     max-height: 90%;
     overflow: auto;

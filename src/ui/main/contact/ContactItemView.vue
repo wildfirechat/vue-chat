@@ -10,9 +10,9 @@
          @click="clickUserItem()"
          @contextmenu.prevent="showContactContextMenu">
         <img class="avatar" :src="source.portrait" alt="" @error="imgUrlAlt">
-        <div style="padding-left: 10px">
-            <div style="display: flex; align-items: center; ">
-                <p class="single-line">{{ source._displayName }}</p>
+        <div class="contact-item-info">
+            <div class="flex-row flex-align-center contact-item-name-row">
+                <p class="single-line contact-item-name">{{ source._displayName }}</p>
                 <p v-if="isExternalDomainUser" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
             </div>
             <p v-if="source._userOnlineStatusDesc" class="single-line user-online-status"> {{ source._userOnlineStatusDesc }}</p>
@@ -79,26 +79,28 @@ export default {
 }
 
 .label p {
-    padding: 5px 5px 5px 0;
-    border-bottom: 1px solid var(--border-primary);
-    font-size: 10px;
-    color: var(--text-secondary-strong);
+    padding: 4px 4px 4px 0;
+    border-bottom: 1px solid var(--border-tertiary);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 .contact-item {
-    padding: 10px 5px 10px 30px;
+    padding: 8px 4px 8px 30px;
     display: flex;
     width: 100%;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     align-items: center;
 }
 
 .contact-item:hover{
-    background-color: var(--background-item-hover)
+    background-color: var(--background-item-hover);
 }
 
 .contact-item span {
-    margin-left: 10px;
+    margin-left: 8px;
 }
 
 .contact-item.active {
@@ -114,15 +116,33 @@ export default {
     z-index: 100;
 }
 
+.contact-item-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding-left: 8px;
+}
+
+.contact-item-name-row {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.contact-item-name {
+    flex: 1;
+    min-width: 0;
+}
+
 .user-online-status {
     color: var(--text-secondary);
-    font-size: 10px;
+    font-size: var(--font-size-xs);
 }
 
 .avatar {
     width: 32px;
     height: 32px;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
+    flex-shrink: 0;
 }
 </style>

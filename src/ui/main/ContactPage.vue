@@ -28,7 +28,14 @@
             :friend-request="sharedContactState.currentFriendRequest"
             class="contact-detail-container"/>
         <div v-else class="contact-empty-container">
-            <h1>^~^</h1>
+            <div class="empty-state">
+                <div class="empty-icon-wrap">
+                    <div class="empty-icon-glow"></div>
+                    <i class="icon-ion-ios-people empty-icon"></i>
+                </div>
+                <p class="empty-title">{{ $t('contact.empty_title') }}</p>
+                <p class="empty-hint">{{ $t('contact.empty_hint') }}</p>
+            </div>
         </div>
     </div>
 </template>
@@ -94,6 +101,8 @@ ul {
 .contact-empty-container {
     flex: 1;
     background-color: var(--background-primary);
+    background-image: var(--hero-bg-pattern);
+    background-size: 20px 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -101,9 +110,67 @@ ul {
     border-bottom-right-radius: var(--main-border-radius);
 }
 
-.contact-empty-container h1 {
-    font-size: 17px;
-    font-weight: normal;
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: empty-fade-in 0.4s ease both;
+}
+
+.empty-icon-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: empty-float 4s ease-in-out infinite;
+}
+
+.empty-icon-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-color-subtle) 0%, transparent 70%);
+    opacity: 0.8;
+}
+
+.empty-icon {
+    position: relative;
+    font-size: 40px;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #5b8ef0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 8px rgba(31, 100, 228, 0.25));
+}
+
+.empty-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+}
+
+.empty-hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    text-align: center;
+    line-height: 1.5;
+    max-width: 200px;
+}
+
+@keyframes empty-float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-6px); }
+}
+
+@keyframes empty-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 </style>

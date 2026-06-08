@@ -43,7 +43,6 @@ export default {
         getActiveStore() {
             return this.conversationActiveStore || store;
         },
-
         joinConference() {
             if (avenginekit.sendConferenceRequest) {
                 let cmc = this.message.messageContent;
@@ -128,38 +127,39 @@ export default {
 
 <style lang="css" scoped>
 .conference-invite-message-container {
-    margin: 0 10px;
-    padding: 5px;
+    margin: 0 8px;
+    padding: 4px;
     background-color: var(--background-primary);
     width: 250px;
     max-width: 250px;
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .avatar {
     width: 60px;
     height: 60px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: lightgrey;
-    margin: 5px 10px;
+    margin: 4px 8px;
+    object-fit: cover;
 }
 
 .type {
-    padding-top: 5px;
-    margin: 5px 10px 0 10px;
+    padding-top: 4px;
+    margin: 4px 8px 0 8px;
     border-top: 1px solid var(--border-tertiary);
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-secondary);
 }
 
 .title {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
 }
 
 .desc {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-secondary);
 }
 

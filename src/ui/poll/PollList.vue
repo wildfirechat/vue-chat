@@ -129,7 +129,7 @@ export default {
 }
 
 .back-btn {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-link);
     cursor: pointer;
 }
@@ -160,10 +160,10 @@ export default {
     border: 3px solid var(--background-trans-muted);
     width: 30px;
     height: 30px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     border-left-color: var(--accent-color);
     animation: spin 1s linear infinite;
-    margin: 0 auto 10px;
+    margin: 0 auto 8px;
 }
 
 @keyframes spin {
@@ -188,7 +188,7 @@ export default {
     align-items: center;
     padding: 16px;
     background: var(--background-primary);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
 }
 
@@ -199,13 +199,13 @@ export default {
 .poll-type-icon {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     background: var(--background-item-selected);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 12px;
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     color: var(--accent-color);
 }
 
@@ -214,7 +214,7 @@ export default {
 }
 
 .poll-list-title {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     font-weight: 500;
     color: var(--text-primary);
     margin-bottom: 4px;
@@ -230,11 +230,11 @@ export default {
 }
 
 .poll-status {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--accent-color);
     background: var(--background-item-selected);
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .poll-status.ended {
@@ -243,12 +243,12 @@ export default {
 }
 
 .poll-count {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
 }
 
 .poll-arrow {
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     color: var(--text-hint);
 }
 </style>

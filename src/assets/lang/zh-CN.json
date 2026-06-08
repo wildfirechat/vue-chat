@@ -16,7 +16,9 @@
         "new_friend": "新的朋友",
         "group": "群聊",
         "channel": "频道",
-        "contact": "联系人"
+        "contact": "联系人",
+        "empty_title": "查看联系人",
+        "empty_hint": "从左侧选择联系人或群组查看详情"
     },
     "friend_request": {
         "request": "好友请求",
@@ -101,7 +103,9 @@
         "show_in_float_window": "在独立窗口打开",
         "clear_conversation_history": "清空本地聊天记录",
         "clear_remote_conversation_history": "清空远程聊天记录",
-        "complain": "举报"
+        "complain": "举报",
+        "empty_title": "开始一段对话",
+        "empty_hint": "从左侧选择一个会话，或发起新的聊天"
     },
     "fav": {
         "fav": "收藏",

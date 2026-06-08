@@ -27,7 +27,7 @@ export default {
 
 <style lang="css" scoped>
 .message-container {
-    padding: 5px;
+    padding: 4px;
     max-height: 400px;
     max-width: 400px;
     overflow: auto;
@@ -42,7 +42,7 @@ export default {
 
 .message-container .text {
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 </style>

@@ -5,7 +5,7 @@
                 <div class="chatroom-item"
                      v-bind:class="{active: sharedContactState.currentChatroom && sharedContactState.currentChatroom.chatRoomId === chatroom.chatRoomId}">
                     <img class="avatar" :src="chatroom.portrait ? chatroom.portrait : defaultPortraitUrl">
-                    <div style="padding-left: 10px">
+                    <div class="item-info">
                         <p class="single-line">{{ chatroom.title}}</p>
                     </div>
                 </div>
@@ -59,14 +59,12 @@ export default {
 .avatar {
     width: 32px;
     height: 32px;
-    border-radius: 3px;
-    object-fit: cover;
 }
 
 .chatroom-item {
-    padding: 10px 5px 10px 30px;
+    padding: 8px 4px 8px 30px;
     display: flex;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     align-items: center;
 }
 
@@ -76,6 +74,13 @@ export default {
 
 .chatroom-item.active {
     background-color: var(--background-item-placeholder);
+}
+
+.item-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding-left: 8px;
 }
 
 .chatroom-item span {

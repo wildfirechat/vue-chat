@@ -239,7 +239,7 @@ export default {
 
 .title {
     flex: 1;
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     font-weight: normal;
     margin: 0;
 }
@@ -248,7 +248,7 @@ export default {
     display: flex;
     align-items: center;
     flex-direction: row;
-    padding: 0 10px;
+    padding: 0 8px;
 }
 
 .search-expand-input {
@@ -258,7 +258,7 @@ export default {
     border-bottom: 2px solid transparent;
     background: transparent;
     outline: none;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     padding: 0;
     color: var(--text-primary);
     transition: width 0.25s ease, border-color 0.25s ease, padding 0.25s ease;
@@ -278,12 +278,12 @@ export default {
     border: none;
     background: transparent;
     cursor: pointer;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-secondary-strong);
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     transition: background 0.15s ease;
 }
 
@@ -295,7 +295,7 @@ export default {
     padding: 20px;
     color: var(--text-secondary);
     text-align: center;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .breadcrumb {
@@ -322,7 +322,7 @@ export default {
 
 .breadcrumb li:not(:last-child)::after {
     display: inline-block;
-    margin: 0 10px;
+    margin: 0 8px;
     color: var(--text-secondary-strong);
     content: ">";
 }
@@ -337,7 +337,7 @@ export default {
 }
 
 .member-list-container {
-    margin: 5px 5px 20px 5px;
+    margin: 4px 4px 20px 4px;
     flex: 1;
     overflow-y: scroll;
 }
@@ -348,8 +348,8 @@ export default {
     align-items: center;
     height: 56px;
     padding: 0 20px;
-    border-radius: 5px;
-    font-size: 14px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
 }
 
 .organization-item:hover {
@@ -359,21 +359,21 @@ export default {
 .organization-item img {
     width: 40px;
     height: 40px;
-    border-radius: 5px;
-    margin-right: 10px;
+    border-radius: var(--default-portrait-border-radius);
+    margin-right: 8px;
 }
 
 .organization-item .button {
     justify-self: flex-end;
     margin-left: auto;
-    padding: 5px;
-    font-size: 14px;
+    padding: 4px;
+    font-size: var(--font-size-base);
     color: var(--accent-color);
 }
 
 .organization-item .button:hover {
     background: var(--background-selected-dim);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 </style>

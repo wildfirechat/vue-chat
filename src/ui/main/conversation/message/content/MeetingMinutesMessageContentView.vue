@@ -58,11 +58,11 @@ export default {
 
 <style lang="css" scoped>
 .meeting-minutes-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: flex-start;
     max-width: 400px;
@@ -80,7 +80,7 @@ export default {
 
 .title {
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     font-weight: bold;
     line-height: 22px;
     margin: 0 0 4px 0;
@@ -89,7 +89,7 @@ export default {
 
 .text {
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     line-height: 20px;
     margin: 0;
     word-break: break-word;

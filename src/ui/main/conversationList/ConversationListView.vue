@@ -1,14 +1,11 @@
 <template>
     <section class="conversation-list">
-        <virtual-list v-if="true" :data-component="conversationItemView" :data-sources="conversationInfoList" :data-key="conversationInfoKey"
+        <virtual-list :data-component="conversationItemView" :data-sources="conversationInfoList" :data-key="conversationInfoKey"
                       ref="virtualList"
                       :onScroll="onScroll"
                       :estimate-size="30"
                       style="height: 100%; overflow-y: auto;"/>
 
-        <div v-else style="height: 100%; overflow-y: auto;">
-            <ConversationItemView v-for="conversationInfo in conversationInfoList" :source="conversationInfo" :key="conversationInfoKey(conversationInfo)"/>
-        </div>
         <vue-context ref="menu" v-slot="{data:conversationInfo}" v-on:close="onConversationItemContextMenuClose">
             <li>
                 <a @click.prevent="setConversationTop(conversationInfo)">{{

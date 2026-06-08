@@ -51,10 +51,10 @@ export default {
 
 <style lang="css" scoped>
 .sticker-content-container {
-    margin: 0 10px;
+    margin: 0 8px;
     position: relative;
     //border: 1px solid var(--border-tertiary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .sticker-content-container img {
@@ -62,7 +62,7 @@ export default {
     max-width: 200px;
     width: 200px;
     height: 200px;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     object-fit: scale-down;
     overflow: hidden;
 }

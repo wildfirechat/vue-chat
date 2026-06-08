@@ -91,12 +91,11 @@ export default {
 .user-info-container .avatar {
     width: 60px;
     height: 60px;
-    border-radius: 3px;
 }
 
 .header {
     width: calc(100% - 40px);
-    margin: 10px 20px;
+    margin: 8px 20px;
     padding-bottom: 20px;
     display: flex;
     justify-content: space-between;
@@ -119,7 +118,7 @@ export default {
 .content ul {
     border: 1px solid white;
     list-style: none;
-    margin: 10px 20px;
+    margin: 8px 20px;
 }
 
 .content ul li {
@@ -153,7 +152,7 @@ export default {
     justify-content: flex-end;
 
     padding-top: 20px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .action a {
@@ -162,8 +161,8 @@ export default {
 }
 
 .action a i {
-    font-size: 24px;
-    padding: 5px 30px;
+    font-size: var(--font-size-3xl);
+    padding: 4px 30px;
 }
 
 .action a i:last-of-type {

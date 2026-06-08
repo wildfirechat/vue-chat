@@ -11,7 +11,7 @@
 
                 <div class="message-avatar-content-container">
                     <!-- 文件的进度条有点特殊，有进度的消息的进度条有点特殊 -->
-                    <FadeLoader :loading="message.status === 0 && message.messageContent.type !== 5" color="var(--text-hint)" style="margin:10px" width="3px" height="8px" margin="2px" radius="8px"> </FadeLoader>
+                    <FadeLoader :loading="message.status === 0 && message.messageContent.type !== 5" color="var(--text-hint)" style="margin: 8px" width="3px" height="8px" margin="2px" radius="8px"> </FadeLoader>
                     <i v-if="message.status === 2" class="icon-ion-close-circled" style="color: red" @click="resend"/>
                     <div class="flex-column flex-align-end">
                         <MessageContentContainerView :message="message"
@@ -19,7 +19,7 @@
                                                      v-bind:class="{highlight:highLight}"
                                                      @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
                         <QuoteMessageView v-if="quotedMessage"
-                                          style="padding: 5px 0; max-width: 80%"
+                                          style="padding: 4px 0; max-width: 80%"
                                           :message="message"
                                           :quoted-message="quotedMessage"
                                           :enable-message-preview="true"
@@ -139,7 +139,6 @@ export default {
         getConversationEventBus() {
             return this.conversationEventBus || this.$eventBus;
         },
-
         onContextMenuClosed() {
             this.highLight = false;
         },
@@ -206,7 +205,6 @@ export default {
         userCardTriggerId() {
             return 'infoTrigger-' +  (this.message.messageId ? this.message.messageId : (this.message.messageUid ? stringValue(this.message.messageUid) : new Date().getTime()));
         },
-
         messageReceipt() {
             let conversation = this.message.conversation;
             let timestamp = this.message.timestamp;
@@ -289,14 +287,14 @@ export default {
 
 .message-time-container .receipt {
     margin-right: 70px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-time);
 }
 
 .message-content-container {
     width: 100%;
     display: flex;
-    padding: 10px 20px 4px 20px;
+    padding: 8px 20px 4px 20px;
     justify-content: space-between;
     align-items: center;
     position: relative;
@@ -311,13 +309,6 @@ export default {
     margin-left: auto;
     text-overflow: ellipsis;
     align-items: flex-start;
-}
-
-.message-avatar-content-container .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 3px;
-    object-fit: cover;
 }
 
 .message-content-container-view.highlight {

@@ -34,7 +34,7 @@
                 </div>
             </li>
             <li>
-                <div class="action" style="color: var(--text-primary); pointer-events: auto">
+                <div class="action close">
                     <i @click="hideMultiSelectionActionView" class="icon-ion-close"></i>
                 </div>
             </li>
@@ -138,11 +138,13 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-top: 1px solid var(--border-separator);
+    border-top: 1px solid var(--border-primary);
 }
 
 ul {
     list-style: none;
+    display: flex;
+    align-items: center;
 }
 
 ul li {
@@ -150,43 +152,78 @@ ul li {
 }
 
 .action {
-    font-size: 13px;
-    padding: 0 15px;
+    font-size: var(--font-size-sm);
+    padding: 0 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: lightgrey;
+    color: var(--text-tertiary);
     pointer-events: none;
+    opacity: 0.4;
 }
 
 .action.enable {
     color: var(--text-primary);
     pointer-events: auto;
+    opacity: 1;
 }
 
 .action .icon {
-    width: 60px;
-    height: 60px;
-    background-color: var(--background-primary);
-    border-radius: 30px;
+    width: 56px;
+    height: 56px;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-tertiary);
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.action.enable .icon:hover {
+    background-color: var(--background-item-hover);
+    border-color: var(--border-primary);
 }
 
 .action.enable .icon:active {
-    background-color: lightgrey;
-
+    background-color: var(--background-item-active);
 }
 
 .action p {
-    padding-top: 10px;
+    padding-top: 8px;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+.action:not(.enable) p {
+    color: var(--text-tertiary);
 }
 
 .action i {
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
 }
 
+.action.close {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.action.close i {
+    font-size: 22px;
+    color: var(--text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.action.close i:hover {
+    background: var(--background-item-hover);
+    color: var(--text-primary);
+}
 
 </style>

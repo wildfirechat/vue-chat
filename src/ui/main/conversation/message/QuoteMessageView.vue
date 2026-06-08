@@ -178,10 +178,10 @@ export default {
 .quoted-message {
     display: flex;
     background-color: var(--background-message-quoted);
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin-right: 10px;
-    font-size: 13px;
+    border-radius: var(--radius-md);
+    padding: 4px 8px;
+    margin-right: 8px;
+    font-size: var(--font-size-sm);
     color: var(--text-muted);
 }
 
@@ -225,8 +225,8 @@ export default {
 }
 
 .quoted-message img {
-    margin-left: 10px;
-    border-radius: 3px;
+    margin-left: 8px;
+    border-radius: var(--radius-sm);
     max-width: 100px;
     max-height: 100px;
 }

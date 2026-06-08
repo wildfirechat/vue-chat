@@ -115,9 +115,9 @@ export default {
 
 <style scoped>
 .collection-message-container {
-    margin: 0 10px;
+    margin: 0 8px;
     background-color: var(--background-primary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     width: 280px; /* Slightly wider for list content */
     display: flex;
@@ -131,12 +131,12 @@ export default {
 
 /* Header */
 .msg-header {
-    padding: 10px 12px 5px 12px;
+    padding: 8px 12px 4px 12px;
     display: flex;
     align-items: flex-start;
 }
 .collection-icon {
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     margin-right: 8px;
     color: var(--text-link);
     margin-top: 2px;
@@ -150,7 +150,7 @@ export default {
 }
 .title {
     font-weight: bold;
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     line-height: 1.4;
     color: var(--text-primary);
 }
@@ -166,7 +166,7 @@ export default {
 
 /* Description */
 .desc {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-muted);
     padding: 0 12px 8px 12px; /* Indent to align with title */
     line-height: 1.4;
@@ -192,10 +192,10 @@ export default {
     min-height: 20px;
 }
 .empty-hint {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-hint);
     text-align: center;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 .collection-message-container.out .empty-hint {
     color: var(--text-muted);
@@ -205,7 +205,7 @@ export default {
     flex-direction: column;
 }
 .entry-item {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-primary);
     padding: 2px 0;
     white-space: nowrap;
@@ -213,7 +213,7 @@ export default {
     text-overflow: ellipsis;
 }
 .more-hint {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
     margin-top: 4px;
 }
@@ -224,7 +224,7 @@ export default {
 /* Footer */
 .footer {
     padding: 8px 12px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-link);
     border-top: 1px solid var(--background-trans-subtle);
     display: flex;

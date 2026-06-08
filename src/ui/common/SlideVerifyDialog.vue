@@ -331,7 +331,7 @@ export default {
 
 .slide-verify-container {
     background: var(--background-primary);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     padding: 20px;
     width: 360px;
     box-shadow: var(--shadow-main);
@@ -339,11 +339,11 @@ export default {
 
 .slide-verify-header {
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
 }
 
 .slide-verify-header .title {
-    font-size: 18px;
+    font-size: var(--font-size-2xl);
     font-weight: bold;
     color: var(--text-primary);
 }
@@ -356,9 +356,9 @@ export default {
     position: relative;
     width: 100%;
     height: 180px;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     background-color: var(--background-tertiary);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
@@ -378,7 +378,7 @@ export default {
 }
 
 .slider-track-container {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .slider-track {
@@ -399,7 +399,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-hint);
     pointer-events: none;
 }
@@ -411,7 +411,7 @@ export default {
     width: 40px;
     height: 40px;
     background: var(--background-primary);
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     box-shadow: var(--shadow-main);
     display: flex;
     align-items: center;
@@ -455,7 +455,7 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background-color: var(--background-trans-light);
     box-shadow: var(--shadow-main);
     transition: all 0.3s;
@@ -474,6 +474,6 @@ export default {
 /* Loading 样式 */
 :deep(.el-loading-mask) {
     background-color: var(--background-trans-light);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 </style>

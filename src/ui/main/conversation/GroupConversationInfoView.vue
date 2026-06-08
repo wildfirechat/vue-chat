@@ -575,15 +575,15 @@ export default {
 /* 搜索框 */
 .search-item {
     position: relative;
-    padding: 10px 20px;
+    padding: 8px 20px;
     flex-shrink: 0;
 }
 
 .search-item input {
     width: 100%;
-    padding: 0 10px 0 20px;
+    padding: 0 8px 0 20px;
     height: 25px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-tertiary);
     background-color: var(--background-primary);
     text-align: left;
@@ -619,7 +619,7 @@ export default {
     flex-direction: column;
     align-items: center;
     padding: 6px 4px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     min-width: 0;
     overflow: hidden;
 }
@@ -633,10 +633,11 @@ export default {
 }
 
 .member-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 5px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
+    -webkit-user-drag: none;
 }
 
 .member-name {
@@ -657,7 +658,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
+    border-radius: var(--default-portrait-border-radius);
     border: 1px dashed var(--border-dashed);
     font-size: 22px;
     color: var(--text-secondary-strong);
@@ -674,7 +675,7 @@ export default {
 .show-more-btn {
     margin-top: 8px;
     text-align: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-secondary-strong);
     padding: 6px 0;
 }
@@ -706,18 +707,18 @@ export default {
     width: 100%;
     justify-content: flex-start;
     align-items: center;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 
 .group-info-section .group-portrait-container p {
     color: var(--text-primary);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .group-info-section .group-portrait-container img {
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--default-portrait-border-radius);
     margin-left: auto;
     cursor: pointer;
 }
@@ -728,47 +729,21 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-primary);
 }
 
 .group-info-section label:not(:first-of-type) {
-    margin-top: 15px;
+    margin-top: 16px;
 }
 
 .group-info-section .input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin-top: 5px;
+    margin-top: 4px;
 }
 
 .group-info-section label .input-wrapper input {
-    flex: 1;
-    border: none;
-    outline: none;
-    width: 100%;
     font-size: 11px;
-    background-color: transparent;
     padding: 0;
-    min-width: 0;
-}
-
-.group-info-section .edit-icon {
-    position: absolute;
-    right: 0;
-    font-size: 13px;
-    color: var(--text-secondary-strong);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-    line-height: 1;
-    transform: rotateZ(90deg);
-}
-
-.group-info-section .input-wrapper:has(input:not(:disabled)):hover .edit-icon {
-    opacity: 1;
 }
 
 .group-info-section label input::-webkit-input-placeholder {
@@ -781,11 +756,11 @@ export default {
     color: var(--text-danger);
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     height: 42px;
     flex-shrink: 0;
     border-top: 1px solid var(--border-tertiary);
-    margin: 0 10px;
+    margin: 0 8px;
 }
 
 .conversation-action-item:active {
@@ -798,8 +773,8 @@ export default {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding-bottom: 15px;
-    margin-top: 15px;
+    padding-bottom: 16px;
+    margin-top: 16px;
 }
 
 </style>

@@ -111,9 +111,9 @@ export default {
 
 <style scoped>
 .poll-message-container {
-    margin: 0 10px;
+    margin: 0 8px;
     background-color: var(--background-primary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     width: 280px;
     display: flex;
@@ -129,7 +129,7 @@ export default {
 .poll-title {
     display: flex;
     align-items: flex-start;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     font-weight: bold;
     color: var(--text-primary);
     line-height: 1.4;
@@ -153,7 +153,7 @@ export default {
 }
 
 .poll-desc {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
     margin-top: 8px;
     line-height: 1.4;
@@ -182,7 +182,7 @@ export default {
 }
 
 .poll-action {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-link);
     margin-top: 4px;
 }

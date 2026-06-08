@@ -381,10 +381,10 @@ export default {
     border: 3px solid var(--background-trans-muted);
     width: 30px;
     height: 30px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     border-left-color: var(--accent-color);
     animation: spin 1s linear infinite;
-    margin: 0 auto 10px;
+    margin: 0 auto 8px;
 }
 
 @keyframes spin {
@@ -406,7 +406,7 @@ export default {
 }
 
 .back-btn {
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-link);
     cursor: pointer;
 }
@@ -432,7 +432,7 @@ export default {
 .creator-avatar {
     width: 40px;
     height: 40px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     margin-right: 12px;
 }
 
@@ -443,16 +443,16 @@ export default {
 }
 
 .creator-name {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-muted);
 }
 
 .status-tag {
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--status-warning);
     background: var(--background-warning-subtle);
     padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .status-tag.ended {
@@ -461,7 +461,7 @@ export default {
 }
 
 .poll-title {
-    font-size: 20px;
+    font-size: var(--font-size-2xl);
     font-weight: bold;
     color: var(--text-primary);
     margin-bottom: 8px;
@@ -469,7 +469,7 @@ export default {
 }
 
 .poll-desc {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-muted);
     line-height: 1.6;
 }
@@ -481,7 +481,7 @@ export default {
 
 .options-section-title {
     padding: 16px 24px 8px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-muted);
     background: var(--background-primary);
 }
@@ -499,7 +499,7 @@ export default {
     margin-bottom: 8px;
     background: var(--background-primary);
     border: 1px solid var(--border-primary);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     overflow: hidden;
 }
@@ -532,11 +532,11 @@ export default {
     width: 22px;
     height: 22px;
     border: 2px solid var(--border-primary);
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-on-accent);
     transition: all 0.2s;
 }
@@ -550,7 +550,7 @@ export default {
     position: relative;
     z-index: 1;
     flex: 1;
-    font-size: 15px;
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
 }
 
@@ -561,7 +561,7 @@ export default {
 .vote-count {
     position: relative;
     z-index: 1;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-muted);
     white-space: nowrap;
 }
@@ -569,7 +569,7 @@ export default {
 .detail-footer {
     padding: 16px 24px;
     text-align: center;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-hint);
     background: var(--background-tertiary);
 }
@@ -591,7 +591,7 @@ export default {
     border: none;
     padding: 12px 40px;
     border-radius: 24px;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.2s, background 0.2s;

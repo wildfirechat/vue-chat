@@ -89,7 +89,7 @@ export default {
 .receipt-detail-container {
     height: 100%;
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -98,8 +98,8 @@ export default {
 .receipt-detail-container .title {
     align-self: center;
     font-weight: 400;
-    font-size: 18px;
-    padding: 5px 0;
+    font-size: var(--font-size-2xl);
+    padding: 4px 0;
 }
 
 .receipt-container {
@@ -108,7 +108,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    padding-top: 10px;
+    padding-top: 8px;
 }
 
 .receipt-item {
@@ -118,13 +118,13 @@ export default {
     max-height: 250px;
     width: 100%;
     overflow: hidden;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .receipt-item .label {
     width: 100%;
     text-align: center;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .receipt-item .users {

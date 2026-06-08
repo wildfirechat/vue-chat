@@ -6,7 +6,7 @@
                     <li v-for="(org, index) in subOrganizations" :key="org.id">
                         <div class="organization-item"
                              @click.stop="clickOrganizationItem(org)">
-                            <input type="checkbox" style="margin-right: 10px"
+                            <input type="checkbox" style="margin-right: 12px"
                                    v-bind:value="org"
                                    :checked="isOrganizationChecked(org)">
                             <img :src="org.portrait ? org.portrait : defaultDepartmentPortraitUrl">
@@ -17,7 +17,7 @@
                     <li v-for="(employee, index) in employees" :key="employee.employeeId">
                         <div class="organization-item "
                              @click.stop="clickEmployeeItem(employee)">
-                            <input type="checkbox" style="margin-right: 10px"
+                            <input type="checkbox" style="margin-right: 12px"
                                    v-bind:value="employee"
                                    :checked="isEmployeeChecked(employee)">
                             <img :src="employeePortraitUrl(employee)">
@@ -32,7 +32,7 @@
                     <li v-for="(employee, index) in searchResults" :key="'search-' + employee.employeeId">
                         <div class="organization-item"
                              @click.stop="clickEmployeeItem(employee)">
-                            <input type="checkbox" style="margin-right: 10px"
+                            <input type="checkbox" style="margin-right: 12px"
                                    v-bind:value="employee"
                                    :checked="isEmployeeChecked(employee)">
                             <img :src="employeePortraitUrl(employee)">
@@ -166,12 +166,9 @@ export default {
     display: flex;
     height: 100%;
     flex-direction: column;
-    border-top-right-radius: var(--main-border-radius);
-    border-bottom-right-radius: var(--main-border-radius);
 }
 
 .member-list-container {
-    margin: 5px 5px 20px 5px;
     flex: 1;
     overflow-y: scroll;
 }
@@ -182,32 +179,31 @@ export default {
     align-items: center;
     height: 56px;
     padding: 0 20px;
-    border-radius: 5px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .organization-item:hover {
-    background: var(--background-item-placeholder);
+    background: var(--background-item-hover);
 }
 
 .organization-item img {
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
-    margin-right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--default-portrait-border-radius);
+    margin-right: 8px;
 }
 
 .organization-item .button {
     justify-self: flex-end;
     margin-left: auto;
-    padding: 5px;
-    font-size: 14px;
+    padding: 4px;
+    font-size: var(--font-size-base);
     color: var(--accent-color);
 }
 
 .organization-item .button:not(.disabled):hover {
     background: var(--background-selected-dim);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .organization-item .button.disabled {
@@ -218,7 +214,7 @@ export default {
     padding: 20px;
     color: var(--text-secondary);
     text-align: center;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 </style>

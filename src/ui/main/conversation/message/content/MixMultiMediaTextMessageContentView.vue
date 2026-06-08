@@ -146,14 +146,14 @@ export default {
 .mix-multimedia-message-view-container {
     max-width: 400px;
     max-height: 600px;
-    margin: 0 10px;
+    margin: 0 8px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: var(--background-primary);
-    padding: 5px 5px 0 5px;
-    border-radius: 5px;
+    padding: 4px 4px 0 4px;
+    border-radius: var(--radius-md);
 }
 
 .content {
@@ -163,7 +163,7 @@ export default {
     overflow: hidden;
     position: relative;
     border: 1px solid var(--border-tertiary);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .footer {
@@ -172,14 +172,14 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .footer p{
     width: 100%;
     max-height: 100px;
     overflow: auto;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 
 img {
@@ -197,7 +197,7 @@ video {
 }
 
 i {
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     color: var(--text-primary);
     cursor: pointer;
 }

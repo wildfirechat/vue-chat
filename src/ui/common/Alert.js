@@ -38,9 +38,9 @@ export default {
                     name: options.name ? options.name : 'alert-modal',
                     clickToClose: true,
                     adaptive: true,
-                    width: 260,
-                    height: showIcon ? 200 : 150,
-                    borderRadius: 10,
+                    width: 280,
+                    height: 'auto',
+                    borderRadius: 12,
                 }, {
                     'before-open': beforeOpen,
                     'before-close': beforeClose,

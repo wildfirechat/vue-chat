@@ -157,7 +157,7 @@ export default {
 }
 
 .conference-manage-view-container .action-tip {
-    padding: 10px;
+    padding: 8px;
     background: var(--background-tertiary);
     border-bottom: 1px solid var(--border-primary);
 }
@@ -168,13 +168,13 @@ export default {
 
 .title-container {
     display: flex;
-    padding: 10px;
+    padding: 8px;
     align-items: center;
     background: var(--background-tertiary);
 }
 
 .title-container i {
-    padding-right: 10px;
+    padding-right: 8px;
     height: 100%;
 }
 

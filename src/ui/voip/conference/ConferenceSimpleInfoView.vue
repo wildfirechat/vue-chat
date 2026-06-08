@@ -53,26 +53,26 @@ export default {
 
 .conference-simple-info-container {
     background: var(--background-primary);
-    padding: 5px 10px;
+    padding: 4px 8px;
     width: 300px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     box-shadow: 0 4px 8px 0 var(--background-mask), 0 6px 20px 0 var(--background-mask);
 }
 
 .title {
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .info-item {
     display: flex;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     align-items: center;
 }
 
 .info-item .name {
     width: 60px;
     min-width: 60px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-primary);
 }
 

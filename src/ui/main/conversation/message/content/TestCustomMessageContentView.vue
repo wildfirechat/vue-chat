@@ -72,11 +72,11 @@ export default {
 
 <style lang="css" scoped>
 .text-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
 }
@@ -89,8 +89,8 @@ export default {
 .text-message-container >>> code {
     background: var(--background-tertiary);
     display: inline-block;
-    border-radius: 3px;
-    padding: 0 5px;
+    border-radius: var(--radius-sm);
+    padding: 0 4px;
     user-select: text;
 }
 
@@ -100,7 +100,7 @@ export default {
 
 .text-message-container .text {
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     line-height: 20px;
     /*max-height: 1000px;*/
     max-width: 400px;

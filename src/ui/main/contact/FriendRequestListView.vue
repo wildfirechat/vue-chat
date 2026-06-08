@@ -8,7 +8,7 @@
                     <img class="avatar" :src="friendRequest._target.portrait">
                     <div class="info">
                         <div class="name-action">
-                            <div style="display: flex; align-items: center; ">
+                            <div class="flex-row flex-align-center name-row">
                                 <p class="name single-line">{{ friendRequest._target.displayName }}</p>
                                 <p v-if="isExternalDomainUser(friendRequest._target)" class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(friendRequest._target) }}</p>
                             </div>
@@ -110,18 +110,19 @@ export default {
 .avatar {
     width: 32px;
     height: 32px;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .new-friend-item {
-    padding: 10px 5px 10px 30px;
+    padding: 8px 4px 8px 30px;
     display: flex;
     width: 100%;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     align-items: center;
+    transition: background var(--duration-fast);
 }
-
 
 .new-friend-item.active {
     background-color: var(--background-item-placeholder);
@@ -132,7 +133,7 @@ export default {
 }
 
 .new-friend-item .info {
-    margin-left: 10px;
+    margin-left: 8px;
     flex: 1;
     overflow: hidden;
 }
@@ -143,17 +144,31 @@ export default {
     align-items: center;
 }
 
+.new-friend-item .info .name-action .name-row {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
 .new-friend-item .info .name-action .name {
     flex: 1;
+    min-width: 0;
 }
 
 .new-friend-item .info .name-action .accept {
-    padding: 0 10px;
+    padding: 2px 10px;
     text-align: center;
     color: var(--text-on-accent);
     background: var(--accent-color);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     border: solid 1px var(--accent-color);
+    font-size: var(--font-size-xs);
+    transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.new-friend-item .info .name-action .accept:hover {
+    background: var(--accent-color-active);
+    border-color: var(--accent-color-active);
 }
 
 .new-friend-item .info .name-action .status {
@@ -161,7 +176,7 @@ export default {
 }
 
 .new-friend-item .info .reason {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-hint);
 }
 

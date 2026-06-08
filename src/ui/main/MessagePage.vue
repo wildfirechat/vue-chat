@@ -146,7 +146,7 @@ export default {
 
 .close-button-container {
     position: absolute;
-    padding: 5px 10px 10px 5px;
+    padding: 4px 8px 8px 4px;
     top: 0;
     right: 0;
 }
@@ -164,7 +164,7 @@ export default {
 
 .message-page ul li {
     position: relative;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 
 .message-page ul li:not(:last-child)::after {
@@ -172,7 +172,7 @@ export default {
     width: calc(100% - 55px);
     position: absolute;
     margin-left: 55px;
-    padding: 5px 0;
+    padding: 4px 0;
     border-bottom: 1px solid var(--border-tertiary);
 }
 
@@ -187,32 +187,32 @@ export default {
 
 .name-time-container {
     width: 100%;
-    padding: 5px 0;
+    padding: 4px 0;
     display: flex;
     justify-content: space-between;
 }
 
 .name-time-container p {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-tertiary);
 }
 
 .name-time-content-container .content {
     display: inline-block;
-    margin-left: -10px;
+    margin-left: -8px;
 }
 
 .portrait-container {
     width: 40px;
     height: 40px;
     overflow: hidden;
-    margin: 10px;
+    margin: 8px;
 }
 
 .portrait-container img {
     width: 100%;
     height: 100%;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
 }
 
 >>> .text-message-container.out {

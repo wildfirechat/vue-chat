@@ -209,14 +209,14 @@ export default {
     display: flex;
     background: gray;
     border-radius: 1px;
-    padding: 5px 10px;
+    padding: 4px 8px;
     justify-content: center;
     align-items: center;
     text-align: center;
 }
 
 .info-container * {
-    margin: 0 5px;
+    margin: 0 4px;
 }
 
 .info-container .name {

@@ -127,7 +127,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px dashed var(--border-dashed);
 }
 
@@ -137,8 +137,8 @@ export default {
 }
 
 .action-item p {
-    margin-left: 10px;
-    font-size: 13px;
+    margin-left: 8px;
+    font-size: var(--font-size-sm);
 }
 
 .action-item:active {

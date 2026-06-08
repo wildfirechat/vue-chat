@@ -131,7 +131,7 @@ export default {
 .sub-menu-item {
     flex: 1;
     height: 30px;
-    padding: 0 10px;
+    padding: 0 8px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -149,13 +149,13 @@ export default {
 
 i {
     margin-left: 20px;
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     color: var(--text-primary);
     cursor: pointer;
 }
 
 >>> .tippy-content{
-    padding: 5px 0 !important;
+    padding: 4px 0 !important;
 }
 
 >>> .tippy-arrow {

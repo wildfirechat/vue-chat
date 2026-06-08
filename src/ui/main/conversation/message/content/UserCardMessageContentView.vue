@@ -60,34 +60,34 @@ export default {
 .user-card-content-container {
     width: 230px;
     height: 100px;
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
 }
 
 .portrait-name-container {
     display: flex;
     align-items: center;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 1px solid var(--border-secondary);
 }
 
 .portrait-name-container img {
     width: 45px;
     height: 45px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .portrait-name-container p {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .desc {
     padding-top: 8px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     color: var(--text-placeholder);
 }
 

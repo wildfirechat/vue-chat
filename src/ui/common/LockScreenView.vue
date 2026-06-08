@@ -70,14 +70,14 @@ export default {
 }
 
 .lock-title {
-    font-size: 24px;
+    font-size: var(--font-size-3xl);
     font-weight: 600;
     margin-bottom: 12px;
     letter-spacing: 1px;
 }
 
 .lock-description {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-trans-light);
 }
 </style>

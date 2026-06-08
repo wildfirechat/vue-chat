@@ -188,8 +188,8 @@ export default {
     position: relative;
     display: flex;
     align-items: center;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 .search-input-container input {
@@ -199,7 +199,7 @@ export default {
     flex: 1;
     width: 100%;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     outline: none;
     background-color: var(--background-input);
 }
@@ -223,14 +223,14 @@ export default {
     width: 30px;
     height: 25px;
     background-color: var(--background-secondary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-primary);
 }
 
 .add-btn-container {
     position: relative;
     flex-shrink: 0;
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .add-menu-popup {
@@ -264,13 +264,13 @@ export default {
 
 .add-menu {
     margin-top: 8px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     background-color: var(--background-tooltip);
     border: 1px solid var(--border-subtle);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     box-shadow: var(--shadow-tooltip);
     min-width: 120px;
-    padding: 5px 0;
+    padding: 4px 0;
     overflow: hidden;
 }
 
@@ -293,7 +293,7 @@ export default {
     cursor: pointer;
     color: var(--text-secondary-strong);
     -webkit-app-region: no-drag;
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     line-height: 1;
 }
 

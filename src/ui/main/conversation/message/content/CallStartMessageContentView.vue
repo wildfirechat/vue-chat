@@ -115,17 +115,17 @@ export default {
 
 <style lang="css" scoped>
 .call-start-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
 }
 
 .call-start-message-container p {
-    padding-left: 5px;
+    padding-left: 4px;
     white-space: pre-line;
 }
 
@@ -136,7 +136,7 @@ export default {
 
 .call-start-message-container .text {
     color: var(--text-primary);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 </style>

@@ -68,11 +68,11 @@ export default {
 <style lang="css" scoped>
 
 .link-message-container {
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 8px;
+    padding: 8px;
     background-color: var(--background-primary);
     position: relative;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -83,10 +83,10 @@ export default {
 .link-message-container img {
     width: 40px;
     height: 40px;
-    margin-left: 10px;
+    margin-left: 8px;
     min-width: 40px;
     background: lightgray;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .link-message-container .title {
@@ -98,7 +98,7 @@ export default {
 
 .link-message-container .desc {
     color: var(--text-hint);
-    font-size: 13px;
+    font-size: var(--font-size-sm);
     -webkit-line-clamp: 3;
     line-height: 20px;
     max-height: 60px;

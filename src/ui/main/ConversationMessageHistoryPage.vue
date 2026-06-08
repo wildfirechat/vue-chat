@@ -320,7 +320,7 @@ export default {
     width: 60px;
     height: 60px;
     margin-right: 20px;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     background: var(--border-primary);
 }
 
@@ -335,11 +335,11 @@ export default {
 
 .search-input-container input {
     height: 25px;
-    padding: 0 10px 0 20px;
+    padding: 0 8px 0 20px;
     text-align: left;
     flex: 1;
     border: 1px solid var(--border-primary);
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
     outline: none;
     background-color: var(--background-input);
 }
@@ -359,7 +359,7 @@ export default {
 
 .category-container {
     display: flex;
-    padding: 15px 0;
+    padding: 16px 0;
     border-top: 1px solid var(--border-primary);
     flex-direction: row;
     justify-content: space-around;
@@ -389,12 +389,12 @@ export default {
 
 .message-list-container ul li {
     position: relative;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 
 .desc-action-container {
     width: 100%;
-    padding: 10px 40px 20px;
+    padding: 8px 40px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -405,7 +405,7 @@ export default {
     width: calc(100% - 55px);
     position: absolute;
     margin-left: 55px;
-    padding: 5px 0;
+    padding: 4px 0;
     border-bottom: 1px solid var(--border-tertiary);
 }
 
@@ -420,13 +420,13 @@ export default {
 
 .name-time-container {
     width: 100%;
-    padding: 5px 0;
+    padding: 4px 0;
     display: flex;
     justify-content: space-between;
 }
 
 .name-time-container p {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     color: var(--text-tertiary);
 }
 
@@ -441,7 +441,7 @@ export default {
     position: absolute;
     right: 0;
     top: 40px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     color: var(--text-link);
 }
 
@@ -454,13 +454,13 @@ export default {
     height: 40px;
     min-width: 40px;
     overflow: hidden;
-    margin: 10px;
+    margin: 8px;
 }
 
 .portrait-container img {
     width: 100%;
     height: 100%;
-    border-radius: 3px;
+    border-radius: var(--default-portrait-border-radius);
 }
 
 >>> .text-message-container.out {

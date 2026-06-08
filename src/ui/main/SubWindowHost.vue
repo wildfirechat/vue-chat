@@ -158,7 +158,7 @@ export default {
 }
 
 .sub-window-close i {
-    font-size: 16px;
+    font-size: var(--font-size-lg);
     color: var(--text-hint);
 }
 
