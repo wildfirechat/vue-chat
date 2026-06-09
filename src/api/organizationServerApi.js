@@ -46,6 +46,7 @@ export class OrganizationServerApi {
                     })
                     .catch(error => {
                         this.isServiceAvailable = false;
+                        console.error('org login error', error);
                         reject(error);
                     })
 

@@ -40,6 +40,7 @@ export default {
                     text: '组织结构服务异常',
                     type: 'error'
                 })
+                console.error(error);
             })
 
     },

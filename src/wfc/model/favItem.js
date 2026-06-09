@@ -30,7 +30,7 @@ export default class FavItem {
 
     static fromMessage(message) {
         let favItem = new FavItem();
-        favItem.messageUid = message.messageUid;
+        favItem.messageUid = stringValue(message.messageUid);
         favItem.conversation = message.conversation;
         favItem.favType = message.messageContent.type;
         favItem.sender = message.from;

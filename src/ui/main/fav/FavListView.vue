@@ -106,7 +106,7 @@ import CompositeMessageContent from "../../../wfc/messages/compositeMessageConte
 import Config from "../../../config";
 import IpcEventType from "../../../ipcEventType";
 import appServerApi from "../../../api/appServerApi";
-import {downloadFile} from "../../../platformHelper";
+import { downloadFile, previewMM } from '../../../platformHelper';
 
 export default {
     name: "FavListView",
@@ -233,10 +233,16 @@ export default {
                             type: 'info'
                         })
                     }
+                    
                     break;
                 case MessageContentType.Image:
                 case MessageContentType.Video:
-                    store.previewMedia(favItem.url, favItem.thumbUrl, favItem.data && favItem.data.thumb ? favItem.data.thumb : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
+                    if(isElectron()){
+                        let item = Object.assign(new FavItem(), favItem);
+                        previewMM(item.toMessage(), 0, false)
+                    } else {
+                        store.previewMedia(favItem.url, favItem.thumbUrl, favItem.data && favItem.data.thumb ? favItem.data.thumb : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
+                    }
                     break;
                 case MessageContentType.File:
                     let fi = Object.assign(new FavItem(), favItem);
@@ -266,19 +272,40 @@ export default {
                     console.log('todo click', favItem)
                     break;
             }
+  
         },
         handleClickMedia(index, favItems) {
-            let mediaItems = [];
             favItems = favItems.filter(favItem => (favItem.url || favItem.thumbUrl || (favItem.data && favItem.data.thumb)))
-            favItems.forEach(favItem => {
-                let thumb = favItem.thumbUrl ? favItem.thumbUrl : (favItem.data && favItem.data.thumb ? 'data:image/png;base64,' + favItem.data.thumb : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
-                mediaItems.push({
-                    src: favItem.url,
-                    thumb: thumb,
-                    autoplay: true,
+            if (isElectron()) {
+                let mediaItems = favItems.map(favItem => ({
+                    url: favItem.url,
+                    thumbUrl: favItem.thumbUrl ? favItem.thumbUrl : (favItem.data && favItem.data.thumb ? 'data:image/png;base64,' + favItem.data.thumb : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg=='),
+                    type: favItem.type,
+                    title: favItem.title || '',
+                    messageUid: favItem.messageUid,
+                }));
+                let hash = window.location.hash;
+                let previewUrl = window.location.origin;
+                if (hash) {
+                    previewUrl = window.location.href.replace(hash, '#/mmpreview');
+                } else {
+                    previewUrl += '/mmpreview';
+                }
+                previewUrl += `?favMediaIndex=${index}&favMediaData=${wfc.escape(wfc.utf8_to_b64(JSON.stringify(mediaItems)))}`;
+                console.log('', previewUrl);
+                ipcRenderer.send(IpcEventType.SHOW_MULTIMEDIA_PREVIEW_WINDOW, { url: previewUrl });
+            } else {
+                let mediaItems = [];
+                favItems.forEach(favItem => {
+                    let thumb = favItem.thumbUrl ? favItem.thumbUrl : (favItem.data && favItem.data.thumb ? 'data:image/png;base64,' + favItem.data.thumb : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNcunDhfwAGwgLoe4t2fwAAAABJRU5ErkJggg==')
+                    mediaItems.push({
+                        src: favItem.url,
+                        thumb: thumb,
+                        autoplay: true,
+                    })
                 })
-            })
-            store.previewMedias(mediaItems, index)
+                store.previewMedias(mediaItems, index)
+            }
         },
         openFavContextMenu(event, favItem) {
             if (!favItem) {

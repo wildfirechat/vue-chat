@@ -24,7 +24,7 @@
         </div>
 
         <CoolLightBox
-            v-if="!sharedMiscState.isElectron"
+            v-if="!sharedMiscState.isElectron || (sharedMiscState.isElectron && !sharedMiscState.isMainWindow)"
             :items="sharedConversationState.previewMediaItems"
             :index="sharedConversationState.previewMediaIndex"
             :slideshow="false"

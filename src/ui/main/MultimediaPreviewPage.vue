@@ -1,12 +1,12 @@
 <template>
     <div class="image-content-container">
-        <div v-if="!message">
+        <div v-if="!message && !favMode">
             加载中...
         </div>
         <div v-else class="flex-center" style="width: 100vw; height: 100vh">
             <img v-show="mediaLoaded === false"
                  alt=""
-                 v-bind:src="'data:video/jpeg;base64,' + currentMedia.thumbnail">
+                 v-bind:src="currentMedia.thumbnailSrc">
             <img v-show="mediaLoaded && currentMedia.type === 'image'" @load="onImageLoaded"
                  draggable="true"
                  alt=""
@@ -32,14 +32,10 @@
         </div>
         <vue-context ref="menu" v-on:close="()=>{}">
             <li>
-                <a @click.prevent="download">{{
-                        $t('common.save')
-                    }}</a>
+                <a @click.prevent="download">{{ $t('common.save') }}</a>
             </li>
-            <li>
-                <a @click.prevent="forward">{{
-                        $t('misc.share_to_friend')
-                    }}</a>
+            <li v-if="!favMode">
+                <a @click.prevent="forward">{{ $t('misc.share_to_friend') }}</a>
             </li>
         </vue-context>
     </div>
@@ -47,12 +43,15 @@
 
 <script>
 import '../../vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
-import wfc from "../../wfc/client/wfc";
-import {currentWindow, ipcRenderer, screen} from "../../platform";
-import MessageContentType from "../../wfc/messages/messageContentType";
-import {downloadFile} from "../../platformHelper";
-import ForwardType from "./conversation/message/forward/ForwardType";
-import {scaleDown} from "../util/imageUtil";
+import wfc from '../../wfc/client/wfc';
+import { currentWindow, screen } from '../../platform';
+import MessageContentType from '../../wfc/messages/messageContentType';
+import { downloadFile, downloadFile2 } from '../../platformHelper';
+import ForwardType from './conversation/message/forward/ForwardType';
+import { scaleDown } from '../util/imageUtil';
+import ImageMessageContent from '../../wfc/messages/imageMessageContent';
+import Message from '../../wfc/messages/message';
+import VideoMessageContent from '../../wfc/messages/videoMessageContent';
 
 export default {
     name: 'MultimediaPreviewPage',
@@ -60,6 +59,9 @@ export default {
         return {
             mediaLoaded: false,
             message: null,
+            favMediaItems:[],
+            currentFavItemIndex: 0,
+            continuous: false,
             currentMixMultiMediaItemIndex: 0,
             hasMoreOldMediaMessage: true,
             hasMoreNewMediaMessage: true,
@@ -75,22 +77,31 @@ export default {
         let query = hash.substring(hash.indexOf('?'));
         if (query && query.length > 1) {
             let params = new URLSearchParams(query);
-            let messageUid = params.get('messageUid');
-            let localMsg = wfc.getMessageByUid(messageUid);
-            if (!localMsg) {
-                wfc.loadRemoteMessage(messageUid, msg => {
-                    this.message = msg;
-                    console.log(msg);
-                }, err => {
-                    console.error('loadRemoteMessage error', err);
-                })
 
+            let favMediaData = params.get('favMediaData');
+            this.continuous = params.get('continuous') === 'true';
+            if (favMediaData) {
+                this.favMediaItems = JSON.parse(wfc.b64_to_utf8(wfc.unescape(favMediaData)));
+                this.currentFavItemIndex = Number(params.get('favMediaIndex') || '0');
+                this.hasMoreOldMediaMessage = this.currentFavItemIndex > 0;
+                this.hasMoreNewMediaMessage = this.currentFavItemIndex < this.favMediaItems.length - 1;
             } else {
-                this.message = localMsg;
-            }
-            let value = params.get('mmmIndex');
-            if (value) {
-                this.currentMixMultiMediaItemIndex = Number(value)
+                let messageUid = params.get('messageUid');
+                let localMsg = wfc.getMessageByUid(messageUid);
+                if (!localMsg) {
+                    wfc.loadRemoteMessage(messageUid, msg => {
+                        this.message = msg;
+                        console.log(msg);
+                    }, err => {
+                        console.error('loadRemoteMessage error', err);
+                    })
+                } else {
+                    this.message = localMsg;
+                }
+                let value = params.get('mmmIndex');
+                if (value) {
+                    this.currentMixMultiMediaItemIndex = Number(value)
+                }
             }
         }
 
@@ -127,7 +138,7 @@ export default {
         handleKeyPress(event) {
             switch (event.keyCode) {
                 case 32:// 空格
-                    if (this.message.messageContent.type === MessageContentType.Video) {
+                    if (this.currentMedia.type === 'video') {
                         if (this.$refs.video.paused) {
                             this.$refs.video.play();
                         } else {
@@ -152,6 +163,30 @@ export default {
         },
         previewNextMessage(before) {
             this.$refs.menu && this.$refs.menu.close();
+
+            if(!this.continuous){
+                return;
+            }
+            if (this.favMode) {
+                if (before) {
+                    if (this.currentFavItemIndex > 0) {
+                        this.currentFavItemIndex--;
+                        this.mediaLoaded = false;
+                        this.hasMoreNewMediaMessage = true;
+                    } else {
+                        this.hasMoreOldMediaMessage = false;
+                    }
+                } else {
+                    if (this.currentFavItemIndex < this.favMediaItems.length - 1) {
+                        this.currentFavItemIndex++;
+                        this.mediaLoaded = false;
+                        this.hasMoreOldMediaMessage = true;
+                    } else {
+                        this.hasMoreNewMediaMessage = false;
+                    }
+                }
+                return;
+            }
 
             if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
                 if (before && this.currentMixMultiMediaItemIndex > 0) {
@@ -198,45 +233,69 @@ export default {
         },
 
         download() {
+            if (this.favMode) {
+                let item = this.favMediaItems[this.currentFavItemIndex];
+                downloadFile2(item.url, item.title || 'media', item.messageUid);
+                return;
+            }
             downloadFile(this.message);
         },
 
         forward() {
             console.log('forward message', this.message);
+            let message;
+            if(this.favMode){
+                message = new Message();
+                const curFavItem = this.favMediaItems[this.currentFavItemIndex];
+                if(curFavItem.type === 'video'){
+                    message.messageContent = new ImageMessageContent('', curFavItem.url, curFavItem.thumbUrl.substring('data:image/png;base64,'.length));
+                } else {
+                    message.messageContent = new VideoMessageContent('', curFavItem.url, curFavItem.thumbUrl.substring('data:image/png;base64,'.length));
+                }
+            } else {
+                message = this.message;
+            }
             this.$forwardMessage({
                 forwardType: ForwardType.NORMAL,
-                messages: [this.message],
+                messages: [message],
             });
         }
     },
 
     computed: {
+        favMode() {
+            return this.favMediaItems.length > 0;
+        },
         currentMedia() {
-            let cm = {
-                url: '',
-                thumbnail: '',
-                type: 'image'
+            if (this.favMode) {
+                let item = this.favMediaItems[this.currentFavItemIndex];
+                return {
+                    url: item.url,
+                    thumbnailSrc: item.thumbUrl || '',
+                    type: item.type === 3 ? 'image' : 'video',
+                };
             }
+            let cm = { url: '', thumbnailSrc: '', type: 'image' };
             if (!this.message) {
                 return cm;
             }
             if (this.message.messageContent.type === MessageContentType.Image) {
                 cm = {
                     url: this.message.messageContent.remotePath,
-                    thumbnail: this.message.messageContent.thumbnail,
+                    thumbnailSrc: 'data:video/jpeg;base64,' + this.message.messageContent.thumbnail,
                     type: 'image'
                 }
             } else if (this.message.messageContent.type === MessageContentType.Video) {
                 cm = {
                     url: this.message.messageContent.remotePath,
-                    thumbnail: this.message.messageContent.thumbnail,
+                    thumbnailSrc: 'data:video/jpeg;base64,' + this.message.messageContent.thumbnail,
                     type: 'video'
                 }
             } else if (this.message.messageContent.type === MessageContentType.MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT) {
                 let entries = this.message.messageContent.multiMedias;
                 cm = {
                     url: entries[this.currentMixMultiMediaItemIndex].url,
-                    thumbnail: entries[this.currentMixMultiMediaItemIndex].thumbnail,
+                    thumbnailSrc: 'data:video/jpeg;base64,' + entries[this.currentMixMultiMediaItemIndex].thumbnail,
                     type: entries[this.currentMixMultiMediaItemIndex].type
                 }
             }
