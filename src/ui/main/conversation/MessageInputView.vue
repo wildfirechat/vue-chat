@@ -189,6 +189,9 @@
                 v-on:cancelQuoteMessage="cancelQuoteMessage"
                 :enable-message-preview="false"
                 :quoted-message="quotedMessage" :show-close-button="true"/>
+            <div v-if="showSendButton" class="send-bar">
+                <button class="primary send-btn" :disabled="!hasInputContent" :title="$t('conversation.action_send') + ' (Enter)'" @click="send">{{ $t('conversation.action_send') }}</button>
+            </div>
         </section>
         <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus"
                          :conversation="conversationInfo.conversation"></ChannelMenuView>
@@ -303,6 +306,7 @@ export default {
 
             isPttTalking: false,
             isRecording: false,
+            hasInputContent: false,
 
             isCollectionEnable: !!Config.COLLECTION_SERVER,
             isPollEnable: !!Config.POLL_SERVER
@@ -335,9 +339,14 @@ export default {
             this.activeStore.quoteMessage(null)
         },
 
+        updateInputState() {
+            const input = this.$refs.input;
+            this.hasInputContent = !!(input && input.innerHTML.trim());
+        },
         onInput(e) {
             this.notifyTyping(TypingMessageContent.TYPING_TEXT);
             this.updateStickerSuggestions();
+            this.updateInputState();
         },
 
         updateStickerSuggestions() {
@@ -431,8 +440,8 @@ export default {
             if (!sticker) return;
             const stk = new StickerMessageContent('', sticker.data, 200, 200);
             wfc.sendConversationMessage(this.conversationInfo.conversation, stk);
-            // 清空输入框
             this.$refs.input.innerHTML = '';
+            this.updateInputState();
             this.stickerSuggestions = [];
             this.selectedStickerIdx = -1;
             this.focusInput();
@@ -765,6 +774,7 @@ export default {
             }
 
             input.innerHTML = '';
+            this.updateInputState();
             this.activeStore.quoteMessage(null);
             this.conversationInfo._quotedMessage = null;
             Draft.setConversationDraft(conversation, '', null, null);
@@ -1134,6 +1144,7 @@ export default {
                     input.appendChild(document.createTextNode(line));
                 });
                 this.moveCursorToEnd(input);
+                this.updateInputState();
             }
         },
 
@@ -1529,6 +1540,10 @@ export default {
         hasInputTextOrImage() {
             // TODO 监听input的输入情况
             return true;
+        },
+
+        showSendButton() {
+            return Config.SHOW_SEND_BUTTON;
         }
     },
 
@@ -1659,6 +1674,20 @@ export default {
 .sticker-suggestion-item.active {
     border-color: var(--accent-color);
     background-color: var(--background-item-hover, var(--background-item-placeholder));
+}
+
+.send-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 4px 12px 8px;
+}
+
+.send-btn {
+    padding: 5px 20px;
+    font-size: var(--font-size-sm);
+    min-width: 72px;
+    border-radius: var(--radius-sm);
 }
 
 .input-action-container {

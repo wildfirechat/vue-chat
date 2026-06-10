@@ -920,7 +920,7 @@ let store = {
                 let title = '';
                 let msgConversation = messages[0].conversation;
                 if (msgConversation.type === ConversationType.Single) {
-                    let users = store.getUserInfos([wfc.getUserId(), msgConversation.target], '');
+                    let users = this.getUserInfos([wfc.getUserId(), msgConversation.target], '');
                     title = users[0]._displayName + '和' + users[1]._displayName + '的聊天记录';
                 } else {
                     title = '群的聊天记录';

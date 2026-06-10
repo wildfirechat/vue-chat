@@ -101,69 +101,82 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
     height: 50px;
     width: 100%;
-    padding: 0 20px;
+    padding: 0 8px;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .channel-menu-container > div:not(:last-child) {
     flex: 1;
     height: 100%;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border-subtle);
 }
 
 .menu-item {
+    flex: 1;
     display: flex;
-    height: 100%;
+    height: calc(100% - 12px);
+    margin: 0 4px;
     justify-content: center;
     align-items: center;
     color: var(--text-primary);
-}
-
-.menu-item:not(:last-of-type) {
-    border-right: 1px solid var(--border-primary);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--duration-fast), color var(--duration-fast);
 }
 
 .menu-item:hover {
-    background: var(--border-primary);
+    background-color: var(--background-item-hover);
 }
 
 .sub-menu-item {
-    flex: 1;
-    height: 30px;
-    padding: 0 8px;
+    height: 32px;
+    padding: 0 14px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--duration-fast), color var(--duration-fast);
 }
 
 .sub-menu-item:not(:last-of-type) {
-    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 2px;
 }
 
 .sub-menu-item:hover {
-    background: var(--accent-color);
+    background-color: var(--accent-color);
     color: var(--text-on-accent);
 }
 
+>>> .tippy-content {
+    padding: 4px !important;
+}
+
 i {
-    margin-left: 20px;
-    font-size: var(--font-size-3xl);
-    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-left: 6px;
+    font-size: 20px;
+    color: var(--text-secondary);
+    border-radius: var(--radius-circle);
     cursor: pointer;
-}
-
->>> .tippy-content{
-    padding: 4px 0 !important;
-}
-
->>> .tippy-arrow {
-    border-top: 8px solid red !important;
-    border-right: 8px solid transparent !important;
+    flex-shrink: 0;
+    transition: background-color var(--duration-fast), color var(--duration-fast);
 }
 
 i:hover {
+    background-color: var(--background-item-hover);
     color: var(--accent-color);
 }
 

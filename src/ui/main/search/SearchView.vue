@@ -267,17 +267,19 @@ export default {
     font-size: var(--font-size-base);
     background-color: var(--background-tooltip);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-tooltip);
     min-width: 120px;
-    padding: 4px 0;
-    overflow: hidden;
+    padding: 4px;
 }
 
 .add-menu-item {
-    padding: .4rem 1rem;
+    padding: .4rem .85rem;
     color: var(--text-primary);
     white-space: nowrap;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--duration-fast), color var(--duration-fast);
 }
 
 .add-menu-item:hover {
@@ -298,11 +300,11 @@ export default {
 }
 
 .search-input-container button:hover {
-    background-color: var(--border-primary);
+    background-color: var(--background-item-hover);
 }
 
 .search-input-container button:active {
-    background-color: var(--border-primary);
+    background-color: var(--background-item-active);
 }
 
 </style>

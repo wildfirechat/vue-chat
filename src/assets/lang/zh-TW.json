@@ -89,6 +89,7 @@
     "action_tip_collection": "群接龍",
     "action_tip_audio_call": "語音通話",
     "action_tip_video_call": "視頻通話",
+    "action_send": "發送",
     "clear_conversation_history": "清空本地聊天記錄",
     "clear_remote_conversation_history": "清空遠程聊天記錄",
     "complain": "舉報",

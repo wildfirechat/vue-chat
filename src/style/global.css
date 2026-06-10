@@ -272,12 +272,15 @@ i {
     background-color: var(--background-tooltip) !important;
     border: 1px solid var(--border-subtle) !important;
     box-shadow: var(--shadow-tooltip) !important;
-    padding: 4px 0 !important;
+    border-radius: var(--radius-md) !important;
+    padding: 4px !important;
 }
 
 .v-context > li > a {
-    padding: .4rem 1rem;
+    padding: .4rem .85rem;
     color: var(--text-primary) !important;
+    border-radius: var(--radius-md);
+    transition: background-color 0.1s ease, color 0.1s ease;
 }
 
 .v-context > li > a:hover {

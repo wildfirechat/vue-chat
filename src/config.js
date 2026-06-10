@@ -178,6 +178,8 @@ export default class Config {
 
     // 单人音视频通话页面是否显示音视频 SDK 相关提示
     static SHOW_VOIP_TIP = true
+    // 消息输入框右下角是否显示发送按钮
+    static SHOW_SEND_BUTTON = true
     // 是否启用登录页滑动验证码
     static ENABLE_LOGIN_SLIDE_VERIFY = true
     // AI机器人ID
