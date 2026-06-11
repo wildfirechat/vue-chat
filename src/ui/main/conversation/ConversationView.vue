@@ -32,7 +32,7 @@
                             <i class="icon-ion-ios-settings-strong"
                                style="display: inline-block"
                                ref="setting"
-                               v-bind:class="{active : showConversationInfo}"
+                               v-bind:class="{active : infoOpen}"
                             />
                         </div>
                     </div>
@@ -92,36 +92,30 @@
                                   :resized="messageInputViewResized"
                                   ref="messageInputView"/>
                 <MessageMultiSelectionActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo"/>
-                <SingleConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
-                    v-v-on-click-outside="hideConversationInfo"
-                    :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
-                <GroupConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 1"
-                    v-v-on-click-outside="hideConversationInfo"
-                    :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
-
-                <SecretConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 5"
-                    v-v-on-click-outside="hideConversationInfo"
-                    :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
-
-                <ChannelConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 3"
-                    v-v-on-click-outside="hideConversationInfo"
-                    :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
+                <div v-if="showConversationInfo"
+                     ref="infoPanel"
+                     v-v-on-click-outside="hideConversationInfo"
+                     class="conversation-info-container"
+                     :class="{ 'is-open': infoOpen }">
+                    <div class="conversation-info-panel-inner">
+                        <SingleConversationInfoView
+                            v-if="sharedConversationState.currentConversationInfo.conversation.type === 0"
+                            :conversation-info="sharedConversationState.currentConversationInfo"
+                        />
+                        <GroupConversationInfoView
+                            v-if="sharedConversationState.currentConversationInfo.conversation.type === 1"
+                            :conversation-info="sharedConversationState.currentConversationInfo"
+                        />
+                        <SecretConversationInfoView
+                            v-if="sharedConversationState.currentConversationInfo.conversation.type === 5"
+                            :conversation-info="sharedConversationState.currentConversationInfo"
+                        />
+                        <ChannelConversationInfoView
+                            v-if="sharedConversationState.currentConversationInfo.conversation.type === 3"
+                            :conversation-info="sharedConversationState.currentConversationInfo"
+                        />
+                    </div>
+                </div>
 
                 <vue-context ref="menu" v-slot="{data : message}" :close-on-scroll="true" v-on:close="onMenuClose">
                     <!--          更多menu item-->
@@ -264,6 +258,7 @@ export default {
         return {
             conversationInfo: null,
             showConversationInfo: false,
+            infoOpen: false,
             localConversationEventBus: localConversationEventBus,
             activeStore: activeStore,
             sharedConversationState: activeStore.state.conversation,
@@ -396,7 +391,43 @@ export default {
             }
         },
         toggleConversationInfo() {
-            this.showConversationInfo = !this.showConversationInfo;
+            if (this.infoOpen) {
+                this._closeInfo();
+            } else {
+                this._openInfo();
+            }
+        },
+
+        _openInfo() {
+            this.showConversationInfo = true;
+            this.$nextTick(() => {
+                // 强制 reflow，先把 width: 0 的初始状态提交给浏览器，
+                // 否则首次样式计算时已带 is-open，过渡不会触发
+                const panel = this.$refs.infoPanel;
+                if (panel) void panel.offsetWidth;
+                this.infoOpen = true;
+            });
+        },
+
+        _closeInfo() {
+            this.infoOpen = false;
+            const panel = this.$refs.infoPanel;
+            if (panel) {
+                const onEnd = (e) => {
+                    // 只响应面板自身 width 的过渡结束，忽略子元素冒泡上来的 transitionend
+                    if (e.target !== panel || e.propertyName !== 'width') return;
+                    panel.removeEventListener('transitionend', onEnd);
+                    if (!this.infoOpen) this.showConversationInfo = false;
+                };
+                panel.addEventListener('transitionend', onEnd);
+            } else {
+                this.showConversationInfo = false;
+            }
+        },
+
+        _closeInfoImmediate() {
+            this.infoOpen = false;
+            this.showConversationInfo = false;
         },
 
         setWindowAlwaysTop() {
@@ -447,10 +478,11 @@ export default {
         },
 
         hideConversationInfo(event) {
+            if (!this.infoOpen) return;
             const path = event.composedPath();
             if (this.$refs.settingBtn && path.includes(this.$refs.settingBtn)) return;
             if (this.$refs.titleEl && path.includes(this.$refs.titleEl)) return;
-            this.showConversationInfo = false;
+            this._closeInfo();
         },
 
         isCancelable(message) {
@@ -1093,7 +1125,7 @@ export default {
 
         // 切换到新的会话
         if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
-            this.showConversationInfo = false;
+            this._closeInfoImmediate();
             this.ongoingCalls = [];
             if (this.ongoingCallTimer) {
                 clearInterval(this.ongoingCallTimer);
@@ -1340,6 +1372,7 @@ export default {
     height: calc(100% - 60px);
     position: relative;
     overflow-y: auto;
+    overflow-x: clip;
     display: flex;
     flex-direction: column;
     background-color: var(--background-tertiary);
@@ -1484,9 +1517,16 @@ export default {
     font-size: 10px;
 }
 
+/*
+ * 显示/隐藏动画用 width 展开，而不是 transform 滑入：
+ * transform 走合成器动画，刚挂载的面板内容来不及光栅化，动画期间会整块白屏；
+ * width 动画每帧走正常的 layout/paint，内容始终正确。
+ * 视觉上等价于从右侧滑入：容器锚定右边缘，宽度 0 -> 266px，
+ * 内部内容固定 266px 宽、锚定容器左边缘（滑动前缘），
+ * 超出部分由父容器（.conversation-content-container）的 overflow-x: clip 裁剪。
+ */
 .conversation-info-container {
-    display: none;
-    width: 266px;
+    width: 0;
     height: 100%;
     top: 0;
     right: 0;
@@ -1498,10 +1538,23 @@ export default {
     否则会 clip 点击会话成员时，出现的 UserCardView
      */
     overflow: visible;
+    /* 退出时 ease-in 加速离开 */
+    transition: width var(--duration-slow) ease-in;
 }
 
-.conversation-info-container.active {
-    display: flex;
+/* open 态：面板展开到位，进入时 ease-out 减速落位 */
+.conversation-info-container.is-open {
+    width: 266px;
+    transition-timing-function: ease-out;
+}
+
+/* 内容固定宽度且锚定容器左缘，动画期间内部不发生 reflow */
+.conversation-info-panel-inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 266px;
+    height: 100%;
 }
 
 i:hover {
