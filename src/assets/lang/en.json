@@ -139,6 +139,7 @@
         "zh_tw": "繁體中文",
         "en": "English",
         "sync_draft": "Sync draft",
+        "show_send_button": "Show send button",
         "theme": "Theme"
     },
     "common": {
