@@ -50,8 +50,14 @@ export default {
             let voip = this.message.messageContent;
             let desc = this.$t('voip.desc');
             if (voip.endTime > 0 && voip.connectTime > 0) {
-                let duration = parseInt((numberValue(voip.endTime) - numberValue(voip.connectTime)) / 1000);
-                desc = `通话时长：${duration}''`
+                let totalSeconds = parseInt((numberValue(voip.endTime) - numberValue(voip.connectTime)) / 1000);
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                let seconds = totalSeconds % 60;
+                let durationStr = hours > 0
+                    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+                    : `${minutes}:${String(seconds).padStart(2, '0')}`;
+                desc = `通话时长：${durationStr}`
             } else if (voip.connectTime > 0) {
                 desc = '通话中'
             } else {
