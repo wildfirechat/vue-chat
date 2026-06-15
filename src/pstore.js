@@ -168,6 +168,7 @@ export const pstore = (id) => defineStore(id, () => {
         enableNotificationMessageDetail: true,
         enableCloseWindowToExit: false,
         enableAutoLogin: false,
+        showSendButton: false,
         isElectron: isElectron(),
         isElectronWindowsOrLinux: process && (process.platform === 'win32' || process.platform === 'linux'),
         isOhos: process && (process.platform === 'openharmony'),
@@ -190,6 +191,7 @@ export const pstore = (id) => defineStore(id, () => {
             this.enableNotificationMessageDetail = true;
             this.enableCloseWindowToExit = false;
             this.enableAutoLogin = false;
+            this.showSendButton = false;
             this.isElectron = isElectron();
             this.isElectronWindowsOrLinux = process && (process.platform === 'win32' || process.platform === 'linux');
             this.isOhos = process && (process.platform === 'openharmony');

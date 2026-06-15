@@ -561,7 +561,7 @@ export default {
     flex-direction: column;
     position: relative;
     height: 100%;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .scroll-container {

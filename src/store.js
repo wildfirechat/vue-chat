@@ -2094,6 +2094,8 @@ let store = {
         this.state.misc.enableAutoLogin = getItem(userId + '-' + 'autoLogin') === '1'
         setting = getItem('minimizable')
         this.state.misc.enableMinimize = setting === null || setting === '1'
+        setting = getItem(userId + '-' + 'showSendButton')
+        this.state.misc.showSendButton = setting !== null ? setting === '1' : false
     },
 
     setEnableNotification(enable) {
@@ -2121,6 +2123,11 @@ let store = {
     setEnableAutoLogin(enable) {
         this.state.misc.enableAutoLogin = enable;
         setItem(this.state.contact.selfUserInfo.uid + '-' + 'autoLogin', enable ? '1' : '0')
+    },
+
+    setShowSendButton(enable) {
+        this.state.misc.showSendButton = enable;
+        setItem(this.state.contact.selfUserInfo.uid + '-' + 'showSendButton', enable ? '1' : '0')
     },
 
     // clone一下，别影响到好友列表
