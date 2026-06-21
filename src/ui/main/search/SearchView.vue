@@ -193,7 +193,7 @@ export default {
 }
 
 .search-input-container input {
-    height: 25px;
+    height: calc(25px * var(--layout-scale-cap));
     padding: 0 24px 0 20px;
     text-align: left;
     flex: 1;
@@ -202,6 +202,7 @@ export default {
     border-radius: var(--radius-sm);
     outline: none;
     background-color: var(--background-input);
+    font-size: var(--font-size-sm);
 }
 
 .search-input-container input:active {

@@ -30,7 +30,7 @@ export default {
 
 .notification-container .time {
     color: var(--text-time);
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     text-align: center;
 }
 

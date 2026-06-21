@@ -2332,6 +2332,27 @@ let store = {
         watermark.refresh();
     },
 
+    // 字体缩放（参考微信PC端），同时影响字号、会话/联系人列表项高度及头像大小
+    setFontScale(scale) {
+        scale = this._normalizeFontScale(scale);
+        this.state.misc.fontScale = scale;
+        setItem('fontScale', scale);
+        this.applyFontScale();
+    },
+
+    applyFontScale() {
+        let scale = this._normalizeFontScale(this.state.misc.fontScale);
+        document.documentElement.style.setProperty('--font-scale', scale);
+    },
+
+    _normalizeFontScale(scale) {
+        scale = parseFloat(scale);
+        if (!scale || isNaN(scale)) {
+            scale = 1;
+        }
+        // 限制在 0.85 ~ 1.45 之间，避免界面错乱
+        return Math.min(1.45, Math.max(0.85, scale));
+    },
     clearConversationUnreadStatus(conversation) {
         let info = wfc.getConversationInfo(conversation);
         if (info && (info.unreadCount.unread + info.unreadCount.unreadMention + info.unreadCount.unreadMentionAll) > 0) {

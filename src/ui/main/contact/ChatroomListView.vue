@@ -56,11 +56,6 @@ export default {
 </script>
 
 <style scoped>
-.avatar {
-    width: 32px;
-    height: 32px;
-}
-
 .chatroom-item {
     padding: 8px 4px 8px 30px;
     display: flex;

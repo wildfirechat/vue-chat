@@ -154,7 +154,12 @@
         "en": "English",
         "sync_draft": "同步草稿",
         "show_send_button": "显示发送按钮",
-        "theme": "主题"
+        "theme": "主题",
+        "font_size": "字体大小",
+        "font_size_standard": "标准",
+        "font_size_small": "小",
+        "font_size_large": "大",
+        "font_size_preview": "调节字体大小，会话和联系人列表也会随之缩放"
     },
     "common": {
         "add": "添加",

@@ -343,6 +343,7 @@ export default {
             const input = this.$refs.input;
             this.hasInputContent = !!(input && input.innerHTML.trim());
         },
+
         onInput(e) {
             this.notifyTyping(TypingMessageContent.TYPING_TEXT);
             this.updateStickerSuggestions();
@@ -1733,7 +1734,7 @@ export default {
     font-size: var(--font-size-sm);
 }
 .input-action-container ul li {
-    padding: 0 4px;
+    padding: 0 calc(4px * var(--layout-scale-cap));
 }
 
 .input-action-container ul li .screen-shot-button {
@@ -1755,8 +1756,8 @@ export default {
     flex-direction: row;
     justify-content: space-around;
     border-radius: var(--radius-lg);
-    width: 40px;
-    height: 28px;
+    width: calc(40px * var(--layout-scale-cap));
+    height: calc(32px * var(--layout-scale-cap));
     transition: background-color 0.15s ease;
     font-size: var(--font-size-xs);
 }
@@ -1806,7 +1807,7 @@ export default {
     transform: translateX(-50%);
     margin-bottom: 8px;
     background: var(--gradient-recording);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-md);
     padding: 12px 20px;
     box-shadow: var(--shadow-accent-recording);
     min-width: 180px;

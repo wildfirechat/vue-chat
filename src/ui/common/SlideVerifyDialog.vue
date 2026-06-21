@@ -331,7 +331,7 @@ export default {
 
 .slide-verify-container {
     background: var(--background-primary);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: 20px;
     width: 360px;
     box-shadow: var(--shadow-main);

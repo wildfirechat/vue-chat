@@ -108,8 +108,8 @@ export default {
 <style lang="css" scoped>
 
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: var(--size-avatar-contact);
+    height:  var(--size-avatar-contact);
     border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
     flex-shrink: 0;

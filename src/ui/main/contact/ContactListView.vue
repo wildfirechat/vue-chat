@@ -237,7 +237,7 @@ export default {
 }
 
 .category-item-container {
-    height: 40px;
+    height: calc(40px * var(--layout-scale-row));
     display: flex;
     align-items: center;
     padding-left: 16px;

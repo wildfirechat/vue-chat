@@ -159,7 +159,7 @@ export default {
 
 .conversation-item {
     width: 100%;
-    height: 48px;
+    height: calc(48px * var(--layout-scale-row));
     display: flex;
     /*border-bottom: 1px solid var(--border-secondary);*/
     align-items: center;
@@ -184,7 +184,7 @@ export default {
 
 .content-container {
     width: 100%;
-    height: 45px;
+    height: calc(45px * var(--layout-scale-row));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -212,6 +212,6 @@ export default {
 .content-container .title-time-container .time {
     display: inline-block;
     color: var(--text-secondary);
-    font-size: 10px;
+    font-size: calc(10px * var(--font-scale));
 }
 </style>

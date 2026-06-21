@@ -142,7 +142,12 @@
     "en": "English",
     "sync_draft": "同步草稿",
     "show_send_button": "顯示發送按鈕",
-    "theme": "主題"
+    "theme": "主題",
+    "font_size": "字體大小",
+    "font_size_standard": "標準",
+    "font_size_small": "小",
+    "font_size_large": "大",
+    "font_size_preview": "調節字體大小，會話和聯絡人列表也會隨之縮放"
   },
   "common": {
     "add": "添加",

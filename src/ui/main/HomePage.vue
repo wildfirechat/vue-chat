@@ -521,8 +521,8 @@ export default {
 
 .menu ul li {
     margin: 8px;
-    height: 40px;
-    line-height: 50px;
+    height: calc(40px * var(--layout-scale-cap));
+    line-height: calc(50px * var(--layout-scale-cap));
 }
 
 .menu ul li:last-of-type {
@@ -542,12 +542,12 @@ export default {
     line-height: 16px;
     font-style: normal;
     text-align: center;
-    right: -10px;
+    right: -2px;
     top: 4px;
 }
 
 i {
-    font-size: 25px;
+    font-size: calc(24px * var(--layout-scale-cap));
     color: var(--text-secondary);
     cursor: pointer;
 }

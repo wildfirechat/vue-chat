@@ -1513,7 +1513,7 @@ export default {
 }
 
 .domain-desc {
-    color: var(--color-warning);
+    color: var(--text-warning);
     font-size: 10px;
 }
 

@@ -202,7 +202,7 @@ export default {
     margin-bottom: 20px;
     color: var(--text-time);
     height: 20px;
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
 }
 
 .message-time-container.checked {

@@ -30,7 +30,7 @@
     display: flex;
     align-items: center;
     border-radius: 3px;
-    font-size: 13px;
+    font-size: var(--font-size-sm);
 }
 
 .tribute-container li img {

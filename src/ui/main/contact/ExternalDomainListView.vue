@@ -47,8 +47,8 @@ export default {
 
 <style scoped>
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: var(--size-avatar-contact);
+    height: var(--size-avatar-contact);
 }
 
 .external-domain-item {

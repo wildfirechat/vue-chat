@@ -140,7 +140,12 @@
         "en": "English",
         "sync_draft": "Sync draft",
         "show_send_button": "Show send button",
-        "theme": "Theme"
+        "theme": "Theme",
+        "font_size": "Font size",
+        "font_size_standard": "Standard",
+        "font_size_small": "Small",
+        "font_size_large": "Large",
+        "font_size_preview": "Adjust font size; conversation and contact lists scale accordingly"
     },
     "common": {
         "add": "Add",

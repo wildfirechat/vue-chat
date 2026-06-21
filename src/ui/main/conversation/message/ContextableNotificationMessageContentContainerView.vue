@@ -92,7 +92,7 @@ export default {
     width: 100%;
     text-align: center;
     color: var(--text-time);
-    font-size: 10px;
+    font-size: var(--font-size-xxs);
     background-color: var(--background-tertiary);
 }
 

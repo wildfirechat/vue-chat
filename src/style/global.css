@@ -24,17 +24,33 @@
 
     /* --- Font Size Scale --- */
     /* 12: 角标/时间戳/图标标签 */
-    --font-size-xs:   12px;
+    --font-scale: 1;
     /* 13: 次要信息（会话摘要、辅助说明） */
-    --font-size-sm:   13px;
     /* 14: 正文（主要 UI 文字） */
-    --font-size-base: 14px;
+    /* 文字本身由 --font-scale 自由缩放；但图标/头像/固定高度若 1:1 跟随会被超大字号撑爆，
+       故统一封顶：
+         · --layout-scale-cap (≤1.2)：图标 / 头像 / 徽标 / 固定高度 / 间距等固定尺寸
+         · --layout-scale-row (≤1.2)：列表行高度（能被文字内容撑高，可放宽）
+       用法：calc(36px * var(--layout-scale-cap))。
+       注意：min() 在放大时取较小值封顶；缩小（<1）时不受影响，与字号同步缩小。 */
+    --layout-scale-cap: min(var(--font-scale), 1.2);
+    --layout-scale-row: min(var(--font-scale), 1.2);
     /* 16: 强调/小标题（区块标题、字段 label） */
-    --font-size-lg:   16px;
     /* 20: 页面/弹窗标题 */
-    --font-size-2xl:  20px;
     /* 24: 展示级大标题（登录页、空状态） */
-    --font-size-3xl:  24px;
+    --font-size-xxs:   calc(11px * var(--font-scale));
+    /* 12: 角标/时间戳/图标标签 */
+    --font-size-xs:   calc(12px * var(--font-scale));
+    /* 13: 次要信息（会话摘要、辅助说明） */
+    --font-size-sm:   calc(13px * var(--font-scale));
+    /* 14: 正文（主要 UI 文字） */
+    --font-size-base: calc(14px * var(--font-scale));
+    /* 16: 强调/小标题（区块标题、字段 label） */
+    --font-size-lg:   calc(16px * var(--font-scale));
+    /* 20: 页面/弹窗标题 */
+    --font-size-2xl:  calc(20px * var(--font-scale));
+    /* 24: 展示级大标题（登录页、空状态） */
+    --font-size-3xl:  calc(24px * var(--font-scale));
 
     /* --- Transition Duration Scale --- */
     --duration-instant: 0.1s;
@@ -56,7 +72,12 @@
     --voip-screen-paused-bg: rgba(255, 184, 77, 0.16);
 
     /* --- Component Size --- */
-    --size-avatar:     36px;  /* 标准头像 */
+    /* 头像与列表项高度随字号缩放，使字体调大时整体协调（参考微信PC端）。
+       头像为固定尺寸 → cap 封顶；列表行可被文字撑高 → row 封顶。 */
+    --size-avatar:           calc(36px * var(--layout-scale-cap));  /* 会话列表标准头像 */
+    --size-avatar-contact:   calc(32px * var(--layout-scale-cap));  /* 联系人列表头像 */
+    --conversation-item-height: calc(68px * var(--layout-scale-row)); /* 会话列表项高度 */
+    --contact-item-height:      calc(50px * var(--layout-scale-row)); /* 联系人列表项高度 */
     --height-titlebar: 30px;  /* Electron 标题栏 */
 }
 
@@ -447,8 +468,8 @@ img.emoji {
     flex-direction: column;
     justify-content: space-around;
     border-radius: var(--radius-md);
-    width: 40px;
-    height: 40px;
+    width: calc(40px * var(--layout-scale-cap));
+    height:  calc(40px * var(--layout-scale-cap));
     transition: background-color var(--duration-fast) ease;
     font-size: var(--font-size-xs);
 }
@@ -462,13 +483,13 @@ img.emoji {
 }
 
 .i-button-small {
-    width: 28px !important;
-    height: 28px !important;
+    width: calc(32px * var(--layout-scale-cap)) !important;
+    height: calc(32px * var(--layout-scale-cap)) !important;
 }
 
 .i-button-large {
-    width: 54px !important;
-    height: 54px !important;
+    width: calc(56px * var(--layout-scale-cap)) !important;
+    height: calc(56px * var(--layout-scale-cap)) !important;
 }
 
 /* --- Inline-edit input wrapper with hover pencil icon --- */

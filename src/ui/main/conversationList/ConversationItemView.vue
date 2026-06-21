@@ -27,7 +27,7 @@
                     </div>
                     <div v-else-if="isExternalDomainSingleConversation" class="flex-row flex-align-center" style="max-width: calc(100% - 60px)">
                         <h2 class="title single-line">{{ conversationTitle }}</h2>
-                        <p class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                        <p class="single-line" style="color: var(--text-warning); border-radius: 2px;  padding: 1px 2px; font-size: var(--font-size-xxs)">{{ domainName }}</p>
                     </div>
                     <h2 v-else class="title single-line">{{ conversationTitle }}</h2>
                     <p class="time single-line">{{ source._timeStr }}</p>
@@ -314,7 +314,7 @@ export default {
 
 .conversation-item {
     width: 100%;
-    height: 68px;
+    height: var(--conversation-item-height);
     display: flex;
     /*border-bottom: 1px solid var(--border-secondary);*/
     align-items: center;
@@ -340,7 +340,7 @@ export default {
 .header .badge {
     position: absolute;
     color: var(--text-on-accent);
-    font-size: 10px;
+    font-size: calc(10px * var(--font-scale));
     background-color: var(--background-badge);
     border-radius: var(--radius-lg);
     min-width: 16px;
@@ -364,7 +364,7 @@ export default {
 
 .content-container {
     width: 100%;
-    height: 45px;
+    height: calc(45px * var(--layout-scale-row));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -392,7 +392,8 @@ export default {
 .content-container .title-time-container .time {
     display: inline-block;
     color: var(--text-secondary);
-    font-size: 10px;
+    vertical-align: middle;
+    font-size: var(--font-size-xxs);
 }
 
 .content-container .content {
@@ -402,7 +403,7 @@ export default {
 
 .content .draft {
     font-size: var(--font-size-xs);
-    height: 20px;
+    height: calc(20px * var(--layout-scale-row));
     color: var(--text-placeholder);
 }
 

@@ -99,6 +99,8 @@ export default {
         let root = document.documentElement;
         // Apply theme
         store.applyTheme();
+        // Apply font scale (字体缩放)
+        store.applyFontScale();
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
             if (this.sharedMiscState.theme === 'system') {
                 store.applyTheme();
