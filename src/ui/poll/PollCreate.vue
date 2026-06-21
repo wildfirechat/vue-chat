@@ -124,9 +124,9 @@
             <div class="dialog-content" @click.stop>
                 <div class="dialog-title">{{ $t('poll.select_end_time') }}</div>
                 <div class="datetime-picker">
-                    <input 
-                        type="datetime-local" 
-                        v-model="tempEndTime" 
+                    <input
+                        type="datetime-local"
+                        v-model="tempEndTime"
                         class="datetime-input"
                         :min="minDateTime"
                     />
@@ -562,7 +562,7 @@ input:checked + .slider:before {
 
 .dialog-content {
     background: var(--background-primary);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     width: 80%;
     max-width: 300px;
     overflow: hidden;

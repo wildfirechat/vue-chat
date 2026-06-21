@@ -151,7 +151,7 @@ export default {
     },
     mounted() {
         document.title = this.$t('collection.collection_detail');
-        
+
         let query = getSubWindowQuery(this);
         this.collectionId = query.collectionId;
         this.groupId = query.groupId || '';
@@ -394,7 +394,7 @@ export default {
     height: 24px;
     background: var(--background-secondary);
     color: var(--text-link);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;

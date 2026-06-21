@@ -90,7 +90,7 @@ export default {
 
 .home-menu {
     background: var(--background-primary);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     overflow: hidden;
 }
 
