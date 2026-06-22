@@ -373,7 +373,7 @@ export default {
                 }
             } else {
                 return {
-                    left: 'calc(60px + 261px)'
+                    left: 'calc(60px + var(--list-panel-width))'
                 }
             }
         },

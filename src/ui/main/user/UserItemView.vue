@@ -106,7 +106,7 @@ export default {
 
         tippyStyleFix() {
             let root = document.documentElement;
-            root.style.setProperty('--tippy-right', '261px');
+            root.style.setProperty('--tippy-right', 'var(--list-panel-width)');
         },
 
         tippyStyleReset() {

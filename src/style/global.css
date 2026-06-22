@@ -14,6 +14,7 @@
     --home-menu-padding-top: 60px;
     --composite-message-page-width: 100%;
     --composite-message-page-height: 100%;
+    --list-panel-width: 261px;
     --default-portrait-border-radius: var(--radius-md);
 
     /* --- Border Radius Scale --- */

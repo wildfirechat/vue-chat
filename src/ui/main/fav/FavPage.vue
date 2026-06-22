@@ -40,6 +40,7 @@
             </div>
 
         </section>
+        <ResizeBar/>
         <FavListView class="fav-list-view" :category="category"/>
     </section>
 </template>
@@ -48,6 +49,7 @@
 import FavListView from "./FavListView.vue";
 import store from "../../../store";
 import SearchView from "../search/SearchView.vue";
+import ResizeBar from "../../common/ResizeBar.vue";
 
 export default {
     name: "FavPage",
@@ -102,6 +104,7 @@ export default {
     components: {
         FavListView,
         SearchView,
+        ResizeBar,
     },
 };
 </script>
@@ -118,8 +121,9 @@ export default {
 }
 
 .fav-category-list-panel-container {
-    width: 261px;
+    width: var(--list-panel-width);
     height: 100%;
+    flex: 0 0 var(--list-panel-width);
     display: flex;
     flex-direction: column;
     border-right: 1px solid var(--border-primary);

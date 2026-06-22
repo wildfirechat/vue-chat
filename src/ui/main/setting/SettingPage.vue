@@ -32,6 +32,8 @@
             </ul>
         </div>
 
+        <ResizeBar/>
+
         <!-- 右侧内容区域 -->
         <div class="setting-content-panel">
             <!-- 选项卡内容：通用 -->
@@ -65,18 +67,9 @@
                 </div>
 
                 <div class="setting-group"
-                     v-if="sharedMiscState.isElectron || sharedMiscState.config.CLIENT_ID_STRATEGY === 1 || sharedMiscState.config.CLIENT_ID_STRATEGY === 2">
+                     v-if="sharedMiscState.isElectron">
                     <span class="group-label">启动与窗口</span>
                     <div class="setting-card">
-                        <div class="card-row switch" v-if="sharedMiscState.isElectron || (sharedMiscState.config.CLIENT_ID_STRATEGY === 1 || sharedMiscState.config.CLIENT_ID_STRATEGY === 2)">
-                            <div class="row-info">
-                                <span class="row-title">{{ $t('setting.auto_login') }}</span>
-                                <span class="row-desc">在打开应用时自动登录上次使用的账号</span>
-                            </div>
-                            <input type="checkbox" role="switch" :checked="sharedMiscState.enableAutoLogin"
-                                   @change="enableAutoLogin($event.target.checked)">
-                        </div>
-
                         <div class="card-row switch" v-if="sharedMiscState.isElectron">
                             <div class="row-info">
                                 <span class="row-title">{{ $t('setting.close_window_to_exit') }}</span>
@@ -110,10 +103,10 @@
                             <span class="row-title">{{ $t('setting.enable_notification') }}</span>
                             <span class="row-desc">开启或关闭新消息到达时的系统声音和横幅通知</span>
                         </div>
-                <input type="checkbox"
-                       role="switch"
+                        <input type="checkbox"
+                               role="switch"
                                :checked="sharedMiscState.enableNotification"
-                       @change="enableNotification($event.target.checked)">
+                               @change="enableNotification($event.target.checked)">
                     </div>
                     <div class="card-row switch" :class="{disabled: !sharedMiscState.enableNotification}">
                         <div class="row-info">
@@ -121,10 +114,10 @@
                             <span class="row-desc">开启后通知显示消息的发件人和预览内容，关闭后只显示“收到一条新消息”</span>
                         </div>
                         <input type="checkbox"
-                       role="switch"
+                               role="switch"
                                v-bind:disabled="!sharedMiscState.enableNotification"
-                       :checked="sharedMiscState.enableNotificationMessageDetail"
-                       @change="enableNotificationDetail($event.target.checked)">
+                               :checked="sharedMiscState.enableNotificationMessageDetail"
+                               @change="enableNotificationDetail($event.target.checked)">
                     </div>
                 </div>
             </div>
@@ -141,32 +134,34 @@
                             <span class="row-title">{{ $t('setting.lang') }}</span>
                             <span class="row-desc">更改客户端的界面语言，需重新启动应用以生效</span>
                         </div>
-                <dropdown
-                          :options="langs"
-                          :selected="currentLang"
-                          v-on:updateOption="setLang"
-                          :placeholder="'Select an Item'"
-                          :closeOnOutsideClick="true">
-                </dropdown>
-            </div>
+                        <dropdown
+                            :options="langs"
+                            :selected="currentLang"
+                            v-on:updateOption="setLang"
+                            :placeholder="'Select an Item'"
+                            :closeOnOutsideClick="true">
+                        </dropdown>
+                    </div>
+
                     <div class="card-row select">
                         <div class="row-info">
                             <span class="row-title">{{ $t('setting.theme') || '外观' }}</span>
                             <span class="row-desc">切换深色、浅色主题风格，或设置跟随系统外观</span>
                         </div>
-                <dropdown
-                          :options="themes"
-                          :selected="currentTheme"
-                          v-on:updateOption="setTheme"
-                          :placeholder="'Select Theme'"
-                          :closeOnOutsideClick="true">
-                </dropdown>
-            </div>
+                        <dropdown
+                            :options="themes"
+                            :selected="currentTheme"
+                            v-on:updateOption="setTheme"
+                            :placeholder="'Select Theme'"
+                            :closeOnOutsideClick="true">
+                        </dropdown>
+                    </div>
+
                     <div class="card-row stacked">
                         <div class="row-info">
                             <span class="row-title">{{ $t('setting.font_size') }}</span>
                             <span class="row-desc">{{ $t('setting.font_size_preview') }}</span>
-        </div>
+                        </div>
                         <div class="font-size-slider">
                             <div class="slider-track-wrapper">
                                 <div class="slider-rail" :style="sliderFillStyle"></div>
@@ -199,7 +194,28 @@
                     <h2 class="content-title">账号与安全</h2>
                     <p class="content-subtitle">管理登录密码、聊天记录备份与账号登录状态</p>
                 </div>
+
+                <!-- 当前登录账号卡片 -->
                 <div class="setting-card">
+                    <div class="card-row account-row">
+                        <img class="account-avatar" :src="selfPortrait || defaultPortrait" @error="imgUrlAlt"/>
+                        <div class="row-info account-info">
+                            <span class="row-title account-name">{{ selfDisplayName }}</span>
+                            <span class="row-desc account-id">{{ selfWfcId }}</span>
+                        </div>
+                        <button class="account-logout-btn" @click="logout">退出登录</button>
+                    </div>
+
+                    <div class="card-row switch"
+                         v-if="sharedMiscState.isElectron || sharedMiscState.config.CLIENT_ID_STRATEGY === 1 || sharedMiscState.config.CLIENT_ID_STRATEGY === 2">
+                        <div class="row-info">
+                            <span class="row-title">{{ $t('setting.auto_login') }}</span>
+                            <span class="row-desc">在打开应用时自动登录上次使用的账号</span>
+                        </div>
+                        <input type="checkbox" role="switch" :checked="sharedMiscState.enableAutoLogin"
+                               @change="enableAutoLogin($event.target.checked)">
+                    </div>
+
                     <!-- 使用 .stop.prevent 阻止事件冒泡和默认行为，避免 vue-context 因检测到 document 上的 click 事件而立刻关闭 -->
                     <div class="card-row clickable" @click.stop.prevent="showChangePasswordContextMenu($event)">
                         <div class="row-info">
@@ -216,15 +232,6 @@
                         </div>
                         <i class="row-chevron icon-ion-ios-arrow-right"/>
                     </div>
-
-                    <!-- 退出/切换账号已移至账号与安全选项卡中 -->
-                    <div class="card-row clickable" @click="logout">
-                        <div class="row-info">
-                            <span class="row-title danger-text">{{ $t('setting.exit_switch_user') }}</span>
-                            <span class="row-desc">安全退出并清除本地登录状态，以便切换其他账号</span>
-                        </div>
-                        <i class="row-chevron icon-ion-ios-arrow-right danger-text"/>
-                    </div>
                 </div>
             </div>
 
@@ -235,19 +242,23 @@
                         <img :src="logoUrl" alt="Logo" class="about-logo" @error="handleLogoError" />
                     </div>
                     <h3 class="about-app-name">野火 IM</h3>
-                    <p class="about-app-version">{{ protoRevision() }}</p>
+                    <p class="about-description">
+                        <strong>野火IM</strong> 是安全可靠、开发对接便捷、部署维护简单，方便二次开发和对接现有系统的私有化即时通讯平台。
+                    </p>
                 </div>
 
                 <div class="setting-card">
-                    <div class="card-row description-row">
-                        <p class="about-description">
-                            <strong>野火IM</strong> 是安全可靠、开发对接便捷、部署维护简单，方便二次开发和对接现有系统的私有化即时通讯平台。
-            </p>
-        </div>
+                    <div class="card-row">
+                        <div class="row-info">
+                            <span class="row-title">版本信息</span>
+                            <span class="row-desc" style="user-select: text">{{ versionInfo() }}</span>
+                        </div>
+                        <button v-if="sharedMiscState.isElectron" class="check-update-btn" @click="checkForUpdates">检查更新</button>
+                    </div>
                     <div class="card-row link-row">
                         <div class="row-info">
-                            <span class="row-title">微信联系</span>
-                            <span class="row-desc" style="user-select: text">wildfirechat 或 wfchat (商务/私有化部署咨询)</span>
+                            <span class="row-title">联系我们</span>
+                            <span class="row-desc" style="user-select: text">微信： wildfirechat 或 wfchat</span>
                         </div>
                     </div>
                 </div>
@@ -271,23 +282,19 @@
                         <span class="link-separator">|</span>
                         <a href="javascript:" @click.prevent.stop="openLogDir">日志目录</a>
                     </template>
-                    <template v-if="sharedMiscState.isElectron && updaterConfigured && !sharedMiscState.isOhos">
-                        <span class="link-separator">|</span>
-                        <a href="javascript:" @click.prevent.stop="checkForUpdates">检查更新</a>
-                    </template>
                 </div>
             </div>
         </div>
 
         <!-- 浮动的二级菜单，放置在最外层以防止任何 overflow: hidden 裁剪，且始终在 DOM 中以保证 $refs 可用 -->
-            <vue-context ref="changePasswordContextMenu" :close-on-scroll="false" v-on:close="onChangePasswordContextMenuClose">
-                <li>
-                    <a @click.prevent="showChangePasswordDialog()">密码验证</a>
-                </li>
-                <li>
-                    <a @click.prevent="showResetPasswordDialog()">短信验证码验证</a>
-                </li>
-            </vue-context>
+        <vue-context ref="changePasswordContextMenu" :close-on-scroll="false" v-on:close="onChangePasswordContextMenuClose">
+            <li>
+                <a @click.prevent="showChangePasswordDialog()">密码验证</a>
+            </li>
+            <li>
+                <a @click.prevent="showResetPasswordDialog()">短信验证码验证</a>
+            </li>
+        </vue-context>
     </section>
 </template>
 
@@ -300,12 +307,12 @@ import { ipcRenderer, isElectron } from '../../../platform';
 import { getItem, setItem } from '../../util/storageHelper';
 import ChangePasswordView from './ChangePasswordView';
 import ResetPasswordView from './ResetPasswordView';
-
 import BackupRestoreView from '../../../backup/BackupRestoreView.vue';
 import { shell } from '../../../platform';
 import IpcEventType from '../../../ipcEventType';
 import avenginekit from '../../../wfc/av/internal/engine.min';
 import Config from '../../../config';
+import ResizeBar from '../../common/ResizeBar.vue';
 
 export default {
     name: 'SettingPage',
@@ -314,9 +321,9 @@ export default {
             sharedMiscState: store.state.misc,
             sharedContactState: store.state.contact,
             openPcChatTimeoutHandler: 0,
-            updaterConfigured: false,
-            langs: [{lang: 'zh-CN', name: '简体中文'}, {lang: 'zh-TW', name: '繁體中文'}, {lang: 'en', name: 'English'}],
-            themes: [{id: 'system', name: '跟随系统'}, {id: 'light', name: '浅色'}, {id: 'dark', name: '暗黑'}],
+            appVersion: '',
+            langs: [{ lang: 'zh-CN', name: '简体中文' }, { lang: 'zh-TW', name: '繁體中文' }, { lang: 'en', name: 'English' }],
+            themes: [{ id: 'system', name: '跟随系统' }, { id: 'light', name: '浅色' }, { id: 'dark', name: '暗黑' }],
             // 字体缩放档位，1 为标准（参考微信PC端）
             fontScaleSteps: [0.85, 1, 1.15, 1.3, 1.45],
 
@@ -327,7 +334,6 @@ export default {
         }
     },
     methods: {
-
         openLogDir() {
             let appPath = wfc.getAppPath();
             shell.openPath(appPath);
@@ -342,7 +348,6 @@ export default {
         },
 
         onChangePasswordContextMenuClose() {
-
         },
 
         showChangePasswordDialog() {
@@ -420,6 +425,7 @@ export default {
         setShowSendButton(enable) {
             store.setShowSendButton(enable);
         },
+
         setLang(lang) {
             setItem('lang', lang.lang)
         },
@@ -427,10 +433,12 @@ export default {
         setTheme(theme) {
             store.setTheme(theme.id);
         },
+
         onFontScaleInput(index) {
             let scale = this.fontScaleSteps[parseInt(index)] || 1;
             store.setFontScale(scale);
         },
+
         openPcChat() {
             // pc 端，deeplink 的 scheme 是 wfc://
             // 打开和 小火的会话
@@ -450,10 +458,10 @@ export default {
             }
         },
 
-        protoRevision() {
-            let version = '';
+        versionInfo() {
+            let version = this.appVersion + ' ';
             try {
-                version = wfc.getProtoRevision();
+                version += wfc.getProtoRevision();
             } catch (e) {
                 version = 'unknown proto version'
                 console.log(e)
@@ -481,7 +489,7 @@ export default {
 
         imgUrlAlt(e) {
             e.target.src = this.defaultPortrait;
-    },
+        },
 
         handleLogoError(e) {
             e.target.style.display = 'none';
@@ -491,7 +499,7 @@ export default {
     async mounted() {
         window.addEventListener('blur', this.blurListener)
         if (isElectron()) {
-            this.updaterConfigured = await ipcRenderer.invoke('is-updater-configured');
+            this.appVersion = await ipcRenderer.invoke('get-app-version');
         }
     },
     beforeUnmount() {
@@ -559,6 +567,7 @@ export default {
     },
     components: {
         'dropdown': dropdown,
+        ResizeBar,
     },
 }
 </script>
@@ -578,13 +587,13 @@ export default {
 
 /* --- 左侧选项栏 --- */
 .setting-menu-panel {
-    width: 260px;
+    width: var(--list-panel-width);
     height: 100%;
     background: var(--background-secondary);
     border-right: 1px solid var(--border-primary);
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    flex: 0 0 var(--list-panel-width);
 }
 
 .setting-menu-header {
@@ -655,8 +664,9 @@ export default {
 }
 
 .tab-content {
-    max-width: 680px;
-    padding: 32px 48px;
+    width: 100%;
+    max-width: 760px;
+    padding: 32px clamp(20px, 4vw, 48px);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -712,16 +722,23 @@ export default {
 }
 
 .card-row {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border-separator);
     box-sizing: border-box;
 }
 
-.card-row:last-child {
-    border-bottom: none;
+/* 行间分割线：左右各留出 padding 间距，不填满整行；hover 背景仍可铺满整行 */
+.card-row:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    height: 1px;
+    background: var(--border-separator);
 }
 
 .row-info {
@@ -743,11 +760,12 @@ export default {
     color: var(--text-secondary);
     line-height: 1.4;
 }
-    /*box-shadow: 0 2px 4px 0 var(--background-mask), 0 6px 20px 0 var(--background-mask);*/
+
 .card-row.disabled {
     opacity: 0.45;
 }
 
+/* 可点击行样式 */
 .card-row.clickable {
     cursor: pointer;
     transition: background-color var(--duration-fast) ease;
@@ -765,6 +783,51 @@ export default {
 
 .danger-text {
     color: var(--text-danger) !important;
+}
+
+/* --- 当前登录账号卡片 --- */
+.card-row.account-row {
+    gap: 12px;
+}
+
+.account-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--background-input);
+}
+
+.account-info {
+    margin-right: 12px;
+}
+
+.account-name {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+}
+
+.account-id {
+    user-select: text;
+}
+
+.account-logout-btn,
+.check-update-btn {
+    flex-shrink: 0;
+    padding: 7px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+    background: var(--background-input);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) ease;
+}
+
+.account-logout-btn:hover,
+.check-update-btn:hover {
+    background: var(--background-item-hover);
 }
 
 /* --- 菜单重写 vue-dropdowns 适配 --- */
@@ -901,7 +964,7 @@ export default {
 .font-size-labels .font-size-label.start {
     left: 0;
 }
-    /* position: relative; */
+
 .font-size-labels .font-size-label.standard {
     transform: translateX(-50%);
 }
@@ -960,9 +1023,12 @@ export default {
 }
 
 .about-description {
+    margin-top: 12px;
+    max-width: 420px;
     font-size: var(--font-size-sm);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     line-height: 1.6;
+    text-align: center;
 }
 
 /* 简约文本按钮样式 */

@@ -1,6 +1,7 @@
 <template>
     <section id="conversation-content" class="conversation-page">
         <ConversationListPanel class="conversation-list-panel"/>
+        <ResizeBar/>
         <ConversationView class="conversation-view"/>
     </section>
 </template>
@@ -8,6 +9,7 @@
 <script>
 import ConversationView from "./conversation/ConversationView";
 import ConversationListPanel from "./ConversationListPanel.vue";
+import ResizeBar from "../common/ResizeBar.vue";
 
 export default {
     name: "ConversationPage",
@@ -19,6 +21,7 @@ export default {
     components: {
         ConversationListPanel,
         ConversationView,
+        ResizeBar,
     },
 };
 </script>
@@ -31,8 +34,9 @@ export default {
 }
 
 .conversation-list-panel {
-    width: 261px;
+    width: var(--list-panel-width);
     height: 100%;
+    flex: 0 0 var(--list-panel-width);
 }
 
 .conversation-view {

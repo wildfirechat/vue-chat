@@ -1,7 +1,9 @@
 <template>
     <div class="conference-portal-container">
         <div class="left-slider">
-            <h2 class="title">视频会议</h2>
+            <div class="left-header">
+                <h2 class="menu-title">视频会议</h2>
+            </div>
             <div class="action-container">
                 <div class="action" style="background: var(--background-accent-subtle)" @click="joinConference">
                     <!--                    <img :src="require(`@/assets/images/av_join_conference.png`)" alt="">-->
@@ -26,9 +28,11 @@
                 </div>
             </div>
         </div>
+        <ResizeBar/>
         <div class="right-slider">
+            <div class="right-content">
             <div class="fav-container">
-                <p>即将开始</p>
+                <span class="group-label">即将开始</span>
                 <div v-if="favConferenceInfos.length > 0" class="fav-list">
                     <div class="fav-conference" @click="showConferenceInfo(conferenceInfo)"
                          v-for="(conferenceInfo, index) in favConferenceInfos"
@@ -47,7 +51,7 @@
                 </div>
             </div>
             <div class="history-container">
-                <p>历史记录</p>
+                <span class="group-label">历史记录</span>
                 <div v-if="historyConferenceInfos.length > 0" class="fav-list">
                     <div class="fav-conference" @click="showConferenceInfo(conferenceInfo)"
                          v-for="(conferenceInfo, index) in historyConferenceInfos"
@@ -65,6 +69,7 @@
                     没有即将开始的会议
                 </div>
             </div>
+            </div>
         </div>
     </div>
 
@@ -78,9 +83,13 @@ import conferenceApi from "../../../api/conferenceApi";
 import ConferenceInfoView from "./ConferenceInfoView";
 import conferenceManager from "./conferenceManager";
 import wfc from "../../../wfc/client/wfc";
+import ResizeBar from "../../common/ResizeBar.vue";
 
 export default {
     name: "ConferencePortalPage",
+    components: {
+        ResizeBar,
+    },
     data() {
         return {
             favConferenceInfos: [],
@@ -259,22 +268,33 @@ export default {
 
 .left-slider {
     height: 100%;
-    width: 30%;
-    background: var(--background-primary);
-    padding: 8px 20px 0;
+    width: var(--list-panel-width);
+    flex: 0 0 var(--list-panel-width);
+    background: var(--background-secondary);
+    border-right: 1px solid var(--border-primary);
+    display: flex;
+    flex-direction: column;
 }
 
+.left-header {
+    padding: 24px 20px 12px;
+    border-bottom: 1px solid var(--border-separator);
+    box-sizing: border-box;
+}
 
-.left-slider > .title {
-    font-weight: normal;
-    font-style: normal;
-    padding-bottom: 8px;
+.menu-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
 }
 
 .action-container {
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding: 16px 20px;
+    box-sizing: border-box;
 }
 
 .action {
@@ -326,22 +346,36 @@ export default {
 
 .right-slider {
     height: 100%;
-    background: var(--background-secondary);
+    background: var(--background-primary);
     flex: 1 1 auto;
     overflow-y: auto;
-    padding: 20px;
+    overflow-x: hidden;
+    padding: 0;
 }
 
-.fav-container {
+.right-content {
+    width: 100%;
+    max-width: 760px;
+    padding: 32px clamp(20px, 4vw, 48px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.fav-container > p,
-.history-container > p {
-    font-size: var(--font-size-base);
-    font-weight: 500;
+.fav-container,
+.history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.group-label {
+    padding-left: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    letter-spacing: 0.4px;
     color: var(--text-secondary);
-    letter-spacing: 0.2px;
-    padding-bottom: 6px;
 }
 
 .empty {
@@ -349,18 +383,18 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 16px;
-    background: var(--background-primary);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-secondary);
     border-radius: var(--radius-md);
     font-size: var(--font-size-xs);
     color: var(--text-secondary);
-    margin: 8px 0;
     min-height: 48px;
 }
 
 .fav-list {
-    background: var(--background-primary);
+    background: var(--background-secondary);
+    border: 1px solid var(--border-secondary);
     border-radius: var(--radius-md);
-    margin: 8px 0;
     overflow: hidden;
 }
 
@@ -406,10 +440,6 @@ export default {
     color: var(--text-secondary);
     margin-top: 3px;
     font-size: var(--font-size-xs);
-}
-
-.history-container {
-    margin-top: 20px;
 }
 
 </style>

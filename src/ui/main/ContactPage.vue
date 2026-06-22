@@ -1,6 +1,7 @@
 <template>
     <div class="contact-page">
         <ContactListPanel class="contact-list-panel"/>
+        <ResizeBar/>
         <GroupDetailView
             v-if="sharedContactState.currentGroup"
             :group="sharedContactState.currentGroup"
@@ -52,6 +53,7 @@ import OrganizationDetailView from "./contact/OrganizationTreeView.vue";
 import ChatroomListView from "./contact/ChatroomListView.vue";
 import ChatroomDetailView from "./contact/ChatroomDetailView.vue";
 import DomainInfoView from "./contact/DomainInfoView.vue";
+import ResizeBar from "../common/ResizeBar.vue";
 
 export default {
     name: 'ContactPage',
@@ -61,6 +63,7 @@ export default {
         }
     },
     components: {
+        ResizeBar,
         DomainInfoView,
         ChatroomDetailView,
         ChatroomListView,
@@ -85,8 +88,9 @@ export default {
 
 .contact-list-panel {
     background-color: var(--background-secondary);
-    width: 261px;
+    width: var(--list-panel-width);
     height: 100%;
+    flex: 0 0 var(--list-panel-width);
 }
 
 ul {
