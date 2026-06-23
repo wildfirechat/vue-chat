@@ -225,7 +225,7 @@
                         <i class="row-chevron icon-ion-ios-arrow-right"/>
                     </div>
 
-                    <div class="card-row clickable" @click="showBackupRestoreDialog">
+                    <div v-if="sharedMiscState.isElectron" class="card-row clickable" @click="showBackupRestoreDialog">
                         <div class="row-info">
                             <span class="row-title">备份与恢复</span>
                             <span class="row-desc">备份聊天记录到电脑，或从电脑恢复备份到手机客户端</span>
