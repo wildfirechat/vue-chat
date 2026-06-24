@@ -1,102 +1,109 @@
 <template>
     <section class="contact-list">
-        <ul>
-            <li>
-                <div @click="showNewFriends" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
-                    <div class="category-item">
-                        <div>
-                            <span class="title">{{ $t('contact.new_friend') }}</span>
-                            <span class="tip">(上方搜索框，添加好友)</span>
+        <!-- Categories live in the #header slot so the whole panel shares one
+             scroll container while the contact list stays virtualized. -->
+        <virtual-list
+            ref="contactVl"
+            @scroll="onContactScroll"
+            class="contact-scroller"
+            :class="{'is-restoring': restoringScroll}"
+            :data-component="contactItemView" :data-sources="contactDataSources" :data-key="'uid'"
+            :estimate-size="30">
+            <template #header>
+                <ul>
+                    <li>
+                        <div @click="showNewFriends" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendRequestList}"></i>
+                            <div class="category-item">
+                                <div>
+                                    <span class="title">{{ $t('contact.new_friend') }}</span>
+                                    <span class="tip">(上方搜索框，添加好友)</span>
+                                </div>
+                                <span class="desc" v-if="sharedContactState.unreadFriendRequestCount === 0">{{ sharedContactState.unreadFriendRequestCount }}</span>
+                            </div>
                         </div>
-                        <span class="desc" v-if="sharedContactState.unreadFriendRequestCount === 0">{{ sharedContactState.unreadFriendRequestCount }}</span>
-                    </div>
-                </div>
-                <NewFriendListView v-if="sharedContactState.expandFriendRequestList"/>
-            </li>
-            <li>
-                <div @click="showGroups" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandGroup}"></i>
-                    <div class="category-item">
-                        <div>
-                            <span class="title">{{ $t('contact.group') }}</span>
-                            <span class="tip">(保存在通讯录的群组)</span>
+                        <NewFriendListView v-if="sharedContactState.expandFriendRequestList"/>
+                    </li>
+                    <li>
+                        <div @click="showGroups" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandGroup}"></i>
+                            <div class="category-item">
+                                <div>
+                                    <span class="title">{{ $t('contact.group') }}</span>
+                                    <span class="tip">(保存在通讯录的群组)</span>
+                                </div>
+                                <span class="desc">{{ sharedContactState.favGroupList.length }}</span>
+                            </div>
                         </div>
-                        <span class="desc">{{ sharedContactState.favGroupList.length }}</span>
-                    </div>
-                </div>
-                <GroupListVue v-if="sharedContactState.expandGroup"/>
-            </li>
-            <li>
-                <div @click="showChannels" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandChanel}"></i>
-                    <div class="category-item">
-                        <span class="title">{{ $t('contact.channel') }}</span>
-                        <span class="desc">{{ sharedContactState.channelList.length }}</span>
-                    </div>
-                </div>
-                <ChannelListView v-if="sharedContactState.expandChanel"/>
-            </li>
-            <li>
-                <div @click="showOrganization" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
-                    <div class="category-item">
-                        <span class="title">组织结构</span>
-                        <span class="desc"></span>
-                    </div>
-                </div>
-                <OrganizationListView v-if="sharedContactState.expandOrganization"/>
-            </li>
-            <li v-if="sharedContactState.isEnableMesh">
-                <div @click="showExternalDomains" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandExternalDomain}"></i>
-                    <div class="category-item">
-                        <span class="title">外部单位</span>
-                        <span class="desc"></span>
-                    </div>
-                </div>
-                <ExternalDomainListView v-if="sharedContactState.expandExternalDomain"/>
-            </li>
-            <li>
-                <div @click="showChatroom" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandChatroom}"></i>
-                    <div class="category-item">
-                        <div>
-                            <span class="title">聊天室</span>
-                            <span class="tip">(野火官方测试聊天室)</span>
+                        <GroupListVue v-if="sharedContactState.expandGroup"/>
+                    </li>
+                    <li>
+                        <div @click="showChannels" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandChanel}"></i>
+                            <div class="category-item">
+                                <span class="title">{{ $t('contact.channel') }}</span>
+                                <span class="desc">{{ sharedContactState.channelList.length }}</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <ChatroomListView v-if="sharedContactState.expandChatroom"/>
-            </li>
-            <li>
-                <div @click="showContacts" class="category-item-container">
-                    <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
-                    <div class="category-item">
-                        <span class="title">{{ $t('contact.contact') }}</span>
-                        <span class="desc">{{ sharedContactState.friendList.length }}</span>
-                    </div>
-                </div>
-                <virtual-list
-                    v-if="sharedContactState.expandFriendList"
-                    :data-component="contactItemView" :data-sources="groupedContacts" :data-key="'uid'"
-                    :estimate-size="30"
-                    style="max-height: 700px; overflow-y: auto"/>
+                        <ChannelListView v-if="sharedContactState.expandChanel"/>
+                    </li>
+                    <li>
+                        <div @click="showOrganization" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
+                            <div class="category-item">
+                                <span class="title">组织结构</span>
+                                <span class="desc"></span>
+                            </div>
+                        </div>
+                        <OrganizationListView v-if="sharedContactState.expandOrganization"/>
+                    </li>
+                    <li v-if="sharedContactState.isEnableMesh">
+                        <div @click="showExternalDomains" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandExternalDomain}"></i>
+                            <div class="category-item">
+                                <span class="title">外部单位</span>
+                                <span class="desc"></span>
+                            </div>
+                        </div>
+                        <ExternalDomainListView v-if="sharedContactState.expandExternalDomain"/>
+                    </li>
+                    <li>
+                        <div @click="showChatroom" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandChatroom}"></i>
+                            <div class="category-item">
+                                <div>
+                                    <span class="title">聊天室</span>
+                                    <span class="tip">(野火官方测试聊天室)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <ChatroomListView v-if="sharedContactState.expandChatroom"/>
+                    </li>
+                    <li>
+                        <div @click="showContacts" class="category-item-container">
+                            <i class="arrow right" v-bind:class="{down: sharedContactState.expandFriendList}"></i>
+                            <div class="category-item">
+                                <span class="title">{{ $t('contact.contact') }}</span>
+                                <span class="desc">{{ sharedContactState.friendList.length }}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </template>
+        </virtual-list>
 
-                <vue-context ref="menu" v-slot="{data:userInfo}" v-on:close="onContactContextMenuClose">
-                    <li>
-                        <a @click.prevent="sendMessage(userInfo)">{{
-                                $t('message.send_message')
-                            }}</a>
-                    </li>
-                    <li>
-                        <a @click.prevent="sendUserCard(userInfo)">{{
-                                $t('misc.share_to_friend')
-                            }}</a>
-                    </li>
-                </vue-context>
+        <vue-context ref="menu" v-slot="{data:userInfo}" v-on:close="onContactContextMenuClose">
+            <li>
+                <a @click.prevent="sendMessage(userInfo)">{{
+                        $t('message.send_message')
+                    }}</a>
             </li>
-        </ul>
+            <li>
+                <a @click.prevent="sendUserCard(userInfo)">{{
+                        $t('misc.share_to_friend')
+                    }}</a>
+            </li>
+        </vue-context>
     </section>
 </template>
 <script>
@@ -133,6 +140,7 @@ export default {
             sharedContactState: store.state.contact,
             contactItemView: markRaw(ContactItemView),
             rootOrganizations: [],
+            restoringScroll: false,
         }
     },
     created() {
@@ -140,10 +148,41 @@ export default {
             this.showContactContextMenu(event, userInfo);
         });
     },
+    activated() {
+        // <keep-alive> resets scrollTop on reactivation, so restore the saved
+        // position. Hide the list while the virtual list re-measures (a couple
+        // of frames) to avoid a visible jump, then reveal it.
+        if (!this.hasActivated) {
+            this.hasActivated = true;
+            return;
+        }
+        const top = this.savedScrollOffset;
+        if (!top) {
+            return;
+        }
+        this.restoringScroll = true;
+        this.$nextTick(() => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const vl = this.$refs.contactVl;
+                    if (vl && vl.$el) {
+                        vl.$el.scrollTop = top;
+                    }
+                    requestAnimationFrame(() => {
+                        this.restoringScroll = false;
+                    });
+                });
+            });
+        });
+    },
     unmounted() {
         this.$eventBus.$off('showContactContextMenu');
     },
     methods: {
+        onContactScroll(event) {
+            // Kept off `data` (non-reactive) so scrolling doesn't trigger re-renders.
+            this.savedScrollOffset = event && event.target ? event.target.scrollTop : 0;
+        },
         setCurrentUser(userInfo) {
             store.setCurrentFriend(userInfo)
         },
@@ -197,6 +236,10 @@ export default {
         }
     },
     computed: {
+        contactDataSources() {
+            return this.sharedContactState.expandFriendList ? this.groupedContacts : [];
+        },
+
         groupedContacts() {
             let groupedUsers = [];
             let currentCategory = {};
@@ -229,11 +272,19 @@ export default {
 
 .contact-list {
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
 }
 
-.contact-list::-webkit-scrollbar {
-    width: 0;
+/* padding-right keeps the overlay scrollbar in a gutter instead of letting the
+   sticky category headers paint over it (notably in Safari). */
+.contact-scroller {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.contact-scroller.is-restoring {
+    visibility: hidden;
 }
 
 .category-item-container {

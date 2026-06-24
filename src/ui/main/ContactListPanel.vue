@@ -41,7 +41,7 @@ export default {
     height: calc(100% - 60px);
     position: relative;
     background-color: var(--background-secondary);
-    overflow-y: auto;
+    overflow: hidden;
     flex: 1;
 }
 
