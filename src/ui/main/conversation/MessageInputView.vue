@@ -382,6 +382,9 @@ export default {
                 this.sendStickerSuggestion(this.stickerSuggestions[this.selectedStickerIdx]);
                 return;
             }
+            if (this.stickerSuggestions.length) {
+                this.hideStickerSuggestions();
+            }
             this.send(e);
         },
 
