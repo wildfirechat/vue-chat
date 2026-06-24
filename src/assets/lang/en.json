@@ -93,7 +93,12 @@
         "clear_remote_conversation_history": "Clear remote history",
         "complain": "Complain",
         "empty_title": "Start a conversation",
-        "empty_hint": "Select a chat from the left, or start a new one"
+        "empty_hint": "Select a chat from the left, or start a new one",
+        "filter_all": "All",
+        "filter_unread": "Unread",
+        "filter_mention": "@Me",
+        "filter_unread_empty": "No unread conversations",
+        "filter_mention_empty": "No conversations that @me"
     },
     "fav": {
         "fav": "Collection",
@@ -140,6 +145,7 @@
         "en": "English",
         "sync_draft": "Sync draft",
         "show_send_button": "Show send button",
+        "enable_conversation_filter": "Conversation list groups",
         "theme": "Theme",
         "font_size": "Font size",
         "font_size_standard": "Standard",

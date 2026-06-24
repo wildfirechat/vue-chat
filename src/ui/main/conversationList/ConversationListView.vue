@@ -1,10 +1,19 @@
 <template>
     <section class="conversation-list">
-        <virtual-list :data-component="conversationItemView" :data-sources="conversationInfoList" :data-key="conversationInfoKey"
+        <div class="conversation-filter-tabs" v-if="sharedMiscState.enableConversationListFilter">
+            <a v-for="tab in filterTabs" :key="tab.value"
+               class="filter-tab" :class="{active: currentFilter === tab.value}"
+               @click="switchFilter(tab.value)">{{ $t(tab.label) }}{{ tabCount(tab.value) > 0 ? ` (${tabCount(tab.value)})` : '' }}</a>
+        </div>
+        <div v-if="showFilterEmptyHint" class="filter-empty-hint">
+            <span>{{ filterEmptyHintText }}</span>
+        </div>
+        <virtual-list v-else :data-component="conversationItemView" :data-sources="conversationInfoList" :data-key="conversationInfoKey"
                       ref="virtualList"
                       :onScroll="onScroll"
                       :estimate-size="30"
-                      style="height: 100%; overflow-y: auto;"/>
+                      class="conversation-virtual-list"
+                      style="overflow-y: auto;"/>
 
         <vue-context ref="menu" v-slot="{data:conversationInfo}" v-on:close="onConversationItemContextMenuClose">
             <li>
@@ -58,6 +67,15 @@ export default {
             sharedMiscState: store.state.misc,
             conversationItemView: markRaw(ConversationItemView),
             currentConversationIndex: 0,
+            currentFilter: 'all',
+            // 进入未读/@我分组时冻结的会话 key 快照，保证清除未读数后会话仍保留在列表，
+            // 切换分组时才刷新。null 表示不过滤（全部分组或功能关闭）
+            filterKeys: null,
+            filterTabs: [
+                {value: 'all', label: 'conversation.filter_all'},
+                {value: 'unread', label: 'conversation.filter_unread'},
+                {value: 'mention', label: 'conversation.filter_mention'},
+            ],
         };
     },
 
@@ -102,6 +120,50 @@ export default {
         conversationInfoKey(conversationInfo) {
             let conv = conversationInfo.conversation;
             return conv.target + '-' + conv.type + '-' + conv.line;
+        },
+
+        // 某个会话是否匹配指定分组
+        matchFilter(conversationInfo, filter) {
+            if (filter === 'unread') {
+                return conversationInfo._unread > 0;
+            }
+            if (filter === 'mention') {
+                let uc = conversationInfo.unreadCount;
+                return !!uc && (uc.unreadMention > 0 || uc.unreadMentionAll > 0);
+            }
+            return true;
+        },
+
+        // 切换分组：重新计算分组快照；若当前会话不在分组内，则清空会话界面
+        switchFilter(filter) {
+            this.currentFilter = filter;
+            if (filter === 'all') {
+                this.filterKeys = null;
+                return;
+            }
+            let keys = new Set();
+            this.baseConversationInfoList.forEach(ci => {
+                if (this.matchFilter(ci, filter)) {
+                    keys.add(this.conversationInfoKey(ci));
+                }
+            });
+            this.filterKeys = keys;
+
+            let current = this.sharedConversationState.currentConversationInfo;
+            if (current && !keys.has(this.conversationInfoKey(current))) {
+                store.setCurrentConversation(null);
+            }
+        },
+
+        // 分组标签后展示的会话数：当前激活分组取已显示列表长度（与快照一致），其余分组取实时匹配数
+        tabCount(filter) {
+            if (filter === 'all') {
+                return 0;
+            }
+            if (filter === this.currentFilter && this.filterKeys) {
+                return this.conversationInfoList.length;
+            }
+            return this.baseConversationInfoList.filter(ci => this.matchFilter(ci, filter)).length;
         },
         scrollActiveElementCenter() {
             let el = this.$el.getElementsByClassName("active")[0];
@@ -181,11 +243,31 @@ export default {
         this.scrollActiveElementCenter();
     },
     computed: {
-        conversationInfoList() {
+        // 排除独立窗口会话后的完整列表
+        baseConversationInfoList() {
             return this.sharedConversationState.conversationInfoList.filter(ci => {
                 const index = this.sharedConversationState.floatingConversations.findIndex(c => c.equal(ci.conversation));
                 return index === -1;
             })
+        },
+        conversationInfoList() {
+            let list = this.baseConversationInfoList;
+            if (!this.sharedMiscState.enableConversationListFilter || this.currentFilter === 'all' || !this.filterKeys) {
+                return list;
+            }
+            // 基于切换分组时的快照过滤，已读会话仍保留，直至下次切换分组
+            return list.filter(ci => this.filterKeys.has(this.conversationInfoKey(ci)));
+        },
+        showFilterEmptyHint() {
+            return this.sharedMiscState.enableConversationListFilter
+                && this.currentFilter !== 'all'
+                && this.conversationInfoList.length === 0;
+        },
+        filterEmptyHintText() {
+            if (this.currentFilter === 'mention') {
+                return this.$t('conversation.filter_mention_empty');
+            }
+            return this.$t('conversation.filter_unread_empty');
         }
     },
 
@@ -197,7 +279,55 @@ export default {
 
 .conversation-list {
     height: 100%;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.conversation-virtual-list {
+    flex: 1;
+    min-height: 0;
+}
+
+.filter-empty-hint {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.conversation-filter-tabs {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-separator);
+}
+
+.filter-tab {
+    padding: 3px 12px;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+
+.filter-tab:hover {
+    background-color: var(--background-item-hover);
+}
+
+.filter-tab.active {
+    background-color: var(--background-selected-alt);
+    color: var(--accent-color);
+    font-weight: 600;
 }
 
 </style>

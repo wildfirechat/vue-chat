@@ -106,7 +106,12 @@
         "clear_remote_conversation_history": "清空远程聊天记录",
         "complain": "举报",
         "empty_title": "开始一段对话",
-        "empty_hint": "从左侧选择一个会话，或发起新的聊天"
+        "empty_hint": "从左侧选择一个会话，或发起新的聊天",
+        "filter_all": "全部",
+        "filter_unread": "未读",
+        "filter_mention": "@我",
+        "filter_unread_empty": "暂无未读消息",
+        "filter_mention_empty": "暂无@我的消息"
     },
     "fav": {
         "fav": "收藏",
@@ -154,6 +159,7 @@
         "en": "English",
         "sync_draft": "同步草稿",
         "show_send_button": "显示发送按钮",
+        "enable_conversation_filter": "会话列表分组",
         "theme": "主题",
         "font_size": "字体大小",
         "font_size_standard": "标准",

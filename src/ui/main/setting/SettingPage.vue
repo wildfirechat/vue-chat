@@ -55,6 +55,14 @@
                                    @change="setShowSendButton($event.target.checked)">
                         </div>
 
+                        <div class="card-row switch">
+                            <div class="row-info">
+                                <span class="row-title">{{ $t('setting.enable_conversation_filter') }}</span>
+                                <span class="row-desc">在会话列表顶部显示“全部 / 未读 / @我”分组标签，关闭后只展示全部会话</span>
+                            </div>
+                            <input type="checkbox" role="switch" :checked="sharedMiscState.enableConversationListFilter"
+                                   @change="setEnableConversationListFilter($event.target.checked)">
+                        </div>
                         <div class="card-row switch" v-if="sharedMiscState.isCommercialServer">
                             <div class="row-info">
                                 <span class="row-title">{{ $t('setting.sync_draft') }}</span>
@@ -424,6 +432,10 @@ export default {
 
         setShowSendButton(enable) {
             store.setShowSendButton(enable);
+        },
+
+        setEnableConversationListFilter(enable) {
+            store.setEnableConversationListFilter(enable);
         },
 
         setLang(lang) {
