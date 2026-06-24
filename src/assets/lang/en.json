@@ -96,9 +96,9 @@
         "empty_hint": "Select a chat from the left, or start a new one",
         "filter_all": "All",
         "filter_unread": "Unread",
-        "filter_mention": "@Me",
+        "filter_mention": "{'@Me'}",
         "filter_unread_empty": "No unread conversations",
-        "filter_mention_empty": "No conversations that @me"
+        "filter_mention_empty": "{'No conversations that @me'}"
     },
     "fav": {
         "fav": "Collection",

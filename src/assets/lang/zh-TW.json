@@ -97,9 +97,9 @@
     "empty_hint": "從左側選擇一個會話，或發起新的聊天",
     "filter_all": "全部",
     "filter_unread": "未讀",
-    "filter_mention": "@我",
+    "filter_mention": "{'@我'}",
     "filter_unread_empty": "暫無未讀消息",
-    "filter_mention_empty": "暫無@我的消息"
+    "filter_mention_empty": "{'暫無@我的消息'}"
   },
   "fav": {
     "fav": "收藏",
