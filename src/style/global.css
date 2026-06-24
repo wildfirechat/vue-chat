@@ -473,6 +473,7 @@ img.emoji {
     height:  calc(40px * var(--layout-scale-cap));
     transition: background-color var(--duration-fast) ease;
     font-size: var(--font-size-xs);
+    text-align: center;
 }
 
 .i-button-wrapper i {
