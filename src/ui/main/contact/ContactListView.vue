@@ -275,23 +275,24 @@ export default {
     overflow: hidden;
 }
 
-/* padding-right keeps the overlay scrollbar in a gutter instead of letting the
-   sticky category headers paint over it (notably in Safari). */
 .contact-scroller {
     height: 100%;
     overflow-y: auto;
-    padding-right: 8px;
 }
 
 .contact-scroller.is-restoring {
     visibility: hidden;
 }
 
+/* Inset the sticky headers (not the rows) so they don't paint over the overlay
+   scrollbar; the gap matches the panel background, so it's invisible. This lets
+   the contact rows fill full width and hover up to the right divider. */
 .category-item-container {
     height: calc(40px * var(--layout-scale-row));
     display: flex;
     align-items: center;
     padding-left: 16px;
+    margin-right: 8px;
     color: var(--text-primary);
     font-size: var(--font-size-base);
     position: sticky;

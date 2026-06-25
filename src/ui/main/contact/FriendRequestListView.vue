@@ -134,6 +134,7 @@ export default {
 
 .new-friend-item .info {
     margin-left: 8px;
+    margin-right: 8px;
     flex: 1;
     overflow: hidden;
 }
