@@ -275,9 +275,13 @@ export default {
     overflow: hidden;
 }
 
+/* overlay = draw-over scrollbar (matches the rest of the app), so the contact
+   rows fill full width and their hover extends under the scrollbar. The auto
+   fallback keeps scrolling working where overlay is unsupported. */
 .contact-scroller {
     height: 100%;
     overflow-y: auto;
+    overflow-y: overlay;
 }
 
 .contact-scroller.is-restoring {
