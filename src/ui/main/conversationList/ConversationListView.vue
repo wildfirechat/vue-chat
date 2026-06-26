@@ -242,6 +242,19 @@ export default {
     activated() {
         this.scrollActiveElementCenter();
     },
+    watch: {
+        // 处于未读/@我分组时，新收到消息使会话命中分组，将其加入快照使其在被读后依然保留
+        filterMatchFingerprint() {
+            if (!this.filterKeys || this.currentFilter === 'all') {
+                return;
+            }
+            this.baseConversationInfoList.forEach(ci => {
+                if (this.matchFilter(ci, this.currentFilter)) {
+                    this.filterKeys.add(this.conversationInfoKey(ci));
+                }
+            });
+        }
+    },
     computed: {
         // 排除独立窗口会话后的完整列表
         baseConversationInfoList() {
@@ -255,8 +268,19 @@ export default {
             if (!this.sharedMiscState.enableConversationListFilter || this.currentFilter === 'all' || !this.filterKeys) {
                 return list;
             }
-            // 基于切换分组时的快照过滤，已读会话仍保留，直至下次切换分组
-            return list.filter(ci => this.filterKeys.has(this.conversationInfoKey(ci)));
+            // 显示：快照内的会话（已读后仍保留）+ 当前实时命中分组的会话（新收到的未读/@我会话即时出现）
+            // 新命中的会话会通过 watch 加入快照，从而在被读后依然保留，直至下次切换分组
+            return list.filter(ci => this.filterKeys.has(this.conversationInfoKey(ci)) || this.matchFilter(ci, this.currentFilter));
+        },
+        // 当前实时命中分组的会话 key 指纹，用于监听未读/@我变化（即使会话未重排也能触发）
+        filterMatchFingerprint() {
+            if (!this.sharedMiscState.enableConversationListFilter || this.currentFilter === 'all') {
+                return '';
+            }
+            return this.baseConversationInfoList
+                .filter(ci => this.matchFilter(ci, this.currentFilter))
+                .map(ci => this.conversationInfoKey(ci))
+                .join(',');
         },
         showFilterEmptyHint() {
             return this.sharedMiscState.enableConversationListFilter

@@ -1096,6 +1096,7 @@ export default {
 
     updated() {
         if (!this.sharedConversationState.currentConversationInfo) {
+            this.conversationInfo = undefined;
             return;
         }
         this.popupItem = this.$refs['setting'];
