@@ -347,7 +347,7 @@ export default {
         },
 
         appServerAudioUrl(url) {
-            return Config.AMR_TO_MP3_SERVER_ADDRESS + url;
+            return Config.getAmrToMp3ServerAddress() + url;
         }
     },
 

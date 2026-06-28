@@ -79,7 +79,7 @@ export default {
     },
     methods: {
         onClick() {
-            if (!Config.POLL_SERVER) {
+            if (!Config.getPollServer()) {
                 this.$notify({
                     text: '未配置投票服务地址',
                     type: 'error',

@@ -62,7 +62,7 @@ export default {
     },
 
     created() {
-        this.defaultUrl = Config.OPEN_PLATFORM_WORK_SPACE_URL;
+        this.defaultUrl = Config.getOpenPlatformWorkSpaceUrl();
         this.processUrlParam();
     },
 

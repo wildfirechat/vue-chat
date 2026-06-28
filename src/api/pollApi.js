@@ -111,7 +111,7 @@ export class PollApi {
     }
 
     async _post(path, data = {}) {
-        let baseUrl = Config.POLL_SERVER;
+        let baseUrl = Config.getPollServer();
         if (!baseUrl) {
             throw new Error('Poll server not configured');
         }

@@ -50,7 +50,7 @@ export default {
 
         remotePath() {
             let voice = this.message.messageContent;
-            return Config.AMR_TO_MP3_SERVER_ADDRESS + voice.remotePath;
+            return Config.getAmrToMp3ServerAddress() + voice.remotePath;
         },
 
         duration() {

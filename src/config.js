@@ -38,19 +38,34 @@ export default class Config {
     // 默认的app server使用端口是8888
     static APP_SERVER = 'https://app.wildfirechat.net';
 
+    // APP SERVER 备选地址，双网环境下使用
+    static APP_BACKUP_SERVER = null;
+
     // 接龙服务地址
     static COLLECTION_SERVER = 'https://jielong.wildfirechat.net';
+
+    // 接龙服务备选地址，双网环境下使用
+    static COLLECTION_BACKUP_SERVER = null;
 
     // 投票服务地址
     static POLL_SERVER = 'https://poll.wildfirechat.net';
 
+    // 投票服务备选地址，双网环境下使用
+    static POLL_BACKUP_SERVER = null;
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
     static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
 
+    // 语音转文字服务备选地址，双网环境下使用
+    static ASR_BACKUP_SERVER = null;
+
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
     static ORGANIZATION_SERVER = 'https://org.wildfirechat.net';
+
+    // 组织结构服务备选地址，双网环境下使用
+    static ORGANIZATION_BACKUP_SERVER = null;
+
     // 野火二维码 scheme，不要修改，如果需要修改的话，所有端都需要一起修改
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
 
@@ -60,7 +75,9 @@ export default class Config {
     // 我们提供的服务能力有限，总体带宽仅3Mbps，只能用于用户测试和体验，为了保证测试可用，我们会不定期的更改密码。<br>
     // 上线时请一定要切换成你们自己的服务。可以购买腾讯云或者阿里云的轻量服务器，价格很便宜，可以避免影响到您的用户体验。<br>
     // 如果所有客户端都是在局域网内使用，可以不配置turn服务，置为null
+    // ICE_SERVERS 是数组数据，可以同时配置多个主备 turn 地址，不需要按双网动态选择
     static ICE_SERVERS = [['turn:turn.wildfirechat.net:3478', 'wfchat', 'wfchatpwd']];
+
     static LANGUAGE = 'zh_CN';
 
     static MESSAGE_ROAMING = 1;
@@ -71,6 +88,9 @@ export default class Config {
 
     // 开放平台工作台地址，如果不需要工作台功能，置为 null 即可
     static OPEN_PLATFORM_WORK_SPACE_URL = 'https://open.wildfirechat.cn/work.html';
+
+    // 工作台备选地址，双网环境下使用
+    static OPEN_PLATFORM_WORK_SPACE_BACKUP_URL = null;
 
     /**
      * web/wx 端有效
@@ -138,7 +158,9 @@ export default class Config {
     // html5 audio 标签不能播放amr格式的音频，需要将amr格式转换为mp3格式
     // 本服务传入amr音频文件的地址，将音频文件转换为mp3格式，并以application/octet-stream的格式返回
     // 如果语音消息很多，建议使用cdn
-    static AMR_TO_MP3_SERVER_ADDRESS = Config.APP_SERVER + '/amr2mp3?path=';
+    static getAmrToMp3ServerAddress() {
+        return Config.getAppServer() + '/amr2mp3?path=';
+    }
 
     // 发送消息超时时间，超时之后，认为当前连接已不可用，将进行重连，单位是秒。没有特殊需求不，不建议修改
     static SEND_MESSAGE_TIMEOUT = 20;
@@ -194,6 +216,52 @@ export default class Config {
     static AI_MINUTES_ROBOT_ID = "robotminutes";
     // 会议纪要页面URL
     static MINUTES_URL = "http://101.42.4.222:8883/index.html";
+
+    // 会议纪要页面备选地址，双网环境下使用
+    static MINUTES_BACKUP_URL = null;
+
+    /**
+     * 双网环境下，根据当前网络选择主网或备选网络地址
+     * @param {string|Array|null} mainUrl
+     * @param {string|Array|null} backupUrl
+     * @return {string|Array|null}
+     * @private
+     */
+    static _selectServer(mainUrl, backupUrl) {
+        if (wfc.connectedToMainNetwork() || !backupUrl) {
+            return mainUrl;
+        }
+        return backupUrl;
+    }
+
+    static getAppServer() {
+        return Config._selectServer(Config.APP_SERVER, Config.APP_BACKUP_SERVER);
+    }
+
+    static getCollectionServer() {
+        return Config._selectServer(Config.COLLECTION_SERVER, Config.COLLECTION_BACKUP_SERVER);
+    }
+
+    static getPollServer() {
+        return Config._selectServer(Config.POLL_SERVER, Config.POLL_BACKUP_SERVER);
+    }
+
+    static getAsrServer() {
+        return Config._selectServer(Config.ASR_SERVER, Config.ASR_BACKUP_SERVER);
+    }
+
+    static getOrganizationServer() {
+        return Config._selectServer(Config.ORGANIZATION_SERVER, Config.ORGANIZATION_BACKUP_SERVER);
+    }
+
+    static getOpenPlatformWorkSpaceUrl() {
+        return Config._selectServer(Config.OPEN_PLATFORM_WORK_SPACE_URL, Config.OPEN_PLATFORM_WORK_SPACE_BACKUP_URL);
+    }
+
+    static getMinutesUrl() {
+        return Config._selectServer(Config.MINUTES_URL, Config.MINUTES_BACKUP_URL);
+    }
+
     static getWFCPlatform() {
         if (isElectron()) {
             if (window.process && window.process.platform === 'darwin') {

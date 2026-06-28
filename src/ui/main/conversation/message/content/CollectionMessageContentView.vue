@@ -84,7 +84,7 @@ export default {
             return String(template).replace('%d', count);
         },
         onClick() {
-            if(!Config.COLLECTION_SERVER){
+            if(!Config.getCollectionServer()){
                 this.$notify({
                     text: '未配置接龙服务地址',
                     type: 'error',

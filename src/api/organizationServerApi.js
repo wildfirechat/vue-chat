@@ -18,7 +18,8 @@ export class OrganizationServerApi {
             //        int ApplicationType_Robot = 0;
 //        int ApplicationType_Channel = 1;
 //        int ApplicationType_Admin = 2;
-            if (!Config.ORGANIZATION_SERVER) {
+            let organizationServer = Config.getOrganizationServer();
+            if (!organizationServer) {
                 this.isServiceAvailable = false;
                 reject(this.serviceUnavailbelError)
                 return
@@ -129,7 +130,7 @@ export class OrganizationServerApi {
     }
 
     employeePortraitUrl(employee) {
-        return employee.portrait ? employee.portrait :Config.APP_SERVER + '/avatar?name=' + encodeURIComponent(employee.name);
+        return employee.portrait ? employee.portrait : Config.getAppServer() + '/avatar?name=' + encodeURIComponent(employee.name);
     }
 
     async _getOrganizationSync(orgId) {
@@ -152,7 +153,7 @@ export class OrganizationServerApi {
         }
 
         let response;
-        path = Config.ORGANIZATION_SERVER + path;
+        path = Config.getOrganizationServer() + path;
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse, headers: {
                 'authToken': getItem('authToken-' + new URL(path).host),

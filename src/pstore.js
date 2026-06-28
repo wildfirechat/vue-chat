@@ -182,7 +182,7 @@ export const pstore = (id) => defineStore(id, () => {
         isVoipOngoing: false,
         config: Config,
         userOnlineStateMap: new Map(),
-        enableOpenWorkSpace: !!(Config.OPEN_PLATFORM_WORK_SPACE_URL),
+        enableOpenWorkSpace: !!(Config.getOpenPlatformWorkSpaceUrl()),
         isLocked: false,
         theme: getItem('theme') || 'system',
         fontScale: parseFloat(getItem('fontScale')) || 1,
@@ -207,7 +207,7 @@ export const pstore = (id) => defineStore(id, () => {
             this.isVoipOngoing = false;
             this.config = Config;
             this.userOnlineStateMap = new Map();
-            this.enableOpenWorkSpace = !!(Config.OPEN_PLATFORM_WORK_SPACE_URL);
+            this.enableOpenWorkSpace = !!(Config.getOpenPlatformWorkSpaceUrl());
             this.isLocked = false;
             this.theme = getItem('theme') || 'system';
             this.fontScale = parseFloat(getItem('fontScale')) || 1;

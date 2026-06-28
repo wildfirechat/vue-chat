@@ -513,7 +513,7 @@ export default {
             let routeHost = wfc.getHost()
             let routePort = Config.ROUTE_PORT
             let useWss = Config.USE_WSS
-            configInfo += `APP-Server: ${Config.APP_SERVER}\n`
+            configInfo += `APP-Server: ${Config.APP_SERVER}${Config.APP_BACKUP_SERVER ? ' / ' + Config.APP_BACKUP_SERVER : ''}\n`
             configInfo += `IM-Server-Host: ${routeHost}\n`
             configInfo += `USE_WSS: ${useWss}\n`
             configInfo += `ROUTE_PORT: ${routePort}\n`
@@ -555,7 +555,7 @@ export default {
             console.warn('-----configInfo end---------\n')
 
             let result = '';
-            let appServerResponse = await axios.get(Config.APP_SERVER, {
+            let appServerResponse = await axios.get(Config.getAppServer(), {
                 transformResponse: [data => data],
             })
             if (appServerResponse.data === 'Ok') {

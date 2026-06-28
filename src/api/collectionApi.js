@@ -40,7 +40,7 @@ export class CollectionApi {
     }
 
     async _post(path, data = {}) {
-        let baseUrl = Config.COLLECTION_SERVER;
+        let baseUrl = Config.getCollectionServer();
         // extract host for auth code
         let host = baseUrl.replace(/^https?:\/\//, '').split('/')[0];
 

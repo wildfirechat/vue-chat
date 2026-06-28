@@ -308,8 +308,8 @@ export default {
             isRecording: false,
             hasInputContent: false,
 
-            isCollectionEnable: !!Config.COLLECTION_SERVER,
-            isPollEnable: !!Config.POLL_SERVER
+            isCollectionEnable: !!Config.getCollectionServer(),
+            isPollEnable: !!Config.getPollServer()
         }
     },
     methods: {

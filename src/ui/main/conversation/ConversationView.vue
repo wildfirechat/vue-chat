@@ -718,7 +718,7 @@ export default {
         isSupportSpeechToText(message) {
             if (message
                 && message.messageContent.type === MessageContentType.Voice
-                && Config.ASR_SERVER
+                && Config.getAsrServer()
                 && !message.messageContent._speechText
                 && !message.messageContent._speechToTextInProgress) {
                 return true;
@@ -801,7 +801,7 @@ export default {
             audioMessage._speechToTextInProgress = true;
             this.scrollToMessageItemView(message)
             try {
-                const res = await fetch(Config.ASR_SERVER, {
+                const res = await fetch(Config.getAsrServer(), {
                     method: "POST",
                     body: JSON.stringify({
                         url: audioMessage.remotePath,

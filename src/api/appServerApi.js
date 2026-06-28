@@ -5,9 +5,46 @@ import FavItem from "../wfc/model/favItem";
 import {stringValue} from "../wfc/util/longUtil";
 import AppServerError from "./appServerError";
 import wfc from "../wfc/client/wfc";
+import ConnectionStatus from "../wfc/client/connectionStatus";
 
 export class AppServerApi {
     constructor() {
+    }
+
+    async _getAppServer() {
+        if (!Config.APP_BACKUP_SERVER) {
+            return Config.APP_SERVER;
+        }
+        // IM 已连接时，直接用 wfc 的网络状态判断
+        if (wfc.getConnectionStatus() === ConnectionStatus.ConnectionStatusConnected) {
+            return wfc.connectedToMainNetwork() ? Config.APP_SERVER : Config.APP_BACKUP_SERVER;
+        }
+
+        // IM 未连接时（登录前），实时探测，不缓存
+        const probe = async (url) => {
+            let response = await axios.get(url, {
+                transformResponse: [data => data],
+                timeout: 5000,
+            });
+            if (response.data === 'Ok') {
+                return url;
+            }
+            throw new Error('app server probe invalid response: ' + response.data);
+        };
+
+        let reachableUrl = await Promise.any([
+            probe(Config.APP_SERVER),
+            probe(Config.APP_BACKUP_SERVER)
+        ]).catch((e) => {
+            console.log('all app server probes failed', e);
+            return null;
+        });
+
+        if (!reachableUrl) {
+            // 都探测失败时，回退到主地址，让后续请求正常报错
+            reachableUrl = Config.APP_SERVER;
+        }
+        return reachableUrl;
     }
 
     requestAuthCode(mobile, slideVerifyToken = null) {
@@ -198,7 +235,7 @@ export class AppServerApi {
      */
     async _post(path, data = {}, rawResponse = false, rawResponseData = false) {
         let response;
-        path = Config.APP_SERVER + path;
+        path = await this._getAppServer() + path;
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
             headers: {

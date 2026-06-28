@@ -38,10 +38,10 @@ export default {
             let meetingId = this.message.messageContent.meetingId;
             let isFromMinutesRobot = this.message.conversation.target === Config.AI_MINUTES_ROBOT_ID
                 || this.message.from === Config.AI_MINUTES_ROBOT_ID;
-            if (Config.AI_MINUTES_ROBOT_ID && Config.MINUTES_URL
+            if (Config.AI_MINUTES_ROBOT_ID && Config.getMinutesUrl()
                 && isFromMinutesRobot
                 && meetingId) {
-                let url = `${Config.MINUTES_URL}?conferenceId=${encodeURIComponent(meetingId)}`;
+                let url = `${Config.getMinutesUrl()}?conferenceId=${encodeURIComponent(meetingId)}`;
                 if (isElectron()) {
                     shell.openExternal(url);
                 } else {

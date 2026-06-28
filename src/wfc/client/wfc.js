@@ -2371,7 +2371,7 @@ export class WfcManager {
         if (!userInfo.updateDt) {
             return Config.DEFAULT_PORTRAIT_URL
         }
-        return `${Config.APP_SERVER}/avatar?name=${encodeURIComponent(userInfo.displayName)}`
+        return `${Config.getAppServer()}/avatar?name=${encodeURIComponent(userInfo.displayName)}`
         // return `http://localhost:8888/avatar?name=${encodeURIComponent(userInfo.displayName)}`
     }
 
@@ -2385,7 +2385,7 @@ export class WfcManager {
         }
         let pending = false;
         for (const m of members) {
-            if (m.portrait && !m.portrait.startsWith(`${Config.APP_SERVER}`)) {
+            if (m.portrait && !m.portrait.startsWith(`${Config.getAppServer()}`)) {
                 req.members.push({
                     avatarUrl: m.portrait
                     // 如果需要对头像地址进行base64编码，可以使用下面的代码，app-server
@@ -2407,7 +2407,7 @@ export class WfcManager {
 
         req = JSON.stringify(req, null, '');
 
-        return `${Config.APP_SERVER}/avatar/group?request=${encodeURIComponent(req)}`
+        return `${Config.getAppServer()}/avatar/group?request=${encodeURIComponent(req)}`
         //return `http://localhost:8888/avatar/group?request=${encodeURIComponent(req)}`
     }
 
