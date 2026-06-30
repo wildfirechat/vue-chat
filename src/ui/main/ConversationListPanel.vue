@@ -1,6 +1,6 @@
 <template>
     <section class="conversation-list-panel-container">
-        <SearchView/>
+        <SearchView :follow-list-background="true"/>
         <div class="panel">
             <ConversationListView class="conversation-list-container"/>
         </div>

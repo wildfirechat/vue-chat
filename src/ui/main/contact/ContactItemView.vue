@@ -104,11 +104,11 @@ export default {
 }
 
 .contact-item.active {
-    background-color: var(--background-item-placeholder);
+    background-color: var(--background-item-active);
 }
 
 .contact-item:active {
-    background-color: var(--background-item-placeholder);
+    background-color: var(--background-item-active);
 }
 
 .contact-item.highlight {

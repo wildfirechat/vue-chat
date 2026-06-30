@@ -249,7 +249,7 @@ let store = {
                         }
                     }
                     clearTimeout(this.state.conversation.inputClearHandler);
-                    setTimeout(this.state.conversation.inputClearHandler, 3000)
+                    setTimeout(this.state.conversation.inputClearHandler, 6000)
                 } else {
                     clearTimeout(this.state.conversation.inputClearHandler);
                     this.state.conversation.inputtingUser = null;

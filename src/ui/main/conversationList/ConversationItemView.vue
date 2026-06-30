@@ -279,40 +279,74 @@ export default {
 
 <style scoped>
 .conversation-item-container {
+    position: relative;
     padding-left: 12px;
     background-color: var(--background-item-normal);
 }
 
-.conversation-item-container:hover{
-    background-color: var(--background-item-hover);
+.conversation-item-container::after {
+    content: '';
+    position: absolute;
+    left: calc(26px + var(--size-avatar));
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--border-separator);
+}
+
+/*
+ * 当会话项有独立背景色（悬停/选中/置顶/右键高亮）时隐藏分隔线：
+ * 缩进的分隔线只覆盖右侧 1px，会让头像一侧的背景比文字一侧高 1px，产生视觉错位；
+ * 此时整行背景块本身已起到分隔作用，无需分隔线。
+ */
+.conversation-item-container:hover::after,
+.conversation-item-container.active::after,
+.conversation-item-container.top::after,
+.conversation-item-container.highlight::after {
+    display: none;
+}
+
+/*
+ * 悬停/选中高亮做成内缩的圆角矩形，与左右边缘留出间距（微信/macOS 风格）。
+ * 用伪元素绘制，不占布局空间，避免影响虚拟列表的行高计算。
+ * 置顶项的底色仍铺满整行（用于列表顶部背景跟随），高亮 pill 叠加其上。
+ */
+.conversation-item-container::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 1px;
+    bottom: 1px;
+    border-radius: var(--radius-md);
+    background: transparent;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.conversation-item-container:hover::before {
+    background: var(--background-item-hover);
+}
+
+.conversation-item-container.active::before {
+    background: var(--background-conversation-item-active);
 }
 
 .conversation-item-container.drag {
     border: 1px solid var(--border-active);
 }
 
-.conversation-item-container.active {
-    background-color: var(--background-item-active);
-}
-
 .conversation-item-container.top {
     background-color: var(--background-item-top);
 }
 
-.conversation-item-container.top:hover{
-    background-color: var(--background-item-active);
-}
-
-.conversation-item-container.highlight {
+.conversation-item-container.highlight::before {
     box-shadow: 0 0 0 1px var(--border-active) inset;
-    z-index: 100;
-}
-
-.conversation-item-container.active.top {
-    background-color: var(--background-item-active);
 }
 
 .conversation-item {
+    position: relative;
+    z-index: 1;
     width: 100%;
     height: var(--conversation-item-height);
     display: flex;

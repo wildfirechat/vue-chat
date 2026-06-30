@@ -8,6 +8,7 @@
 
     --background-item-normal: transparent;
     --background-item-hover: rgba(255, 255, 255, 0.05);
+    --background-conversation-item-active: rgba(10, 132, 255, 0.28);
     --background-item-active: rgba(255, 255, 255, 0.1);
     --background-item-selected: #007aff; /* 经典的 macOS 选蓝色 */
     --background-item-top: rgba(255, 255, 255, 0.03);

@@ -1,7 +1,7 @@
 <template>
-    <div class="search-input-container">
+    <div class="search-input-container" :style="containerStyle">
         <div class="input-wrapper">
-            <i class="icon-ion-ios-search"></i>
+            <i class="icon-ion-ios-search search-i"></i>
             <input id="searchInput"
                    ref="input"
                    autocomplete="off"
@@ -12,8 +12,8 @@
                    type="text" :placeholder="placeHolder"/>
             <span v-if="sharedSearchState.query" class="clear-btn" @click="sharedSearchState.query = ''">&#215;</span>
         </div>
-        <div v-if="showAddButton" class="add-btn-container">
-            <button ref="addBtn" @click="toggleMenu">+</button>
+        <div v-if="showAddButton" class="i-button-wrapper add-btn-container">
+            <i ref="addBtn" class="icon-ion-ios-plus-outline add-button" @click="toggleMenu"></i>
         </div>
         <Teleport to="body">
             <div v-if="showMenu" class="add-menu-popup" :style="popupStyle">
@@ -46,12 +46,18 @@ export default {
         searchType: {
             type: String,
             default: '',
+        },
+        // 为 true 时，搜索栏背景跟随会话列表最上方可见项（置顶/普通）切换，实现与列表无缝衔接
+        followListBackground: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {
         return {
             sharedSearchState: store.state.search,
             sharedContactState: store.state.contact,
+            sharedConversationState: store.state.conversation,
             searchTip: '在测试单位搜索用户',
             showMenu: false,
             inputFocused: false,
@@ -156,6 +162,16 @@ export default {
             } else {
                 return '搜索、添加好友'
             }
+        },
+        containerStyle() {
+            if (!this.followListBackground) {
+                return {};
+            }
+            return {
+                backgroundColor: this.sharedConversationState.conversationListHeaderPinned
+                    ? 'var(--background-item-top)'
+                    : 'var(--background-item-normal)',
+            };
         }
     },
 
@@ -213,25 +229,24 @@ export default {
     border: 1px solid var(--border-active);
 }
 
-.search-input-container i {
+.search-input-container .search-i {
     position: absolute;
     left: 5px;
     top: 50%;
     transform: translate(0, -50%);
 }
 
-.search-input-container button {
-    width: 30px;
-    height: 25px;
-    background-color: var(--background-secondary);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-primary);
+.search-input-container .add-btn-container {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    margin-right: 8px;
 }
 
-.add-btn-container {
-    position: relative;
-    flex-shrink: 0;
-    margin-right: 8px;
+.search-input-container .add-button {
+    font-size: var(--font-size-2xl);
+    font-weight: bold;
+    color: var(--text-secondary-strong);
 }
 
 .add-menu-popup {

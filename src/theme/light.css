@@ -3,13 +3,14 @@
     --background-primary: #ffffff;
     --background-secondary: #fafafa;
     --background-tertiary: #f3f3f3;
-    --background-sidebar: #EAEAEA;
+    --background-sidebar: #E9E9E9;
     --background-input: #eeeeee;
     --background-item-normal: #f8f8f8;
     --background-item-hover: #eaeaea;
+    --background-conversation-item-active: #d6e4fb;
     --background-item-active: #dedede;
     --background-item-selected: #e3f2fd;
-    --background-item-top: #ebebeb;
+    --background-item-top: #E3E3E5;
     --background-item-placeholder: #d6d6d6;
     --background-tooltip: #fcfcfc;
     --background-overlay: rgba(0, 0, 0, 0.5);

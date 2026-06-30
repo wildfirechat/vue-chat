@@ -40,6 +40,8 @@ export const pstore = (id) => defineStore(id, () => {
 
         currentVoiceMessage: null,
         contextMenuConversationInfo: null,
+        // 会话列表顶部（搜索栏/分组栏）背景是否跟随置顶会话色：当前列表最上方可见项为置顶会话时为 true
+        conversationListHeaderPinned: false,
 
         _reset() {
             this.currentConversationInfo = null;
@@ -63,6 +65,7 @@ export const pstore = (id) => defineStore(id, () => {
             this.floatingConversations = [];
             this.currentVoiceMessage = null;
             this.contextMenuConversationInfo = null;
+            this.conversationListHeaderPinned = false;
         }
     })
 

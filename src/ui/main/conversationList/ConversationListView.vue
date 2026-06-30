@@ -1,6 +1,7 @@
 <template>
     <section class="conversation-list">
-        <div class="conversation-filter-tabs" v-if="sharedMiscState.enableConversationListFilter">
+        <div class="conversation-filter-tabs" v-if="sharedMiscState.enableConversationListFilter"
+             :style="{backgroundColor: headerBgColor, borderBottom : headerBorderBottom}">
             <a v-for="tab in filterTabs" :key="tab.value"
                class="filter-tab" :class="{active: currentFilter === tab.value}"
                @click="switchFilter(tab.value)">{{ $t(tab.label) }}{{ tabCount(tab.value) > 0 ? ` (${tabCount(tab.value)})` : '' }}</a>
@@ -153,6 +154,7 @@ export default {
             if (current && !keys.has(this.conversationInfoKey(current))) {
                 store.setCurrentConversation(null);
             }
+            this.$nextTick(() => this.updateHeaderPinned());
         },
 
         // 分组标签后展示的会话数：当前激活分组取已显示列表长度（与快照一致），其余分组取实时匹配数
@@ -215,6 +217,36 @@ export default {
             if (params) {
                 this.currentConversationIndex = params.end
             }
+            this.updateHeaderPinned();
+        },
+
+        // 顶部搜索栏/分组栏背景跟随：判断列表最上方可见项是否为置顶会话
+        // 置顶会话恒排在列表最前；滚动到其下方的普通会话时切换为普通背景
+        updateHeaderPinned() {
+            let list = this.conversationInfoList;
+            let pinnedCount = 0;
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].top > 0) {
+                    pinnedCount++;
+                } else {
+                    break;
+                }
+            }
+            if (pinnedCount === 0) {
+                this.sharedConversationState.conversationListHeaderPinned = false;
+                return;
+            }
+            let scroller = this.$refs.virtualList && this.$refs.virtualList.$el;
+            let scrollTop = scroller ? scroller.scrollTop : 0;
+            let itemHeight = this.measureItemHeight(scroller);
+            // 最上方可见项索引；若该项仍处于置顶区间，则使用置顶背景
+            let topIndex = itemHeight > 0 ? Math.floor(scrollTop / itemHeight) : 0;
+            this.sharedConversationState.conversationListHeaderPinned = topIndex < pinnedCount;
+        },
+
+        measureItemHeight(scroller) {
+            let el = scroller && scroller.querySelector('.conversation-item-container');
+            return el ? el.offsetHeight : 0;
         },
 
         // 滑动到下一个未读会话
@@ -239,8 +271,12 @@ export default {
             }
         }
     },
+    mounted() {
+        this.$nextTick(() => this.updateHeaderPinned());
+    },
     activated() {
         this.scrollActiveElementCenter();
+        this.$nextTick(() => this.updateHeaderPinned());
     },
     watch: {
         // 处于未读/@我分组时，新收到消息使会话命中分组，将其加入快照使其在被读后依然保留
@@ -253,6 +289,10 @@ export default {
                     this.filterKeys.add(this.conversationInfoKey(ci));
                 }
             });
+        },
+        // 列表内容变化（置顶增删、排序、过滤）时，刷新顶部背景跟随状态
+        conversationInfoList() {
+            this.$nextTick(() => this.updateHeaderPinned());
         }
     },
     computed: {
@@ -292,6 +332,15 @@ export default {
                 return this.$t('conversation.filter_mention_empty');
             }
             return this.$t('conversation.filter_unread_empty');
+        },
+        // 分组栏背景：跟随最上方可见项是置顶/普通会话切换
+        headerBgColor() {
+            return this.sharedConversationState.conversationListHeaderPinned
+                ? 'var(--background-item-top)'
+                : 'var(--background-item-normal)';
+        },
+        headerBorderBottom() {
+            return '1px solid ' + (this.sharedConversationState.conversationListHeaderPinned ? 'var(--border-strong)' : 'var(--border-separator)');
         }
     },
 

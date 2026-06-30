@@ -82,15 +82,6 @@ export default class Config {
 
     static MESSAGE_ROAMING = 1;
 
-    // AI 入口地址，如果不需要 AI 功能，置为 null 即可
-    // static AI_PORTAL_URL = "https://static.wildfirechat.cn/chatbox-web/index.html";
-    static AI_PORTAL_URL = null;
-
-    // 开放平台工作台地址，如果不需要工作台功能，置为 null 即可
-    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://open.wildfirechat.cn/work.html';
-
-    // 工作台备选地址，双网环境下使用
-    static OPEN_PLATFORM_WORK_SPACE_BACKUP_URL = null;
 
     /**
      * web/wx 端有效
@@ -182,6 +173,16 @@ export default class Config {
      * 允许重新编辑多长时间内的撤回消息，单位是秒
      */
     static RECALL_REEDIT_TIME_LIMIT = 60;
+
+    // 如果不支持工作台，将其置空即可
+    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://open.wildfirechat.cn/work.html';
+
+    // 工作台备选地址，双网环境下使用
+    static OPEN_PLATFORM_WORK_SPACE_BACKUP_URL = null;
+
+    // AI 入口地址，如果不需要 AI 功能，置为 null 即可
+    // static AI_PORTAL_URL = "https://static.wildfirechat.cn/chatbox-web/index.html";
+    static AI_PORTAL_URL = null;
 
     // 允许主动加入多人音视频通话
     static ENABLE_MULTI_CALL_AUTO_JOIN = false;
