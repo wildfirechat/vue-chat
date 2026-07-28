@@ -842,6 +842,10 @@ export default {
     background: var(--background-item-hover);
 }
 
+.account-logout-btn {
+    color: var(--text-danger);
+}
+
 /* --- 菜单重写 vue-dropdowns 适配 --- */
 .card-row :deep(.btn-group) {
     min-width: auto;

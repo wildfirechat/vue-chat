@@ -13,8 +13,7 @@
             上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!
         </p>
         <div v-if="session" class="container">
-            <section>
-                <!--audio-->
+            <section class="participant-section">
                 <div class="content-container">
                     <!--self-->
                     <div class="participant-container">
@@ -62,7 +61,7 @@
             </section>
 
             <!--actions-->
-            <footer>
+            <footer class="action-footer">
                 <!--incoming-->
                 <div v-if="status === 2" class="action-container">
                     <div class="action">
@@ -590,18 +589,36 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     background: var(--background-voip);
+    overflow: hidden;
+}
+
+.participant-section {
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
 }
 
 .content-container {
     width: 100%;
+    height: 100%;
     position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    align-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 0;
+}
+
+.action-footer {
+    flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    background: var(--background-voip);
 }
 
 .participant-container {

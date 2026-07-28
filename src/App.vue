@@ -47,6 +47,7 @@ import wfc from "./wfc/client/wfc";
 import waterMark from "./ui/util/waterMark";
 import Config from "./config";
 import LockScreenView from "./ui/common/LockScreenView";
+import {restoreListPanelWidth} from "./ui/common/ResizeBar";
 import ForwardType from "./ui/main/conversation/message/forward/ForwardType";
 
 export default {
@@ -101,6 +102,8 @@ export default {
         store.applyTheme();
         // Apply font scale (字体缩放)
         store.applyFontScale();
+        // 恢复用户上次拖拽的列表分栏宽度
+        restoreListPanelWidth();
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
             if (this.sharedMiscState.theme === 'system') {
                 store.applyTheme();

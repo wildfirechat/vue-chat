@@ -60,6 +60,26 @@ import StreamingTextGeneratingMessageContent from './wfc/messages/streamingTextG
  * 外部不直接更新字段，而是通过提供各种action方法更新
  */
 
+// 拼音转换是纯 CPU 开销，且同一个名字的转换结果不变，缓存起来，避免联系人列表每次重载时全量重算
+const pinyinCache = new Map();
+
+function convertPinyinCached(name) {
+    if (!name || typeof name !== 'string') {
+        return { pinyin: '', firstLetters: '' };
+    }
+    let entry = pinyinCache.get(name);
+    if (!entry) {
+        entry = {
+            pinyin: convert(name, {style: 0}).join('').trim().toLowerCase(),
+            firstLetters: convert(name, {style: 4}).join('').trim().toLowerCase(),
+        };
+        if (pinyinCache.size > 10000) {
+            pinyinCache.clear();
+        }
+        pinyinCache.set(name, entry);
+    }
+    return entry;
+}
 let store = {
     debug: true,
     state: {
@@ -71,6 +91,7 @@ let store = {
     },
     storeId: '',
     _wfcListeners: [],
+    _reloadTimers: null,
 
     _addWfcListener(eventName, handler) {
         wfc.eventEmitter.on(eventName, handler);
@@ -100,6 +121,7 @@ let store = {
         console.log('init store')
 
         this.removeAllListeners();
+        this._cancelDeferredReloads();
 
         this.storeId = isMainWindow ? 'mainStore' : subStoreId;
         const {conversationStore, contactStore, pickStore, searchStore, miscStore} = storeToRefs(pstore(this.storeId));
@@ -139,13 +161,20 @@ let store = {
         });
 
         this._addWfcListener(EventType.UserInfosUpdate, (userInfos) => {
-            console.log('store UserInfosUpdate', userInfos, this.state.misc.connectionStatus)
+            console.log('store UserInfosUpdate', userInfos.length, this.state.misc.connectionStatus)
             this._reloadSingleConversationIfExist(userInfos);
-            // TODO optimize
-            this._patchCurrentConversationMessages();
-            this._loadFriendList();
-            this._loadFriendRequest();
-            this._loadSelfUserInfo();
+            let updatedUidSet = new Set(userInfos.map(u => u.uid));
+            // 只有更新的用户出现在当前会话消息里时，才需要重新 patch 当前会话消息
+            let msgs = this.state.conversation.currentConversationMessageList;
+            if (msgs && msgs.length > 0 && msgs.some(m => updatedUidSet.has(m.from))) {
+                this._deferPatchCurrentConversationMessages();
+            }
+            this._deferLoadFriendList();
+            this._deferLoadFriendRequest();
+            let selfUid = this.state.contact.selfUserInfo ? this.state.contact.selfUserInfo.uid : wfc.getUserId();
+            if (updatedUidSet.has(selfUid)) {
+            	this._loadSelfUserInfo();
+            }
             // TODO 其他相关逻辑
         });
 
@@ -157,10 +186,9 @@ let store = {
                 this.state.misc.isLocked = newLockedState;
                 console.log('lock state changed:', newLockedState);
             }
-            this._loadDefaultConversationList();
-            this._loadFavContactList();
-            this._loadFavGroupList();
-            this.updateTray();
+            this._deferLoadDefaultConversationList();
+            this._deferLoadFavContactList();
+            this._deferLoadFavGroupList();
             // 清除远程消息时，WEB SDK会同时触发ConversationInfoUpdate 和 setting更新，但PC SDK不会，只会触发setting更新
             // if (isElectron()) {
             //     this._loadCurrentConversationMessages();
@@ -168,23 +196,23 @@ let store = {
         });
 
         this._addWfcListener(EventType.FriendRequestUpdate, (newFrs) => {
-            this._loadFriendRequest();
+            this._deferLoadFriendRequest();
         });
 
         this._addWfcListener(EventType.FriendListUpdate, (updatedFriendIds) => {
             console.log('FriendListUpdate', updatedFriendIds);
-            this._loadFriendList();
-            this._loadFriendRequest();
-            this._loadFavContactList();
-            this._loadDefaultConversationList();
-            this._patchCurrentConversationMessages();
+            this._deferLoadFriendList();
+            this._deferLoadFriendRequest();
+            this._deferLoadFavContactList();
+            this._deferLoadDefaultConversationList();
+            this._deferPatchCurrentConversationMessages();
         });
 
         this._addWfcListener(EventType.GroupInfosUpdate, (groupInfos) => {
             // TODO optimize
-            console.log('store GroupInfosUpdate', groupInfos)
+            console.log('store GroupInfosUpdate', groupInfos.length)
             this._reloadGroupConversationIfExist(groupInfos);
-            this._loadFavGroupList();
+            this._deferLoadFavGroupList();
             // TODO 其他相关逻辑
 
         });
@@ -196,15 +224,15 @@ let store = {
             // this._loadFavGroupList();
             if (this.state.conversation.currentConversationInfo && this.state.conversation.currentConversationInfo.conversation.type === ConversationType.Group
                 && this.state.conversation.currentConversationInfo.conversation.target === groupId) {
-                this._patchCurrentConversationMessages();
+                this._deferPatchCurrentConversationMessages();
             }
 
             // TODO 其他相关逻辑
         });
 
         this._addWfcListener(EventType.ChannelInfosUpdate, (groupInfos) => {
-            this._loadDefaultConversationList();
-            this._loadChannelList();
+            this._deferLoadDefaultConversationList();
+            this._deferLoadChannelList();
         });
 
         this._addWfcListener(EventType.ConversationInfoUpdate, (conversationInfo) => {
@@ -337,8 +365,10 @@ let store = {
             userOnlineStatus.forEach(e => {
                 this.state.misc.userOnlineStateMap.set(e.userId, e);
             })
-            // 更新在线状态
-            this.state.contact.friendList = this._patchAndSortUserInfos(this.state.contact.friendList, '');
+            // 更新在线状态。在线状态不影响显示名、拼音和排序，只需更新在线状态描述，不必全量重新 patch + 排序
+            this.state.contact.friendList.forEach(u => {
+                u._userOnlineStatusDesc = this.getUserOnlineState(u.uid);
+            });
             this._patchCurrentConversationOnlineStatus();
         })
         // 服务端删除
@@ -557,6 +587,69 @@ let store = {
         }
     },
 
+    // 初次登录或长时间未登录后，数据同步期间 UserInfosUpdate/GroupInfosUpdate/SettingUpdate/FriendListUpdate
+    // 等事件会高频触发，对应 handler 又会全量重载数据（大量同步 IPC + 拼音转换等计算），把渲染主线程打满，
+    // 导致主页长时间卡顿、数据迟迟补不全。这里做 trailing debounce 合并，maxWait 保证持续风暴下也会定期刷新
+    _deferReload(key, reloadFn, delay = 300, maxWait = 1500) {
+        if (!this._reloadTimers) {
+            this._reloadTimers = new Map();
+        }
+        let entry = this._reloadTimers.get(key);
+        if (!entry) {
+            entry = {timer: 0, firstDeferTime: 0};
+            this._reloadTimers.set(key, entry);
+        }
+        if (!entry.firstDeferTime) {
+            entry.firstDeferTime = Date.now();
+        }
+        clearTimeout(entry.timer);
+        let wait = Math.min(delay, Math.max(0, entry.firstDeferTime + maxWait - Date.now()));
+        entry.timer = setTimeout(() => {
+            entry.firstDeferTime = 0;
+            reloadFn();
+        }, wait);
+    },
+
+    _cancelDeferredReloads() {
+        if (this._reloadTimers) {
+            this._reloadTimers.forEach(entry => clearTimeout(entry.timer));
+            this._reloadTimers.clear();
+        }
+    },
+
+    _deferLoadDefaultConversationList() {
+        this._deferReload('defaultConversationList', () => {
+            this._loadDefaultConversationList();
+            // 未读数从 conversationInfoList 计算而来，列表刷新后需要同步刷新系统托盘/Dock 角标。
+            // PC SDK 下，其他端标记已读/清除远程消息只会触发 SettingUpdate，若在列表重载前计算角标，会得到过期数值
+            this.updateTray();
+        });
+    },
+
+    _deferLoadFriendList() {
+        this._deferReload('friendList', () => this._loadFriendList());
+    },
+
+    _deferLoadFriendRequest() {
+        this._deferReload('friendRequest', () => this._loadFriendRequest());
+    },
+
+    _deferLoadFavContactList() {
+        this._deferReload('favContactList', () => this._loadFavContactList());
+    },
+
+    _deferLoadFavGroupList() {
+        this._deferReload('favGroupList', () => this._loadFavGroupList());
+    },
+
+    _deferLoadChannelList() {
+        this._deferReload('channelList', () => this._loadChannelList());
+    },
+
+    _deferPatchCurrentConversationMessages() {
+        this._deferReload('patchCurrentMessages', () => this._patchCurrentConversationMessages(), 150, 1000);
+    },
+
     // conversation actions
 
     _isDisplayMessage(message) {
@@ -670,22 +763,26 @@ let store = {
             return;
         }
         if (userInfos.length > 10) {
-            this._loadDefaultConversationList();
+            // 初次同步时用户信息会大批量更新，走去抖合并的全量重载
+            this._deferLoadDefaultConversationList();
         } else {
             let toReloadConversations = [];
+            let addedConvKeys = new Set();
+            let uidSet = new Set(userInfos.map(info => info.uid));
             if (cl) {
-                let uids = userInfos.map(info => info.uid);
                 cl.forEach(ci => {
                     let conv = ci.conversation;
+                    let key = this._conversationKey(conv);
                     if (conv.type === ConversationType.Single) {
-                        if (uids.indexOf(conv.target) >= 0) {
+                        if (uidSet.has(conv.target) && !addedConvKeys.has(key)) {
+                            addedConvKeys.add(key);
                             toReloadConversations.push(conv);
                         }
                     } else {
                         let lastMsg = ci.lastMessage;
-                        if (lastMsg && uids.indexOf(lastMsg.from) >= 0
-                            && toReloadConversations.findIndex(c => c.type === conv.type && c.target === conv.target && c.line === conv.line) === -1) {
-                            toReloadConversations.push(conv)
+                        if (lastMsg && uidSet.has(lastMsg.from) && !addedConvKeys.has(key)) {
+                            addedConvKeys.add(key);
+                            toReloadConversations.push(conv);
                         }
                     }
                 })
@@ -698,7 +795,7 @@ let store = {
 
     _reloadGroupConversationIfExist(groupInfos) {
         if (groupInfos.length > 10) {
-            this._loadDefaultConversationList();
+            this._deferLoadDefaultConversationList();
         } else {
             groupInfos.forEach(gi => {
                 let conv = new Conversation(ConversationType.Group, gi.target, 0);
@@ -1687,14 +1784,15 @@ let store = {
                 u._displayName = wfc.getUserDisplayNameEx(u);
                 u._displayNameIgnoreFriendAlias = u.displayName
             }
-            u._pinyin = convert(u._displayName, {style: 0}).join('').trim().toLowerCase();
+            let pinyin = convertPinyinCached(u._displayName);
+            u._pinyin = pinyin.pinyin;
             let firstLetter = u._pinyin[0];
             if (firstLetter >= 'a' && firstLetter <= 'z') {
                 u.__sortPinyin = 'a' + u._pinyin;
             } else {
                 u.__sortPinyin = 'z' + u._pinyin;
             }
-            u._firstLetters = convert(u._displayName, {style: 4}).join('').trim().toLowerCase();
+            u._firstLetters = pinyin.firstLetters;
             return u;
         });
         if (compareFn) {
@@ -1951,7 +2049,7 @@ let store = {
         if (!users || !filter || !filter.trim()) {
             return users;
         }
-        let queryPinyin = convert(filter, {style: 0}).join('').trim().toLowerCase();
+        let queryPinyin = convertPinyinCached(filter).pinyin;
         let result = users.filter(u => {
             return u._displayName.indexOf(filter) > -1 || u._displayName.indexOf(queryPinyin) > -1
                 || u._pinyin.indexOf(filter) > -1 || u._pinyin.indexOf(queryPinyin) > -1
@@ -1964,11 +2062,11 @@ let store = {
     // 目前只搜索群名称
     filterFavGroup(query) {
         console.log('to search group', this.state.contact.favGroupList)
-        let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
+        let queryPinyin = convertPinyinCached(query).pinyin;
         let result = this.state.contact.favGroupList.filter(g => {
-            let groupNamePinyin = convert(g.name, {style: 0}).join('').trim().toLowerCase();
+            let groupNamePinyin = convertPinyinCached(g.name).pinyin;
             return g.name.indexOf(query) > -1 || g.name.indexOf(queryPinyin) > -1
-                || groupNamePinyin.indexOf(query) > -1 || groupNamePinyin.indexOf(queryPinyin) > -1
+                || groupNamePinyin.indexOf(query) > -1 || groupNamePinyin.indexOf(queryPinyin) > -1;
         });
 
         console.log('group searchResult', result)
@@ -1976,11 +2074,15 @@ let store = {
     },
 
     filterConversation(query) {
+        let lowerQuery = query.toLowerCase();
         return this.state.conversation.conversationInfoList.filter(info => {
-            let displayNamePinyin = convert(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
-            let firstLetters = convert(info.conversation._target._displayName, {style: 4}).join('').trim().toLowerCase();
-            return info.conversation._target._displayName.indexOf(query) > -1 || displayNamePinyin.indexOf(query.toLowerCase()) > -1 || firstLetters.indexOf(query) > -1
-        })
+            let target = info.conversation._target;
+            if (!target || !target._displayName) return false;
+            let targetPinyin = convertPinyinCached(target._displayName);
+            return target._displayName.indexOf(query) > -1 
+                || targetPinyin.pinyin.indexOf(lowerQuery) > -1 
+                || targetPinyin.firstLetters.indexOf(lowerQuery) > -1;
+        });
     },
 
     filterGroupConversation(query) {
@@ -2525,6 +2627,7 @@ let store = {
 
 
     _reset() {
+        this._cancelDeferredReloads();
         this.state.conversation._reset();
         this.state.contact._reset();
         this.state.search._reset();
