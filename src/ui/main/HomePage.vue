@@ -586,6 +586,7 @@ i.active {
     flex-direction: column;
     width: 360px;
     height: 640px;
+    z-index: 99999;
     overflow: hidden;
     scale: 1;
     opacity: 1;
