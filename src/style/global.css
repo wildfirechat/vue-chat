@@ -453,8 +453,8 @@ img.emoji {
 
 /*--- Avatar ---*/
 .avatar {
-    width: var(--size-avatar);
-    height: var(--size-avatar);
+    width: var(--size-avatar-contact);
+    height: var(--size-avatar-contact);
     border-radius: var(--default-portrait-border-radius);
     object-fit: cover;
     -webkit-user-drag: none;
