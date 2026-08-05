@@ -933,6 +933,7 @@ let store = {
     quitGroup(groupId) {
         wfc.quitGroup(groupId, [0], null, () => {
             this.setCurrentConversationInfo(null)
+            this._deferLoadFavGroupList()
         }, (err) => {
             console.log('quit group error', err)
         })
@@ -940,6 +941,7 @@ let store = {
     dismissGroup(groupId) {
         wfc.dismissGroup(groupId, [0], null, () => {
             this.setCurrentConversationInfo(null)
+            this._deferLoadFavGroupList()
         }, (err) => {
             console.log('dismiss group error', err)
         })
