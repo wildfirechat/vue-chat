@@ -28,29 +28,28 @@
                     </div>
 
                     <tippy
-                        :to="'#' + userCardTriggerId"
+                        :tag="null"
                         interactive
                         :animate-fill="false"
                         placement="left"
-                        distant="7"
                         theme="light"
                         animation="fade"
                         trigger="click"
                         :append-to="tippyAppendTo"
-                        strategy="fixed"
-                        :popper-options="{ modifiers: [{ name: 'eventListeners', options: { scroll: false } }] }"
+                        :popper-options="{ strategy: 'fixed', modifiers: [{ name: 'eventListeners', options: { scroll: false } }] }"
                     >
+                        <template #default>
+                            <img ref="userCardTippy"
+                                 :id="userCardTriggerId"
+                                 class="avatar"
+                                 @click="onClickUserPortrait(message.from)"
+                                 draggable="false"
+                                 :src="message._from ? message._from.portrait : ''">
+                        </template>
                         <template #content>
                             <UserCardView v-on:close="closeUserCard" :user-info="message._from"/>
                         </template>
                     </tippy>
-
-                    <img ref="userCardTippy"
-                        :id="userCardTriggerId"
-                         class="avatar"
-                         @click="onClickUserPortrait(message.from)"
-                         draggable="false"
-                         :src="message._from ? message._from.portrait : ''">
                 </div>
             </div>
             <p v-if="shouldShowMessageReceipt" class="receipt" @click="showMessageReceiptDetail">

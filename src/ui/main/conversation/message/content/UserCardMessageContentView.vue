@@ -1,27 +1,28 @@
 <template>
-    <div ref="userCardTippy"
-         :id="'userCardInfoTrigger' + message.messageId"
-         class="user-card-content-container">
-        <div class="portrait-name-container">
-            <img :src="message.messageContent.portrait">
-            <p>{{ message.messageContent.displayName }}</p>
-        </div>
-        <p class="desc single-line">个人名片</p>
-        <tippy
-            :to="'#userCardInfoTrigger' + message.messageId"
-            interactive
-            :animate-fill="false"
-            placement="left"
-            distant="7"
-            theme="light"
-            animation="fade"
-            trigger="click"
-        >
-            <template #content>
-                <UserCardView v-on:close="closeUserCard" :user-info="userInfo()"/>
-            </template>
-        </tippy>
-    </div>
+    <tippy
+        :tag="null"
+        interactive
+        :animate-fill="false"
+        placement="left"
+        theme="light"
+        animation="fade"
+        trigger="click"
+    >
+        <template #default>
+            <div ref="userCardTippy"
+                 :id="'userCardInfoTrigger' + message.messageId"
+                 class="user-card-content-container">
+                <div class="portrait-name-container">
+                    <img :src="message.messageContent.portrait">
+                    <p>{{ message.messageContent.displayName }}</p>
+                </div>
+                <p class="desc single-line">个人名片</p>
+            </div>
+        </template>
+        <template #content>
+            <UserCardView v-on:close="closeUserCard" :user-info="userInfo()"/>
+        </template>
+    </tippy>
 </template>
 
 <script>

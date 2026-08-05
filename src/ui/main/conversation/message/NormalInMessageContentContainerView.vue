@@ -4,31 +4,39 @@
              v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
             <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
             <div class="message-avatar-content-container">
-                <tippy
-                    v-if="enableClickMessageSenderPortrait"
-                    :to="'#' + userCardTriggerId"
-                    interactive
-                    :animate-fill="false"
-                    placement="right"
-                    distant="7"
-                    theme="light"
-                    animation="fade"
-                    trigger="click"
-                    :append-to="tippyAppendTo"
-                    strategy="fixed"
-                    :popper-options="{ modifiers: [{ name: 'eventListeners', options: { scroll: false } }] }"
-                >
-                    <template #content>
-                        <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target"/>
-                        <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from"/>
-                    </template>
-                </tippy>
                 <div class="avatar-container">
                     <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
                            :value="message"
                            v-model="sharedPickState.messages"/>
-                    <img ref="userCardTippy"
-                        :id="userCardTriggerId"
+                    <tippy
+                        v-if="enableClickMessageSenderPortrait"
+                        :tag="null"
+                        interactive
+                        :animate-fill="false"
+                        placement="right"
+                        theme="light"
+                        animation="fade"
+                        trigger="click"
+                        :append-to="tippyAppendTo"
+                        :popper-options="{ strategy: 'fixed', modifiers: [{ name: 'eventListeners', options: { scroll: false } }] }"
+                    >
+                        <template #default>
+                            <img ref="userCardTippy"
+                                 :id="userCardTriggerId"
+                                 @click="onClickUserPortrait(message.from)"
+                                 @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
+                                 class="avatar"
+                                 draggable="false"
+                                 :src="messageSenderPortrait">
+                        </template>
+                        <template #content>
+                            <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target"/>
+                            <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from"/>
+                        </template>
+                    </tippy>
+                    <img v-else
+                         ref="userCardTippy"
+                         :id="userCardTriggerId"
                          @click="onClickUserPortrait(message.from)"
                          @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
                          class="avatar"

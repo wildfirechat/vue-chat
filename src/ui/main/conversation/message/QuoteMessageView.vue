@@ -9,23 +9,24 @@
             </div>
             <div v-else-if="enableMessagePreview && this.quotedMessage.messageContent.type === 1" class="other-content">
                 <tippy
-                    :to="'#messagePreview' + this.message.messageId + this.quotedMessage.messageId + enableMessagePreview"
+                    :tag="null"
                     interactive
                     :animate-fill="false"
                     placement="top"
-                    distant="7"
                     theme="light"
                     animation="fade"
                     trigger="click"
                 >
+                    <template #default>
+                        <p
+                            :id="'messagePreview' + this.message.messageId  + this.quotedMessage.messageId + enableMessagePreview">
+                            {{ this.quotedMessageStr }}
+                        </p>
+                    </template>
                     <template #content>
                         <PreviewQuotedMessageView :message="quotedMessage"/>
                     </template>
                 </tippy>
-                <p
-                    :id="'messagePreview' + this.message.messageId  + this.quotedMessage.messageId + enableMessagePreview">
-                    {{ this.quotedMessageStr }}
-                </p>
             </div>
             <p v-else
                @click="onMessageClick">
