@@ -76,17 +76,23 @@ export default {
 
     },
     computed: {
+        // target（头像/名称）在展示时才按需解析，详见 store.ensureConversationTarget
+        conversationTarget() {
+            return store.ensureConversationTarget(this.source.conversation);
+        },
+
         conversationTitle() {
-            let info = this.source;
-            if (info.conversation._target) {
-                return info.conversation._target._displayName;
+            let target = this.conversationTarget;
+            if (target) {
+                return target._displayName;
             }
             return '';
         },
 
         isOrganizationGroupConversation() {
             let info = this.source;
-            if (info.conversation.type === ConversationType.Group && info.conversation._target && info.conversation._target.type === GroupType.Organization) {
+            let target = this.conversationTarget;
+            if (info.conversation.type === ConversationType.Group && target && target.type === GroupType.Organization) {
                 return true;
             }
             return false;
@@ -110,16 +116,20 @@ export default {
 
         portrait() {
             let info = this.source;
+            let target = this.conversationTarget;
+            if (!target) {
+                return info.conversation.type === ConversationType.Group ? Config.DEFAULT_GROUP_PORTRAIT_URL : Config.DEFAULT_PORTRAIT_URL;
+            }
             if (info.conversation.type === ConversationType.Group) {
-                if (info.conversation._target.portrait) {
-                    return info.conversation._target.portrait;
+                if (target.portrait) {
+                    return target.portrait;
                 } else {
-                    let dp = wfc.defaultGroupPortrait(info.conversation._target);
-                    info.conversation._target.portrait = dp;
+                    let dp = wfc.defaultGroupPortrait(target);
+                    target.portrait = dp;
                     return dp;
                 }
             } else {
-                return info.conversation._target.portrait;
+                return target.portrait;
             }
         }
     },

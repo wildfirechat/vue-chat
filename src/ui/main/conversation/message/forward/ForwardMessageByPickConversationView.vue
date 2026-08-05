@@ -35,10 +35,10 @@
                 <div class="picked-user-container" v-for="(conversation, index) in sharedPickState.conversations"
                      :key="index">
                     <div class="picked-user">
-                        <img class="avatar" :src="conversation._target.portrait" alt="">
+                        <img class="avatar" :src="portraitOfConversation(conversation)" alt="">
                         <button @click="unpConversation(conversation)" class="unpick-button">X</button>
                     </div>
-                    <span class="name single-line">{{ conversation._target._displayName }}</span>
+                    <span class="name single-line">{{ displayNameOfConversation(conversation) }}</span>
                 </div>
             </div>
             <ForwardMessageView ref="forwardMessageView" v-if="sharedPickState.conversations.length > 0"
@@ -53,6 +53,7 @@
 
 <script>
 import store from "../../../../../store";
+import Config from "../../../../../config";
 import ForwardMessageView from "./ForwardMessageView.vue";
 import ConversationPickItem from "./ConversationPickItem.vue";
 import {markRaw} from "vue";
@@ -87,6 +88,16 @@ export default {
         }
     },
     methods: {
+        // target（头像/名称）在展示时才按需解析，详见 store.ensureConversationTarget
+        portraitOfConversation(conversation) {
+            let target = this.activeStore.ensureConversationTarget(conversation);
+            let portrait = target ? target.portrait : '';
+            return portrait ? portrait : Config.DEFAULT_PORTRAIT_URL;
+        },
+        displayNameOfConversation(conversation) {
+            let target = this.activeStore.ensureConversationTarget(conversation);
+            return target ? target._displayName : '';
+        },
         onConversationItemClick(conversation) {
             this.activeStore.pickOrUnpickConversation(conversation, true)
         },

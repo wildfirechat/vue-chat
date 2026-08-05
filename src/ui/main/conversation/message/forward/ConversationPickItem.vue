@@ -6,7 +6,7 @@
         <div class="header">
             <img class="avatar" :src="portrait" alt=""/>
         </div>
-        <p class="title single-line">{{ source.conversation._target._displayName }}</p>
+        <p class="title single-line">{{ conversationTitle }}</p>
     </div>
 </template>
 
@@ -14,6 +14,7 @@
 import store from "../../../../../store";
 import ConversationType from '../../../../../wfc/model/conversationType';
 import wfc from '../../../../../wfc/client/wfc';
+import Config from '../../../../../config';
 
 export default {
     name: "ConversationPickItem",
@@ -41,18 +42,30 @@ export default {
                 this.activeStore.state.pick.conversations = value;
             }
         },
+        // target（头像/名称）在展示时才按需解析，详见 store.ensureConversationTarget
+        conversationTarget() {
+            return this.activeStore.ensureConversationTarget(this.source.conversation);
+        },
+        conversationTitle() {
+            let target = this.conversationTarget;
+            return target ? target._displayName : '';
+        },
         portrait() {
             let info = this.source;
+            let target = this.conversationTarget;
+            if (!target) {
+                return info.conversation.type === ConversationType.Group ? Config.DEFAULT_GROUP_PORTRAIT_URL : Config.DEFAULT_PORTRAIT_URL;
+            }
             if (info.conversation.type === ConversationType.Group) {
-                if (info.conversation._target.portrait) {
-                    return info.conversation._target.portrait;
+                if (target.portrait) {
+                    return target.portrait;
                 } else {
-                    let dp = wfc.defaultGroupPortrait(info.conversation._target);
-                    info.conversation._target.portrait = dp;
+                    let dp = wfc.defaultGroupPortrait(target);
+                    target.portrait = dp;
                     return dp;
                 }
             } else {
-                return info.conversation._target.portrait;
+                return target.portrait;
             }
         }
     },

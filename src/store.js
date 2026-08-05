@@ -36,13 +36,13 @@ import UnreadCount from "./wfc/model/unreadCount";
 import LeaveChannelChatMessageContent from "./wfc/messages/leaveChannelChatMessageContent";
 import EnterChannelChatMessageContent from "./wfc/messages/enterChannelChatMessageContent";
 import ArticlesMessageContent from "./wfc/messages/articlesMessageContent";
-import NullUserInfo from "./wfc/model/nullUserInfo";
 import NullGroupInfo from "./wfc/model/nullGroupInfo";
 import IPCEventType from "./ipcEventType";
 import NullChannelInfo from "./wfc/model/NullChannelInfo";
 import ModifyGroupSettingNotification from "./wfc/messages/notification/modifyGroupSettingNotification";
 import {storeToRefs} from 'pinia'
 import {pstore} from './pstore'
+import {toRaw} from 'vue'
 
 import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
 import SoundMessageContent from "./wfc/messages/soundMessageContent";
@@ -63,6 +63,9 @@ import StreamingTextGeneratingMessageContent from './wfc/messages/streamingTextG
 // 拼音转换是纯 CPU 开销，且同一个名字的转换结果不变，缓存起来，避免联系人列表每次重载时全量重算
 const pinyinCache = new Map();
 
+// String.prototype.localeCompare 每次调用都要重新解析 locale 并构造排序规则，联系人上万时
+// 一次排序有十几万次比较，开销很可观。复用同一个 Collator，语义不变但快一个数量级
+const nameCollator = new Intl.Collator();
 function convertPinyinCached(name) {
     if (!name || typeof name !== 'string') {
         return { pinyin: '', firstLetters: '' };
@@ -92,6 +95,8 @@ let store = {
     storeId: '',
     _wfcListeners: [],
     _reloadTimers: null,
+    // 待合并处理的群成员更新事件对应的群 id，详见 EventType.GroupMembersUpdate 监听
+    _pendingGroupMemberUpdateGroupIds: new Set(),
 
     _addWfcListener(eventName, handler) {
         wfc.eventEmitter.on(eventName, handler);
@@ -218,9 +223,13 @@ let store = {
         });
 
         this._addWfcListener(EventType.GroupMembersUpdate, (groupId, members) => {
-            // TODO optimize
-            console.log('store GroupMembersUpdate', groupId)
-            this._reloadGroupConversationIfExist([new NullGroupInfo(groupId)]);
+            // 初次登录同步时，SDK 会为每个群逐一回调群成员更新，群很多时这里会被连续调用成百上千次。
+            // 单次处理要走 getConversationInfo/getGroupInfo/isFavGroup 等多次同步 IPC，还会对整个会话
+            // 列表做一次排序，逐个处理会把渲染进程主线程打满，表现为主页大面积白屏、卡死。
+            // 这里先把 groupId 攒起来，去抖后合并处理；群数量多时 _reloadGroupConversationIfExist
+            // 会自动退化成一次全量会话列表重载。
+            this._pendingGroupMemberUpdateGroupIds.add(groupId);
+            this._deferReload('groupMemberUpdate', () => this._flushPendingGroupMemberUpdates());
             // this._loadFavGroupList();
             if (this.state.conversation.currentConversationInfo && this.state.conversation.currentConversationInfo.conversation.type === ConversationType.Group
                 && this.state.conversation.currentConversationInfo.conversation.target === groupId) {
@@ -615,6 +624,19 @@ let store = {
             this._reloadTimers.forEach(entry => clearTimeout(entry.timer));
             this._reloadTimers.clear();
         }
+        this._pendingGroupMemberUpdateGroupIds.clear();
+    },
+
+    // 合并处理攒下来的群成员更新：群数量超过阈值时，_reloadGroupConversationIfExist 内部会
+    // 退化成一次去抖的全量会话列表重载，避免逐个会话重载带来的同步 IPC 与排序风暴
+    _flushPendingGroupMemberUpdates() {
+        if (this._pendingGroupMemberUpdateGroupIds.size === 0) {
+            return;
+        }
+        let groupIds = Array.from(this._pendingGroupMemberUpdateGroupIds);
+        this._pendingGroupMemberUpdateGroupIds.clear();
+        console.log('store GroupMembersUpdate flush', groupIds.length);
+        this._reloadGroupConversationIfExist(groupIds.map(groupId => new NullGroupInfo(groupId)));
     },
 
     _deferLoadDefaultConversationList() {
@@ -667,46 +689,17 @@ let store = {
 
     _loadConversationList(conversationType = [0, 1, 3], lines = [0]) {
         let conversationList = wfc.getConversationList(conversationType, lines);
-        let toLoadUserIdSet = new Set();
-        let toLoadGroupIds = [];
+        console.log('_loadConversationList size', conversationList.length);
         conversationList.forEach(info => {
-            if (info.conversation.type === ConversationType.Single) {
-                toLoadUserIdSet.add(info.conversation.target)
-                if (info.lastMessage && info.lastMessage.from) {
-                    toLoadUserIdSet.add(info.lastMessage.from);
-                }
-            } else if (info.conversation.type === ConversationType.Group) {
-                toLoadGroupIds.push(info.conversation.target)
-                if (info.lastMessage && info.lastMessage.from) {
-                    toLoadUserIdSet.add(info.lastMessage.from);
-                }
-            }
-        })
-        let userInfoMap = new Map();
-        let groupInfoMap = new Map();
-        toLoadUserIdSet.forEach(uid => {
-            userInfoMap.set(uid, new NullUserInfo(uid));
-        })
-        toLoadGroupIds.forEach(gid => {
-            groupInfoMap.set(gid, new NullGroupInfo(gid))
-        })
-
-        console.log('to load userIds', [...toLoadUserIdSet]);
-        wfc.getUserInfos([...toLoadUserIdSet])
-            .forEach(u => {
-                userInfoMap.set(u.uid, u);
-            });
-        console.log('to load groupIds', toLoadGroupIds);
-        wfc.getGroupInfos(toLoadGroupIds)
-            .forEach(g => {
-                groupInfoMap.set(g.target, g);
-            });
-
-        conversationList.forEach(info => {
-            this._patchConversationInfo(info, true, userInfoMap, groupInfoMap);
+            // 只做纯本地计算；target（头像/名称）解析很昂贵（本地没有还会发远程拉取），
+            // 会话很多时（2000+ 群）不能在这里批量做，交给会话列表条目渲染时按需 ensureConversationTarget。
+            // lastMessage 的发送者信息同理，由会话条目展示时按需 _patchMessage。
+            this._patchConversationInfoLight(info, false);
             // side affect
             if (this.state.conversation.currentConversationInfo
                 && this.state.conversation.currentConversationInfo.conversation.equal(info.conversation)) {
+                // 当前正在聊天的会话本来就要展示，直接解析
+                this._resolveConversationTarget(info.conversation);
                 this.state.conversation.currentConversationInfo = info;
                 this._patchCurrentConversationOnlineStatus();
             }
@@ -742,19 +735,40 @@ let store = {
             this.state.conversation.currentConversationInfo = conversationInfo;
         }
 
-        // sort
-        this.state.conversation.conversationInfoList.sort((a, b) => {
-            if ((a.top && b.top) || (!a.top && !b.top)) {
-                return gt(a.timestamp, b.timestamp) ? -1 : 1;
-            } else {
-                if (a.top) {
+        this._sortConversationInfoList();
+        return conversationInfo;
+    },
+
+    // 置顶会话在前，其余按时间倒序。时间相同返回 0，保证排序稳定，也让下面的"是否已有序"判断成立
+    _compareConversationInfo(a, b) {
+        if (!!a.top !== !!b.top) {
+            return a.top ? -1 : 1;
+        }
+        if (gt(a.timestamp, b.timestamp)) {
                     return -1;
-                } else {
+        }
+        if (lt(a.timestamp, b.timestamp)) {
                     return 1;
                 }
+        // 时间相同（或时间戳非法无法比较）时返回 0，保持原有相对顺序，避免每次重载都判定成乱序而反复重排
+        return 0;
+    },
+
+    // 直接对 conversationInfoList（reactive proxy）调用 sort，每次元素交换都要穿过 Proxy 的
+    // get/set 并触发依赖通知，会话上千时单次排序就是几万次响应式写入。这里改成先在 raw 数组上
+    // 判断是否已经有序（绝大多数重载都不会改变顺序），确实乱序时才在 raw 数组上排好序、整体赋值一次，
+    // 把 O(n log n) 次响应式触发降为 1 次。
+    _sortConversationInfoList() {
+        let raw = toRaw(this.state.conversation.conversationInfoList);
+        if (!raw || raw.length < 2) {
+            return;
             }
-        })
-        return conversationInfo;
+        for (let i = 1; i < raw.length; i++) {
+            if (this._compareConversationInfo(raw[i - 1], raw[i]) > 0) {
+                this.state.conversation.conversationInfoList = raw.slice().sort(this._compareConversationInfo);
+                return;
+            }
+        }
     },
 
     _reloadSingleConversationIfExist(userInfos) {
@@ -883,6 +897,8 @@ let store = {
             return;
         }
         let conversation = conversationInfo.conversation;
+        // 会话列表加载时不再解析 target，进入会话时（本来就要展示）确保已解析
+        this.ensureConversationTarget(conversation);
         if (wfc.isUserOnlineStateEnabled() && ((conversation.type === ConversationType.Single || conversation.type === ConversationType.SecretChat) && !wfc.isMyFriend(conversation.target))) {
             wfc.watchOnlineState(conversation.type, [conversation.target], 1000, (states) => {
                 states.forEach((e => {
@@ -1616,39 +1632,54 @@ let store = {
         })
     },
 
-    _patchConversationInfo(info, patchLastMessage = true, userInfoMap, groupInfoMap) {
-        if (info.conversation.type === ConversationType.Single) {
-            info.conversation._target = userInfoMap ? userInfoMap.get(info.conversation.target) : wfc.getUserInfo(info.conversation.target, false);
-            if (info.conversation._target) {
-                info.conversation._target._displayName = wfc.getUserDisplayNameEx(info.conversation._target);
+    // 解析会话目标（头像/名称）需要查用户/群信息，本地没有还会发远程拉取，
+    // 是唯一昂贵的部分，必须按需（展示时）调用，不能对会话列表批量调用。
+    _resolveConversationTarget(conversation, userInfoMap, groupInfoMap) {
+        if (conversation.type === ConversationType.Single) {
+            conversation._target = userInfoMap ? userInfoMap.get(conversation.target) : wfc.getUserInfo(conversation.target, false);
+            if (conversation._target) {
+                conversation._target._displayName = wfc.getUserDisplayNameEx(conversation._target);
             }
-        } else if (info.conversation.type === ConversationType.Group) {
-            info.conversation._target = groupInfoMap ? groupInfoMap.get(info.conversation.target) : wfc.getGroupInfo(info.conversation.target, false);
-            if (info.conversation._target) {
-                info.conversation._target._isFav = wfc.isFavGroup(info.conversation.target);
-                info.conversation._target._displayName = info.conversation._target.remark ? info.conversation._target.remark : info.conversation._target.name;
+        } else if (conversation.type === ConversationType.Group) {
+            conversation._target = groupInfoMap ? groupInfoMap.get(conversation.target) : wfc.getGroupInfo(conversation.target, false);
+            if (conversation._target) {
+                conversation._target._isFav = wfc.isFavGroup(conversation.target);
+                conversation._target._displayName = conversation._target.remark ? conversation._target.remark : conversation._target.name;
             }
-        } else if (info.conversation.type === ConversationType.Channel) {
-            info.conversation._target = wfc.getChannelInfo(info.conversation.target, false);
-            info.conversation._target._displayName = info.conversation._target.name;
-        } else if (info.conversation.type === ConversationType.SecretChat) {
-            let secretChatInfo = wfc.getSecretChatInfo(info.conversation.target);
+        } else if (conversation.type === ConversationType.Channel) {
+            conversation._target = wfc.getChannelInfo(conversation.target, false);
+            conversation._target._displayName = conversation._target.name;
+        } else if (conversation.type === ConversationType.SecretChat) {
+            let secretChatInfo = wfc.getSecretChatInfo(conversation.target);
             if (secretChatInfo) {
                 let userId = secretChatInfo.userId;
                 let userInfo = wfc.getUserInfo(userId, false);
-                info.conversation._target = userInfo;
-                info.conversation._target._displayName = wfc.getUserDisplayNameEx(userInfo);
+                conversation._target = userInfo;
+                conversation._target._displayName = wfc.getUserDisplayNameEx(userInfo);
             } else {
-                info.conversation._target = {};
+                conversation._target = {};
             }
-        } else if (info.conversation.type === ConversationType.ChatRoom) {
-            wfc.getChatroomInfo(info.conversation.target, 0, (chatRoomInfo) => {
-                info.conversation._target = chatRoomInfo;
+        } else if (conversation.type === ConversationType.ChatRoom) {
+            wfc.getChatroomInfo(conversation.target, 0, (chatRoomInfo) => {
+                conversation._target = chatRoomInfo;
             }, err => {
                 console.log('get chatRoomInfo error', err);
-                info.conversation._target = {};
+                conversation._target = {};
             });
         }
+    },
+
+    // 会话目标（头像/名称）解析要在真正展示时才有意义，页面渲染时调用本方法按需解析并缓存到 conversation._target 上，
+    // 避免会话很多（2000+ 群）时一次性对全部会话拉取用户/群信息，卡死主线程。
+    ensureConversationTarget(conversation) {
+        if (!conversation._target) {
+            this._resolveConversationTarget(conversation);
+        }
+        return conversation._target;
+    },
+
+    // 只做纯本地计算，不涉及任何用户/群信息查询，会话列表批量调用是廉价的。
+    _patchConversationInfoLight(info, patchLastMessage = true, userInfoMap) {
         if (gt(info.timestamp, 0)) {
             info._timeStr = helper.dateFormat(info.timestamp);
         } else {
@@ -1672,6 +1703,10 @@ let store = {
         return info;
     },
 
+    _patchConversationInfo(info, patchLastMessage = true, userInfoMap, groupInfoMap) {
+        this._resolveConversationTarget(info.conversation, userInfoMap, groupInfoMap);
+        return this._patchConversationInfoLight(info, patchLastMessage, userInfoMap);
+    },
     addDownloadingMessage(messageUid) {
         this.state.conversation.downloadingMessages.push({
             messageUid: messageUid,
@@ -1800,7 +1835,7 @@ let store = {
         if (compareFn) {
             userInfos = userInfos.sort(compareFn);
         } else {
-            userInfos = userInfos.sort((a, b) => a.__sortPinyin.localeCompare(b.__sortPinyin));
+            userInfos = userInfos.sort((a, b) => nameCollator.compare(a.__sortPinyin, b.__sortPinyin));
         }
 
         userInfos.forEach(u => {
@@ -2078,11 +2113,11 @@ let store = {
     filterConversation(query) {
         let lowerQuery = query.toLowerCase();
         return this.state.conversation.conversationInfoList.filter(info => {
-            let target = info.conversation._target;
+            let target = this.ensureConversationTarget(info.conversation);
             if (!target || !target._displayName) return false;
             let targetPinyin = convertPinyinCached(target._displayName);
-            return target._displayName.indexOf(query) > -1 
-                || targetPinyin.pinyin.indexOf(lowerQuery) > -1 
+            return target._displayName.indexOf(query) > -1
+                || targetPinyin.pinyin.indexOf(lowerQuery) > -1
                 || targetPinyin.firstLetters.indexOf(lowerQuery) > -1;
         });
     },

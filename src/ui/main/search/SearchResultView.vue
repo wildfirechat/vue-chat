@@ -76,8 +76,8 @@
                     <ul>
                         <li v-for="(conv, index) in toShowConversationList" :key="index">
                             <div class="search-result-item group" @click.stop="chatToConversation(conv.conversation)">
-                                <img :src="conv.conversation._target.portrait">
-                                <span class="single-line">{{ conv.conversation._target._displayName }}</span>
+                                <img :src="conversationPortrait(conv)">
+                                <span class="single-line">{{ conversationDisplayName(conv) }}</span>
                             </div>
                         </li>
                     </ul>
@@ -129,6 +129,7 @@ import IpcEventType from '../../../ipcEventType';
 import { ipcRenderer } from '../../../platform';
 import wfc from '../../../wfc/client/wfc';
 import organizationServerApi from '../../../api/organizationServerApi';
+import Config from '../../../config';
 
 const FLOATING_PANEL_MIN_WIDTH = 320;
 const FLOATING_PANEL_MIN_HEIGHT = 180;
@@ -223,6 +224,15 @@ export default {
     },
 
     methods: {
+        // target（头像/名称）在展示时才按需解析，详见 store.ensureConversationTarget
+        conversationPortrait(conv) {
+            let target = store.ensureConversationTarget(conv.conversation);
+            return target && target.portrait ? target.portrait : Config.DEFAULT_PORTRAIT_URL;
+        },
+        conversationDisplayName(conv) {
+            let target = store.ensureConversationTarget(conv.conversation);
+            return target ? target._displayName : '';
+        },
         bindFloatingEvents() {
             document.addEventListener('pointerdown', this.onGlobalPointerDown, true)
             window.addEventListener('resize', this.updateFloatingPosition)

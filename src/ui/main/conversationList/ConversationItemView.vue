@@ -163,17 +163,25 @@ export default {
 
     },
     computed: {
+        // target（头像/名称）在展示时才按需解析：本地没有还会发远程拉取，
+        // 会话很多（2000+ 群）时不能在加载会话列表时批量做，见 store._loadConversationList。
+        // store 内部按 conversation._target 缓存，重复调用是廉价的。
+        conversationTarget() {
+            return store.ensureConversationTarget(this.source.conversation);
+        },
+
         conversationTitle() {
-            let info = this.source;
-            if (info.conversation._target) {
-                return info.conversation._target._displayName;
+            let target = this.conversationTarget;
+            if (target) {
+                return target._displayName;
             }
             return '';
         },
 
         isOrganizationGroupConversation() {
             let info = this.source;
-            if (info.conversation.type === ConversationType.Group && info.conversation._target && info.conversation._target.type === GroupType.Organization) {
+            let target = this.conversationTarget;
+            if (info.conversation.type === ConversationType.Group && target && target.type === GroupType.Organization) {
                 return true;
             }
             return false;
@@ -261,16 +269,20 @@ export default {
 
         portrait() {
             let info = this.source;
+            let target = this.conversationTarget;
+            if (!target) {
+                return info.conversation.type === ConversationType.Group ? Config.DEFAULT_GROUP_PORTRAIT_URL : Config.DEFAULT_PORTRAIT_URL;
+            }
             if (info.conversation.type === ConversationType.Group) {
-                if (info.conversation._target.portrait) {
-                    return info.conversation._target.portrait;
+                if (target.portrait) {
+                    return target.portrait;
                 } else {
-                    let dp = wfc.defaultGroupPortrait(info.conversation._target);
-                    info.conversation._target.portrait = dp;
+                    let dp = wfc.defaultGroupPortrait(target);
+                    target.portrait = dp;
                     return dp;
                 }
             } else {
-                return info.conversation._target.portrait;
+                return target.portrait;
             }
         }
     },
@@ -284,6 +296,7 @@ export default {
     background-color: var(--background-item-normal);
 }
 
+/* 分隔线从头像(.header)右侧开始，不贯穿整个会话项 */
 .conversation-item-container::after {
     content: '';
     position: absolute;
