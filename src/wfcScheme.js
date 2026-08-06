@@ -8,7 +8,7 @@ export default class WfcScheme {
     static buildConferenceLink(conferenceId, password) {
         let link = WfcScheme.QR_CODE_PREFIX_CONFERENCE + conferenceId;
         if (password) {
-            link += '/?pwd=' + password
+            link += '?pwd=' + password
         }
         return link;
     }

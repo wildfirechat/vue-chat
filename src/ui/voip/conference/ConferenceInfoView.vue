@@ -14,7 +14,7 @@
                 <p class="title">会议号</p>
                 <p class="desc" @click="copyConferenceId">{{ conferenceInfo.conferenceId }}</p>
             </div>
-            <div class="item">
+            <div class="item" @click="showQrCode">
                 <p class="title">二维码</p>
                 <i>&gt;</i>
             </div>
@@ -67,6 +67,8 @@ import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import conferenceApi from "../../../api/conferenceApi";
 import {copyText} from "../../util/clipboard";
 import conferenceManager from "./conferenceManager";
+import WfcScheme from "../../../wfcScheme";
+import QRCodeDialogView from "../../common/QRCodeDialogView.vue";
 
 export default {
     name: "ConferenceInfoView",
@@ -113,6 +115,21 @@ export default {
                 text: '会议号已复制',
                 type: 'info'
             });
+        },
+
+        showQrCode() {
+            this.$modal.hide('conference-info-modal');
+            this.$modal.show(
+                QRCodeDialogView,
+                {
+                    title: '会议二维码',
+                    content: WfcScheme.buildConferenceLink(this.conferenceInfo.conferenceId, this.conferenceInfo.pin),
+                }, null, {
+                    name: 'qr-code-dialog-modal',
+                    width: 320,
+                    height: 380,
+                    clickToClose: true,
+                }, {})
         },
 
         async destroyConference(){
