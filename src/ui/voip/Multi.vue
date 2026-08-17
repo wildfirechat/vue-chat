@@ -257,9 +257,12 @@ export default {
                 this.audioOnly = session.audioOnly;
                 this.selfUserInfo = selfUserInfo;
                 this.initiatorUserInfo = initiatorUserInfo;
-                // 为了逻辑更清晰，参数引用传递，参数中传入的participantUserInfos会变化，如果直接使用的话，didParticipantJoined里面，可啥都不做
-                this.participantUserInfos = [...participantUserInfos];
-                this.groupMemberUserInfos = groupMemberUserInfos;
+                // 这个回调可能在用户信息更新之后才触发，导致用户信息更新那不能正常更新参与者信息
+                let userIds = participantUserInfos.map(user => user.uid);
+                this.participantUserInfos = wfc.getUserInfos(userIds, session.conversation.target)
+
+                let gmuids = groupMemberUserInfos.map(user => user.uid);
+                this.groupMemberUserInfos = wfc.getUserInfos(gmuids, session.conversation.target)
 
                 this.$set(this.selfUserInfo, '_stream', null)
                 this.$set(this.selfUserInfo, '_volume', 0)

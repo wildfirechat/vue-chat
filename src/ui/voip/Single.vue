@@ -281,7 +281,11 @@ export default {
                 console.log('onInitial')
                 this.session = session;
                 this.audioOnly = session.audioOnly;
-                this.participantUserInfos = [...participantUserInfos];
+
+                // why ?
+                // 这个回调可能在用户信息更新之后才触发，导致用户信息更新那不能正常更新参与者信息
+                let userIds = participantUserInfos.map(user => user.uid);
+                this.participantUserInfos = wfc.getUserInfos(userIds, '')
                 // for test
                 // navigator.mediaDevices.getUserMedia({
                 //     audio: false,
