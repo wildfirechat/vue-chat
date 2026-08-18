@@ -72,6 +72,7 @@ import MessageReceiptDetailView from "./MessageReceiptDetailView.vue";
 import QuoteMessageView from "./QuoteMessageView.vue";
 import Config from "../../../../config";
 import FadeLoader from 'vue-spinner/src/FadeLoader.vue'
+import MessageContentType from '../../../../wfc/messages/messageContentType';
 
 export default {
     name: "NormalOutMessageContentView",
@@ -250,6 +251,10 @@ export default {
 
         shouldShowMessageReceipt() {
             let show = false;
+            // 有的消息很难说是已读或未读
+            if([MessageContentType.VOIP_CONTENT_TYPE_START].indexOf(this.message.messageContent.type) >= 0){
+                return false;
+            }
             if (this.message.conversation.type === ConversationType.Group) {
                 show = this.sharedConversationState.isGroupMessageReceiptEnable;
             } else if (this.message.conversation.type === ConversationType.Single) {
