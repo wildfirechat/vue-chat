@@ -439,6 +439,7 @@ export default {
             this.qrCode = null;
             // 切换用户时，先进行disconnect
             wfc.disconnect();
+            document.cookie = '';
             clear();
 
             // 重置滑动验证状态

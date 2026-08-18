@@ -404,6 +404,7 @@ export default {
 
         logout() {
             clear();
+            document.cookie = '';
             wfc.disconnect();
             if (isElectron()) {
                 ipcRenderer.send(IpcEventType.LOGOUT);
