@@ -323,9 +323,12 @@ export default {
                 this.currentParticipant = {};
                 return;
             }
-            this.$refs.menu.open(event, participant);
-            this.isContextMenuShow = true;
-            this.currentParticipant = participant;
+            let menus = this.buildParticipantContextMenu(participant)
+            if(menus.length > 0) {
+                this.$refs.menu.open(event, participant);
+                this.isContextMenuShow = true;
+                this.currentParticipant = participant;
+            }
         },
 
         onContextMenuClose() {
@@ -348,6 +351,11 @@ export default {
             let unmute = true;
             this.conferenceManager.requestUnmuteAll(true, unmute);
         }
+    },
+    beforeUnmount() {
+        // if (this.isContextMenuShow) {
+        //     this.$refs.menu.close();
+        // }
     }
 }
 </script>

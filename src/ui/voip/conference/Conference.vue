@@ -254,7 +254,7 @@
                 </div>
                 <div class="slider-content">
                 <ConferenceManageView
-                    v-show="showConferenceManageView && activeSliderTab === 'manage'"
+                    v-if="showConferenceManageView && activeSliderTab === 'manage'"
                     v-bind:class="{ active: showConferenceManageView}"
                     :participants="participantUserInfos"
                     :session="session"
