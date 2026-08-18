@@ -48,14 +48,17 @@
             <button class="destroy" v-if="enableDestroy" @click="destroyConference">
                 销毁会议
             </button>
-            <button ref="favButton" v-if="new Date().getTime() < conferenceInfo.startTime * 1000" @click="favConference">
+            <button ref="favButton" v-if="conferenceInfo.startTime * 1000 > new Date().getTime() && conferenceInfo.owner !== selfUserId" @click="favConference">
                 尚未开始，收藏会议
             </button>
-            <button v-else-if="conferenceInfo.endTime === 0 || new Date().getTime() < conferenceInfo.endTime * 1000" @click="joinConference">
-                加入会议
+            <button ref="favButton" v-else-if="conferenceInfo.startTime * 1000 > new Date().getTime()" :disabled="true">
+                尚未开始
             </button>
-            <button v-else :disabled="true">
+            <button v-else-if="conferenceInfo.endTime * 1000 < new Date().getTime()" :disabled="true">
                 会议已结束
+            </button>
+            <button v-else @click="joinConference">
+                加入会议
             </button>
         </div>
     </div>
@@ -89,6 +92,13 @@ export default {
     mounted() {
         console.log('conferenceInfo', this.conferenceInfo);
         this.ownerName = wfc.getUserDisplayName(this.conferenceInfo.owner);
+        conferenceApi.queryConferenceInfo(this.conferenceInfo.conferenceId, this.conferenceInfo.password)
+            .then(info => {
+                this.conferenceInfo.endTime = info.endTime;
+            })
+            .catch(err => {
+                console.log('queryConferenceInfo error', err);
+            })
     },
     methods: {
         favConference() {
@@ -156,8 +166,17 @@ export default {
             return !(this.conferenceInfo.owner === this.selfUserId || !this.conferenceInfo.audience || this.conferenceInfo.allowSwitchMode)
         },
         enableDestroy() {
-            console.log('conferenceInfo', this.conferenceInfo, this.selfUserId);
-            return this.conferenceInfo.owner === this.selfUserId;
+            return this.conferenceInfo.owner === this.selfUserId && this.conferenceInfo.endTime * 1000 > new Date().getTime();
+        },
+        enableFav() {
+            return this.conferenceInfo.owner !== this.selfUserId && new Date().getTime() > this.conferenceInfo.startTime * 1000;
+        },
+        notStarted() {
+            return new Date().getTime() > this.conferenceInfo.startTime * 1000;
+        },
+        enableJoin() {
+            let now = new Date().getTime();
+            return now > this.conferenceInfo.startTime * 1000 && now < this.conferenceInfo.endTime * 1000;
         }
     }
 }

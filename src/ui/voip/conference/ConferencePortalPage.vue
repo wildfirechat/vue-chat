@@ -113,6 +113,7 @@ export default {
             conferenceApi.getFavConferences()
                 .then(favConferenceInfos => {
                     this.favConferenceInfos = favConferenceInfos.filter(c => c.startTime > 0);
+                    this.historyConferenceInfos = this.historyConferenceInfos.filter(c => this.favConferenceInfos.findIndex(fc => fc.conferenceId === c.conferenceId) === -1);
                 })
                 .catch(err => {
                     console.log('getFavConferences error', err)

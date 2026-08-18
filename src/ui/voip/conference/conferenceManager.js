@@ -7,6 +7,7 @@ import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
 import wfc from "../../../wfc/client/wfc";
 import {isElectron} from "../../../platform";
+import * as storage from '../../util/storageHelper';
 
 class ConferenceManager {
 
@@ -486,12 +487,14 @@ class ConferenceManager {
         }
     }
 
-    addHistory(conferenceInfo, durationMS) {
+    addHistory(conferenceInfo, durationMS, destroyed = false) {
         console.log('addHistory', conferenceInfo, durationMS);
-        let tmp = localStorage.getItem('historyConfList');
+        let tmp = storage.getItem('historyConfList');
         let historyList = JSON.parse(tmp);
         historyList = historyList && Array.isArray(historyList) ? historyList : [];
-        conferenceInfo.endTime = Math.ceil(conferenceInfo.startTime + durationMS / 1000);
+        if(destroyed){
+            conferenceInfo.endTime = Math.ceil(conferenceInfo.startTime + durationMS / 1000);
+        }
         let index = historyList.findIndex(info => info.conferenceId === conferenceInfo.conferenceId)
         if (index >= 0) {
             historyList[index] = conferenceInfo;
@@ -501,20 +504,20 @@ class ConferenceManager {
                 historyList = historyList.shift();
             }
         }
-        localStorage.setItem('historyConfList', JSON.stringify(historyList, null, ''));
+        storage.setItem('historyConfList', JSON.stringify(historyList, null, ''));
     }
 
     removeHistory(conferenceInfo) {
         console.log('removeHistory', conferenceInfo);
-        let tmp = localStorage.getItem('historyConfList');
+        let tmp = storage.getItem('historyConfList');
         let historyList = JSON.parse(tmp);
         historyList = historyList ? historyList : [];
         historyList = historyList.filter(info => info.conferenceId !== conferenceInfo.conferenceId);
-        localStorage.setItem('historyConfList', JSON.stringify(historyList, null, ''));
+        storage.setItem('historyConfList', JSON.stringify(historyList, null, ''));
     }
 
     getHistoryConference() {
-        let tmp = localStorage.getItem('historyConfList');
+        let tmp = storage.getItem('historyConfList');
         let historyList = JSON.parse(tmp);
         historyList = historyList ? historyList : [];
         return historyList;

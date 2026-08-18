@@ -743,6 +743,7 @@ export default {
             this.hangupMenuVisible = false;
             this.session.leaveConference(true);
             this.$eventBus.$emit('conference-slider-closed');
+            conferenceManager.addHistory(conferenceManager.conferenceInfo, new Date().getTime() - conferenceManager.conferenceInfo.startTime * 1000, true)
             await conferenceApi.destroyConference(conferenceManager.conferenceInfo.conferenceId)
             this.$eventBus.$emit('conferenceListUpdated');
         },
