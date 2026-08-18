@@ -28,7 +28,7 @@
                 <ul class="flex-row" style="align-content: center; padding: 0 8px">
                     <li v-if="!inputOptions['disableEmoji']">
                         <div class="i-button-wrapper i-button-small" @click="toggleEmojiView">
-                            <i id="showEmoji" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
+                            <i ref="showEmojiBtn" class="icon-ion-ios-heart" :title="$t('conversation.action_tip_emoji')"/>
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableFile']">
@@ -789,7 +789,7 @@ export default {
             this.showEmojiDialog = !this.showEmojiDialog;
             if (this.showEmojiDialog) {
                 this.$nextTick(() => {
-                    const btn = document.getElementById('showEmoji');
+                    const btn = this.$refs.showEmojiBtn;
                     if (btn) {
                         const rect = btn.getBoundingClientRect();
                         this.emojiPickerPos = {
@@ -831,7 +831,7 @@ export default {
         },
 
         hideEmojiView(e) {
-            if (e.target.id !== 'showEmoji') {
+            if (e.target !== this.$refs.showEmojiBtn) {
                 this.showEmojiDialog = false;
             }
         },
