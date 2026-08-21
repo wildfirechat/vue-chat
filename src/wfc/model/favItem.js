@@ -1,4 +1,5 @@
 import ConversationType from "./conversationType";
+import Conversation from "./conversation";
 import wfc from "../client/wfc";
 import MessageContentType from "../messages/messageContentType";
 import Message from "../messages/message";
@@ -187,6 +188,9 @@ export default class FavItem {
         } catch (e) {
             console.log('toMessage Error', e)
             content = new UnknownMessageContent();
+        }
+        if(!this.conversation){
+            this.conversation = new Conversation(this.convType, this.convTarget, this.convLine);
         }
         let msg = new Message(this.conversation, content);
         if (this.messageUid) {

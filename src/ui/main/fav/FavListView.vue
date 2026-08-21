@@ -233,7 +233,7 @@ export default {
                             type: 'info'
                         })
                     }
-                    
+
                     break;
                 case MessageContentType.Image:
                 case MessageContentType.Video:
@@ -262,17 +262,33 @@ export default {
                             url: url,
                         });
                     } else {
-                        this.$notify({
-                            text: '暂不支持预览，请手机端或者 PC 端查看',
-                            type: 'info'
-                        })
-                    }
+                        let CompositeMessagePage = require('../CompositeMessagePage').default;
+                        let beforeClose = () => {
+                            // todo
+                        };
+                        let fi = Object.assign(new FavItem(), favItem);
+                        console.log('show composite favItem', fi)
+                        this.$modal.show(
+                            CompositeMessagePage,
+                            {
+                                favItem: fi,
+                                isInCompositeView: true,
+                            }, null, {
+                                name: 'show-composite-message-modal' + '-' + stringValue(favItem.id),
+                                width: 800,
+                                height: 600,
+                                clickToClose: true,
+                            }, {
+                                'before-close': beforeClose,
+                            });
+
+                        }
                     break;
                 default:
                     console.log('todo click', favItem)
                     break;
             }
-  
+
         },
         handleClickMedia(index, favItems) {
             favItems = favItems.filter(favItem => (favItem.url || favItem.thumbUrl || (favItem.data && favItem.data.thumb)))

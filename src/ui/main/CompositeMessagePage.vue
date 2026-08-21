@@ -87,7 +87,12 @@ export default {
             required: false,
             type: Message,
             default: null,
-        }
+        },
+        favItem: {
+            required: false,
+            type: FavItem,
+            default: null,
+        },
     },
     data() {
         return {
@@ -101,36 +106,39 @@ export default {
             this.compositeMessage = this.message;
             this.loadMediaCompositeMessage(this.compositeMessage);
             return;
-        }
-        let hash = window.location.hash;
-        if (hash.indexOf('messageUid=') >= 0) {
-            let messageUid = hash.substring(hash.indexOf('=') + 1);
-            this.compositeMessage = store.getMessageByUid(messageUid);
-            if (!this.compositeMessage) {
-                wfc.loadRemoteMessage(messageUid, msg => {
-                    this.compositeMessage = msg
-
-                    if (this.compositeMessage) {
-                        store._patchMessage(this.compositeMessage, 0);
-                        if (isElectron()) {
-                            document.title = this.compositeMessage.messageContent.title;
-                        }
-                        this.loadMediaCompositeMessage(this.compositeMessage);
-                    }
-                }, err => {
-                    console.error('load remote message error', err);
-                })
-            }
-            if (!this.compositeMessage) {
-                return;
-            }
+        } else if(this.favItem) {
+            this.compositeMessage = this.favItem.toMessage();
         } else {
-            let faveItemData = hash.substring(hash.indexOf('=') + 1);
-            let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
-            let favItem = Object.assign(new FavItem(), favItemRaw);
-            favItem.conversation = new Conversation(favItem.convType, favItem.convTarget, favItem.convLine);
-            favItem.favType = favItem.type;
-            this.compositeMessage = favItem.toMessage();
+            let hash = window.location.hash;
+            if (hash.indexOf('messageUid=') >= 0) {
+                let messageUid = hash.substring(hash.indexOf('=') + 1);
+                this.compositeMessage = store.getMessageByUid(messageUid);
+                if (!this.compositeMessage) {
+                    wfc.loadRemoteMessage(messageUid, msg => {
+                        this.compositeMessage = msg
+
+                        if (this.compositeMessage) {
+                            store._patchMessage(this.compositeMessage, 0);
+                            if (isElectron()) {
+                                document.title = this.compositeMessage.messageContent.title;
+                            }
+                            this.loadMediaCompositeMessage(this.compositeMessage);
+                        }
+                    }, err => {
+                        console.error('load remote message error', err);
+                    })
+                }
+                if (!this.compositeMessage) {
+                    return;
+                }
+            } else {
+                let faveItemData = hash.substring(hash.indexOf('=') + 1);
+                let favItemRaw = JSON.parse((wfc.b64_to_utf8(wfc.unescape(faveItemData))));
+                let favItem = Object.assign(new FavItem(), favItemRaw);
+                favItem.conversation = new Conversation(favItem.convType, favItem.convTarget, favItem.convLine);
+                favItem.favType = favItem.type;
+                this.compositeMessage = favItem.toMessage();
+            }
         }
         if (this.compositeMessage) {
             store._patchMessage(this.compositeMessage, 0);
@@ -143,7 +151,7 @@ export default {
 
     methods: {
         hideCompositeMessagePage() {
-            this.$modal.hide('show-composite-message-modal' + '-' + stringValue(this.message.messageUid))
+            this.$modal.hide('show-composite-message-modal' + '-' + ( this.favItem ? this.favItem.id : stringValue(this.message.messageUid)))
         },
         loadMediaCompositeMessage(msg) {
             let content = msg.messageContent;
