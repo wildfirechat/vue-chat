@@ -51,6 +51,7 @@ import MixFileTextMessageContent from "./wfc/messages/mixFileTextMessageContent"
 import Long from "long";
 import StreamingTextGeneratedMessageContent from './wfc/messages/streamingTextGeneratedMessageContent'
 import StreamingTextGeneratingMessageContent from './wfc/messages/streamingTextGeneratingMessageContent'
+import StreamingTextCancelledMessageContent from './wfc/messages/streamingTextCancelledMessageContent'
 
 /**
  * 一些说明
@@ -258,6 +259,11 @@ let store = {
                 return;
             }
             this._handleStreamingTextMessage(msg);
+            // 取消消息（20）只是删除信号：按 streamId 移除正在生成的
+            // 14/15 消息后，取消消息本身不进入列表、不触发刷新
+            if (msg.messageContent instanceof StreamingTextCancelledMessageContent) {
+                return;
+            }
             if (this.state.misc.isMainWindow && !this.isConversationInCurrentWindow(msg.conversation)) {
                 return;
             }
@@ -2655,6 +2661,30 @@ let store = {
             this.state.conversation.streamingTextGeneratingMessages.set(this._conversationKey(msg.conversation), msg);
         } else if(msg.messageContent instanceof  StreamingTextGeneratedMessageContent){
             this.state.conversation.streamingTextGeneratingMessages.delete(this._conversationKey(msg.conversation));
+        } else if(msg.messageContent instanceof StreamingTextCancelledMessageContent) {
+            this.state.conversation.streamingTextGeneratingMessages.delete(this._conversationKey(msg.conversation));
+            this._removeStreamingMessage(msg);
+        }
+    },
+
+    /**
+     * 取消消息（20）：按 streamId 从当前会话消息列表删除对应的
+     * 正在生成(14)/已生成(15)消息，界面上的"生成中"气泡直接消失。
+     */
+    _removeStreamingMessage(msg) {
+        const current = this.state.conversation.currentConversationInfo;
+        if (!current || !msg.conversation.equal(current.conversation)) {
+            return;
+        }
+        const streamId = msg.messageContent.streamId;
+        const list = this.state.conversation.currentConversationMessageList;
+        const idx = list.findIndex(m =>
+            (m.messageContent.type === MessageContentType.Streaming_Text_Generating
+                || m.messageContent.type === MessageContentType.Streaming_Text_Generated)
+            && m.messageContent.streamId === streamId
+        );
+        if (idx > -1) {
+            list.splice(idx, 1);
         }
     },
 

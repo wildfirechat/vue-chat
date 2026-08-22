@@ -5,6 +5,8 @@
                                 v-bind:class="{leftarrow:message.direction === 1, rightarrow: message.direction === 0}"/>
         <StreamingTextMessageContentView :message="message"
                                          v-else-if="message.messageContent.type === 14 || message.messageContent.type === 15"/>
+        <!-- 取消消息（20）不渲染：实时场景已在 store 中删除对应 generating，历史残留也不显示 -->
+        <div v-else-if="message.messageContent.type === 20"></div>
         <AudioMessageContentView :message="message"
                                  v-else-if="message.messageContent.type === 2"/>
         <AudioMessageContentView :message="message"

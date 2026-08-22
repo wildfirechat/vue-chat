@@ -69,6 +69,7 @@ import LeaveChannelChatMessageContent from "../messages/leaveChannelChatMessageC
 import ModifyGroupSettingNotification from "../messages/notification/modifyGroupSettingNotification";
 import StreamingTextGeneratingMessageContent from "../messages/streamingTextGeneratingMessageContent";
 import StreamingTextGeneratedMessageContent from "../messages/streamingTextGeneratedMessageContent";
+import StreamingTextCancelledMessageContent from "../messages/streamingTextCancelledMessageContent";
 import MixMultiMediaTextMessageContent from "../messages/mixMultiMediaTextMessageContent";
 import MixFileTextMessageContent from "../messages/mixFileTextMessageContent";
 import GroupRejectJoinNotificationContent from "../messages/notification/groupRejectJoinNotificationContent";
@@ -382,6 +383,12 @@ export default class MessageConfig {
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.Streaming_Text_Generated,
             contentClazz: StreamingTextGeneratedMessageContent,
+        },
+        {
+            name: 'streamingTextCancelled',
+            flag: PersistFlag.Transparent,
+            type: MessageContentType.Streaming_Text_Cancelled,
+            contentClazz: StreamingTextCancelledMessageContent,
         },
         {
             name: 'callStartMessageContent',
