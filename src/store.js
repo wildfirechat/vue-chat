@@ -1013,28 +1013,41 @@ let store = {
         this.state.pick.messages.length = 0;
     },
 
-    forwardMessage(forwardType, targetConversations, messages, extraMessageText) {
+    async forwardMessage(forwardType, targetConversations, messages, extraMessageText) {
         // web 端，避免撤回消息等操作，影响组合消息
         if (!isElectron()) {
             messages = messages.map(m => Object.assign({}, m));
         }
-        targetConversations.forEach(conversation => {
+        for (const conversation of targetConversations) {
             // let msg =new Message(conversation, message.messageContent)
             // wfc.sendMessage(msg)
             // 或者下面这种
+            let ps = (conversation, message) => {
+                return new Promise((resolve, reject) => {
+                    wfc.sendConversationMessage(conversation, message, [], null, null, (messageUid, timestamp) => {
+                        // resolve(messageUid, timestamp);
+                        // ignore result
+                        resolve()
+                    }, err => {
+                        // reject(err);
+                        // ignore error
+                        resolve()
+                    });
+                })
+            }
             if (forwardType === ForwardType.NORMAL || forwardType === ForwardType.ONE_BY_ONE) {
-                messages.forEach(message => {
+                for (const message of messages) {
                     if (message.messageContent instanceof ArticlesMessageContent) {
                         let linkContents = message.messageContent.toLinkMessageContent();
-                        linkContents.forEach(lm => {
-                            wfc.sendConversationMessage(conversation, lm);
-                        })
+                        for (const lm of linkContents) {
+                            await ps(conversation, lm);
+                        }
 
                     } else {
                         message.messageContent = this._filterForwardMessageContent(message)
-                        wfc.sendConversationMessage(conversation, message.messageContent);
+                        await ps(conversation, message.messageContent);
                     }
-                });
+                }
             } else {
                 // 合并转发
                 let compositeMessageContent = new CompositeMessageContent();
@@ -1053,14 +1066,14 @@ let store = {
                 })
                 compositeMessageContent.setMessages(msgs);
 
-                wfc.sendConversationMessage(conversation, compositeMessageContent);
+                await ps(conversation, compositeMessageContent);
             }
 
             if (extraMessageText) {
                 let textMessage = new TextMessageContent(extraMessageText)
-                wfc.sendConversationMessage(conversation, textMessage);
+                await ps(conversation, textMessage);
             }
-        });
+        }
     },
 
     forwardByCreateConversation(forwardType, users, messages, extraMessageText) {
