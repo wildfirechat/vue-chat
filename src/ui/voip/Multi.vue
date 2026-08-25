@@ -70,10 +70,6 @@
                     <div class="action">
                         <img @click="answer" class="action-img" src='@/assets/images/av_video_answer.png'/>
                     </div>
-                    <div v-if="!audioOnly" class="action">
-                        <img @click="down2voice" class="action-img" src='@/assets/images/av_float_audio.png'/>
-                        <p>切换到语音聊天</p>
-                    </div>
                 </div>
                 <!--outgoing-->
                 <div v-if="status === 1 || status === 3" class="action-container">
@@ -417,10 +413,6 @@ export default {
             let toMute = this.session.videoMuted ? false : true;
             this.selfUserInfo._isVideoMuted = toMute;
             this.session.muteVideo(toMute)
-        },
-
-        down2voice() {
-            this.session.downgrade2Voice();
         },
 
         screenShare() {
