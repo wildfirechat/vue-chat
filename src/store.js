@@ -2079,7 +2079,7 @@ let store = {
     // TODO 到底是什么匹配了
     filterContact(query) {
         let result = this.state.contact.friendList.filter(u => {
-            return u._displayName.indexOf(query) > -1 || u._firstLetters.indexOf(query.toLowerCase()) > -1 || u._pinyin.indexOf(query.toLowerCase()) > -1
+            return u.displayName.indexOf(query) > -1 || u._displayName.indexOf(query) > -1 || u._firstLetters.indexOf(query.toLowerCase()) > -1 || u._pinyin.indexOf(query.toLowerCase()) > -1
         });
 
         console.log('friend searchResult', result)
@@ -2107,7 +2107,7 @@ let store = {
         }
         let queryPinyin = convertPinyinCached(filter).pinyin;
         let result = users.filter(u => {
-            return u._displayName.indexOf(filter) > -1 || u._displayName.indexOf(queryPinyin) > -1
+            return u.displayName.indexOf(filter) > -1 || u._displayName.indexOf(filter) > -1 || u._displayName.indexOf(queryPinyin) > -1
                 || u._pinyin.indexOf(filter) > -1 || u._pinyin.indexOf(queryPinyin) > -1
                 || u._firstLetters.indexOf(filter) > -1 || u._firstLetters.indexOf(queryPinyin) > -1
         });
