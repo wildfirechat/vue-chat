@@ -32,6 +32,9 @@
             </div>
 
             <!-- 操作按钮 -->
+            <div class="conversation-action-item" @click="openConversationSearch">
+                <i class="icon-ion-ios-search action-icon"></i>查找聊天记录
+            </div>
             <div v-if="sharedMiscState.isElectron" class="conversation-action-item" @click="clearConversationHistory">{{ $t('conversation.clear_conversation_history') }}</div>
             <div class="conversation-action-item" @click="clearRemoteConversationHistory">{{ $t('conversation.clear_remote_conversation_history') }}</div>
             <div class="conversation-action-item" @click="complain">{{ $t('conversation.complain') }}</div>
@@ -45,6 +48,7 @@ import ConversationInfo from "../../../wfc/model/conversationInfo";
 import store from "../../../store";
 import Config from "../../../config";
 import {showComplainAlert} from "./conversationComplainHelper";
+import {openInAppSubWindow} from "../../../ui/util/subWindowNavigator";
 
 export default {
     name: "SingleConversationInfoView",
@@ -70,6 +74,15 @@ export default {
     },
     components: {UserCardView},
     methods: {
+        openConversationSearch() {
+            const conv = this.conversationInfo.conversation;
+            openInAppSubWindow(this, '/conversation-search', {
+                type: conv.type,
+                target: conv.target,
+                line: conv.line,
+            });
+        },
+
         showCreateConversationModal() {
             let successCB = users => {
                 users.push(this.conversationInfo.conversation._target)

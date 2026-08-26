@@ -12,6 +12,8 @@ import Conference from "./ui/voip/conference/Conference";
 import CompositeMessagePage from "./ui/main/CompositeMessagePage";
 import MessageHistoryPage from "./ui/main/MessageHistoryPage";
 import ConversationMessageHistoryPage from "./ui/main/ConversationMessageHistoryPage";
+import ConversationMessageSearchPage from "./ui/main/search/ConversationMessageSearchPage";
+import MessageContextPage from "./ui/main/search/MessageContextPage";
 import ConversationFloatPage from "./ui/main/ConversationFloatPage";
 import ConferencePortalPage from "./ui/voip/conference/ConferencePortalPage";
 import MessagePage from "./ui/main/MessagePage.vue";
@@ -124,6 +126,16 @@ const routers = [
         name: 'conversation-window',
         path: '/conversation-window',
         component: ConversationFloatPage,
+    },
+    {
+        name: 'conversation-search',
+        path: '/conversation-search',
+        component: ConversationMessageSearchPage,
+    },
+    {
+        name: 'message-context',
+        path: '/message-context',
+        component: MessageContextPage,
     },
     {
         name: 'collection-create',

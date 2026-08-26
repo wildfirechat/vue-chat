@@ -104,6 +104,9 @@
             </section>
 
             <!-- 操作按钮 -->
+            <div class="conversation-action-item" @click="openConversationSearch">
+                <i class="icon-ion-ios-search action-icon"></i>查找聊天记录
+            </div>
             <div v-if="sharedMiscState.isElectron" @click="clearConversationHistory" class="conversation-action-item">
                 {{ $t('conversation.clear_conversation_history') }}
             </div>
@@ -137,6 +140,7 @@ import MessageContentMediaType from "../../../wfc/messages/messageContentMediaTy
 import MessageContentType from "../../../wfc/messages/messageContentType";
 import {isElectron} from "../../../platform";
 import {showComplainAlert} from "./conversationComplainHelper";
+import {openInAppSubWindow} from "../../../ui/util/subWindowNavigator";
 
 export default {
     name: "GroupConversationInfoView",
@@ -278,6 +282,15 @@ export default {
                     this.groupAlias = this.newGroupAlias;
                 }, null);
             }
+        },
+
+        openConversationSearch() {
+            const conv = this.conversationInfo.conversation;
+            openInAppSubWindow(this, '/conversation-search', {
+                type: conv.type,
+                target: conv.target,
+                line: conv.line,
+            });
         },
 
         quitGroup() {

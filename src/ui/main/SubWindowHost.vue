@@ -1,6 +1,6 @@
 <template>
-    <div v-if="visible" class="sub-window-mask">
-        <div class="sub-window-panel">
+    <div v-if="visible" class="sub-window-mask" :class="{centered: isCentered}">
+        <div class="sub-window-panel" :class="{centered: isCentered}">
             <div class="sub-window-close" @click="close">
                 <i class="icon-ion-close"></i>
             </div>
@@ -21,6 +21,8 @@ import PollList from "../poll/PollList.vue";
 import PollDetail from "../poll/PollDetail.vue";
 import CollectionCreate from "../collection/CollectionCreate.vue";
 import CollectionDetail from "../collection/CollectionDetail.vue";
+import ConversationMessageSearchPage from "./search/ConversationMessageSearchPage.vue";
+import MessageContextPage from "./search/MessageContextPage.vue";
 
 export default {
     name: "SubWindowHost",
@@ -35,12 +37,19 @@ export default {
                 '/poll/detail': PollDetail,
                 '/collection/create': CollectionCreate,
                 '/collection/detail': CollectionDetail,
-            }
+                '/conversation-search': ConversationMessageSearchPage,
+                '/message-context': MessageContextPage,
+            },
+            // 居中弹窗展示的路由（会话内搜索/消息上下文：屏幕中央弹窗，而非右侧滑出）
+            centeredRoutes: ['/conversation-search', '/message-context'],
         };
     },
     computed: {
         activeEntry() {
             return this.stack.length > 0 ? this.stack[this.stack.length - 1] : null;
+        },
+        isCentered() {
+            return this.activeEntry && this.centeredRoutes.includes(this.activeEntry.route);
         }
     },
     methods: {
@@ -136,12 +145,27 @@ export default {
     justify-content: flex-end;
 }
 
+/* 居中模式：屏幕中央弹窗 */
+.sub-window-mask.centered {
+    justify-content: center;
+    align-items: center;
+}
+
 .sub-window-panel {
     width: min(480px, 100vw);
     height: 100%;
     background: var(--background-tertiary);
     position: relative;
     box-shadow: -2px 0 12px var(--background-mask);
+}
+
+/* 居中模式：屏幕中央弹窗 */
+.sub-window-panel.centered {
+    width: min(920px, 90vw);
+    height: min(720px, 88vh);
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 8px 40px var(--background-mask, rgba(0, 0, 0, 0.35));
+    overflow: hidden;
 }
 
 .sub-window-close {

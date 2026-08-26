@@ -23,6 +23,7 @@ import TextMessageContent from "./wfc/messages/textMessageContent";
 import {currentWindow, ipcRenderer, isElectron} from "./platform";
 import SearchType from "./wfc/model/searchType";
 import Config from "./config";
+import searchServerApi from "./api/searchServerApi";
 import {getItem, setItem} from "./ui/util/storageHelper";
 import watermark from "./ui/util/waterMark";
 import CompositeMessageContent from "./wfc/messages/compositeMessageContent";
@@ -2043,6 +2044,72 @@ let store = {
 
     setSearchDomainInfo(domainInfo) {
         this.state.search.searchDomainInfo = domainInfo;
+    },
+
+    // ==================== 会话内服务器搜索（wf-search-server） ====================
+
+    resetConversationSearch() {
+        this.state.search.conversationSearch._reset();
+    },
+
+    /**
+     * 会话内消息搜索（服务器搜索服务）。
+     * cursor 为空视为新搜索（重置结果），非空为翻页（追加）。
+     *
+     * @param {Object} conversation {type, target, line}
+     * @param {Object} options {keyword, contentTypes, fromUser, startTime, endTime, cursor}
+     * @returns {Promise<Object>} 服务端返回 data
+     */
+    async searchConversationMessages(conversation, options = {}) {
+        const cs = this.state.search.conversationSearch;
+        if (!options.cursor) {
+            cs.conversation = conversation;
+            cs.query = options.keyword || '';
+            cs.contentTypes = options.contentTypes || [];
+            cs.fromUser = options.fromUser || null;
+            cs.startTime = options.startTime || null;
+            cs.endTime = options.endTime || null;
+            cs.items = [];
+            cs.cursor = null;
+            cs.hasMore = false;
+            cs.truncated = false;
+            cs.total = 0;
+        }
+        cs.loading = true;
+        cs.error = null;
+        try {
+            const data = await searchServerApi.searchConversationMessages(conversation, {
+                keyword: options.keyword || '',
+                contentTypes: options.contentTypes || [],
+                fromUser: options.fromUser || null,
+                startTime: options.startTime || null,
+                endTime: options.endTime || null,
+                cursor: options.cursor || null,
+                size: options.size || 20,
+            });
+            cs.items = options.cursor ? cs.items.concat(data.items || []) : (data.items || []);
+            cs.total = data.total || 0;
+            cs.cursor = data.nextCursor || null;
+            cs.hasMore = !!data.hasMore;
+            cs.truncated = !!data.truncated;
+            return data;
+        } catch (e) {
+            cs.error = (e && e.message) ? e.message : '搜索失败';
+            throw e;
+        } finally {
+            cs.loading = false;
+        }
+    },
+
+    /**
+     * 消息上下文（服务器搜索服务）：锚点 ±N 条 + 上一处/下一处命中
+     * @param {Object} conversation {type, target, line}
+     * @param {number} anchorMid 锚点消息 mid
+     * @param {Object} options {beforeCount, afterCount, keyword, contentTypes, fromUser, startTime, endTime}
+     * @returns {Promise<Object>}
+     */
+    searchConversationMessageContext(conversation, anchorMid, options = {}) {
+        return searchServerApi.getMessageContext(conversation, anchorMid, options);
     },
 
     searchUser(query, domainId = '') {

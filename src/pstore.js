@@ -139,6 +139,42 @@ export const pstore = (id) => defineStore(id, () => {
         messageSearchResult: [],
         searchDomainInfo: null,
 
+        // 会话内服务器搜索（wf-search-server）
+        conversationSearch: {
+            // 当前会话
+            conversation: null,
+            // 搜索条件
+            query: '',
+            contentTypes: [],
+            fromUser: null,
+            startTime: null,
+            endTime: null,
+            // 结果
+            items: [],
+            total: 0,
+            cursor: null,
+            hasMore: false,
+            truncated: false,
+            loading: false,
+            error: null,
+
+            _reset() {
+                this.conversation = null;
+                this.query = '';
+                this.contentTypes = [];
+                this.fromUser = null;
+                this.startTime = null;
+                this.endTime = null;
+                this.items = [];
+                this.total = 0;
+                this.cursor = null;
+                this.hasMore = false;
+                this.truncated = false;
+                this.loading = false;
+                this.error = null;
+            }
+        },
+
         _reset() {
             this.query = null
             this.userSearchResult = [];
@@ -148,6 +184,7 @@ export const pstore = (id) => defineStore(id, () => {
             this.conversationSearchResult = [];
             this.messageSearchResult = []
             this.searchDomainInfo = null;
+            this.conversationSearch._reset();
         }
     })
 
