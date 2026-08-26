@@ -845,9 +845,9 @@ export default {
                 return;
             }
 
-            this.$refs.input.focus();
             this.insertHTML(emojiParse(emoji.data));
             this.focusInput();
+            this.updateInputState();
         },
 
         createElementFromHTML(htmlString) {
@@ -1395,6 +1395,7 @@ export default {
             this.restoreDraft();
             this.initMention(this.conversationInfo.conversation)
             this.focusInput();
+            this.updateInputState();
             this.initEmojiPicker()
         },
 
