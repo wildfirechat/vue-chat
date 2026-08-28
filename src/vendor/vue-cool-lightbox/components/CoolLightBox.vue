@@ -1725,6 +1725,12 @@ export default {
     // getYoutube ID
     getYoutubeID(url) {
 
+      // 传入的 item 没有 src 时（items 为空或数据异常），url 为 undefined，
+      // 直接 match 会抛错并把整个页面带崩，这里兜底返回 false
+      if (!url || typeof url !== 'string') {
+        return false
+      }
+
       // youtube data
       const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/
       const ytId = (url.match(youtubeRegex)) ? RegExp.$1 : false
@@ -1758,6 +1764,9 @@ export default {
 
     // vimeo ID
     getVimeoID(url) {
+      if (!url || typeof url !== 'string') {
+        return false
+      }
 
       // if is vimeo video
       const result = url.match(/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i)
@@ -1770,6 +1779,9 @@ export default {
 
     // get vimeo url
     getVimeoUrl(url) {
+      if (!url || typeof url !== 'string') {
+        return false
+      }
 
       // if is vimeo video
       const result = url.match(/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i)

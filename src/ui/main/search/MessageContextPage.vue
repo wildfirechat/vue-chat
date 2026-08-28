@@ -35,7 +35,7 @@
             <ul v-else-if="messages.length > 0" class="message-list">
                 <!-- 顶部哨兵：向上滚动到最早附近 → 加载更早消息（插入顶部） -->
                 <li ref="sentinelTop" class="sentinel"></li>
-                <li v-if="loadingEarlier" class="scroll-loading">加载更早消息…</li>
+                <li v-if="loadingEarlier" class="scroll-loading"><span class="mini-spinner"></span>加载更早消息…</li>
                 <li v-if="!hasEarlier && !loadingEarlier" class="scroll-end">已到最早的消息</li>
                 <!-- 按 messageId 去重渲染（服务端上下文可能包含重复消息） -->
                 <li v-for="msg in displayMessages" :id="'msg-' + msg.messageId" :key="msg.messageId"
@@ -58,7 +58,8 @@
                             <NotificationMessageContentView v-else :message="messageOf(msg)"/>
                         </div>
                         <!-- 完整消息渲染：OutputMessageData → 本地 Message → MessageContentContainerView -->
-                        <div v-else-if="messageOf(msg)" class="msg-content">
+                        <div v-else-if="messageOf(msg)" class="msg-content"
+                             :class="{'no-interaction': isNonInteractive(messageOf(msg))}">
                             <MessageContentContainerView :message="messageOf(msg)"/>
                         </div>
                         <!-- 兜底：payload 不可用时的摘要展示；digest 为空（如撤回消息）显示占位 -->
@@ -66,7 +67,7 @@
                     </div>
                 </li>
                 <!-- 底部哨兵：向下滚动到最晚附近 → 加载更晚消息（追加底部） -->
-                <li v-if="loadingLater" class="scroll-loading">加载更晚消息…</li>
+                <li v-if="loadingLater" class="scroll-loading"><span class="mini-spinner"></span>加载更晚消息…</li>
                 <li v-if="!hasLater && !loadingLater" class="scroll-end">已到最新的消息</li>
                 <li ref="sentinelBottom" class="sentinel"></li>
             </ul>
@@ -89,9 +90,6 @@
             <li v-if="message && isFavable(message)">
                 <a @click.prevent="favMessage(message)">收藏</a>
             </li>
-            <li v-if="message && isQuotable(message)">
-                <a @click.prevent="quoteMessage(message)">引用</a>
-            </li>
         </vue-context>
     </section>
 </template>
@@ -102,7 +100,7 @@ import wfc from "../../../wfc/client/wfc";
 import Config from "../../../config";
 import ConversationType from "../../../wfc/model/conversationType";
 import {renderSearchDigest} from "../../util/searchKeywordHighlight";
-import {openInAppSubWindow, backInAppSubWindowOrRouter, getSubWindowQuery} from "../../util/subWindowNavigator";
+import {backInAppSubWindowOrRouter, getSubWindowQuery} from "../../util/subWindowNavigator";
 import {messagesFromOutputMessageData} from "../../util/outputMessageData";
 import MessageContentContainerView from "../conversation/message/MessageContentContainerView";
 import NotificationMessageContentView from "../conversation/message/NotificationMessageContentView.vue";
@@ -130,6 +128,13 @@ import ForwardType from "../conversation/message/forward/ForwardType";
 
 // 连续多少轮「拉到消息却一条都渲染不出来」后停止该方向的自动加载（分页死循环保护）
 const MAX_EMPTY_ROUNDS = 3;
+
+// 本页面只用于查看历史消息，这些消息的点击会真的发起通话/加入会议，在上下文里点到都是误触，
+// 故屏蔽其内容区的交互（右键菜单挂在外层 li 上，不受影响）
+const NON_INTERACTIVE_CONTENT_TYPES = [
+    MessageContentType.VOIP_CONTENT_TYPE_START,
+    MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE,
+];
 
 export default {
     name: "MessageContextPage",
@@ -266,6 +271,14 @@ export default {
             return flag === PersistFlag.No_Persist || flag === PersistFlag.Transparent;
         },
 
+        /** 通话、会议邀请等消息：屏蔽点击等交互，见 NON_INTERACTIVE_CONTENT_TYPES */
+        isNonInteractive(message) {
+            if (!message || !message.messageContent) {
+                return false;
+            }
+            return NON_INTERACTIVE_CONTENT_TYPES.indexOf(message.messageContent.type) > -1;
+        },
+
         /**
          * 64 位消息 ID 比较（JS Number 无法精确表示，用 Long 库；mid 均为正数）
          * @returns {number} -1/0/1
@@ -315,19 +328,6 @@ export default {
                 MessageContentType.Collection].indexOf(message.messageContent.type) <= -1;
         },
 
-        isQuotable(message) {
-            if (!message || !message.messageContent) {
-                return false;
-            }
-            return [MessageContentType.VOIP_CONTENT_TYPE_START,
-                MessageContentType.Voice,
-                MessageContentType.Video,
-                MessageContentType.Composite_Message,
-                MessageContentType.Articles,
-                MessageContentType.Collection,
-                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) === -1;
-        },
-
         copyMessage(message) {
             const content = message.messageContent;
             if (content instanceof TextMessageContent) {
@@ -364,16 +364,6 @@ export default {
                     console.log('fav error', err);
                     this.$notify({text: '收藏失败', type: 'error'});
                 });
-        },
-
-        quoteMessage(message) {
-            // 引用：设为会话引用消息并进入会话（MessageInputView 显示引用待发送）
-            store.quoteMessage(message);
-            openInAppSubWindow(this, '/conversation-window', {
-                type: this.conversation.type,
-                target: this.conversation.target,
-                line: this.conversation.line,
-            });
         },
 
         loadConversationName() {
@@ -909,10 +899,24 @@ export default {
 }
 
 .scroll-loading {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     color: var(--text-secondary-weak);
     font-size: var(--font-size-xs);
     padding: 8px 0;
+}
+
+/* 加载更早/更晚消息时的转圈动画 */
+.mini-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--border-primary);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: spin 0.8s linear infinite;
 }
 
 .scroll-end {
@@ -983,6 +987,11 @@ export default {
     border: 1px solid currentColor;
     border-radius: var(--radius-xs);
     padding: 0 4px;
+}
+
+/* 通话、会议邀请等消息：屏蔽内容区的点击 */
+.msg-content.no-interaction {
+    pointer-events: none;
 }
 
 .msg-digest {

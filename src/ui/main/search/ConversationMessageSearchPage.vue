@@ -160,7 +160,7 @@
                         </li>
                     </ul>
                 </div>
-                <div v-if="cs.loading" class="load-more">加载中…</div>
+                <div v-if="cs.loading" class="load-more"><span class="mini-spinner"></span>加载中…</div>
                 <div v-else-if="!cs.hasMore" class="no-more">没有更多了</div>
             </template>
         </div>
@@ -1239,5 +1239,29 @@ export default {
     color: var(--text-secondary-weak);
     font-size: var(--font-size-sm);
     padding: 12px 0;
+}
+
+/* 翻页加载中的转圈动画 */
+.load-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.mini-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--border-primary);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

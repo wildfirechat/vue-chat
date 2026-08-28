@@ -89,6 +89,27 @@ function convertPinyinCached(name) {
 // 用序号丢弃过期响应，避免先发后到的旧结果覆盖新结果
 let conversationSearchSeq = 0;
 
+/**
+ * 判断是否为同一条消息。
+ * 优先比较 messageUid（服务端唯一 id，本地库消息与远程消息都有），
+ * 其次比较 messageId（本地库自增 id，远程消息没有，故不能只比它）。
+ * @param a {Message}
+ * @param b {Message}
+ * @return {boolean}
+ */
+function isSameMessage(a, b) {
+    if (!a || !b) {
+        return false;
+    }
+    if (a === b) {
+        return true;
+    }
+    if (a.messageUid && b.messageUid && eq(a.messageUid, b.messageUid)) {
+        return true;
+    }
+    return !!(a.messageId && b.messageId && String(a.messageId) === String(b.messageId));
+}
+
 let store = {
     debug: true,
     state: {
@@ -1127,47 +1148,60 @@ let store = {
     },
 
     /**
+     * 媒体消息 → lightbox 预览项
+     * @param message
+     * @return {{src: String, thumb: String, autoplay: Boolean}}
+     */
+    _previewMediaItemOf(message) {
+        let content = message.messageContent;
+        let thumb = content.thumbnail ? 'data:image/png;base64,' + content.thumbnail : '';
+        let mediaUrl = content.remotePath;
+        if (!mediaUrl && content.file) {
+            mediaUrl = URL.createObjectURL(content.file)
+        }
+        return {
+            // src 为空时 lightbox 内部取不到 url，会直接抛错（getYoutubeID(undefined)），
+            // 故兜底用缩略图，保证至少能展示
+            src: mediaUrl ? mediaUrl : thumb,
+            thumb: thumb,
+            autoplay: true,
+        };
+    },
+
+    /**
      *
      * @param message
      * @param {Boolean} continuous  true，预览周围的媒体消息；false，只预览第一个参数传入的那条媒体消息
      */
     previewMessage(message, continuous) {
-        this.state.conversation.previewMediaItems.length = 0;
-        this.state.conversation.previewMediaIndex = 0;
+        let items = [];
+        let index = 0;
         if (continuous && this.state.conversation.currentConversationMessageList.length > 0) {
             let mediaMsgs = this.state.conversation.currentConversationMessageList.filter(m => [MessageContentType.Image, MessageContentType.Video].indexOf(m.messageContent.type) > -1)
-            let msg;
+            let target = -1;
             for (let i = 0; i < mediaMsgs.length; i++) {
-                msg = mediaMsgs[i];
-                if (msg.messageId === message.messageId) {
-                    this.state.conversation.previewMediaIndex = i;
+                let msg = mediaMsgs[i];
+                if (isSameMessage(msg, message)) {
+                    target = i;
                 }
-                let mediaUrl = msg.messageContent.remotePath;
-                if (!mediaUrl) {
-                    if (msg.messageContent.file) {
-                        mediaUrl = URL.createObjectURL(msg.messageContent.file)
-                    }
-                }
-                this.state.conversation.previewMediaItems.push({
-                    src: mediaUrl,
-                    thumb: 'data:image/png;base64,' + msg.messageContent.thumbnail,
-                    autoplay: true,
-                });
+                items.push(this._previewMediaItemOf(msg));
             }
-        } else {
-            this.state.conversation.previewMediaIndex = 0;
-            let mediaUrl = message.messageContent.remotePath;
-            if (!mediaUrl) {
-                if (message.messageContent.file) {
-                    mediaUrl = URL.createObjectURL(message.messageContent.file)
-                }
+            // 待预览的消息不在当前会话消息列表里（比如从消息搜索、消息上下文页面点开的消息），
+            // 此时连续预览的列表与它无关：轻则预览到别的媒体消息，重则列表为空
+            // （当前会话没有媒体消息）导致 lightbox 取 src 报错，故回退成只预览这一条
+            if (target < 0) {
+                items = [];
+            } else {
+                index = target;
             }
-            this.state.conversation.previewMediaItems.push({
-                src: mediaUrl,
-                thumb: 'data:image/png;base64,' + message.messageContent.thumbnail,
-                autoplay: true,
-            });
         }
+        if (items.length === 0) {
+            index = 0;
+            items.push(this._previewMediaItemOf(message));
+        }
+        this.state.conversation.previewMediaItems.length = 0;
+        this.state.conversation.previewMediaItems.push(...items);
+        this.state.conversation.previewMediaIndex = index;
     },
 
     previewCompositeMessage(compositeMessage, focusMessageUid) {
