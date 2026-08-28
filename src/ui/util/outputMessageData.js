@@ -4,6 +4,8 @@ import wfc from "../../wfc/client/wfc";
 import MessageStatus from "../../wfc/messages/messageStatus";
 import UnsupportMessageContent from "../../wfc/messages/unsupportMessageConten";
 import UnknownMessageContent from "../../wfc/messages/unknownMessageContent";
+import MessageConfig from "../../wfc/client/messageConfig";
+import PersistFlag from "../../wfc/messages/persistFlag";
 
 /**
  * OutputMessageData → 本地 Message 转换工具。
@@ -15,6 +17,7 @@ import UnknownMessageContent from "../../wfc/messages/unknownMessageContent";
  * - 使用 SDK 标准转换 Message.messageContentFromMessagePayload（与正常消息接收路径一致，
  *   支持 MessageConfig 注册类型 + CustomMessageConfig 自定义类型）；
  * - 二进制内容预处理：payload.base64edData → binaryContent（图片/文件等 decode 读取 binaryContent）；
+ * - 透传/不存储类型（按 MessageConfig 注册表判断，非 payload.persistFlag）不渲染；
  * - 转换失败 / 类型未注册 / 解码为"不支持/未知"类型时返回 null，
  *   由调用方 fallback 到 digest 简式展示（digest 来自 _searchable_key，包含实际内容，
  *   避免显示"不支持/未知类型"占位文案）。
@@ -33,8 +36,12 @@ export function messageFromOutputMessageData(outputMessageData) {
         const item = outputMessageData;
         const payload = item.payload;
 
-        // persistFlag=0：不存储的消息（Typing/未知类型等），直接过滤不显示
-        if (payload.persistFlag === 0) {
+        // 透传/不存储类型（如 Typing）不参与渲染。
+        // 注意：不能用 payload.persistFlag 判断——该字段由发送方编码进消息体，
+        // 服务端 API/机器人发送的消息常常不带（解析出来恒为 0），但消息确实已入库，
+        // 据此过滤会把整屏消息过滤光。按本地消息类型注册表判断，未注册类型（-1）保留。
+        const persistFlag = MessageConfig.getMessageContentPersitFlag(payload.type);
+        if (persistFlag === PersistFlag.No_Persist || persistFlag === PersistFlag.Transparent) {
             return null;
         }
 

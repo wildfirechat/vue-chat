@@ -119,12 +119,17 @@ import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 import FileMessageContent from "../../../wfc/messages/fileMessageContent";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import MessageContentType from "../../../wfc/messages/messageContentType";
+import MessageConfig from "../../../wfc/client/messageConfig";
+import PersistFlag from "../../../wfc/messages/persistFlag";
 import CollectionMessageContent from "../../../wfc/messages/collectionMessageContent";
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 import {copyText, copyImg} from "../../util/clipboard";
 import {downloadFile} from "../../../platformHelper";
 import appServerApi from "../../../api/appServerApi";
 import ForwardType from "../conversation/message/forward/ForwardType";
+
+// 连续多少轮「拉到消息却一条都渲染不出来」后停止该方向的自动加载（分页死循环保护）
+const MAX_EMPTY_ROUNDS = 3;
 
 export default {
     name: "MessageContextPage",
@@ -165,6 +170,10 @@ export default {
             loadingLater: false,
             hasEarlier: true,
             hasLater: true,
+            // 连续「拉到消息但一条都渲染不出来」的轮次：达到上限即停止该方向，
+            // 避免列表填不满视口时哨兵无限触发分页、把 context 接口打爆
+            emptyEarlierRounds: 0,
+            emptyLaterRounds: 0,
             userInfoMap: {},
             // messageId → 本地 Message（转换结果缓存）
             messageMap: new Map(),
@@ -181,7 +190,7 @@ export default {
         /**
          * 去重后的消息列表（按 messageId，保留首次出现）：
          * 服务端上下文/滚动加载可能返回重复 mid（边界消息、多表归并等）。
-         * 同时过滤 persistFlag=0 的消息（不存储的消息，如 Unknown 类型，不应显示）。
+         * 同时过滤透传/不存储类型的消息（按本地消息类型注册表判断，见 shouldHideMessage）。
          */
         displayMessages() {
             const seen = new Set();
@@ -191,7 +200,7 @@ export default {
                     continue;
                 }
                 seen.add(msg.messageId);
-                // persistFlag=0：不存储的消息，过滤不显示
+                // 透传/不存储类型（如 Typing），过滤不显示
                 if (this.shouldHideMessage(msg)) {
                     continue;
                 }
@@ -236,9 +245,25 @@ export default {
     },
 
     methods: {
-        /** persistFlag=0 的消息（不存储，如 Typing/未知类型）不显示 */
+        /**
+         * 透传/不存储类型的消息（如 Typing）不显示。
+         *
+         * 注意：<b>不能用 payload.persistFlag 判断</b>。该字段由发送方编码进消息体，
+         * 服务端 API / 机器人 / 部分 SDK 发送的消息并不带该字段（解析出来恒为 0），
+         * 但消息本身确实已入库（能被搜索到即已存储）。早期按 persistFlag === 0 过滤，
+         * 会把这类会话的上下文消息<b>整屏过滤光</b>：页面只剩"加载更早消息…/已到最新的消息"，
+         * 且因为列表始终填不满视口，哨兵会不停触发分页，表现为不停请求 context 接口。
+         *
+         * 这里改为按本地消息类型注册表（MessageConfig）判断，与会话界面语义一致；
+         * 未注册类型（-1）保留，回退 digest 简式展示。
+         */
         shouldHideMessage(msg) {
-            return !!(msg && msg.payload && msg.payload.persistFlag === 0);
+            const type = msg && msg.payload ? msg.payload.type : undefined;
+            if (type === undefined || type === null) {
+                return false;
+            }
+            const flag = MessageConfig.getMessageContentPersitFlag(type);
+            return flag === PersistFlag.No_Persist || flag === PersistFlag.Transparent;
         },
 
         /**
@@ -393,6 +418,12 @@ export default {
                 this.hasLater = true;
                 // OutputMessageData → 本地 Message（完整消息渲染）
                 this.messageMap = messagesFromOutputMessageData(this.messages);
+                this.emptyEarlierRounds = 0;
+                this.emptyLaterRounds = 0;
+                if (this.messages.length > 0 && this.displayMessages.length === 0) {
+                    console.warn('[Ctx] 服务端返回', this.messages.length, '条消息，但全部被过滤，页面无内容可显示，'
+                        + '首条 payload=', this.messages[0] && this.messages[0].payload);
+                }
                 console.log('[Ctx] loadContext anchor=', this.anchorMid,
                     '| messages=', this.messages.length,
                     '| first=', this.messages[0] && this.messages[0].messageId,
@@ -541,10 +572,12 @@ export default {
                     return;
                 }
                 // 更早消息插入顶部（在现有最早之前），滚动位置保持
+                const visibleBefore = this.displayMessages.length;
                 this.messages = toAdd.concat(this.messages);
                 this.mergeMessageMap(toAdd);
                 // 只要还有返回，就继续可加载（边界由服务端空返回决定）
                 this.hasEarlier = true;
+                this.checkVisibleGrowth('earlier', visibleBefore, toAdd);
                 console.log('[Ctx] loadEarlier done: toAdd=', toAdd.length, '| total=', this.messages.length, '| hasEarlier=', this.hasEarlier);
                 this.$nextTick(() => {
                     const sc = this.$refs.scrollContainer;
@@ -593,10 +626,12 @@ export default {
                     this.hasLater = false;
                     return;
                 }
+                const visibleBefore = this.displayMessages.length;
                 this.messages = this.messages.concat(toAdd);
                 this.mergeMessageMap(toAdd);
                 // 只要还有返回，就继续可加载（边界由服务端空返回决定）
                 this.hasLater = true;
+                this.checkVisibleGrowth('later', visibleBefore, toAdd);
                 console.log('[Ctx] loadLater done: toAdd=', toAdd.length, '| total=', this.messages.length, '| hasLater=', this.hasLater);
             }).catch(e => {
                 console.error('load later failed', e);
@@ -605,6 +640,36 @@ export default {
                 this.loadingLater = false;
                 this.$nextTick(() => this.continueIfSentinelVisible());
             });
+        },
+
+        /**
+         * 分页保护：本轮拉到了消息，但一条都没能渲染出来（全被 shouldHideMessage 过滤）时计数；
+         * 连续 MAX_EMPTY_ROUNDS 轮如此就停止该方向的自动加载。
+         *
+         * 列表填不满视口时哨兵会一直可见 → continueIfSentinelVisible 无限触发分页，
+         * 没有这个保护就会不停请求 context 接口（曾经的现象：页面空白 + 接口刷屏）。
+         */
+        checkVisibleGrowth(direction, visibleBefore, toAdd) {
+            const grew = this.displayMessages.length > visibleBefore;
+            if (grew) {
+                if (direction === 'earlier') {
+                    this.emptyEarlierRounds = 0;
+                } else {
+                    this.emptyLaterRounds = 0;
+                }
+                return;
+            }
+            const rounds = direction === 'earlier' ? ++this.emptyEarlierRounds : ++this.emptyLaterRounds;
+            console.warn('[Ctx]', direction, '本轮新增', toAdd.length, '条消息但均不可显示（连续', rounds, '轮），'
+                + '首条 payload=', toAdd[0] && toAdd[0].payload);
+            if (rounds >= MAX_EMPTY_ROUNDS) {
+                console.warn('[Ctx]', direction, '连续', rounds, '轮无可显示消息，停止该方向自动加载');
+                if (direction === 'earlier') {
+                    this.hasEarlier = false;
+                } else {
+                    this.hasLater = false;
+                }
+            }
         },
 
         /**
