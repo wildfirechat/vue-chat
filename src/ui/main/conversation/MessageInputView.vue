@@ -47,7 +47,7 @@
                             </span>
                         </div>
                     </li>
-                    <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
+                    <li v-if="!inputOptions['disableHistory'] && enableMessageHistory">
                         <div class="i-button-wrapper i-button-small" @click="showMessageHistory">
                             <i id="messageHistory" class="icon-ion-android-chat" :title="$t('conversation.action_tip_history')"/>
                         </div>
@@ -236,6 +236,7 @@ import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import avenginekit from "../../../wfc/av/internal/engine.min";
 import { buildCollectionUrl, buildPollUrl } from '../../../platformHelper'
 import { openInAppSubWindow } from '../../util/subWindowNavigator'
+import searchServerApi from "../../../api/searchServerApi";
 
 export default {
     name: "MessageInputView",
@@ -813,6 +814,16 @@ export default {
             ipcRenderer.send(IpcEventType.START_SCREEN_SHOT, {});
         },
         showMessageHistory() {
+            // web 端：打开会话内服务器搜索页（子窗口）
+            if (!isElectron()) {
+                let conversation = this.conversationInfo.conversation;
+                openInAppSubWindow(this, '/conversation-search', {
+                    type: conversation.type,
+                    target: conversation.target,
+                    line: conversation.line,
+                });
+                return;
+            }
             let hash = window.location.hash;
             let url = window.location.origin;
             if (hash) {
@@ -1549,6 +1560,20 @@ export default {
 
         showSendButton() {
             return this.sharedMiscState.showSendButton;
+        },
+
+        /**
+         * 聊天记录入口是否可用。
+         * electron：本地历史记录窗口，始终可用；
+         * web：走服务器搜索（wf-search-server），需服务已配置，且仅支持单聊/群聊。
+         */
+        enableMessageHistory() {
+            if (this.sharedMiscState.isElectron) {
+                return true;
+            }
+            let type = this.conversationInfo.conversation.type;
+            return searchServerApi.isServiceAvailable
+                && (type === ConversationType.Single || type === ConversationType.Group);
         }
     },
 

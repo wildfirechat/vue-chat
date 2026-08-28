@@ -4,11 +4,18 @@
             <div class="sub-window-close" @click="close">
                 <i class="icon-ion-close"></i>
             </div>
+            <!--
+                渲染整个栈，非栈顶用 v-show 隐藏而不是卸载：
+                压栈打开子页（会话内搜索 → 消息上下文、发起投票 → 投票列表 → 投票详情）时，
+                下层页面保持挂载，返回时关键词/筛选/结果等组件内状态天然保留，无需外部持久化。
+                栈被 open()/close() 重建时，出栈页面照常卸载并执行各自的清理。
+            -->
             <component
-                v-if="activeEntry"
-                :is="activeEntry.component"
-                :key="activeEntry.id"
-                :sub-window-query="activeEntry.query"
+                v-for="entry in stack"
+                v-show="entry.id === activeEntryId"
+                :is="entry.component"
+                :key="entry.id"
+                :sub-window-query="entry.query"
             />
         </div>
     </div>
@@ -47,6 +54,9 @@ export default {
     computed: {
         activeEntry() {
             return this.stack.length > 0 ? this.stack[this.stack.length - 1] : null;
+        },
+        activeEntryId() {
+            return this.activeEntry ? this.activeEntry.id : null;
         },
         isCentered() {
             return this.activeEntry && this.centeredRoutes.includes(this.activeEntry.route);

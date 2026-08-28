@@ -150,6 +150,11 @@ export default {
             conversationName: '',
             anchorMid: 0,
             keyword: '',
+            // 搜索页透传的筛选条件（命中标记 / 上一处 / 下一处）
+            contentTypes: [],
+            fromUser: null,
+            startTime: null,
+            endTime: null,
             context: null,
             // 当前消息列表（时间升序：最早在上，最晚在下），支持上下滚动分页扩展
             messages: [],
@@ -211,6 +216,14 @@ export default {
         this.conversation = {type, target, line};
         this.anchorMid = anchorMid;
         this.keyword = query.keyword || '';
+        // 搜索页带过来的筛选条件：用于命中标记与上一处/下一处（不影响上下文消息流本身）
+        this.contentTypes = String(query.contentTypes || '')
+            .split(',')
+            .map(v => Number(v))
+            .filter(v => !isNaN(v) && v > 0);
+        this.fromUser = query.fromUser || null;
+        this.startTime = query.startTime ? Number(query.startTime) : null;
+        this.endTime = query.endTime ? Number(query.endTime) : null;
         this.loadConversationName();
         this.loadContext();
     },
@@ -358,6 +371,10 @@ export default {
             this.error = null;
             store.searchConversationMessageContext(this.conversation, this.anchorMid, {
                 keyword: this.keyword,
+                contentTypes: this.contentTypes,
+                fromUser: this.fromUser,
+                startTime: this.startTime,
+                endTime: this.endTime,
                 beforeCount: 20,
                 afterCount: 10,
             }).then(data => {

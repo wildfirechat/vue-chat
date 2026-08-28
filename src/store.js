@@ -85,6 +85,10 @@ function convertPinyinCached(name) {
     }
     return entry;
 }
+// 会话内服务器搜索的请求序号：输入抖动/筛选切换会并发多次请求，
+// 用序号丢弃过期响应，避免先发后到的旧结果覆盖新结果
+let conversationSearchSeq = 0;
+
 let store = {
     debug: true,
     state: {
@@ -2056,15 +2060,18 @@ let store = {
      * 会话内消息搜索（服务器搜索服务）。
      * cursor 为空视为新搜索（重置结果），非空为翻页（追加）。
      *
+     * keyword 可为空串：服务端语义为"仅按筛选（类型/发送人/时间）浏览"。
+     *
      * @param {Object} conversation {type, target, line}
      * @param {Object} options {keyword, contentTypes, fromUser, startTime, endTime, cursor}
      * @returns {Promise<Object>} 服务端返回 data
      */
     async searchConversationMessages(conversation, options = {}) {
         const cs = this.state.search.conversationSearch;
+        const keyword = (options.keyword || '').trim();
         if (!options.cursor) {
             cs.conversation = conversation;
-            cs.query = options.keyword || '';
+            cs.query = keyword;
             cs.contentTypes = options.contentTypes || [];
             cs.fromUser = options.fromUser || null;
             cs.startTime = options.startTime || null;
@@ -2075,11 +2082,12 @@ let store = {
             cs.truncated = false;
             cs.total = 0;
         }
+        const seq = ++conversationSearchSeq;
         cs.loading = true;
         cs.error = null;
         try {
             const data = await searchServerApi.searchConversationMessages(conversation, {
-                keyword: options.keyword || '',
+                keyword,
                 contentTypes: options.contentTypes || [],
                 fromUser: options.fromUser || null,
                 startTime: options.startTime || null,
@@ -2087,6 +2095,10 @@ let store = {
                 cursor: options.cursor || null,
                 size: options.size || 20,
             });
+            // 已有更新的请求发出，丢弃这次过期响应
+            if (seq !== conversationSearchSeq) {
+                return data;
+            }
             cs.items = options.cursor ? cs.items.concat(data.items || []) : (data.items || []);
             cs.total = data.total || 0;
             cs.cursor = data.nextCursor || null;
@@ -2094,10 +2106,14 @@ let store = {
             cs.truncated = !!data.truncated;
             return data;
         } catch (e) {
-            cs.error = (e && e.message) ? e.message : '搜索失败';
+            if (seq === conversationSearchSeq) {
+                cs.error = (e && e.message) ? e.message : '搜索失败';
+            }
             throw e;
         } finally {
-            cs.loading = false;
+            if (seq === conversationSearchSeq) {
+                cs.loading = false;
+            }
         }
     },
 
