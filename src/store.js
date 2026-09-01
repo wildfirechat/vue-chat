@@ -2133,8 +2133,9 @@ let store = {
             if (seq !== conversationSearchSeq) {
                 return data;
             }
-            cs.items = options.cursor ? cs.items.concat(data.items || []) : (data.items || []);
-            cs.total = data.total || 0;
+            let items = options.cursor ? cs.items.concat(data.items || []) : (data.items || []);
+            cs.items = items.filter(item => item.payload.persistFlag > 0); // 过滤掉未持久化的消息
+            cs.total = cs.items.length|| 0;
             cs.cursor = data.nextCursor || null;
             cs.hasMore = !!data.hasMore;
             cs.truncated = !!data.truncated;
