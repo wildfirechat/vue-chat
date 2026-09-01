@@ -17,6 +17,7 @@
         "group": "Group Chat",
         "contact": "Contact",
         "empty_title": "View contacts",
+        "delete_friend": "Delete friend",
         "empty_hint": "Select a contact or group from the left to view details"
     },
     "friend_request": {

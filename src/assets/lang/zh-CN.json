@@ -18,6 +18,7 @@
         "channel": "频道",
         "contact": "联系人",
         "empty_title": "查看联系人",
+        "delete_friend": "删除好友",
         "empty_hint": "从左侧选择联系人或群组查看详情"
     },
     "friend_request": {

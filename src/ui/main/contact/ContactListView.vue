@@ -103,6 +103,11 @@
                         $t('misc.share_to_friend')
                     }}</a>
             </li>
+            <li v-if="userInfo && isFriend(userInfo)">
+                <a class="danger-action" @click.prevent="deleteFriend(userInfo)">{{
+                        $t('contact.delete_friend')
+                    }}</a>
+            </li>
         </vue-context>
     </section>
 </template>
@@ -221,6 +226,31 @@ export default {
                 forwardType: ForwardType.NORMAL,
                 messages: [message],
             });
+        },
+
+        isFriend(userInfo) {
+            return wfc.isMyFriend(userInfo.uid);
+        },
+
+        deleteFriend(userInfo) {
+            let displayName = userInfo._displayName ? userInfo._displayName : userInfo.displayName;
+            this.$alert({
+                title: '删除好友?',
+                content: '删除好友「' + displayName + '」后，与他的聊天记录也将被清空',
+                confirmText: '确定',
+                confirmButtonType: 'danger',
+                cancelText: '取消',
+                cancelCallback: () => {
+                    // do nothing
+                },
+                confirmCallback: () => {
+                    store.deleteFriend(userInfo.uid);
+                    let currentFriend = this.sharedContactState.currentFriend;
+                    if (currentFriend && currentFriend.uid === userInfo.uid) {
+                        store.setCurrentFriend(null);
+                    }
+                }
+            })
         },
 
         showContactContextMenu(event, userInfo) {
