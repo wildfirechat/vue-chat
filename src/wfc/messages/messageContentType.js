@@ -29,7 +29,7 @@ export default class MessageContentType {
     // 消息未能送达
     static NOT_DELIVERED = 16;
 
-    // 流式文本取消消息（生成无产出/失败时发送，客户端按 streamId 删除对应的 generating(14)/generated(15) 气泡）
+    // 流式文本取消消息（生成无产出/失败时发送，客户端按 streamId 将 generating 替换为取消态）
     static Streaming_Text_Cancelled = 20;
 
     // 接龙消息，与iOS MESSAGE_CONTENT_TYPE_COLLECTION 保持一致

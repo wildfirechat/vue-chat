@@ -28,6 +28,11 @@ export default class WfcAVEngineKit {
     // 是否禁用双流模式
     static DISABLE_DUAL_STREAM = false;
 
+    /** 启用Simulcast模式, 默认为false。仅在双流模式(DISABLE_DUAL_STREAM为false)下生效。
+      为true时大小流通过WebRTC Simulcast实现(单Track双编码层), 为false时使用Legacy双Track方案。
+      此开关只影响本端发布, 订阅端自动识别对端方案。只能在通话或者会议开始前设置。 */
+    static ENABLE_SIMULCAST = false;
+
     /**
      屏幕分享替换模式。为ture时，屏幕分享会替换摄像头的数据流。为false时，屏幕分享会再单独发起一路，不会影响摄像头的输入。
      */

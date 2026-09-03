@@ -313,7 +313,7 @@ export default {
 
 .message-avatar-content-container {
     display: flex;
-    max-width: calc(100% - 60px);
+    max-width: min(calc(100% - 60px), max(400px, 75%));
     overflow: hidden;
     /*max-height: 800px;*/
     margin-left: auto;

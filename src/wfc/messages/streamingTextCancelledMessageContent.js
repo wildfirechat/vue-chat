@@ -3,8 +3,8 @@ import MessageContentType from "./messageContentType";
 
 /**
  * 流式文本取消消息（20）：生成无产出/失败时由机器人发送，携带 streamId。
- * 客户端按 streamId 找到对应的 generating(14)/generated(15) 消息并从界面删除，
- * 取消消息自身不显示任何内容、不落库（Transparent）。
+ * 客户端按 streamId 找到对应的 generating(14)/generated(15) 消息并替换为取消态
+ * （去掉"生成中"loading，显示取消提示文本）。
  */
 export default class StreamingTextCancelledMessageContent extends MessageContent {
     text = '';

@@ -2,7 +2,7 @@
     <div>
         <div class="streaming-text-message-container"
             v-bind:class="{out:message.direction === 0}">
-            <p class="text" v-html="this.$xss(this.textContent)" @click="handleLinkClick" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></p>
+            <div class="text" v-html="this.$xss(this.textContent)" @click="handleLinkClick" @mouseup="mouseUp" @contextmenu="preventContextMenuTextSelection"></div>
             <FadeLoader :loading="message.messageContent.type === 14" color="var(--text-hint)" style="margin: 8px" width="3px" height="8px" margin="2px" radius="8px"></FadeLoader>
         </div>
         <p class="ai-content-tip">本内容由 AI 生成</p>
@@ -99,7 +99,7 @@ export default {
     computed: {
         textContent() {
             let content = this.message.messageContent.digest(this.message).trim();
-            content = marked.parse(content);
+            content = marked.parse(content, {breaks: true});
             if (content.indexOf('<img') >= 0) {
                 content = content.replace(/<img/g, '<img style="max-width:400px;"')
                 return content;
@@ -123,9 +123,86 @@ export default {
     align-items: flex-start;
 }
 
-.streaming-text-message-container >>> p {
+.streaming-text-message-container .text >>> p {
+    margin: 0 0 8px;
+    word-break: break-word;
     user-select: text;
-    //white-space: pre-line;
+}
+
+.streaming-text-message-container .text >>> p:last-child {
+    margin-bottom: 0;
+}
+
+.streaming-text-message-container .text >>> h1,
+.streaming-text-message-container .text >>> h2,
+.streaming-text-message-container .text >>> h3,
+.streaming-text-message-container .text >>> h4,
+.streaming-text-message-container .text >>> h5,
+.streaming-text-message-container .text >>> h6 {
+    margin: 12px 0 6px;
+}
+
+.streaming-text-message-container .text >>> h1:first-child,
+.streaming-text-message-container .text >>> h2:first-child,
+.streaming-text-message-container .text >>> h3:first-child {
+    margin-top: 0;
+}
+
+.streaming-text-message-container .text >>> ul,
+.streaming-text-message-container .text >>> ol {
+    margin: 0 0 8px;
+    padding-left: 20px;
+}
+
+.streaming-text-message-container .text >>> ul {
+    list-style: disc;
+}
+
+.streaming-text-message-container .text >>> ol {
+    list-style: decimal;
+}
+
+.streaming-text-message-container .text >>> li {
+    margin: 2px 0;
+}
+
+.streaming-text-message-container .text >>> pre {
+    margin: 0 0 8px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    background: var(--background-tertiary);
+    overflow-x: auto;
+}
+
+.streaming-text-message-container .text >>> pre code {
+    background: none;
+    padding: 0;
+    display: block;
+    white-space: pre;
+}
+
+.streaming-text-message-container .text >>> blockquote {
+    margin: 0 0 8px;
+    padding: 2px 10px;
+    border-left: 3px solid var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.streaming-text-message-container .text >>> hr {
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    margin: 12px 0;
+}
+
+.streaming-text-message-container .text >>> table {
+    border-collapse: collapse;
+    margin: 0 0 8px;
+}
+
+.streaming-text-message-container .text >>> th,
+.streaming-text-message-container .text >>> td {
+    border: 1px solid var(--border-subtle);
+    padding: 4px 8px;
 }
 
 .streaming-text-message-container >>> .loading {
@@ -149,7 +226,7 @@ export default {
     font-size: var(--font-size-sm);
     line-height: 1.5;
     /*max-height: 1000px;*/
-    max-width: 400px;
+    max-width: none;
     word-spacing: normal;
     word-break: break-word;
     overflow: hidden;

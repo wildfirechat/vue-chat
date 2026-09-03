@@ -27,6 +27,7 @@ const IpcEventType = {
     SHOW_POLL_WINDOW: 'show-poll-window',
     OPEN_MAIN_DEV_TOOLS: 'open-main-dev-tools',
     CHECK_FOR_UPDATES: 'check-for-updates',
+    RESTART_APP: 'restart-app',
 }
 
 module.exports = IpcEventType
