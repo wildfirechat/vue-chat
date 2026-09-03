@@ -4,8 +4,7 @@ import wfc from "../../wfc/client/wfc";
 import MessageStatus from "../../wfc/messages/messageStatus";
 import UnsupportMessageContent from "../../wfc/messages/unsupportMessageConten";
 import UnknownMessageContent from "../../wfc/messages/unknownMessageContent";
-import MessageConfig from "../../wfc/client/messageConfig";
-import PersistFlag from "../../wfc/messages/persistFlag";
+import {isTransparentSearchMessage} from "./searchMessageFilter";
 
 /**
  * OutputMessageData → 本地 Message 转换工具。
@@ -36,12 +35,8 @@ export function messageFromOutputMessageData(outputMessageData) {
         const item = outputMessageData;
         const payload = item.payload;
 
-        // 透传/不存储类型（如 Typing）不参与渲染。
-        // 注意：不能用 payload.persistFlag 判断——该字段由发送方编码进消息体，
-        // 服务端 API/机器人发送的消息常常不带（解析出来恒为 0），但消息确实已入库，
-        // 据此过滤会把整屏消息过滤光。按本地消息类型注册表判断，未注册类型（-1）保留。
-        const persistFlag = MessageConfig.getMessageContentPersitFlag(payload.type);
-        if (persistFlag === PersistFlag.No_Persist || persistFlag === PersistFlag.Transparent) {
+        // 透传/不存储类型（如 Typing）不参与渲染，判断规则见 searchMessageFilter
+        if (isTransparentSearchMessage(item)) {
             return null;
         }
 

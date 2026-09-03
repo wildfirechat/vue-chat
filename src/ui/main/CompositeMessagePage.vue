@@ -6,13 +6,17 @@
         <div v-if="!compositeMessage">
             {{ 'Null CompositeMessagePage' }}
         </div>
+        <!-- 子消息一条都没有：内容存在远端时还在拉取，否则消息体里就没有内容，给个提示，不要留一片空白 -->
+        <div v-else-if="messages.length === 0" class="composite-empty">
+            <p>{{ isLoadingMessages ? '加载中…' : '没有可显示的聊天记录' }}</p>
+        </div>
         <ul v-else>
-            <li v-for="(message, index) in compositeMessage.messageContent.messages"
+            <li v-for="(message, index) in messages"
                 :key="message.uid">
                 <div class="message-container">
                     <div class="portrait-container">
                         <img
-                            v-if="index === 0 || message.from !== compositeMessage.messageContent.messages[index -1].from"
+                            v-if="index === 0 || message.from !== messages[index -1].from"
                             alt="" :src="message._from.portrait">
                     </div>
                     <div class="name-time-content-container">
@@ -101,9 +105,26 @@ export default {
         }
     },
 
+    computed: {
+        messages() {
+            let content = this.compositeMessage ? this.compositeMessage.messageContent : null;
+            return content && content.messages ? content.messages : [];
+        },
+
+        // 大的合并转发消息，内容存在远端，需要下载之后才能展示
+        isLoadingMessages() {
+            let content = this.compositeMessage ? this.compositeMessage.messageContent : null;
+            return !!(content && content.remotePath && !content.loaded);
+        },
+    },
+
     mounted() {
         if (this.message) {
             this.compositeMessage = this.message;
+            // 子消息的 _from/_timeStr 等展示字段由 _patchMessage 补上。
+            // 会话界面传进来的消息 store 已经补过，但搜索结果/消息上下文里的消息是由
+            // 服务端返回的数据直接转换而来，没补丁的话，下面渲染 message._from.portrait 会直接报错，页面一片空白。
+            store._patchMessage(this.compositeMessage, 0);
             this.loadMediaCompositeMessage(this.compositeMessage);
             return;
         } else if(this.favItem) {
@@ -200,6 +221,15 @@ export default {
     height: var(--composite-message-page-height);
     background: var(--background-primary);
     overflow: scroll;
+}
+
+.composite-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
 }
 
 .close-button-container {

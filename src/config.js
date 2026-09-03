@@ -1,5 +1,6 @@
 import {isElectron} from './platform'
 import wfc from "./wfc/client/wfc";
+import MessageContentType from "./wfc/messages/messageContentType";
 
 export default class Config {
     // 调试用
@@ -58,6 +59,37 @@ export default class Config {
 
     // 服务器搜索服务备选地址，双网环境下使用
     static SEARCH_BACKUP_SERVER = null;
+
+    /**
+     * 聊天记录搜索结果中不展示的消息类型。
+     *
+     * 搜索服务会把会话内所有已存储的消息都索引起来，其中一部分对"找聊天记录"没有意义，
+     * 如撤回提示、音视频通话的接受/挂断信令、打招呼、加好友提示等，默认在搜索结果里隐藏。
+     * 置为空数组即可展示全部类型（透传/不存储类型始终不展示）。
+     *
+     * 注意：仅作用于搜索结果列表，消息上下文（查看上下文）仍按会话原貌展示。
+     */
+    static SEARCH_RESULT_HIDDEN_MESSAGE_TYPES = [
+        // 撤回/删除提示
+        MessageContentType.RecallMessage_Notification,
+        MessageContentType.DeleteMessage_Notification,
+        // 提示类通知
+        MessageContentType.Tip_Notification,
+        // 打招呼、加好友
+        MessageContentType.Friend_Greeting,
+        MessageContentType.Friend_Added,
+        // 音视频通话的接受/拒绝/挂断等信令；通话记录本身（VOIP_CONTENT_TYPE_START）仍展示。
+        // 其中大部分本来就是不存储类型，列在这里是为了一眼能看全"搜索结果里不展示什么"
+        MessageContentType.VOIP_CONTENT_TYPE_ACCEPT,
+        MessageContentType.VOIP_CONTENT_TYPE_ACCEPT_T,
+        MessageContentType.VOIP_CONTENT_TYPE_END,
+        MessageContentType.VOIP_CONTENT_TYPE_SIGNAL,
+        MessageContentType.VOIP_CONTENT_TYPE_MODIFY,
+        MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT,
+        MessageContentType.VOIP_CONTENT_TYPE_MUTE_VIDEO,
+        MessageContentType.VOIP_Multi_Call_Ongoing,
+        MessageContentType.VOIP_Join_Call_Request,
+    ];
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
     static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';

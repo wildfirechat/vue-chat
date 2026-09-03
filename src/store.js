@@ -24,6 +24,7 @@ import {currentWindow, ipcRenderer, isElectron} from "./platform";
 import SearchType from "./wfc/model/searchType";
 import Config from "./config";
 import searchServerApi from "./api/searchServerApi";
+import {isHiddenSearchResultMessage} from "./ui/util/searchMessageFilter";
 import {getItem, setItem} from "./ui/util/storageHelper";
 import watermark from "./ui/util/waterMark";
 import CompositeMessageContent from "./wfc/messages/compositeMessageContent";
@@ -88,6 +89,8 @@ function convertPinyinCached(name) {
 // 会话内服务器搜索的请求序号：输入抖动/筛选切换会并发多次请求，
 // 用序号丢弃过期响应，避免先发后到的旧结果覆盖新结果
 let conversationSearchSeq = 0;
+// 会话内搜索：一页结果被过滤规则清空时，最多自动往后续拉多少页
+const MAX_SEARCH_AUTO_FILL_ROUNDS = 5;
 
 /**
  * 判断是否为同一条消息。
@@ -2133,12 +2136,27 @@ let store = {
             if (seq !== conversationSearchSeq) {
                 return data;
             }
+            let shownCount = options.cursor ? cs.items.length : 0;
             let items = options.cursor ? cs.items.concat(data.items || []) : (data.items || []);
-            cs.items = items.filter(item => item.payload.persistFlag > 0); // 过滤掉未持久化的消息
-            cs.total = cs.items.length|| 0;
+            // 过滤掉透传/不存储的信令消息，以及配置的不展示类型（撤回、通话信令、打招呼、加好友等），
+            // 见 Config.SEARCH_RESULT_HIDDEN_MESSAGE_TYPES
+            cs.items = items.filter(item => !isHiddenSearchResultMessage(item));
+            cs.total = cs.items.length || 0;
             cs.cursor = data.nextCursor || null;
             cs.hasMore = !!data.hasMore;
             cs.truncated = !!data.truncated;
+            // 这一页的结果被过滤光时自动续拉下一页：页面没有新增内容就不会再产生滚动，
+            // 触底翻页也就不会再触发，界面会卡在"未找到匹配的消息"或不再加载
+            if (cs.items.length === shownCount && cs.hasMore && cs.cursor) {
+                let round = (options._autoFillRound || 0) + 1;
+                if (round <= MAX_SEARCH_AUTO_FILL_ROUNDS) {
+                    return this.searchConversationMessages(conversation, {
+                        ...options,
+                        cursor: cs.cursor,
+                        _autoFillRound: round,
+                    });
+                }
+            }
             return data;
         } catch (e) {
             if (seq === conversationSearchSeq) {

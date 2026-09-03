@@ -117,8 +117,7 @@ import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 import FileMessageContent from "../../../wfc/messages/fileMessageContent";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import MessageContentType from "../../../wfc/messages/messageContentType";
-import MessageConfig from "../../../wfc/client/messageConfig";
-import PersistFlag from "../../../wfc/messages/persistFlag";
+import {isTransparentSearchMessage} from "../../util/searchMessageFilter";
 import CollectionMessageContent from "../../../wfc/messages/collectionMessageContent";
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 import {copyText, copyImg} from "../../util/clipboard";
@@ -251,24 +250,14 @@ export default {
 
     methods: {
         /**
-         * 透传/不存储类型的消息（如 Typing）不显示。
+         * 透传/不存储类型的消息（如 Typing）不显示，判断规则见 searchMessageFilter。
          *
-         * 注意：<b>不能用 payload.persistFlag 判断</b>。该字段由发送方编码进消息体，
-         * 服务端 API / 机器人 / 部分 SDK 发送的消息并不带该字段（解析出来恒为 0），
-         * 但消息本身确实已入库（能被搜索到即已存储）。早期按 persistFlag === 0 过滤，
-         * 会把这类会话的上下文消息<b>整屏过滤光</b>：页面只剩"加载更早消息…/已到最新的消息"，
-         * 且因为列表始终填不满视口，哨兵会不停触发分页，表现为不停请求 context 接口。
-         *
-         * 这里改为按本地消息类型注册表（MessageConfig）判断，与会话界面语义一致；
-         * 未注册类型（-1）保留，回退 digest 简式展示。
+         * 上下文按会话原貌展示，故这里<b>不</b>套用搜索结果列表的隐藏类型配置
+         * （Config.SEARCH_RESULT_HIDDEN_MESSAGE_TYPES）：撤回提示、加好友提示等
+         * 在会话界面本来就是可见的，上下文里缺失反而会让人对不上号。
          */
         shouldHideMessage(msg) {
-            const type = msg && msg.payload ? msg.payload.type : undefined;
-            if (type === undefined || type === null) {
-                return false;
-            }
-            const flag = MessageConfig.getMessageContentPersitFlag(type);
-            return flag === PersistFlag.No_Persist || flag === PersistFlag.Transparent;
+            return isTransparentSearchMessage(msg);
         },
 
         /** 通话、会议邀请等消息：屏蔽点击等交互，见 NON_INTERACTIVE_CONTENT_TYPES */
@@ -407,7 +396,7 @@ export default {
                 this.hasEarlier = true;
                 this.hasLater = true;
                 // OutputMessageData → 本地 Message（完整消息渲染）
-                this.messageMap = messagesFromOutputMessageData(this.messages);
+                this.messageMap = this.buildMessageMap(this.messages);
                 this.emptyEarlierRounds = 0;
                 this.emptyLaterRounds = 0;
                 if (this.messages.length > 0 && this.displayMessages.length === 0) {
@@ -684,10 +673,28 @@ export default {
         },
 
         mergeMessageMap(newItems) {
-            const extra = messagesFromOutputMessageData(newItems);
+            const extra = this.buildMessageMap(newItems);
             const merged = new Map(this.messageMap);
             extra.forEach((v, k) => merged.set(k, v));
             this.messageMap = merged;
+        },
+
+        /**
+         * OutputMessageData → 本地 Message，并补上 UI 展示字段（_from/_timeStr 等）。
+         *
+         * 服务端搜索返回的消息没走 store 的加载流程，缺少这些补丁字段；组合消息（合并转发）
+         * 点开后的 CompositeMessagePage、转发预览等都会读子消息的 _from，不补丁就会渲染成空白。
+         */
+        buildMessageMap(items) {
+            const map = messagesFromOutputMessageData(items);
+            map.forEach((m, mid) => {
+                try {
+                    store._patchMessage(m, 0);
+                } catch (e) {
+                    console.warn('[Ctx] patch message failed, messageId=', mid, e);
+                }
+            });
+            return map;
         },
 
         jumpTo(direction) {

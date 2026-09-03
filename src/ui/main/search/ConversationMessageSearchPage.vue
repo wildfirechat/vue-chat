@@ -511,19 +511,27 @@ export default {
                 return {startTime: null, endTime: new Date(this.customEnd + 'T23:59:59').getTime()};
             }
             const now = Date.now();
+            // 快捷项按"自然天"取起点：今天 = 今天 0 点，近 N 天 = N 天前那天的 0 点，
+            // 而不是当前时刻往前推 N * 24 小时（否则 N 天前当天 0 点到此刻的消息会被漏掉）
             switch (this.timeValue) {
-                case 'today': {
-                    const d = new Date();
-                    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-                    return {startTime: start, endTime: now};
-                }
+                case 'today':
+                    return {startTime: this.startOfDayBefore(0), endTime: now};
                 case '7d':
-                    return {startTime: now - 7 * 24 * 3600 * 1000, endTime: now};
+                    return {startTime: this.startOfDayBefore(7), endTime: now};
                 case '30d':
-                    return {startTime: now - 30 * 24 * 3600 * 1000, endTime: now};
+                    return {startTime: this.startOfDayBefore(30), endTime: now};
                 default:
                     return {startTime: null, endTime: null};
             }
+        },
+
+        /**
+         * n 天前那一天 0 点的时间戳（n = 0 即今天 0 点）。
+         * 用 Date 构造函数做日期回退，跨月/跨年/夏令时都不会算偏。
+         */
+        startOfDayBefore(n) {
+            const d = new Date();
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate() - n).getTime();
         },
 
         onScroll() {
