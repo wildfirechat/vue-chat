@@ -73,6 +73,27 @@ const routers = [
                 path: 'ai',
                 name: 'AI',
                 component: AI,
+            },
+            // 网盘与在线文档：作为主框架的子路由，入口在左侧图标导航栏上
+            {
+                path: 'pan',
+                name: 'pan-home',
+                component: PanHomePage,
+            },
+            {
+                path: 'pan/files',
+                name: 'pan-files',
+                component: PanFileListPage,
+            },
+            {
+                path: 'pan/docs',
+                name: 'pan-docs',
+                component: PanDocsPage,
+            },
+            {
+                path: 'pan/doc-web',
+                name: 'pan-doc-web',
+                component: PanDocWebView,
             }
         ]
     },
@@ -170,27 +191,6 @@ const routers = [
         name: 'poll-detail',
         path: '/poll/detail',
         component: PollDetail,
-    },
-    // 网盘与在线文档（未配置 Config.PAN_SERVER 时入口不展示，页面内也会兜底提示）
-    {
-        name: 'pan-home',
-        path: '/pan',
-        component: PanHomePage,
-    },
-    {
-        name: 'pan-files',
-        path: '/pan/files',
-        component: PanFileListPage,
-    },
-    {
-        name: 'pan-docs',
-        path: '/pan/docs',
-        component: PanDocsPage,
-    },
-    {
-        name: 'pan-doc-web',
-        path: '/pan/doc-web',
-        component: PanDocWebView,
     }
 ]
 export default routers

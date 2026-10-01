@@ -84,55 +84,18 @@ export default {
         },
     },
     async mounted() {
-        document.title = this.pageTitle;
-        if (!this.enabled) {
-            return;
-        }
-        const query = this.$route.query || {};
-        const fileId = Number(query.fileId || 0);
-        const viewUrl = query.url || '';
-        const directUrl = query.href || '';
-        if (!fileId && !viewUrl && !directUrl) {
-            this.error = this.$t('pan.doc_missing');
-            return;
-        }
-        // 静态页（开源许可）直接放进 iframe，不用弹窗
-        this.mode = directUrl
-            ? 'iframe'
-            : (query.mode === 'popup' || query.mode === 'iframe'
-                ? query.mode
-                : (this.isSameOrigin() ? 'iframe' : 'popup'));
-        // 页面会在第一次消息里判断宿主，宿主先挂上监听，再让页面开始跑
-        this.unregisterBridge = registerPanBridge(() => this.targetWindow, {
-            onToast: (text) => this.$notify({text: text || '', type: 'warn'}),
-            onOpenUrl: (url) => openExternal(url),
-            onDownloadFile: (url) => downloadByUrl(url),
-            chooseContacts: () => this.chooseContacts(),
-            chooseGroup: () => this.chooseGroup(),
-            onClose: () => this.goBack(),
-        });
-
-        if (this.mode === 'iframe') {
-            this.targetWindow = this.$refs.frame ? this.$refs.frame.contentWindow : null;
-        }
-
-        try {
-            const authCode = await getPanAuthCode();
-            let url;
-            if (directUrl) {
-                url = directUrl;
-            } else if (fileId) {
-                url = panApi.docOpenUrl(fileId);
-            } else {
-                url = panApi.docViewUrl(viewUrl, query.name || '');
+        // 该页面被 HomePage 的 keep-alive 缓存，换一个文档时组件不会重新挂载，
+        // 所以打开逻辑抽出来，由 $route 的 watch 再触发一次。
+        await this.openFromRoute();
+    },
+    watch: {
+        '$route.fullPath'(fullPath) {
+            if (fullPath.indexOf('/home/pan/doc-web') !== 0) {
+                return;
             }
-            this.docUrl = withPanAuthCode(url, authCode);
-            if (this.mode === 'popup') {
-                this.$nextTick(() => this.openPopup());
-            }
-        } catch (e) {
-            this.error = e.message || this.$t('pan.doc_open_failed');
-        }
+            this.reset();
+            this.openFromRoute();
+        },
     },
     beforeUnmount() {
         if (this.unregisterBridge) {
@@ -147,6 +110,79 @@ export default {
         }
     },
     methods: {
+        /** 换文档前清掉上一份的状态（监听、弹窗、地址） */
+        reset() {
+            if (this.unregisterBridge) {
+                this.unregisterBridge();
+                this.unregisterBridge = null;
+            }
+            if (this.popupWindow && !this.popupWindow.closed) {
+                try {
+                    this.popupWindow.close();
+                } catch (e) {
+                    // 忽略
+                }
+            }
+            this.popupWindow = null;
+            this.targetWindow = null;
+            this.docUrl = '';
+            this.error = '';
+            this.mode = 'iframe';
+            this.enabled = Config.isPanEnabled();
+        },
+        async openFromRoute() {
+            this.reset();
+            document.title = this.pageTitle;
+            if (!this.enabled) {
+                return;
+            }
+            const query = this.$route.query || {};
+            const fileId = Number(query.fileId || 0);
+            const viewUrl = query.url || '';
+            const directUrl = query.href || '';
+            if (!fileId && !viewUrl && !directUrl) {
+                this.error = this.$t('pan.doc_missing');
+                return;
+            }
+            // 静态页（开源许可）直接放进 iframe，不用弹窗
+            this.mode = directUrl
+                ? 'iframe'
+                : (query.mode === 'popup' || query.mode === 'iframe'
+                    ? query.mode
+                    : (this.isSameOrigin() ? 'iframe' : 'popup'));
+            // 页面会在第一次消息里判断宿主，宿主先挂上监听，再让页面开始跑
+            this.unregisterBridge = registerPanBridge(() => this.targetWindow, {
+                onToast: (text) => this.$notify({text: text || '', type: 'warn'}),
+                onOpenUrl: (url) => openExternal(url),
+                onDownloadFile: (url) => downloadByUrl(url),
+                chooseContacts: () => this.chooseContacts(),
+                chooseGroup: () => this.chooseGroup(),
+                onClose: () => this.goBack(),
+            });
+
+            if (this.mode === 'iframe') {
+                await this.$nextTick();
+                this.targetWindow = this.$refs.frame ? this.$refs.frame.contentWindow : null;
+            }
+
+            try {
+                const authCode = await getPanAuthCode();
+                let url;
+                if (directUrl) {
+                    url = directUrl;
+                } else if (fileId) {
+                    url = panApi.docOpenUrl(fileId);
+                } else {
+                    url = panApi.docViewUrl(viewUrl, query.name || '');
+                }
+                this.docUrl = withPanAuthCode(url, authCode);
+                if (this.mode === 'popup') {
+                    this.$nextTick(() => this.openPopup());
+                }
+            } catch (e) {
+                this.error = e.message || this.$t('pan.doc_open_failed');
+            }
+        },
         isSameOrigin() {
             const base = Config.getPanServer() || '';
             try {
@@ -234,7 +270,7 @@ export default {
             if (this.$router && window.history.length > 1) {
                 this.$router.back();
             } else {
-                this.$router.push({path: '/pan/docs'});
+                this.$router.push({path: '/home/pan/docs'});
             }
         },
     },
@@ -247,6 +283,9 @@ export default {
     flex-direction: column;
     height: 100%;
     width: 100%;
+    /* 作为 HomePage 的子路由，占满图标导航栏右侧的剩余空间 */
+    flex: 1;
+    min-width: 0;
     background: var(--background-primary);
     color: var(--text-primary);
     overflow: hidden;

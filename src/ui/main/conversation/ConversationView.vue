@@ -699,7 +699,7 @@ export default {
         openOnlinePreview(message) {
             const content = message.messageContent;
             this.$router.push({
-                path: '/pan/doc-web',
+                path: '/home/pan/doc-web',
                 query: {
                     url: content.remoteUrl,
                     name: content.name,
@@ -727,7 +727,7 @@ export default {
                 }
                 if (panApi.isOnlineDocName(file.name) && isInlineWebViewSupported()) {
                     this.$router.push({
-                        path: '/pan/doc-web',
+                        path: '/home/pan/doc-web',
                         query: {fileId: file.id, name: file.name, title: file.name},
                     });
                     return;

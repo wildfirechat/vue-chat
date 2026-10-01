@@ -56,6 +56,18 @@
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"></i>
                             </div>
                         </li>
+                        <li v-if="panEnabled">
+                            <div class="i-button-wrapper" @click="go2Pan">
+                                <i class="icon-ion-ios-cloud"
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/pan'}"></i>
+                            </div>
+                        </li>
+                        <li v-if="panEnabled">
+                            <div class="i-button-wrapper" @click="go2PanDocs">
+                                <i class="icon-ion-document-text"
+                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/pan/docs'}"></i>
+                            </div>
+                        </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <div class="i-button-wrapper" @click="go2Files">
                                 <i class="icon-ion-ios-folder"
@@ -92,7 +104,9 @@
                 </nav>
             </section>
             <router-view v-slot="{ Component, route }">
-                <keep-alive v-show="route.path !== '/home/ai'">
+                <!-- 网盘/文档页不做缓存：它们按 URL 上的 query（文件 id、目录）加载，缓存会看到旧内容 -->
+                <keep-alive v-show="route.path !== '/home/ai'"
+                            :exclude="['PanHomePage','PanFileListPage','PanDocsPage','PanDocWebView']">
                     <component :is="Component" :key="route.path"/>
                 </keep-alive>
                 <AI v-show="route.path === '/home/ai'"/>
@@ -263,6 +277,20 @@ export default {
             this.$router.replace("/home/fav");
             this.isSetting = false;
         },
+        go2Pan() {
+            if (this.$router.currentRoute.value.path === '/home/pan') {
+                return;
+            }
+            this.$router.replace("/home/pan");
+            this.isSetting = true;
+        },
+        go2PanDocs() {
+            if (this.$router.currentRoute.value.path === '/home/pan/docs') {
+                return;
+            }
+            this.$router.replace("/home/pan/docs");
+            this.isSetting = true;
+        },
         go2Files() {
             let hash = window.location.hash;
             let url = window.location.origin;
@@ -354,6 +382,10 @@ export default {
         aiPortalUrl() {
             return Config.AI_PORTAL_URL
         },
+        // 未配置网盘服务（Config.PAN_SERVER 为空）时，导航栏上的网盘/文档图标都不出现
+        panEnabled() {
+            return Config.isPanEnabled();
+        },
         unread() {
             let count = 0;
             this.shareConversationState.conversationInfoList.forEach(info => {
@@ -367,7 +399,9 @@ export default {
         },
         dragAreaLeft() {
             // 60为左边菜单栏的宽度，261为会话列表的宽度
-            if (this.isSetting) {
+            const path = this.$router.currentRoute.value.path;
+            // 设置、网盘、文档等整页不带会话列表面板的页面，拖拽区从图标导航栏右边开始
+            if (this.isSetting || path === '/home/pan' || path.indexOf('/home/pan/') === 0) {
                 return {
                     left: '60px'
                 }

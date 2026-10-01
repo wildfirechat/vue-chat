@@ -214,7 +214,7 @@ export default {
                 return;
             }
             this.$router.push({
-                path: '/pan/doc-web',
+                path: '/home/pan/doc-web',
                 query: {fileId: file.id, name: file.name, title: file.name},
             });
         },
@@ -255,7 +255,7 @@ export default {
         openLicenses() {
             // 许可页是服务端自带的静态页，直接放进内置网页，不用过 /doc/open
             this.$router.push({
-                path: '/pan/doc-web',
+                path: '/home/pan/doc-web',
                 query: {
                     href: panApi.docLicensesUrl(),
                     name: this.$t('pan.licenses'),
@@ -295,6 +295,9 @@ export default {
     flex-direction: column;
     height: 100%;
     width: 100%;
+    /* 作为 HomePage 的子路由，占满图标导航栏右侧的剩余空间 */
+    flex: 1;
+    min-width: 0;
     background: var(--background-primary);
     color: var(--text-primary);
     overflow: hidden;
