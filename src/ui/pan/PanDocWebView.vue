@@ -84,8 +84,8 @@ export default {
         },
     },
     async mounted() {
-        // 该页面被 HomePage 的 keep-alive 缓存，换一个文档时组件不会重新挂载，
-        // 所以打开逻辑抽出来，由 $route 的 watch 再触发一次。
+        // 同一个路由只用 query 区分文档时组件不会重新挂载，所以打开逻辑抽出来，
+        // 由下面 $route 的 watch 再触发一次。
         await this.openFromRoute();
     },
     watch: {
