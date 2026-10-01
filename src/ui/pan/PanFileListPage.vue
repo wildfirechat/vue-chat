@@ -2,7 +2,7 @@
     <div class="pan-page">
         <header class="pan-header">
             <div class="pan-header-title">
-                <button class="pan-back" @click="goBack">‹</button>
+                <button v-if="!embedded || pathStack.length > 1" class="pan-back" @click="goBack">‹</button>
                 <nav class="pan-breadcrumb">
                     <template v-for="(segment, index) in pathStack" :key="segment.id + '-' + index">
                         <span v-if="index > 0" class="pan-crumb-sep">/</span>
@@ -169,6 +169,21 @@ import PanShareDialog from './PanShareDialog.vue';
 export default {
     name: 'PanFileListPage',
     components: {PanNameDialog, PanShareDialog},
+    props: {
+        // 作为网盘页的详情栏内嵌使用时，空间由父组件传进来
+        embedded: {
+            type: Boolean,
+            default: false,
+        },
+        spaceId: {
+            type: [Number, String],
+            default: 0,
+        },
+        spaceName: {
+            type: String,
+            default: '',
+        },
+    },
     data() {
         return {
             enabled: isPanEnabled(),
@@ -211,34 +226,68 @@ export default {
         },
     },
     async mounted() {
-        if (!this.enabled) {
-            this.loading = false;
-            return;
-        }
-        const query = this.$route.query || {};
-        const spaceId = Number(query.spaceId || 0);
-        this.pathStack = [{id: 0, name: query.spaceName || this.$t('pan.title')}];
-        if (!spaceId) {
-            this.error = this.$t('pan.space_missing');
-            this.loading = false;
-            return;
-        }
-        try {
-            const spaces = await panApi.getSpaces();
-            this.space = (spaces || []).find((s) => Number(s.id) === spaceId) || null;
-        } catch (e) {
-            this.error = e.message || this.$t('pan.load_failed');
-        }
-        if (!this.space) {
-            this.error = this.error || this.$t('pan.space_missing');
-            this.loading = false;
-            return;
-        }
-        this.pathStack[0].name = spaceDisplayName(this.space, this.$t);
-        document.title = this.pathStack[0].name;
-        this.load();
+        await this.init();
+    },
+    watch: {
+        // 内嵌时由父组件切换空间
+        spaceId() {
+            if (this.embedded) {
+                this.init();
+            }
+        },
+        spaceName() {
+            if (this.embedded && this.space) {
+                this.pathStack[0].name = this.spaceName || this.pathStack[0].name;
+            }
+        },
     },
     methods: {
+        /** 要打开的空间：内嵌取 props，路由模式取 query */
+        targetSpaceId() {
+            if (this.embedded || this.spaceId) {
+                return Number(this.spaceId || 0);
+            }
+            return Number((this.$route.query || {}).spaceId || 0);
+        },
+        targetSpaceName() {
+            if (this.embedded || this.spaceName) {
+                return this.spaceName || '';
+            }
+            return (this.$route.query || {}).spaceName || '';
+        },
+        async init() {
+            if (!this.enabled) {
+                this.loading = false;
+                return;
+            }
+            const spaceId = this.targetSpaceId();
+            this.pathStack = [{id: 0, name: this.targetSpaceName() || this.$t('pan.title')}];
+            this.files = [];
+            this.error = '';
+            this.loading = true;
+            this.space = null;
+            if (!spaceId) {
+                this.error = this.$t('pan.space_missing');
+                this.loading = false;
+                return;
+            }
+            try {
+                const spaces = await panApi.getSpaces();
+                this.space = (spaces || []).find((s) => Number(s.id) === spaceId) || null;
+            } catch (e) {
+                this.error = e.message || this.$t('pan.load_failed');
+            }
+            if (!this.space) {
+                this.error = this.error || this.$t('pan.space_missing');
+                this.loading = false;
+                return;
+            }
+            this.pathStack[0].name = spaceDisplayName(this.space, this.$t);
+            if (!this.embedded) {
+                document.title = this.pathStack[0].name;
+            }
+            this.load();
+        },
         isFolder,
         formatSize(size) {
             return formatPanSize(size);
@@ -289,6 +338,9 @@ export default {
                 this.load();
                 return;
             }
+            if (this.embedded) {
+                return;
+            }
             this.$router.back();
         },
         goCrumb(index) {
@@ -316,6 +368,11 @@ export default {
         },
         openDoc(file) {
             this.menuFile = null;
+            if (this.embedded) {
+                // 由父页面把文档放到详情栏里打开
+                this.$emit('open-doc', {fileId: file.id, name: file.name, title: file.name});
+                return;
+            }
             this.$router.push({
                 path: '/home/pan/doc-web',
                 query: {fileId: file.id, name: file.name, title: file.name},

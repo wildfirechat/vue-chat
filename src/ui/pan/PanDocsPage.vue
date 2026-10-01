@@ -1,59 +1,96 @@
 <template>
-    <div class="pan-page">
-        <header class="pan-header">
-            <div class="pan-header-title">
-                <button class="pan-back" @click="goBack">‹</button>
+    <div class="pan-layout">
+        <!-- 中间栏：最近打开 / 共享给我的文档列表 -->
+        <section class="pan-nav-panel">
+            <header class="pan-nav-header">
                 <h1>{{ $t('pan.online_docs') }}</h1>
-            </div>
-            <div class="pan-header-actions">
-                <template v-if="canCreate">
-                    <button class="pan-text-btn" @click="createDoc('docx')">{{ $t('pan.new_word') }}</button>
-                    <button class="pan-text-btn" @click="createDoc('xlsx')">{{ $t('pan.new_cell') }}</button>
-                    <button class="pan-text-btn" @click="createDoc('pptx')">{{ $t('pan.new_slide') }}</button>
-                </template>
-                <button class="pan-text-btn" @click="loadTab(currentTab)">{{ $t('pan.refresh') }}</button>
-            </div>
-        </header>
+                <div class="pan-nav-header-actions">
+                    <button v-if="canCreate" class="pan-icon-btn" :title="$t('pan.new_doc')" @click="createMenuVisible = !createMenuVisible">
+                        <i class="icon-ion-ios-add"/>
+                    </button>
+                    <button class="pan-icon-btn" :title="$t('pan.refresh')" @click="loadTab(currentTab)">
+                        <i class="icon-ion-android-refresh"/>
+                    </button>
+                </div>
+            </header>
 
-        <div class="pan-tabs">
-            <div class="pan-tab" :class="{active: currentTab === 'recent'}" @click="selectTab('recent')">
-                {{ $t('pan.recent_docs') }}
+            <!-- 新建菜单（贴着中间栏右上角） -->
+            <div v-if="createMenuVisible" class="pan-create-menu" @click.stop>
+                <a @click.prevent="createDoc('docx')">{{ $t('pan.new_word') }}</a>
+                <a @click.prevent="createDoc('xlsx')">{{ $t('pan.new_cell') }}</a>
+                <a @click.prevent="createDoc('pptx')">{{ $t('pan.new_slide') }}</a>
             </div>
-            <div class="pan-tab" :class="{active: currentTab === 'shared'}" @click="selectTab('shared')">
-                {{ $t('pan.shared_with_me') }}
-            </div>
-            <a class="pan-licenses" href="javascript:" @click.prevent="openLicenses">{{ $t('pan.licenses') }}</a>
-        </div>
 
-        <div class="pan-body">
-            <div v-if="!enabled" class="pan-status">{{ $t('pan.not_configured') }}</div>
-            <div v-else-if="loading" class="pan-status">{{ $t('pan.loading') }}</div>
-            <div v-else-if="error" class="pan-status">
-                <p>{{ error }}</p>
-                <button class="pan-btn" @click="loadTab(currentTab)">{{ $t('pan.retry') }}</button>
-            </div>
-            <div v-else-if="entries.length === 0" class="pan-status">
-                <p>{{ currentTab === 'recent' ? $t('pan.docs_recent_empty') : $t('pan.shared_empty') }}</p>
-                <p class="pan-status-hint">
-                    {{ currentTab === 'recent' ? (canCreate ? $t('pan.docs_recent_hint') : $t('pan.docs_recent_hint_no_create')) : $t('pan.docs_shared_hint') }}
-                </p>
-            </div>
-            <div v-else class="pan-list">
-                <div v-for="entry in entries" :key="entry.file.id" class="pan-file-row" @click="open(entry.file)">
-                    <span class="pan-file-icon" :class="fileIcon(entry.file).cls">{{ fileIcon(entry.file).icon }}</span>
-                    <div class="pan-file-info">
-                        <div class="pan-file-name">{{ entry.file.name }}</div>
-                        <div class="pan-file-meta">
-                            <span>{{ currentTab === 'recent' ? formatTime(entry.openedAt) : formatTime(entry.sharedAt) }}</span>
-                            <span v-if="entry.file.size">· {{ formatSize(entry.file.size) }}</span>
-                            <span v-if="entry.file.creatorName">· {{ entry.file.creatorName }}</span>
-                            <span v-if="currentTab === 'shared'">· {{ permissionText(entry.permission) }}</span>
-                        </div>
-                    </div>
-                    <button v-if="currentTab === 'recent'" class="pan-more" @click.stop="openMenu(entry, $event)">⋯</button>
+            <div class="pan-tabs">
+                <div class="pan-tab" :class="{active: currentTab === 'recent'}" @click="selectTab('recent')">
+                    {{ $t('pan.recent_docs') }}
+                </div>
+                <div class="pan-tab" :class="{active: currentTab === 'shared'}" @click="selectTab('shared')">
+                    {{ $t('pan.shared_with_me') }}
                 </div>
             </div>
-        </div>
+
+            <div class="pan-nav-body">
+                <div v-if="!enabled" class="pan-status">{{ $t('pan.not_configured') }}</div>
+                <div v-else-if="loading" class="pan-status">{{ $t('pan.loading') }}</div>
+                <div v-else-if="error" class="pan-status">
+                    <p>{{ error }}</p>
+                    <button class="pan-btn" @click="loadTab(currentTab)">{{ $t('pan.retry') }}</button>
+                </div>
+                <div v-else-if="entries.length === 0" class="pan-status">
+                    <p>{{ currentTab === 'recent' ? $t('pan.docs_recent_empty') : $t('pan.shared_empty') }}</p>
+                    <p class="pan-status-hint">
+                        {{ currentTab === 'recent' ? (canCreate ? $t('pan.docs_recent_hint') : $t('pan.docs_recent_hint_no_create')) : $t('pan.docs_shared_hint') }}
+                    </p>
+                </div>
+                <template v-else>
+                    <div
+                        v-for="entry in entries"
+                        :key="entry.file.id"
+                        class="pan-nav-row"
+                        :class="{active: activeDoc && Number(activeDoc.fileId) === Number(entry.file.id)}"
+                        @click="open(entry.file)">
+                        <span class="pan-file-icon" :class="fileIcon(entry.file).cls">{{ fileIcon(entry.file).icon }}</span>
+                        <div class="pan-nav-info">
+                            <div class="pan-nav-name">{{ entry.file.name }}</div>
+                            <div class="pan-nav-meta">
+                                <span>{{ currentTab === 'recent' ? formatTime(entry.openedAt) : formatTime(entry.sharedAt) }}</span>
+                                <span v-if="entry.file.size">· {{ formatSize(entry.file.size) }}</span>
+                                <span v-if="currentTab === 'shared'">· {{ permissionText(entry.permission) }}</span>
+                            </div>
+                        </div>
+                        <button v-if="currentTab === 'recent'" class="pan-more" @click.stop="openMenu(entry, $event)">⋯</button>
+                    </div>
+                </template>
+            </div>
+
+            <div class="pan-nav-footer">
+                <a href="javascript:" @click.prevent="openLicenses">{{ $t('pan.licenses') }}</a>
+            </div>
+        </section>
+
+        <ResizeBar/>
+
+        <!-- 详情栏：在线文档 -->
+        <section class="pan-detail">
+            <PanDocWebView
+                v-if="activeDoc"
+                :key="docKey"
+                :file-id="activeDoc.fileId"
+                :href="activeDoc.href"
+                :name="activeDoc.name"
+                :title="activeDoc.title"
+                embedded
+                @close="activeDoc = null"/>
+            <div v-else class="pan-detail-empty">
+                <div class="pan-detail-empty-icon">📄</div>
+                <p class="pan-detail-empty-title">{{ $t('pan.select_doc') }}</p>
+                <p class="pan-detail-empty-hint">{{ $t('pan.select_doc_hint') }}</p>
+            </div>
+        </section>
+
+        <!-- 新建菜单的点击外面关闭 -->
+        <div v-if="createMenuVisible" class="pan-menu-backdrop" @click="createMenuVisible = false"></div>
 
         <div v-if="menuEntry" class="pan-menu-backdrop" @click="menuEntry = null">
             <div class="pan-context-menu" :style="menuStyle">
@@ -88,18 +125,19 @@ import {
     isInlineWebViewSupported,
     isPanEnabled,
     isFolder,
-    spaceDisplayName,
 } from './panUtil';
 import PanNameDialog from './PanNameDialog.vue';
 import PanShareDialog from './PanShareDialog.vue';
+import PanDocWebView from './PanDocWebView.vue';
+import ResizeBar from '../common/ResizeBar.vue';
 
 /**
- * 在线文档首页：最近打开、共享给我，新建 Word/Excel/PPT，开源许可入口。
- * 新建在手机上默认不给（服务端 docs/options 打开 mobileEdit 才给），点开文档进内置文档页。
+ * 在线文档页（三栏布局）：中间栏是最近打开 / 共享给我的文档列表，
+ * 详情栏打开选中的文档（内置网页），新建的文档也直接在这里打开。
  */
 export default {
     name: 'PanDocsPage',
-    components: {PanNameDialog, PanShareDialog},
+    components: {PanNameDialog, PanShareDialog, PanDocWebView, ResizeBar},
     data() {
         return {
             enabled: isPanEnabled(),
@@ -110,9 +148,11 @@ export default {
             canCreate: true,
             manageableSpaces: new Set(),
             newDocType: null,
+            createMenuVisible: false,
             shareFile: null,
             menuEntry: null,
             menuStyle: {},
+            activeDoc: null,
         };
     },
     computed: {
@@ -136,6 +176,12 @@ export default {
                 return this.$t('pan.untitled_slide');
             }
             return this.$t('pan.untitled_word');
+        },
+        docKey() {
+            if (!this.activeDoc) {
+                return '';
+            }
+            return [this.activeDoc.fileId || '', this.activeDoc.href || '', this.activeDoc.name || ''].join('|');
         },
     },
     mounted() {
@@ -213,10 +259,7 @@ export default {
             if (!isInlineWebViewSupported()) {
                 return;
             }
-            this.$router.push({
-                path: '/home/pan/doc-web',
-                query: {fileId: file.id, name: file.name, title: file.name},
-            });
+            this.activeDoc = {fileId: file.id, name: file.name, title: file.name};
         },
         share(file) {
             this.menuEntry = null;
@@ -233,6 +276,7 @@ export default {
             }
         },
         createDoc(type) {
+            this.createMenuVisible = false;
             if (!this.canCreate) {
                 return;
             }
@@ -253,15 +297,12 @@ export default {
             }
         },
         openLicenses() {
-            // 许可页是服务端自带的静态页，直接放进内置网页，不用过 /doc/open
-            this.$router.push({
-                path: '/home/pan/doc-web',
-                query: {
-                    href: panApi.docLicensesUrl(),
-                    name: this.$t('pan.licenses'),
-                    title: this.$t('pan.licenses'),
-                },
-            });
+            // 许可页是服务端自带的静态页，直接放进详情栏，不用过 /doc/open
+            this.activeDoc = {
+                href: panApi.docLicensesUrl(),
+                name: this.$t('pan.licenses'),
+                title: this.$t('pan.licenses'),
+            };
         },
         openMenu(entry, event) {
             if (this.menuEntry && this.menuEntry.file.id === entry.file.id) {
@@ -275,88 +316,73 @@ export default {
                 left: Math.max(8, Math.min(rect.right - 160, window.innerWidth - 176)) + 'px',
             };
         },
-        spaceDisplayName(space) {
-            return spaceDisplayName(space, this.$t);
-        },
-        goBack() {
-            if (window.history.length > 1) {
-                this.$router.back();
-            } else {
-                this.$router.push({path: '/home/setting'});
-            }
-        },
     },
 };
 </script>
 
 <style scoped>
-.pan-page {
+.pan-layout {
     display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    /* 作为 HomePage 的子路由，占满图标导航栏右侧的剩余空间 */
     flex: 1;
     min-width: 0;
+    height: 100%;
     background: var(--background-primary);
     color: var(--text-primary);
     overflow: hidden;
 }
 
-.pan-header {
+/* ---------------- 中间栏 ---------------- */
+.pan-nav-panel {
+    width: var(--list-panel-width);
+    flex: 0 0 var(--list-panel-width);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--background-secondary);
+    border-right: 1px solid var(--border-primary);
+    overflow: hidden;
+    position: relative;
+}
+
+.pan-nav-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    min-height: 52px;
-    padding: 0 16px;
-    border-bottom: 1px solid var(--border-secondary);
+    gap: 8px;
+    height: 52px;
+    padding: 0 8px 0 16px;
     flex-shrink: 0;
 }
 
-.pan-header-title {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-}
-
-.pan-header-title h1 {
+.pan-nav-header h1 {
     font-size: var(--font-size-2xl);
     font-weight: 600;
     margin: 0;
-}
-
-.pan-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.pan-back {
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: var(--font-size-3xl);
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 4px;
-}
-
-.pan-text-btn {
-    border: 1px solid var(--border-primary);
-    background: transparent;
     color: var(--text-primary);
-    border-radius: var(--radius-sm);
-    height: 30px;
-    padding: 0 12px;
-    font-size: var(--font-size-sm);
-    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.pan-text-btn:hover {
+.pan-nav-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.pan-icon-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: var(--font-size-xl);
+    line-height: 1;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+}
+
+.pan-icon-btn:hover {
     background: var(--background-item-hover);
 }
 
@@ -364,90 +390,80 @@ export default {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 0 16px;
-    border-bottom: 1px solid var(--border-secondary);
+    padding: 0 12px 8px;
     flex-shrink: 0;
 }
 
 .pan-tab {
-    padding: 10px 12px;
-    font-size: var(--font-size-base);
-    color: var(--text-secondary);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-}
-
-.pan-tab.active {
-    color: var(--accent-color);
-    border-bottom-color: var(--accent-color);
-}
-
-.pan-licenses {
-    margin-left: auto;
-    font-size: var(--font-size-sm);
-    color: var(--text-link);
-    text-decoration: none;
-}
-
-.pan-body {
     flex: 1;
-    overflow-y: auto;
-    padding: 8px 16px 32px;
-    box-sizing: border-box;
-}
-
-.pan-file-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 8px;
-    border-bottom: 1px solid var(--border-subtle);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.pan-file-row:hover {
+.pan-tab:hover {
     background: var(--background-item-hover);
 }
 
-.pan-file-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
+.pan-tab.active {
+    background: var(--background-item-selected);
+    color: var(--accent-color-active, var(--accent-color));
+}
+
+.pan-nav-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 12px;
+    box-sizing: border-box;
+}
+
+.pan-nav-footer {
+    flex-shrink: 0;
+    padding: 8px 16px 12px;
+    border-top: 1px solid var(--border-secondary);
+}
+
+.pan-nav-footer a {
+    font-size: var(--font-size-xs);
+    color: var(--text-hint);
+    text-decoration: none;
+}
+
+.pan-nav-footer a:hover {
+    color: var(--accent-color);
+}
+
+.pan-nav-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-2xl);
+    gap: 10px;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-bottom: 2px;
+    position: relative;
+}
+
+.pan-nav-row:hover {
+    background: var(--background-item-hover);
+}
+
+.pan-nav-row.active {
     background: var(--background-item-selected);
-    color: var(--text-primary);
-    flex-shrink: 0;
 }
 
-.pan-file-icon.word {
-    background: rgba(31, 100, 228, 0.16);
-}
-
-.pan-file-icon.excel {
-    background: rgba(60, 180, 120, 0.18);
-}
-
-.pan-file-icon.ppt {
-    background: rgba(240, 120, 60, 0.18);
-}
-
-.pan-file-icon.pdf,
-.pan-file-icon.image,
-.pan-file-icon.video,
-.pan-file-icon.audio,
-.pan-file-icon.archive {
-    background: var(--background-item-active);
-}
-
-.pan-file-info {
+.pan-nav-info {
     flex: 1;
     min-width: 0;
 }
 
-.pan-file-name {
+.pan-nav-name {
     font-size: var(--font-size-base);
     color: var(--text-primary);
     overflow: hidden;
@@ -455,10 +471,10 @@ export default {
     white-space: nowrap;
 }
 
-.pan-file-meta {
+.pan-nav-meta {
     font-size: var(--font-size-xs);
     color: var(--text-hint);
-    margin-top: 4px;
+    margin-top: 3px;
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
@@ -468,24 +484,54 @@ export default {
     border: none;
     background: transparent;
     color: var(--text-hint);
-    font-size: var(--font-size-2xl);
     cursor: pointer;
-    padding: 0 6px;
-    flex-shrink: 0;
+    font-size: var(--font-size-xl);
+    line-height: 1;
+    padding: 0 4px;
 }
 
-.pan-status {
+/* ---------------- 详情栏 ---------------- */
+.pan-detail {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--background-primary);
+    overflow: hidden;
+}
+
+.pan-detail-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     color: var(--text-hint);
+    background-image: var(--hero-bg-pattern);
+    background-size: 20px 20px;
+}
+
+.pan-detail-empty-icon {
+    font-size: 48px;
+    line-height: 1;
+    opacity: 0.5;
+}
+
+.pan-detail-empty-title {
+    margin: 8px 0 0;
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+}
+
+.pan-detail-empty-hint {
+    margin: 0;
     font-size: var(--font-size-sm);
-    text-align: center;
-    padding: 40px 16px;
+    color: var(--text-hint);
 }
 
-.pan-status-hint {
-    font-size: var(--font-size-xs);
-    margin-top: 6px;
-}
-
+/* ---------------- 菜单 ---------------- */
 .pan-menu-backdrop {
     position: fixed;
     top: 0;
@@ -521,6 +567,60 @@ export default {
 
 .pan-context-menu a.danger {
     color: var(--text-danger);
+}
+
+.pan-create-menu {
+    position: absolute;
+    z-index: 2600;
+    top: 46px;
+    right: 12px;
+    min-width: 140px;
+    background: var(--background-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 24px var(--background-mask, rgba(0, 0, 0, 0.3));
+    padding: 4px;
+}
+
+.pan-create-menu a {
+    display: block;
+    padding: 8px 12px;
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.pan-create-menu a:hover {
+    background: var(--background-item-hover);
+}
+
+/* ---------------- 通用 ---------------- */
+.pan-file-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    background: var(--background-item-selected);
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.pan-empty,
+.pan-status {
+    color: var(--text-hint);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    padding: 24px 12px;
+}
+
+.pan-status-hint {
+    font-size: var(--font-size-xs);
+    margin-top: 6px;
 }
 
 .pan-btn {

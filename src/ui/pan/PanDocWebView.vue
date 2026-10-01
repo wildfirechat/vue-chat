@@ -2,11 +2,11 @@
     <div class="pan-doc-page">
         <header class="pan-header">
             <div class="pan-header-title">
-                <button class="pan-back" @click="goBack">‹</button>
+                <button v-if="!embedded" class="pan-back" @click="goBack">‹</button>
                 <h1>{{ pageTitle }}</h1>
             </div>
             <div class="pan-header-actions">
-                <button class="pan-text-btn" v-if="mode === 'iframe' && docUrl && !$route.query.href" @click="switchToPopup">{{ $t('pan.open_in_popup') }}</button>
+                <button class="pan-text-btn" v-if="mode === 'iframe' && docUrl && !isDirectUrl" @click="switchToPopup">{{ $t('pan.open_in_popup') }}</button>
                 <button class="pan-text-btn" v-if="mode === 'popup' && docUrl" @click="openPopup">{{ $t('pan.open_doc') }}</button>
                 <button class="pan-text-btn" v-if="docUrl" @click="reload">{{ $t('pan.refresh') }}</button>
             </div>
@@ -62,6 +62,35 @@ import PanPickGroupDialog from './PanPickGroupDialog.vue';
 export default {
     name: 'PanDocWebView',
     components: {PanPickGroupDialog},
+    props: {
+        // 作为详情栏内嵌使用时不再走路由：文档参数由父组件传进来
+        embedded: {
+            type: Boolean,
+            default: false,
+        },
+        fileId: {
+            type: [Number, String],
+            default: 0,
+        },
+        // 按链接只读打开
+        viewUrl: {
+            type: String,
+            default: '',
+        },
+        // 直接放进 iframe 的地址（静态页）
+        href: {
+            type: String,
+            default: '',
+        },
+        name: {
+            type: String,
+            default: '',
+        },
+        title: {
+            type: String,
+            default: '',
+        },
+    },
     data() {
         return {
             enabled: isPanEnabled(),
@@ -78,23 +107,56 @@ export default {
         };
     },
     computed: {
-        pageTitle() {
+        /** 当前要打开的文档参数：内嵌时取 props，否则取路由 query */
+        target() {
+            if (this.embedded || this.fileId || this.viewUrl || this.href) {
+                return {
+                    fileId: this.fileId,
+                    viewUrl: this.viewUrl,
+                    href: this.href,
+                    name: this.name,
+                    title: this.title,
+                };
+            }
             const query = this.$route.query || {};
-            return query.title || query.name || this.$t('pan.online_docs');
+            return {
+                fileId: query.fileId,
+                viewUrl: query.url,
+                href: query.href,
+                name: query.name,
+                title: query.title,
+                mode: query.mode,
+            };
+        },
+        targetKey() {
+            const t = this.target;
+            return [t.fileId, t.viewUrl, t.href, t.name, t.mode].join('|');
+        },
+        isDirectUrl() {
+            return !!this.target.href;
+        },
+        pageTitle() {
+            const t = this.target;
+            return t.title || t.name || this.$t('pan.online_docs');
         },
     },
     async mounted() {
-        // 同一个路由只用 query 区分文档时组件不会重新挂载，所以打开逻辑抽出来，
-        // 由下面 $route 的 watch 再触发一次。
-        await this.openFromRoute();
+        // 只传 query 时同一个路由不会重新挂载组件，所以打开逻辑抽出来，
+        // 由 $route / props 的 watch 再触发一次。
+        await this.openTarget();
     },
     watch: {
         '$route.fullPath'(fullPath) {
-            if (fullPath.indexOf('/home/pan/doc-web') !== 0) {
+            if (this.embedded || fullPath.indexOf('/home/pan/doc-web') !== 0) {
                 return;
             }
-            this.reset();
-            this.openFromRoute();
+            this.openTarget();
+        },
+        targetKey() {
+            if (!this.embedded) {
+                return;
+            }
+            this.openTarget();
         },
     },
     beforeUnmount() {
@@ -130,16 +192,18 @@ export default {
             this.mode = 'iframe';
             this.enabled = Config.isPanEnabled();
         },
-        async openFromRoute() {
+        async openTarget() {
             this.reset();
-            document.title = this.pageTitle;
+            if (!this.embedded) {
+                document.title = this.pageTitle;
+            }
             if (!this.enabled) {
                 return;
             }
-            const query = this.$route.query || {};
-            const fileId = Number(query.fileId || 0);
-            const viewUrl = query.url || '';
-            const directUrl = query.href || '';
+            const target = this.target;
+            const fileId = Number(target.fileId || 0);
+            const viewUrl = target.viewUrl || '';
+            const directUrl = target.href || '';
             if (!fileId && !viewUrl && !directUrl) {
                 this.error = this.$t('pan.doc_missing');
                 return;
@@ -147,8 +211,8 @@ export default {
             // 静态页（开源许可）直接放进 iframe，不用弹窗
             this.mode = directUrl
                 ? 'iframe'
-                : (query.mode === 'popup' || query.mode === 'iframe'
-                    ? query.mode
+                : (target.mode === 'popup' || target.mode === 'iframe'
+                    ? target.mode
                     : (this.isSameOrigin() ? 'iframe' : 'popup'));
             // 页面会在第一次消息里判断宿主，宿主先挂上监听，再让页面开始跑
             this.unregisterBridge = registerPanBridge(() => this.targetWindow, {
@@ -173,7 +237,7 @@ export default {
                 } else if (fileId) {
                     url = panApi.docOpenUrl(fileId);
                 } else {
-                    url = panApi.docViewUrl(viewUrl, query.name || '');
+                    url = panApi.docViewUrl(viewUrl, target.name || '');
                 }
                 this.docUrl = withPanAuthCode(url, authCode);
                 if (this.mode === 'popup') {
@@ -267,6 +331,10 @@ export default {
             }
         },
         goBack() {
+            if (this.embedded) {
+                this.$emit('close');
+                return;
+            }
             if (this.$router && window.history.length > 1) {
                 this.$router.back();
             } else {

@@ -433,6 +433,11 @@
         "popup_hint": "独立窗口里文档的登录凭证是第一方的，跨站部署时更可靠；没看到窗口请点下面的按钮。",
         "popup_blocked": "浏览器拦截了弹窗，请允许本站弹出窗口后重试",
         "doc_missing": "缺少文件参数",
-        "doc_open_failed": "打开文档失败"
+        "doc_open_failed": "打开文档失败",
+        "new_doc": "新建",
+        "select_space": "选择一个空间",
+        "select_space_hint": "在左侧选择一个空间，查看里面的文件和文件夹",
+        "select_doc": "选择一篇文档",
+        "select_doc_hint": "从左侧「最近打开」或「共享给我」里选择文档"
     }
 }

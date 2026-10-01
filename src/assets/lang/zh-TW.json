@@ -421,6 +421,11 @@
     "popup_hint": "獨立視窗裡文件的登入憑證是第一方的，跨站部署時更可靠；沒看到視窗請點下面的按鈕。",
     "popup_blocked": "瀏覽器攔截了彈窗，請允許本站彈出視窗後重試",
     "doc_missing": "缺少檔案參數",
-    "doc_open_failed": "開啟文件失敗"
+    "doc_open_failed": "開啟文件失敗",
+    "new_doc": "新建",
+    "select_space": "選擇一個空間",
+    "select_space_hint": "在左側選擇一個空間，查看裡面的檔案和資料夾",
+    "select_doc": "選擇一篇文件",
+    "select_doc_hint": "從左側「最近開啟」或「共享給我」裡選擇文件"
   }
 }

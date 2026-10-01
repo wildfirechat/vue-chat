@@ -419,6 +419,11 @@
         "popup_hint": "A separate window keeps the login cookie first-party, which is more reliable across sites. Click the button below if you do not see it.",
         "popup_blocked": "The browser blocked the popup, please allow popups for this site",
         "doc_missing": "Missing file parameter",
-        "doc_open_failed": "Failed to open document"
+        "doc_open_failed": "Failed to open document",
+        "new_doc": "New",
+        "select_space": "Select a space",
+        "select_space_hint": "Pick a space on the left to browse its files and folders",
+        "select_doc": "Select a document",
+        "select_doc_hint": "Pick a document from \u201cRecent\u201d or \u201cShared with me\u201d on the left"
     }
 }
