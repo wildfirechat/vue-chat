@@ -2,7 +2,7 @@
     <div class="pan-doc-page">
         <header class="pan-header">
             <div class="pan-header-title">
-                <button v-if="!embedded" class="pan-back" @click="goBack">‹</button>
+                <button class="pan-back" @click="goBack">‹</button>
                 <h1>{{ pageTitle }}</h1>
             </div>
             <div class="pan-header-actions">
