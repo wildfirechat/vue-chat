@@ -125,6 +125,16 @@
                     <li v-if="isDownloadable(message)">
                         <a @click.prevent="download(message)">{{ $t('common.save') }}</a>
                     </li>
+                    <!-- 网盘 / 在线文档：没配置网盘服务时这几项不出现 -->
+                    <li v-if="canPreviewOnline(message)">
+                        <a @click.prevent="openOnlinePreview(message)">{{ $t('pan.online_preview') }}</a>
+                    </li>
+                    <li v-if="canSaveToPan(message)">
+                        <a @click.prevent="saveToPan(message, false)">{{ $t('pan.save_to_pan') }}</a>
+                    </li>
+                    <li v-if="canSaveToPan(message)">
+                        <a @click.prevent="saveToPan(message, true)">{{ $t('pan.save_to_pan_and_open') }}</a>
+                    </li>
                     <li v-if="isForwardable(message)">
                         <a @click.prevent="_forward(message)">{{ $t('common.forward') }}</a>
                     </li>
@@ -221,6 +231,13 @@ import MessageItemView from "./MessageItemView.vue";
 import {markRaw} from "vue";
 import mitt from "mitt";
 import CollectionMessageContent from '../../../wfc/messages/collectionMessageContent'
+import panApi from "../../../api/panApi";
+import {
+    downloadByUrl,
+    isInlineWebViewSupported,
+    mimeTypeOf,
+    saveStorageUrlToPan,
+} from "../../pan/panUtil";
 
 var amr;
 export default {
@@ -657,6 +674,69 @@ export default {
             return message && (message.messageContent instanceof ImageMessageContent
                 || message.messageContent instanceof FileMessageContent
                 || message.messageContent instanceof VideoMessageContent);
+        },
+
+        // ---- 网盘 / 在线文档 ----
+        isFileMessageWithUrl(message) {
+            return !!(message
+                && message.messageContent instanceof FileMessageContent
+                && message.messageContent.remoteUrl);
+        },
+
+        /** 在线预览：只有在线文档格式（Word/Excel/PPT/PDF）才给，按链接只读打开，不占网盘 */
+        canPreviewOnline(message) {
+            return Config.isPanEnabled()
+                && isInlineWebViewSupported()
+                && this.isFileMessageWithUrl(message)
+                && panApi.isOnlineDocName(message.messageContent.name);
+        },
+
+        /** 存到网盘：任何文件消息都能存（服务端把物理文件拷进网盘 bucket） */
+        canSaveToPan(message) {
+            return Config.isPanEnabled() && this.isFileMessageWithUrl(message);
+        },
+
+        openOnlinePreview(message) {
+            const content = message.messageContent;
+            this.$router.push({
+                path: '/pan/doc-web',
+                query: {
+                    url: content.remoteUrl,
+                    name: content.name,
+                    title: content.name,
+                },
+            });
+        },
+
+        /**
+         * 把文件消息存进「我的网盘」（存到私有空间根目录，同名自动改名）。
+         * openAfterSave 为真时接着打开：在线文档格式进文档页，其余取签名地址交给浏览器。
+         */
+        async saveToPan(message, openAfterSave) {
+            const content = message.messageContent;
+            try {
+                const file = await saveStorageUrlToPan({
+                    name: content.name,
+                    size: content.size,
+                    mimeType: mimeTypeOf(content.name),
+                    storageUrl: content.remoteUrl,
+                });
+                this.$notify({text: this.$t('pan.save_success'), type: 'info'});
+                if (!openAfterSave || !file) {
+                    return;
+                }
+                if (panApi.isOnlineDocName(file.name) && isInlineWebViewSupported()) {
+                    this.$router.push({
+                        path: '/pan/doc-web',
+                        query: {fileId: file.id, name: file.name, title: file.name},
+                    });
+                    return;
+                }
+                const res = await panApi.getDownloadUrl(file.id);
+                downloadByUrl(res && res.storageUrl, file.name);
+            } catch (e) {
+                this.$notify({text: e.message || this.$t('pan.save_failed'), type: 'warn'});
+            }
         },
 
         isForwardable(message) {

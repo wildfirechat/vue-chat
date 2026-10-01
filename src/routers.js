@@ -25,6 +25,10 @@ import PollHome from "./ui/poll/PollHome.vue";
 import PollCreate from "./ui/poll/PollCreate.vue";
 import PollList from "./ui/poll/PollList.vue";
 import PollDetail from "./ui/poll/PollDetail.vue";
+import PanHomePage from "./ui/pan/PanHomePage.vue";
+import PanFileListPage from "./ui/pan/PanFileListPage.vue";
+import PanDocsPage from "./ui/pan/PanDocsPage.vue";
+import PanDocWebView from "./ui/pan/PanDocWebView.vue";
 
 const routers = [
     {
@@ -166,6 +170,27 @@ const routers = [
         name: 'poll-detail',
         path: '/poll/detail',
         component: PollDetail,
+    },
+    // 网盘与在线文档（未配置 Config.PAN_SERVER 时入口不展示，页面内也会兜底提示）
+    {
+        name: 'pan-home',
+        path: '/pan',
+        component: PanHomePage,
+    },
+    {
+        name: 'pan-files',
+        path: '/pan/files',
+        component: PanFileListPage,
+    },
+    {
+        name: 'pan-docs',
+        path: '/pan/docs',
+        component: PanDocsPage,
+    },
+    {
+        name: 'pan-doc-web',
+        path: '/pan/doc-web',
+        component: PanDocWebView,
     }
 ]
 export default routers

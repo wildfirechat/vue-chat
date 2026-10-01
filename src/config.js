@@ -54,6 +54,14 @@ export default class Config {
     // 投票服务备选地址，双网环境下使用
     static POLL_BACKUP_SERVER = null;
 
+    // 网盘 / 在线文档服务地址（wf-pan 客户端端口）。接口在 `{PAN_SERVER}/api/v1` 下，
+    // 在线文档 H5 页面在 `{PAN_SERVER}/doc/` 下；鉴权用 IM 的 authCode。
+    // 未部署网盘时保持为空字符串（或 null）：客户端不显示网盘与在线文档的入口与菜单。
+    static PAN_SERVER = 'https://pan.wildfirechat.net';
+
+    // 网盘服务备选地址，双网环境下使用
+    static PAN_BACKUP_SERVER = null;
+
     // 服务器搜索服务地址（会话内消息搜索），对应 wf-search-server 项目（https://gitee.com/wfchat/search_server）
     static SEARCH_SERVER = 'https://api.wildfirechat.net/search';
 
@@ -283,6 +291,15 @@ export default class Config {
 
     static getPollServer() {
         return Config._selectServer(Config.POLL_SERVER, Config.POLL_BACKUP_SERVER);
+    }
+
+    static getPanServer() {
+        return Config._selectServer(Config.PAN_SERVER, Config.PAN_BACKUP_SERVER);
+    }
+
+    // 是否配置了网盘服务：未配置时隐藏网盘与在线文档的全部入口
+    static isPanEnabled() {
+        return !!Config.getPanServer();
     }
 
     static getSearchServer() {

@@ -74,6 +74,29 @@
                     </div>
                 </div>
 
+                <div class="setting-group" v-if="panEnabled">
+                    <span class="group-label">网盘与文档</span>
+                    <div class="setting-card">
+                        <div class="card-row clickable" @click="goPanHome">
+                            <i class="row-icon icon-ion-ios-cloud"/>
+                            <div class="row-info">
+                                <span class="row-title">网盘</span>
+                                <span class="row-desc">我的空间与共享文件，可上传、下载、新建文件夹与分享</span>
+                            </div>
+                            <i class="row-chevron icon-ion-ios-arrow-right"/>
+                        </div>
+
+                        <div class="card-row clickable" v-if="inlineWebViewSupported" @click="goPanDocs">
+                            <i class="row-icon icon-ion-document-text"/>
+                            <div class="row-info">
+                                <span class="row-title">在线文档</span>
+                                <span class="row-desc">最近打开的文档，新建 Word / Excel / PPT 并在线编辑</span>
+                            </div>
+                            <i class="row-chevron icon-ion-ios-arrow-right"/>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="setting-group"
                      v-if="sharedMiscState.isElectron">
                     <span class="group-label">启动与窗口</span>
@@ -320,6 +343,7 @@ import { shell } from '../../../platform';
 import IpcEventType from '../../../ipcEventType';
 import avenginekit from '../../../wfc/av/internal/engine.min';
 import Config from '../../../config';
+import {isInlineWebViewSupported, isPanEnabled} from '../../pan/panUtil';
 import ResizeBar from '../../common/ResizeBar.vue';
 
 export default {
@@ -339,9 +363,18 @@ export default {
             currentTab: 'general',
             defaultPortrait: Config.DEFAULT_PORTRAIT_URL,
             logoUrl: require('@/assets/images/icon.png'),
+            // 网盘服务没配置（Config.PAN_SERVER 为空）时，网盘与在线文档入口都不出现
+            panEnabled: Config.isPanEnabled(),
+            inlineWebViewSupported: isPanEnabled() ? isInlineWebViewSupported() : false,
         }
     },
     methods: {
+        goPanHome() {
+            this.$router.push({path: '/pan'});
+        },
+        goPanDocs() {
+            this.$router.push({path: '/pan/docs'});
+        },
         openLogDir() {
             let appPath = wfc.getAppPath();
             shell.openPath(appPath);
@@ -792,6 +825,16 @@ export default {
     flex-shrink: 0;
     font-size: var(--font-size-lg);
     color: var(--text-tertiary);
+}
+
+/* 行前置图标（网盘/在线文档等） */
+.row-icon {
+    flex-shrink: 0;
+    width: 24px;
+    margin-right: 12px;
+    font-size: 20px;
+    text-align: center;
+    color: var(--text-secondary);
 }
 
 .danger-text {
