@@ -344,7 +344,7 @@ export default class Config {
         // 示例代码
         // 双网环境时，将媒体文件地址切到备选网络
         if (Config.isUseBackupAddress()) {
-            url = url.replace('oss.xxxx.com', '192.168.2.19');
+            // url = url.replace('192.168.2.154', '192.168.1.141:8443');
         }
         return url;
     }
@@ -354,12 +354,7 @@ export default class Config {
      * @return {boolean}
      */
     static isUseBackupAddress() {
-        //示例代码
-        let host = wfc.getHost();
-        if (host === '192.168.2.169'/* backupHost */) {
-            return true;
-        }
-        return false;
+        return wfc.connectedToMainNetwork && !wfc.connectedToMainNetwork();
     }
 
     /**

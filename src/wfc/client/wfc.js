@@ -170,6 +170,7 @@ export class WfcManager {
 
     /**
      * 设置网络策略，仅专业版支持
+     * 2026-10-19 之后的 web SDK，开始支持 0
      * @param {int} strategy 网络策略。0 是自动选择；1 选择主网络；2选择备用网络
      *
      */
@@ -2420,7 +2421,7 @@ export class WfcManager {
         }
         return Config.urlRedirect(url);
     }
-    
+
     defaultUserPortrait(userInfo) {
         if (!userInfo.updateDt) {
             return Config.DEFAULT_PORTRAIT_URL
