@@ -32,10 +32,10 @@ export class WfcManager {
                     || ev === EventType.SendMessage
                     || ev === EventType.ConnectToServer
                     || ev === EventType.MessageStatusUpdate) {
-                    self.eventEmitter.emit(ev, ...args)
+                    self._safeEmit(ev, ...args)
                 } else {
                     if (impl.connectionStatus === ConnectionStatus.ConnectionStatusConnected) {
-                        self.eventEmitter.emit(ev, ...args)
+                        self._safeEmit(ev, ...args)
                     } else {
                         // ignore
                     }
@@ -44,6 +44,30 @@ export class WfcManager {
         };
     }
 
+    /**
+     * SDK 内部是同步派发事件的，业务监听器抛出的异常会直接冒回 SDK 内部流程（如拉取历史消息），导致流程中断。
+     * 这里逐个调用监听器并分别捕获异常：只打日志，不影响 SDK 流程，也不影响同一事件的其他监听器。
+     * @private
+     */
+    _safeEmit(ev, ...args) {
+        let emitter = self.eventEmitter;
+        if (typeof emitter.rawListeners !== 'function') {
+            try {
+                emitter.emit(ev, ...args);
+            } catch (e) {
+                console.log('wfc event listener exception', ev, e && e.stack ? e.stack : e);
+            }
+            return;
+        }
+        // rawListeners 返回的是副本，并包含 once 的包装函数（调用时会自动移除）
+        emitter.rawListeners(ev).forEach(listener => {
+            try {
+                listener.apply(emitter, args);
+            } catch (e) {
+                console.log('wfc event listener exception', ev, e && e.stack ? e.stack : e);
+            }
+        });
+    }
     /**
      * 初始化，请参考本demo的用法
      * 只可以在主窗口调用，其他窗口调用应当调用{@link attach}
