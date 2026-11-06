@@ -37,25 +37,25 @@ export default class Config {
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://app.wildfirechat.net';
+    static APP_SERVER = 'https://im.aiwork.lgdg.cc/app';
 
     // APP SERVER 备选地址，双网环境下使用
     static APP_BACKUP_SERVER = null;
 
     // 接龙服务地址
-    static COLLECTION_SERVER = 'https://jielong.wildfirechat.net';
+    static COLLECTION_SERVER = null;   // 未部署接龙服务
 
     // 接龙服务备选地址，双网环境下使用
     static COLLECTION_BACKUP_SERVER = null;
 
     // 投票服务地址
-    static POLL_SERVER = 'https://poll.wildfirechat.net';
+    static POLL_SERVER = null;         // 未部署投票服务
 
     // 投票服务备选地址，双网环境下使用
     static POLL_BACKUP_SERVER = null;
 
     // 服务器搜索服务地址（会话内消息搜索），对应 wf-search-server 项目（https://gitee.com/wfchat/search_server）
-    static SEARCH_SERVER = 'https://api.wildfirechat.net/search';
+    static SEARCH_SERVER = null;       // 未部署 search_server（Web 会话内搜索不可用）
 
     // 服务器搜索服务备选地址，双网环境下使用
     static SEARCH_BACKUP_SERVER = null;
@@ -92,14 +92,14 @@ export default class Config {
     ];
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
-    static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
+    static ASR_SERVER = null;          // 未部署语音转文字服务
 
     // 语音转文字服务备选地址，双网环境下使用
     static ASR_BACKUP_SERVER = null;
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
-    static ORGANIZATION_SERVER = 'https://org.wildfirechat.net';
+    static ORGANIZATION_SERVER = 'https://im.aiwork.lgdg.cc/org';
 
     // 组织结构服务备选地址，双网环境下使用
     static ORGANIZATION_BACKUP_SERVER = null;
@@ -114,7 +114,10 @@ export default class Config {
     // 上线时请一定要切换成你们自己的服务。可以购买腾讯云或者阿里云的轻量服务器，价格很便宜，可以避免影响到您的用户体验。<br>
     // 如果所有客户端都是在局域网内使用，可以不配置turn服务，置为null
     // ICE_SERVERS 是数组数据，可以同时配置多个主备 turn 地址，不需要按双网动态选择
-    static ICE_SERVERS = [['turn:turn.wildfirechat.net:3478', 'wfchat', 'wfchatpwd']];
+    static ICE_SERVERS = [
+        ['turn:172.16.198.165:3478', 'wfchat', 'WFpocTurn8Pass'],
+        ['turn:172.16.198.169:3478', 'wfchat', 'WFpocTurn8Pass']
+    ];
 
     static LANGUAGE = 'zh_CN';
 
@@ -363,7 +366,7 @@ export default class Config {
      */
     static emojiBaseUrl() {
         // 表情的 baseUrl，一定要求以 / 结尾
-        let emojiBaseUrl = 'https://static.wildfirechat.net/twemoji/assets/';
+        let emojiBaseUrl = '/web-static/twemoji/assets/';   // 纯内网：由本站 nginx 托管（不用外网静态域名）
         // 实例代码
         // 双网环境时，将表情地址切换到备选网络
         // if (Config.isUseBackupAddress()) {
@@ -378,7 +381,7 @@ export default class Config {
      */
     static stickerBaseUrl() {
         // 动态表情的 baseUrl，一定要求以 / 结尾
-        let stickerBaseUrl = 'https://static.wildfirechat.net/sticker/';
+        let stickerBaseUrl = '/web-static/sticker/';        // 纯内网：由本站 nginx 托管
         // 实例代码
         // 双网环境时，将动态表情地址切换到备选网络
         // if (Config.isUseBackupAddress()) {

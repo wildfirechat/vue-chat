@@ -11,7 +11,7 @@ module.exports = {
         allowedHosts: 'all',
         port: 8013
     },
-    publicPath: '/',
+    publicPath: '/web/',   // 单域名约束：站点挂在 /web/ 下，避免与 IM 的 /api /im /ws 等根路径冲突（hash 路由，改动安全）
     outputDir: 'dist',
     //assetsDir: 'static',
     lintOnSave: process.env.NODE_ENV === 'development',
