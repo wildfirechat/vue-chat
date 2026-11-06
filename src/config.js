@@ -37,7 +37,7 @@ export default class Config {
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://im.lgdg.cc/app';
+    static APP_SERVER = 'https://aiwork-im.lgdg.cc/app';
 
     // APP SERVER 备选地址，双网环境下使用
     static APP_BACKUP_SERVER = null;
@@ -99,7 +99,7 @@ export default class Config {
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
-    static ORGANIZATION_SERVER = 'https://im.lgdg.cc/org';
+    static ORGANIZATION_SERVER = 'https://aiwork-im.lgdg.cc/org';
 
     // 组织结构服务备选地址，双网环境下使用
     static ORGANIZATION_BACKUP_SERVER = null;
