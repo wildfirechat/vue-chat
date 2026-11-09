@@ -43,13 +43,13 @@ export default class Config {
     static APP_BACKUP_SERVER = null;
 
     // 接龙服务地址
-    static COLLECTION_SERVER = null;   // 未部署接龙服务
+    static COLLECTION_SERVER = 'https://aiwork-im.lgdg.cc/collection';   // 接龙服务（经 /collection 路径）
 
     // 接龙服务备选地址，双网环境下使用
     static COLLECTION_BACKUP_SERVER = null;
 
     // 投票服务地址
-    static POLL_SERVER = null;         // 未部署投票服务
+    static POLL_SERVER = 'https://aiwork-im.lgdg.cc/poll';         // 投票服务（经 /poll 路径）
 
     // 投票服务备选地址，双网环境下使用
     static POLL_BACKUP_SERVER = null;
@@ -92,7 +92,7 @@ export default class Config {
     ];
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
-    static ASR_SERVER = null;          // 未部署语音转文字服务
+    static ASR_SERVER = 'https://aiwork-im.lgdg.cc/asr/api/recognize';   // 语音转文字（离线识别）
 
     // 语音转文字服务备选地址，双网环境下使用
     static ASR_BACKUP_SERVER = null;
