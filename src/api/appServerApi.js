@@ -110,7 +110,7 @@ export class AppServerApi {
                         }
 
                         if (appAuthToken) {
-                            setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
+                            setItem('appAuthToken-' + new URL(response.config.url).host, appAuthToken);
                         }
                         resolve(response.data);
                     } else if ([9, 18].indexOf(response.data.code) > -1) {
@@ -212,7 +212,7 @@ export class AppServerApi {
                     }
 
                     if (appAuthToken) {
-                        setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
+                        setItem('appAuthToken-' + new URL(response.config.url).host, appAuthToken);
                     }
                     resolve(response.data.result);
                 } else {
@@ -239,7 +239,7 @@ export class AppServerApi {
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
             headers: {
-                'authToken': getItem('authToken-' + new URL(path).host),
+                'authToken': getItem('appAuthToken-' + new URL(path).host),
             },
             withCredentials: false,
         })
