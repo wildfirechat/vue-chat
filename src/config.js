@@ -216,7 +216,9 @@ export default class Config {
     static RECALL_REEDIT_TIME_LIMIT = 60;
 
     // 如果不支持工作台，将其置空即可
-    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://open.wildfirechat.cn/work.html';
+    // 私有部署：工作台指向自建开放平台（原为野火官方 open.wildfirechat.cn，会导致
+    // 工作台加载官方页面、且无法用我们的 AuthCode 登录）
+    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://aiwork-im.lgdg.cc/open/work.html';
 
     // 工作台备选地址，双网环境下使用
     static OPEN_PLATFORM_WORK_SPACE_BACKUP_URL = null;
