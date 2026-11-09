@@ -37,7 +37,7 @@ export class OrganizationServerApi {
                             }
 
                             if (appAuthToken) {
-                                setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
+                                setItem('orgAuthToken-' + new URL(response.config.url).host, appAuthToken);
                             }
                             this.isServiceAvailable = true;
                             resolve(response.data.result);
@@ -156,7 +156,7 @@ export class OrganizationServerApi {
         path = Config.getOrganizationServer() + path;
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse, headers: {
-                'authToken': getItem('authToken-' + new URL(path).host),
+                'authToken': getItem('orgAuthToken-' + new URL(path).host),
             },
             withCredentials: false,
         })
