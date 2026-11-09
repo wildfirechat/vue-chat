@@ -259,7 +259,7 @@ export default class Config {
     // AI会议纪要机器人ID，为空时不启用会议纪要跳转功能
     static AI_MINUTES_ROBOT_ID = "robotminutes";
     // 会议纪要页面URL
-    static MINUTES_URL = "http://101.42.4.222:8883/index.html";
+    static MINUTES_URL = null;   // 未部署会议纪要服务（原为野火官方公网地址）
 
     // 会议纪要页面备选地址，双网环境下使用
     static MINUTES_BACKUP_URL = null;
