@@ -37,19 +37,19 @@ export default class Config {
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://aiwork-im.lgdg.cc/app';
+    static APP_SERVER = 'https://lt.wildfirechat.net/app';
 
     // APP SERVER 备选地址，双网环境下使用
     static APP_BACKUP_SERVER = null;
 
     // 接龙服务地址
-    static COLLECTION_SERVER = 'https://aiwork-im.lgdg.cc/collection';   // 接龙服务（经 /collection 路径）
+    static COLLECTION_SERVER = null;   // 未部署接龙服务   // 接龙服务（经 /collection 路径）
 
     // 接龙服务备选地址，双网环境下使用
     static COLLECTION_BACKUP_SERVER = null;
 
     // 投票服务地址
-    static POLL_SERVER = 'https://aiwork-im.lgdg.cc/poll';         // 投票服务（经 /poll 路径）
+    static POLL_SERVER = 'https://lt.wildfirechat.net/poll';         // 投票服务（经 /poll 路径）
 
     // 投票服务备选地址，双网环境下使用
     static POLL_BACKUP_SERVER = null;
@@ -92,14 +92,14 @@ export default class Config {
     ];
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
-    static ASR_SERVER = 'https://aiwork-im.lgdg.cc/asr/api/recognize';   // 语音转文字（离线识别）
+    static ASR_SERVER = null;   // 未部署语音转文字   // 语音转文字（离线识别）
 
     // 语音转文字服务备选地址，双网环境下使用
     static ASR_BACKUP_SERVER = null;
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
-    static ORGANIZATION_SERVER = 'https://aiwork-im.lgdg.cc/org';
+    static ORGANIZATION_SERVER = 'https://lt.wildfirechat.net/org';
 
     // 组织结构服务备选地址，双网环境下使用
     static ORGANIZATION_BACKUP_SERVER = null;
@@ -115,9 +115,8 @@ export default class Config {
     // 如果所有客户端都是在局域网内使用，可以不配置turn服务，置为null
     // ICE_SERVERS 是数组数据，可以同时配置多个主备 turn 地址，不需要按双网动态选择
     static ICE_SERVERS = [
-        ['turn:aiwork-im.lgdg.cc:3478', 'wfchat', 'WFpocTurn8Pass'],
-        ['turn:aiwork-im.lgdg.cc:3479', 'wfchat', 'WFpocTurn8Pass']
-    ];
+        ['turn:lt.wildfirechat.net:3478', 'wfchat', 'WFpocTurn8Pass'],
+            ];
 
     static LANGUAGE = 'zh_CN';
 
@@ -218,7 +217,7 @@ export default class Config {
     // 如果不支持工作台，将其置空即可
     // 私有部署：工作台指向自建开放平台（原为野火官方 open.wildfirechat.cn，会导致
     // 工作台加载官方页面、且无法用我们的 AuthCode 登录）
-    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://aiwork-im.lgdg.cc/open/work.html';
+    static OPEN_PLATFORM_WORK_SPACE_URL = null;   // 未部署开放平台
 
     // 工作台备选地址，双网环境下使用
     static OPEN_PLATFORM_WORK_SPACE_BACKUP_URL = null;
