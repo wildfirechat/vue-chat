@@ -43,7 +43,7 @@ export default class Config {
     static APP_BACKUP_SERVER = null;
 
     // 接龙服务地址
-    static COLLECTION_SERVER = null;   // 未部署接龙服务   // 接龙服务（经 /collection 路径）
+    static COLLECTION_SERVER = 'https://lt.wildfirechat.net/collection'; // 接龙服务（经 /collection 路径）   // 接龙服务（经 /collection 路径）
 
     // 接龙服务备选地址，双网环境下使用
     static COLLECTION_BACKUP_SERVER = null;
