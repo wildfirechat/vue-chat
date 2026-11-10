@@ -297,7 +297,16 @@ export default {
                 this.autoPlay();
             };
 
+            // 普通版第二个参数是 userInfo，高级版是 screenSharing(boolean)，故需严格判断 === true
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
+                // 屏幕共享（非替换模式）的流以单独的参与者回调，本页面不单独展示，忽略，否则会出现重复的参与者
+                if (screenSharing === true) {
+                    return;
+                }
+                if (this.participantUserInfos.findIndex(p => p.uid === userId) > -1) {
+                    console.log('didParticipantJoined, already exists, ignore', userId)
+                    return;
+                }
                 let userInfo = wfc.getUserInfo(userId)
                 console.log('didParticipantJoined', userInfo)
                 userInfo._stream = null;
@@ -305,7 +314,11 @@ export default {
                 this.participantUserInfos.push(userInfo);
             }
 
-            sessionCallback.didParticipantLeft = (userId) => {
+            sessionCallback.didParticipantLeft = (userId, reason, screenSharing) => {
+                // 仅屏幕共享结束，参与者本人还在通话中
+                if (screenSharing === true) {
+                    return;
+                }
                 console.log('didParticipantLeft', userId, this.participantUserInfos.length)
                 this.participantUserInfos = this.participantUserInfos.filter(p => p.uid !== userId);
                 console.log('didParticipantLeft d', userId, this.participantUserInfos.length)
