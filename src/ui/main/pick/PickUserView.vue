@@ -150,6 +150,8 @@ export default {
             filterQuery: '',
             organizationPathList: [],
             expandOrganizationSection: false,
+            // 搜索开始前组织结构是否展开（清空搜索时恢复）
+            orgExpandedBeforeSearch: null,
             expandContactSection: true,
             defaultOrganizationPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
             orgServiceAvailable: organizationServerApi.isServiceAvailable,
@@ -157,10 +159,17 @@ export default {
     },
     watch: {
         // 搜索时自动展开组织结构：添加群成员等场景进来时该分类是收起的，
-        // 不展开的话搜到的人被折叠在下面看不到
+        // 不展开的话搜到的人被折叠在下面看不到；清空搜索后恢复成搜索前的展开状态
+        // （添加群成员这类原本就是收起的场景，清空后自动合上）
         filterQuery(query) {
             if (query && query.trim()) {
+                if (this.orgExpandedBeforeSearch === null) {
+                    this.orgExpandedBeforeSearch = this.expandOrganizationSection;
+                }
                 this.expandOrganizationSection = true;
+            } else if (this.orgExpandedBeforeSearch !== null) {
+                this.expandOrganizationSection = this.orgExpandedBeforeSearch;
+                this.orgExpandedBeforeSearch = null;
             }
         },
     },
