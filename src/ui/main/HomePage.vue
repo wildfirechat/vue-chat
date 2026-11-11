@@ -34,12 +34,14 @@
                         alt=""
                     />
                 </div>
-                <nav class="menu">
+                <nav class="menu" :class="{ 'menu-with-label': showIconLabel }">
                     <ul>
                         <li>
                             <div class="i-button-wrapper" @click="go2Conversation">
                                 <i class="icon-ion-ios-chatboxes"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home'}">{{ $t('sidebar.message') }}</span>
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
                         </li>
@@ -47,6 +49,8 @@
                             <div class="i-button-wrapper" @click="go2Contact">
                                 <i class="icon-ion-android-contact"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/contact'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home/contact'}">{{ $t('sidebar.contact') }}</span>
                                 <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
@@ -54,30 +58,40 @@
                             <div class="i-button-wrapper" @click="go2Fav">
                                 <i class="icon-ion-android-favorite"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home/fav'}">{{ $t('sidebar.fav') }}</span>
                             </div>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <div class="i-button-wrapper" @click="go2Files">
                                 <i class="icon-ion-ios-folder"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/files'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home/files'}">{{ $t('sidebar.files') }}</span>
                             </div>
                         </li>
                         <li v-if="sharedMiscState.enableOpenWorkSpace">
                             <div class="i-button-wrapper" @click="go2Workspace">
                                 <i class="icon-ion-code-working"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}">{{ $t('sidebar.workspace') }}</span>
                             </div>
                         </li>
                         <li v-if="supportConference">
                             <div class="i-button-wrapper" @click="go2Conference">
                                 <i class="icon-ion-speakerphone"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/conference'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home/conference'}">{{ $t('sidebar.conference') }}</span>
                             </div>
                         </li>
                         <li v-if="aiPortalUrl">
                             <div class="i-button-wrapper" @click="go2AI">
                                 <i class="icon-ion-android-sunny"
                                    v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai'}"></i>
+                                <span class="menu-label"
+                                      :class="{ active: this.$router.currentRoute.value.path === '/home/ai'}">{{ $t('sidebar.ai') }}</span>
                             </div>
                         </li>
                         <li>
@@ -86,6 +100,8 @@
                                  @click="go2Setting">
                                 <i class="icon-ion-android-settings"
                                    v-bind:class="{active : this.$router.currentRoute.value.path === '/home/setting'}"></i>
+                                <span class="menu-label"
+                                      :class="{active : this.$router.currentRoute.value.path === '/home/setting'}">{{ $t('sidebar.setting') }}</span>
                             </div>
                         </li>
                     </ul>
@@ -167,6 +183,8 @@ var avenginkitSetuped = false;
 export default {
     data() {
         return {
+            // 左侧导航栏是否在图标下显示文字，由 Config.SHOW_SIDEBAR_ICON_LABEL 控制，默认关闭
+            showIconLabel: Config.SHOW_SIDEBAR_ICON_LABEL,
             sharedContactState: store.state.contact,
             sharedMiscState: store.state.misc,
             shareConversationState: store.state.conversation,
@@ -524,9 +542,52 @@ export default {
     line-height: calc(50px * var(--layout-scale-cap));
 }
 
+/* 图标下带文字时，单个菜单项高度略增、间距收紧，保证图标+文字的占位不超出原来的视觉高度 */
+.menu.menu-with-label ul li {
+    margin: 4px 8px;
+    height: calc(48px * var(--layout-scale-cap));
+    line-height: 1;
+}
+
 .menu ul li:last-of-type {
     margin-top: auto;
     margin-bottom: 20px;
+}
+
+/* 图标 + 文字作为一个整体，图标在上、文字在下；高度与改造前单个菜单项占位一致 */
+.menu.menu-with-label .i-button-wrapper {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    gap: calc(3px * var(--layout-scale-cap));
+    cursor: pointer;
+}
+
+.menu.menu-with-label .i-button-wrapper i {
+    display: block;
+    line-height: 1;
+}
+
+.menu .menu-label {
+    display: none;
+}
+
+.menu.menu-with-label .menu-label {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: calc(10px * var(--layout-scale-cap));
+    line-height: 1.1;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: color var(--duration-fast) ease;
+}
+
+.menu .menu-label.active {
+    color: var(--accent-color-active);
 }
 
 .menu .badge {

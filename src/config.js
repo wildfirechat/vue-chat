@@ -239,6 +239,10 @@ export default class Config {
 
     // 单人音视频通话页面是否显示音视频 SDK 相关提示
     static SHOW_VOIP_TIP = true
+
+    // 左侧导航栏是否在图标下方显示文字（会话/通讯录/收藏/工作台/会议/AI/设置）。
+    // 默认关闭；开启后图标下会多一行小字，窄屏或图标不易辨认时可打开。
+    static SHOW_SIDEBAR_ICON_LABEL = false
     // 是否启用登录页滑动验证码
     static ENABLE_LOGIN_SLIDE_VERIFY = true
     // AI机器人ID
