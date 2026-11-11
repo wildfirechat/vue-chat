@@ -38,6 +38,9 @@ export class WfcManager {
                         self._safeEmit(ev, ...args)
                     } else {
                         // ignore
+                        if(ev === EventType.ReceiveMessage && args[0].messageContent.type >= 400 && args[0].messageContent.type < 500) {
+                            self._safeEmit(ev, ...args)
+                        }
                     }
                 }
             }
