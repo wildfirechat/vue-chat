@@ -97,7 +97,7 @@
                             </div>
                         </li>
                     </ul>
-                    <div v-if="!shouldShowAllOrgEmployee && employeeSearchResult.length > 5"
+                    <div v-if="!shouldShowAllOrgEmployee && employeeSearchResult.length > 4"
                          class="show-all"
                          @click.stop="showAllOrgEmployee">
                         {{ $t('search.view_all') + employeeSearchResult.length }}
@@ -154,7 +154,7 @@ export default {
             shouldShowAllConversation: false,
             shouldShowAllOrgEmployee: false,
             employeeSearchResult: [],
-            rootOrgId: null,
+            rootOrgIds: [],
             floatingStyle: {
                 left: '0px',
                 top: '0px',
@@ -166,16 +166,8 @@ export default {
     },
 
     async mounted() {
-        if (organizationServerApi.isServiceAvailable) {
-            try {
-                const orgs = await organizationServerApi.getRootOrganization();
-                if (orgs && orgs.length > 0) {
-                    this.rootOrgId = orgs[0].id;
-                }
-            } catch (e) {
-                // org service not available
-            }
-        }
+        // 组织结构服务可能还没登录完成，这里先尽力加载一遍；搜索时还会按需再加载
+        await this.loadRootOrgIds();
         this.search(this.query);
         this.bindFloatingEvents()
         this.$nextTick(() => {
@@ -422,20 +414,71 @@ export default {
             this.searchEmployee(query);
         },
 
+        /**
+         * 按需加载根组织：组织结构服务的登录是登录成功后异步发起的，搜索可能比它先到，
+         * 挂载时那次请求可能因为没 token 而失败，导致「组织结构」分类一直是空的。
+         * 这里每次搜索时兜底加载一次，只在成功时缓存。
+         */
+        async loadRootOrgIds() {
+            if (this.rootOrgIds.length) {
+                return this.rootOrgIds;
+            }
+            if (!organizationServerApi.isServiceAvailable) {
+                return this.rootOrgIds;
+            }
+            try {
+                const orgs = await organizationServerApi.getRootOrganization();
+                // 可能配置了多个根组织：全局搜索要跨所有根组织找人
+                this.rootOrgIds = (orgs || []).map(o => o.id).filter(id => id !== undefined && id !== null);
+            } catch (e) {
+                console.error('load root organizations failed', e);
+            }
+            return this.rootOrgIds;
+        },
+
         async searchEmployee(keyword) {
-            if (!keyword || !this.rootOrgId) {
+            if (!keyword) {
                 this.employeeSearchResult = [];
                 return;
             }
             if (!organizationServerApi.isServiceAvailable) {
                 return;
             }
-            try {
-                this.employeeSearchResult = await organizationServerApi.searchEmployee(this.rootOrgId, keyword);
-            } catch (e) {
-                console.error('search employee error', e);
-                this.employeeSearchResult = [];
+            let rootOrgIds = await this.loadRootOrgIds();
+            if (!rootOrgIds.length) {
+                // 还没登录成功的话，补一次组织结构登录再重试
+                try {
+                    await organizationServerApi.login();
+                } catch (e) {
+                    console.error('organizationServer login failed', e);
+                }
+                rootOrgIds = await this.loadRootOrgIds();
             }
+            if (!rootOrgIds.length) {
+                this.employeeSearchResult = [];
+                return;
+            }
+            const results = await Promise.all(rootOrgIds.map(async orgId => {
+                try {
+                    return await organizationServerApi.searchEmployee(orgId, keyword);
+                } catch (e) {
+                    console.error('search employee error, orgId=', orgId, e);
+                    return [];
+                }
+            }));
+            const seen = new Set();
+            const merged = [];
+            results.forEach(list => {
+                (list || []).forEach(employee => {
+                    const key = employee && (employee.employeeId || employee.id || employee.name);
+                    if (!key || seen.has(key)) {
+                        return;
+                    }
+                    seen.add(key);
+                    merged.push(employee);
+                });
+            });
+            this.employeeSearchResult = merged;
         },
 
         showAllOrgEmployee() {
@@ -468,7 +511,7 @@ export default {
             return !this.shouldShowAllConversation && this.sharedSearchState.conversationSearchResult.length > 5 ? this.sharedSearchState.conversationSearchResult.slice(0, 4) : this.sharedSearchState.conversationSearchResult;
         },
         toShowOrgEmployeeList() {
-            return !this.shouldShowAllOrgEmployee && this.employeeSearchResult.length > 5 ? this.employeeSearchResult.slice(0, 4) : this.employeeSearchResult;
+            return !this.shouldShowAllOrgEmployee && this.employeeSearchResult.length > 4 ? this.employeeSearchResult.slice(0, 4) : this.employeeSearchResult;
         },
         isSearchResultEmpty() {
             return this.sharedSearchState.userSearchResult.length === 0
