@@ -94,6 +94,7 @@
                             <div class="search-result-item contact" @click.stop="chatToEmployee(employee)">
                                 <img :src="employeePortrait(employee)">
                                 <span class="single-line">{{ employee.name }}</span>
+                                <button v-if="canAddEmployee(employee)" @click.stop="addEmployee(employee)">{{ $t('common.add') }}</button>
                             </div>
                         </li>
                     </ul>
@@ -485,6 +486,20 @@ export default {
             this.shouldShowAllOrgEmployee = true;
         },
 
+        // 组织结构里的人也能加好友：还不是好友才显示「添加」（排除自己和文件传输助手）
+        canAddEmployee(employee) {
+            const uid = employee && (employee.employeeId || employee.id);
+            return !!uid
+                && uid !== wfc.getUserId()
+                && uid !== Config.FILE_HELPER_ID
+                && !this.isFriend(uid);
+        },
+        addEmployee(employee) {
+            if (!this.canAddEmployee(employee)) {
+                return;
+            }
+            this.addFriend(organizationServerApi.employeeToUserInfo(employee));
+        },
         chatToEmployee(employee) {
             let userInfo = organizationServerApi.employeeToUserInfo(employee);
             this.chatToContact(userInfo);

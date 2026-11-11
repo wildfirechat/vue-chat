@@ -155,6 +155,16 @@ export default {
             orgServiceAvailable: organizationServerApi.isServiceAvailable,
         }
     },
+    watch: {
+        // 搜索时自动展开组织结构：添加群成员等场景进来时该分类是收起的，
+        // 不展开的话搜到的人被折叠在下面看不到
+        filterQuery(query) {
+            if (query && query.trim()) {
+                this.expandOrganizationSection = true;
+            }
+        },
+    },
+
     methods: {
         toggleOrganizationSection() {
             this.expandOrganizationSection = !this.expandOrganizationSection;
