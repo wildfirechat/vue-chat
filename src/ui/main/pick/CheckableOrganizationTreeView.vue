@@ -88,22 +88,44 @@ export default {
         }
     },
     mounted() {
-        // this.loadAndShowOrganization(this.sharedContactState.currentOrganization);
-        organizationServerApi.getRootOrganization()
-            .then(orgs => {
-                if (orgs.length > 0) {
-                    this.currentOrgId = orgs[0].id;
-                    this.loadAndShowOrganization(orgs[0])
+        this.loadRootOrganizations().then(orgs => {
+            if (orgs.length === 0) {
+                if (organizationServerApi.isServiceAvailable) {
+                    this.$notify({
+                        text: '组织结构服务异常',
+                        type: 'error',
+                    });
                 }
-            })
-            .catch(error => {
-                this.$notify({
-                    text: error.message,
-                    type: "error",
-                });
-            })
+                return;
+            }
+            if (orgs.length > 0) {
+                this.currentOrgId = orgs[0].id;
+                this.loadAndShowOrganization(orgs[0])
+            }
+        })
     },
     methods: {
+        /**
+         * 加载根组织。组织结构服务的登录是登录成功后异步发起的，组件挂载时可能还没有 token，
+         * 这里失败后补一次登录再重试；搜索时也会兜底调用，避免根组织为空导致搜不到人。
+         */
+        async loadRootOrganizations() {
+            if (this.rootOrganizations.length) {
+                return this.rootOrganizations;
+            }
+            try {
+                this.rootOrganizations = (await organizationServerApi.getRootOrganization()) || [];
+            } catch (e) {
+                console.error('load root organizations failed', e);
+                try {
+                    await organizationServerApi.login();
+                    this.rootOrganizations = (await organizationServerApi.getRootOrganization()) || [];
+                } catch (e2) {
+                    console.error('load root organizations failed after login', e2);
+                }
+            }
+            return this.rootOrganizations;
+        },
         loadAndShowOrganization(org) {
             this.loadAndShowOrganizationById(org.id);
         },
@@ -121,9 +143,15 @@ export default {
                 })
         },
         async search(keyword) {
-            if (!this.currentOrgId) return;
+            // 还没进入某个部门时，在根组织列表搜索所有根组织（原来必须点进部门才能搜到人）
+            const rootOrganizations = await this.loadRootOrganizations();
+            const orgIds = this.currentOrgId ? [this.currentOrgId] : rootOrganizations.map(o => o.id);
+            if (orgIds.length === 0) return;
             try {
-                this.searchResults = await organizationServerApi.searchEmployee(this.currentOrgId, keyword);
+                const resultList = await Promise.all(orgIds.map(orgId => organizationServerApi.searchEmployee(orgId, keyword)));
+                const employeeMap = new Map();
+                resultList.flat().forEach(e => employeeMap.set(e.employeeId, e));
+                this.searchResults = [...employeeMap.values()];
                 this.searchMode = true;
             } catch (e) {
                 console.error('search employee error', e);
